@@ -1,0 +1,456 @@
+1. A tile with nothing but the background polygon (flat, untextured), alone in the region array
+   TSP's bit after STARTRENDER, 32 bit framebuffer, pointers to all five lists (the modifier volume lists too): 5997 counts
+   pointers to the first n lists only (opaque, opaque modifier, translucent, translucent modifier, punch through):
+      0: 5717  1: 5773  2: 5829  3: 5891  4: 5941  5: 5997
+   framebuffer pack mode (the same with dither):  0555: 5371  565: 5373  4444: 5375  1555: 5373  888: 5491  0888: 5997  8888: 5997
+   8 tiles after one entry that draws nothing:    565: 21747  888: 22615  0888: 26785
+   framebuffer clip (0888) leaving all / 16 lines / 16 columns / 16x16 / nothing:  5995  5673  5371  5373  5373
+   entries in front of the tile's that draw nothing and are not written out (as KallistiOS has one):
+      0: 5997   1: 7791 (+1794)   2: 9875 (+2084)   4: 14013 (+2069.0 each)
+   => B, the TSP's time for a tile of background:   2069.0 counts =  1034.5 clocks, 2.021 counts a pixel
+   the first n tiles of the screen (0888), after one such entry:  1: 7791  2: 10517  4: 15931  8: 26791  16: 48475  32: 92123  64: 179565
+      per tile more:  2726  2707  2715  2710  2728  2733
+      the same with a 16 bit framebuffer: 2083 per tile more
+
+2. The background polygon by format: TSP time per region array entry (from 2 against 4 entries in front), and
+   what the first tile costs more than that (texels not read before)
+   format                                        per entry  a pixel  first tile
+   untextured flat                                  2069.0    2.021        +0.0
+   untextured gouraud                               2073.0    2.024        -6.0
+   565 flat                                         2080.0    2.031      +153.0
+   565 gouraud                                      2074.0    2.025      +161.0
+   565 flat offset                                  2086.0    2.037      +177.0
+   565 gouraud offset                               2087.0    2.038      +176.0
+   565 gouraud bilinear                             2268.0    2.215      +161.0
+   565 gouraud mipmapped point                      2083.0    2.034      +152.0
+   565 gouraud mipmapped bilinear                   2797.0    2.731      +112.0
+   565 gouraud trilinear A                          2797.0    2.731      +106.0
+   565 gouraud trilinear B                          2083.0    2.034      +166.0
+   1555 gouraud                                     2081.0    2.032      +154.0
+   4444 gouraud                                     2084.0    2.035      +141.0
+   YUV422 gouraud                                   2073.0    2.024      +162.0
+   bump gouraud offset                              2082.0    2.033      +155.0
+   palette 4 bpp gouraud                            4099.5    4.003      +163.5
+   palette 8 bpp gouraud                            4102.0    4.006      +159.0
+   565 VQ gouraud                                   2075.0    2.026      +272.0
+   565 VQ mipmapped gouraud                         2083.0    2.034      +210.0
+   565 not twiddled gouraud                         2082.0    2.033      +153.0
+   YUV422 gouraud bilinear                          4093.0    3.997      +226.0
+   palette 8 bpp gouraud bilinear                   4106.0    4.010      +187.0
+   565 VQ gouraud bilinear                          2068.0    2.020      +909.0
+   565 gouraud, 8 texels a pixel                    6690.0    6.533      +153.0
+   565 gouraud mipmapped, 8 texels a pixel          4377.0    4.274      +136.0
+   565 gouraud trilinear A, 6 texels a pixel        4459.0    4.354       +58.0
+   565 gouraud, fog table                           2073.0    2.024      +164.0
+   565 gouraud, punch through list                  2084.0    2.035      +149.0
+   565 gouraud, translucent list                    2072.0    2.023      +163.0
+   untextured gouraud, translucent list             2069.0    2.021        -2.0
+   YUV422 not twiddled gouraud                      2081.0    2.032      +163.0
+   YUV422 not twiddled gouraud bilinear             4239.0    4.140      +302.0
+   565 not twiddled gouraud bilinear                4249.5    4.150      +285.5
+   1555 gouraud bilinear                            2266.0    2.213      +166.0
+   4444 gouraud bilinear                            2277.0    2.224      +155.0
+   YUV422 gouraud mipmapped bilinear                4100.5    4.004      +237.5
+   YUV422 gouraud, 8 texels a pixel                 6683.0    6.526      +172.0
+   YUV422 gouraud bilinear, 8 texels a pixel        8759.5    8.554      +167.5
+   565 gouraud bilinear, 8 texels a pixel           6693.5    6.537      +161.5
+   YUV422 VQ gouraud                                2065.5    2.017      +204.5
+   YUV422 VQ gouraud bilinear                       4092.0    3.996      +707.0
+   palette 4 bpp VQ gouraud                         4107.5    4.011      +159.5
+   palette 8 bpp VQ gouraud                         4106.0    4.010      +177.0
+   palette 8 bpp VQ gouraud bilinear                4097.0    4.001      +338.0
+   palette 4 bpp gouraud bilinear                   4120.0    4.023      +366.0
+   565 VQ gouraud, 8 texels a pixel                 7330.0    7.158      +148.0
+   palette 8 bpp gouraud, 8 texels a pixel          6692.5    6.536      +162.5
+   with one untextured sprite over the tile, the background's format changes nothing in that tile: untextured f: 6193  565 flat: 6189  palette 8 bp: 6185  565 gouraud,: 6189
+
+3. ISP: objects that are not seen. (TSP's bit with N objects - with none) / N, and from 64 to 256 of them.
+   behind: behind the background (its depth 1, theirs 0.5, compare GREATER); never: compare NEVER;
+   pass: compare ALWAYS, and a sprite over the tile after them. The tile is alone in the region array.
+   object                      behind   never    pass  clocks  ISP bit   behind, total for N = 1 2 4 8 16 32 64 128 256
+   triangle 8x8                 31.93   31.92   31.90    16.0    31.90   144 200 252 330 564 872 1892 3948 8022
+   quad 8x8 (strip of 2)        68.06   68.05   67.95    34.0    68.00   196 208 221 378 910 1994 4166 8516 17233
+   sprite 8x8                   37.90   37.89   37.90    18.9    37.84   166 214 246 366 670 1066 2280 4730 9556
+   textured quad 8x8            67.99   68.06   68.00    34.0    68.01   198 222 224 380 912 2000 4183 8524 17238
+   textured quad, offset        68.07   68.00   67.91    34.0    67.99   198 214 223 375 920 1988 4164 8520 17234
+   quad 1x1                     67.97   67.90   67.99    34.0    68.01   172 180 196 364 906 1974 4158 8494 17208
+   quad 32x32                  128.01  127.99  128.04    64.0   128.01   280 418 446 962 1974 4026 8126 16312 32704
+   quad 32x1                    68.00   68.04   68.00    34.0    68.05   166 170 198 360 882 1976 4156 8496 17212
+   quad 1x32                   100.02   99.99   99.97    50.0   100.00   254 352 334 730 1526 3140 6330 12734 25534
+   sprite 32x32                 64.09   64.03   63.99    32.0    63.98   212 296 426 678 1194 1966 4018 8106 16324
+   sprite 1x1                   37.90   37.89   37.82    18.9    37.85   157 186 198 348 658 1052 2266 4708 9542
+   strip of 6 triangles        204.01  204.04  203.98   102.0   204.03   198 252 628 1442 3074 6346 12872 25924 52042
+   triangle of half a pixel     31.91   31.83   31.89    16.0    31.89   138 174 218 308 550 854 1864 3962 7990
+   with one entry in front that draws nothing, the TSP is busy with that entry's background while the ISP works:
+   total for 16 / 64 / 256 quads 8x8:  34 / 2250 / 15306   against  910 / 4166 / 17233  alone
+   (the scenes below have that entry in front; * = the 64 objects were still within its time, the number is low)
+   quad 1 wide, by height:       1:67.8  2:68.1  4:68.0  8:68.0  12:68.1  16:68.0  17:68.0  20:68.0  24:78.0  28:89.9  32:99.9
+   quad 32 wide, by height:      1:67.9  2:67.9  4:68.1  8:67.9  12:68.0  16:68.0  17:71.9  20:84.0  24:99.9  28:116.0  32:128.1
+   quad 8x8 by place (x,y):      (0,0):67.9  (0,12):68.0  (0,24):68.0  (24,0):68.0  (24,24):67.9
+   strip of k triangles:         1:31.4*  2:68.0  3:106.0  4:135.9  5:174.0  6:204.0
+   sprite, textured sprite:      37.7  37.5
+   triangle culled by winding / not / culled as small, by the ISP's bit:  30.2  31.7  30.1
+
+4. TSP by format, opaque list: difference to the twin, in counts
+   triangle: (1024 quads of 1x1 + B) / 1024: one seen triangle of one pixel (the other half of a quad covers none)
+   span: (32 quads of 1x32 + B) / 1024: a run of one pixel, 32 different triangles on every line
+   quad: one quad 32x32 over the tile; 32x1: 32 quads of 32x1 (64 triangles of 16 pixels)
+   format                                        triangle    span    quad    32x1     4x4    8x32
+   untextured flat                                  78.08   16.13     166    3010    8032     524
+   untextured gouraud                               78.08   16.13     148    3020    8030     534
+   565 flat                                         96.16   19.93     328    4268   10444    1204
+   565 gouraud                                      96.15   19.93     340    4261   10452    1190
+   565 flat offset                                 128.15   26.54     474    6301   14556    2138
+   565 gouraud offset                              128.17   26.53     464    6300   14540    2126
+   565 gouraud bilinear                             96.18   19.93     675    4290   10454    1636
+   565 gouraud mipmapped point                      96.17   19.92     448    4264   10446    1246
+   565 gouraud mipmapped bilinear                   96.18   19.92    1123    4312   10450    1848
+   565 gouraud trilinear A                          96.18   19.92    1120    4312   10450    1806
+   565 gouraud trilinear B                          96.20   19.92     396    4314   10478    1344
+   1555 gouraud                                     96.16   19.91     350    4254   10440    1198
+   4444 gouraud                                     96.16   19.93     354    4253   10447    1210
+   YUV422 gouraud                                   96.14   19.93     354    4268   10410    1202
+   bump gouraud offset                              98.15   20.34     352    4396   10704    1336
+   palette 4 bpp gouraud                            96.16   19.94    2340    4284   10430    2360
+   palette 8 bpp gouraud                            96.13   19.93    2348    4308   10442    2326
+   565 VQ gouraud                                   96.14   19.91     502    4254   10451    1634
+   565 VQ mipmapped gouraud                         96.16   19.92     520    4254   10428    1522
+   565 not twiddled gouraud                         96.15   19.93     364    4272   10446    1335
+   YUV422 gouraud bilinear                          96.18   19.96    2451    4366   10484    2729
+   palette 8 bpp gouraud bilinear                   96.14   19.93    2342    4304   10458    2380
+   565 VQ gouraud bilinear                          96.17   19.92    1328    4280   10454    2421
+   565 gouraud, 8 texels a pixel                    96.17   19.96    5246    6468   10459    5360
+   565 gouraud mipmapped, 8 texels a pixel          96.18   19.98    2812    4320   10454    2224
+   565 gouraud trilinear A, 6 texels a pixel        96.20   19.95    2748    4328   10452    3098
+   565 gouraud, fog table                           96.15   19.93     344    4260   10434    1190
+   565 gouraud, punch through list                 115.97   14.64    2110    5484   13322    2954
+   565 gouraud, translucent list                    80.16   11.04    2134    6898   11914    3016
+   untextured gouraud, translucent list             80.06   10.78    2076    5982   11332    2454
+   YUV422 not twiddled gouraud                      96.15   19.94     372    4287   10450    1349
+   YUV422 not twiddled gouraud bilinear             96.18   19.96    2641    4352   10492    2687
+   565 not twiddled gouraud bilinear                96.17   19.96    2606    4354   10496    2690
+   1555 gouraud bilinear                            96.17   19.94     683    4290   10439    1642
+   4444 gouraud bilinear                            96.16   19.93     689    4295   10436    1653
+   YUV422 gouraud mipmapped bilinear                96.19   19.96    2545    4386   10516    2896
+   YUV422 gouraud, 8 texels a pixel                 96.20   19.96    5267    6486   10453    5364
+   YUV422 gouraud bilinear, 8 texels a pixel        96.21   20.00    7341    8912   10496    7421
+   565 gouraud bilinear, 8 texels a pixel           96.17   19.97    5252    6469   10440    5355
+   YUV422 VQ gouraud                                96.16   19.90     495    4248   10432    1609
+   YUV422 VQ gouraud bilinear                       96.19   19.96    2896    4353   10492    3232
+   palette 4 bpp VQ gouraud                         96.14   19.93    2319    4309   10432    2336
+   palette 8 bpp VQ gouraud                         96.15   19.94    2328    4276   10431    2341
+   palette 8 bpp VQ gouraud bilinear                96.17   19.92    2504    4325   10458    2367
+   palette 4 bpp gouraud bilinear                   96.16   19.93    2519    4292   10438    2417
+   565 VQ gouraud, 8 texels a pixel                 96.20   19.99    5984    7435   10478    4417
+   palette 8 bpp gouraud, 8 texels a pixel          96.17   19.97    5250    6468   10467    5148
+
+5. Runs of 4, 2 and 1 pixels from few triangles: sprites 32 tall, centred, each narrower than the one before
+   (4, 8 and 17 sprites: 8, 15 and 32 runs a line). Difference to the twin; per run over the widest;
+   and what a run then costs with its pixels
+   untextured               one sprite   164   4 px:   156 (-0.03 a run,  8.05)   2 px:  2250 (+4.66,  8.70)   1 px:  7820 (+7.48,  9.50)
+   565                      one sprite   332   4 px:   740 (+1.59 a run,  9.72)   2 px:  3374 (+6.79, 10.85)   1 px: 10240 (+9.68, 11.71)
+   565 with offset colour   one sprite   362   4 px:  1540 (+4.60 a run, 12.75)   2 px:  5456 (+11.37, 15.44)   1 px: 15004 (+14.30, 16.34)
+
+6. Many triangles on a line: a quad over the tile and K columns one pixel wide over it. Difference to the twin,
+   and per column and line since the K before
+   untextured quads           0:168 1:416 2:640 3:828 4:1054 6:1528 8:2002 12:3064 14:3620 16:4540 20:6348 24:8830 28:12116 32:14458
+                              7.8 7.0 5.9 7.1 7.4 7.4 8.3 8.7 14.4 14.1 19.4 25.7 18.3
+   untextured sprites         0:174 1:388 2:598 3:766 4:984 6:1444 8:1914 12:2890 14:3434 16:4054 20:5498 24:7440 28:10012 32:12440
+                              6.7 6.6 5.2 6.8 7.2 7.3 7.6 8.5 9.7 11.3 15.2 20.1 19.0
+   565 Gouraud quads          0:330 1:606 2:910 3:1242 4:1580 6:2138 8:2866 12:4232 14:4944 16:6170 20:8520 24:11496 28:15464 32:18334
+                              8.6 9.5 10.4 10.6 8.7 11.4 10.7 11.1 19.2 18.4 23.2 31.0 22.4
+   565 sprites                0:340 1:562 2:840 3:1145 4:1484 6:2062 8:2700 12:3992 14:4696 16:5514 20:7582 24:9932 28:12870 32:15850
+                              6.9 8.7 9.5 10.6 9.0 10.0 10.1 11.0 12.8 16.2 18.4 23.0 23.3
+   565 sprites, offset colour 0:456 1:840 2:1244 3:1692 4:2130 6:3020 8:3957 12:5862 14:6881 16:8132 20:10826 24:13966 28:17794 32:21780
+                              12.0 12.6 14.0 13.7 13.9 14.6 14.9 15.9 19.5 21.0 24.5 29.9 31.1
+   columns' parameters moved apart in memory (1, 2, 3, 5 unseen quads between them), K = 16, untextured sprites:  4054  4044  4074  4078  4072
+
+7. The tile covered by polygons of w x h: TSP time per polygon, (difference to the twin + B) / number
+   untextured sprites
+      h / w         1        2        4        8       16       32      the whole tile
+          1     78.07    78.17    78.28    78.55    79.64    81.59       79943  40022  20039  10055   5097   2611
+          2     78.18    78.36    78.76    79.58    81.47   139.94       40027  20059  10081   5093   2607   2239
+          4     78.39    78.80    79.70    81.47   140.81   280.62       20069  10087   5101   2607   2253   2245
+          8    149.34    89.33    89.22   138.69   277.88   552.25       19116   5717   2855   2219   2223   2209
+         16    240.05   169.72   159.19   276.38   555.75  1112.50       15363   5431   2547   2211   2223   2225
+         32    452.97   314.19   303.38   546.25  1114.50  2223.00       14495   5027   2427   2185   2229   2223
+   untextured quads (two triangles)
+      h / w         1        2        4        8       16       32      the whole tile
+          1     78.09   156.13   156.26   156.65   157.61   159.16       79969  79941  40003  20051  10087   5093
+          2    156.12   156.36   156.74   157.39   158.84   163.81       79933  40029  20063  10073   5083   2621
+          4    156.31   156.87   157.52   159.16   163.56   279.25       40015  20079  10081   5093   2617   2234
+          8    203.05   225.42   160.03   165.94   292.00   559.75       25991  14427   5121   2655   2336   2239
+         16    312.11   353.34   299.69   325.12   569.25  1120.50       19975  11307   4795   2601   2277   2241
+         32    516.72   624.56   550.38   647.75  1145.50  2211.00       16535   9993   4403   2591   2291   2211
+   565 Gouraud quads
+      h / w         1        2        4        8       16       32      the whole tile
+          1     96.15   192.30   192.57   193.37   194.67   197.72       98455  98459  49297  24751  12459   6327
+          2    192.31   192.65   193.28   194.80   198.53   207.44       98461  49319  24740  12467   6353   3319
+          4    192.67   193.43   195.64   199.59   208.19   307.62       49323  24759  12521   6387   3331   2461
+          8    250.26   278.48   199.97   209.94   346.12   603.75       32033  17823   6399   3359   2769   2415
+         16    384.98   437.16   373.69   410.62   670.25  1229.50       24639  13989   5979   3285   2681   2459
+         32    637.78   772.06   690.88   817.25  1296.50  2415.00       20409  12353   5527   3269   2593   2415
+   565 sprites
+      h / w         1        2        4        8       16       32      the whole tile
+          1     96.13    96.29    96.60    97.23    99.02   102.59       98439  49299  24729  12445   6337   3283
+          2     96.32    96.72    97.59    99.17   103.72   155.56       49315  24761  12491   6347   3319   2489
+          4     96.71    97.54    99.42   103.72   157.56   298.88       24759  12485   6363   3319   2521   2391
+          8    184.18   111.42   112.78   153.06   301.38   596.25       23575   7131   3609   2449   2411   2385
+         16    296.33   210.72   205.44   300.62   595.25  1201.00       18965   6743   3287   2405   2381   2402
+         32    560.09   393.19   388.12   593.25  1180.50  2383.00       17923   6291   3105   2373   2361   2383
+
+8. Cascades: difference to the twin.  For comparison: 77872 for 1024 untextured sprites of 1x1
+    12042   17 untextured quads, 32x32, 30x32 .. 2x32 centred and a 1x32: stripes, 1024 runs
+      682   the same 17 quads turned by a quarter (32x32, 32x30 ..): rows, one polygon a line
+     7820   17 untextured sprites as stripes
+      188   17 untextured sprites as rows
+    15376   17 565 Gouraud quads as stripes
+     1384   17 565 Gouraud quads as rows
+    10240   17 565 sprites as stripes
+      534   17 565 sprites as rows
+    12426   32 untextured sprites, left edges together (32x32, 31x32 ..): 1024 runs, one of each a line
+    14762   the same with quads
+      190   16 untextured sprites 32x32, 32x30 .. centred: rows
+
+9. Translucent layers. N quads on top of each other: per layer, (12 layers - 4) / 8, ISP and TSP together
+   untextured Gouraud 32x32:  2093.5  32x16:  1062.0  16x16:   556.0  8x8:   202.5  32x1:   202.2  1x1:   105.5
+   565 Gouraud        32x32:  2153.2  32x16:  1118.5  16x16:   569.8  8x8:   237.8  32x1:   230.0  1x1:   122.0
+   every format as a translucent quad over the tile, per layer and pixel:
+      untextured flat                               2.046
+      untextured gouraud                            2.046
+      565 flat                                      2.104
+      565 gouraud                                   2.104
+      565 flat offset                               2.193
+      565 gouraud offset                            2.192
+      565 gouraud bilinear                          2.446
+      565 gouraud mipmapped point                   2.189
+      565 gouraud mipmapped bilinear                2.872
+      565 gouraud trilinear A                       2.873
+      565 gouraud trilinear B                       2.121
+      1555 gouraud                                  2.106
+      4444 gouraud                                  2.101
+      YUV422 gouraud                                2.102
+      bump gouraud offset                           2.112
+      palette 4 bpp gouraud                         4.008
+      palette 8 bpp gouraud                         4.009
+      565 VQ gouraud                                2.101
+      565 VQ mipmapped gouraud                      2.099
+      565 not twiddled gouraud                      2.125
+      YUV422 gouraud bilinear                       4.086
+      palette 8 bpp gouraud bilinear                4.008
+      565 VQ gouraud bilinear                       2.129
+      565 gouraud, 8 texels a pixel                 6.944
+      565 gouraud mipmapped, 8 texels a pixel       4.582
+      565 gouraud trilinear A, 6 texels a pixel     4.496
+      565 gouraud, fog table                        2.104
+      YUV422 not twiddled gouraud                   2.127
+      YUV422 not twiddled gouraud bilinear          4.220
+      565 not twiddled gouraud bilinear             4.220
+      1555 gouraud bilinear                         2.443
+      4444 gouraud bilinear                         2.445
+      YUV422 gouraud mipmapped bilinear             4.193
+      YUV422 gouraud, 8 texels a pixel              6.943
+      YUV422 gouraud bilinear, 8 texels a pixel     8.953
+      565 gouraud bilinear, 8 texels a pixel        6.944
+      YUV422 VQ gouraud                             2.101
+      YUV422 VQ gouraud bilinear                    4.024
+      palette 4 bpp VQ gouraud                      4.008
+      palette 8 bpp VQ gouraud                      4.009
+      palette 8 bpp VQ gouraud bilinear             4.009
+      palette 4 bpp gouraud bilinear                4.008
+      565 VQ gouraud, 8 texels a pixel              7.935
+      palette 8 bpp gouraud, 8 texels a pixel       6.922
+
+10. The ISP's end-of-render bit: how much later it comes than in the twin (the ISP's work is the same)
+   1 sprite 32x32            0    TSP's bit:    164
+   1 quad 32x32             60    TSP's bit:    166
+   1 quad 32x16             38    TSP's bit:    191
+   4 quads 8x32            418    TSP's bit:    524
+   32 quads 32x1            62    TSP's bit:   3010
+   64 quads 4x4            830    TSP's bit:   8032
+   32 quads 1x32         10208    TSP's bit:  14448
+   1024 quads 1x1        47506    TSP's bit:  77880
+   1024 sprites 1x1      47514    TSP's bit:  77872
+   n tiles of background: ISP's bit at  1: 729  2: 1061  4: 1705  8: 2989  16: 8753  32: 52163  64: 139593   (TSP's at 7791, 10517, 15931, 26791, 48475, 92123, 179565)
+
+11. Opaque modifier volumes. One sheet in front of everything, closed as INSIDE_LAST (the pixels under it are in
+    the volume: cheap shadow, or the second parameters of polygons with two volumes) or as OUTSIDE_LAST (none is).
+    The framebuffer shows the shadow in the first and not in the second; the ISP's work is the same.
+    sheet over the tile, inside - outside: 54 scenes of 6 formats and 11 layouts with cheap shadow: -22 to 24 counts;
+       18 scenes of polygons with two volumes: -22 to 14 counts
+    outside - no volume at all (the ISP's work for the sheet's two triangles): 86 to 304 counts, middle 166
+    n volumes over the tile, inside / outside:  1: 6287 / 6277   2: 6417 / 6427   4: 6679 / 6679   8: 7185 / 7205   per volume more: 132.6
+    polygon without the shadow bit, inside / outside: 6354 / 6359    one triangle as the volume, background: 6193 / 6181
+    the sheet covers w x h at the tile's corner: inside - outside, counts
+                                        32x32   32x16   32x8    32x4    32x2    32x1    16x32    8x32    4x32    2x32    1x32   16x16    8x8     4x4     2x2     1x1  
+    background only                         10       0       6       2      -2       2     -14       6      18     152     218      -2       4      50      70      84
+    untextured sprite over the tile        -16     -22      -2      -4      26      30       0     -26      20     147     220      -6       4      28      56      74
+    565 sprite over the tile                -8      24      -2      26       4       0     -23       1      42     152     223     -12      -8      10      22      34
+    1024 untextured sprites of 1x1          14       5       2     -14       0      -4      -2      -2       3       0      -8       8      -4      18       2      -4
+    quad with two volumes                   -8      26      22      29      44      80     -20      26     104     176     224      12     -20      54      82      84
+    565 Gouraud quad, two volumes            0       4      -8       0      -2      58      50      84     162     184     224       6       0       0      28      22
+    a run of w pixels of the part in the volume, with its pixels: (difference + 32 w pixels) / 32, clocks
+    background only                   1 px:  4.42   2 px:  4.40   4 px:  4.32   8 px:  8.18   16 px: 15.95
+    untextured sprite over the tile   1 px:  4.45   2 px:  4.32   4 px:  4.35   8 px:  7.68   16 px: 16.16
+    565 sprite over the tile          1 px:  4.49   2 px:  4.40   4 px:  4.70   8 px:  8.10   16 px: 15.80
+    quad with two volumes             1 px:  4.51   2 px:  4.77   4 px:  5.67   8 px:  8.49   16 px: 15.85
+    565 Gouraud quad, two volumes     1 px:  4.51   2 px:  4.90   4 px:  6.57   8 px:  9.39   16 px: 16.95
+
+12. Polygons with two volumes whose second volume blends differently, and the list they are in. A quad over the
+    tile, first volume 0x404040 / 0x406080 / 0x804020 (no volume / inside / outside), second volume 0x202020
+    (SRC_ALPHA: white with alpha 0x80). Pixel (20, 20) of the framebuffer after 12 renders, and the TSP's bit.
+    opaque list, opaque modifier volume
+       second volume as the first               picture none / inside / outside: 404040 / 202020 / 804020    time 6275 / 6385 / 6410   inside - outside   -25   (1024 quads of 1x1:    -18)
+       second volume ONE, ONE                   picture none / inside / outside: 404040 / ffffff / 804020    time 6279 / 6400 / 6405   inside - outside    -5   (1024 quads of 1x1:     -4)
+       second volume ZERO, ONE                  picture none / inside / outside: 404040 / 404040 / 804020    time 6277 / 6375 / 6409   inside - outside   -34   (1024 quads of 1x1:      4)
+       second volume SRC_ALPHA, INV_SRC_ALPHA   picture none / inside / outside: 404040 / fbfbfb / 804020    time 6281 / 6377 / 6397   inside - outside   -20   (1024 quads of 1x1:     -2)
+    punch through list, opaque modifier volume
+       second volume as the first               picture none / inside / outside: 404040 / 202020 / 804020    time 8251 / 11173 / 8975   inside - outside  2198   (1024 quads of 1x1:  79876)
+       second volume ONE, ONE                   picture none / inside / outside: 404040 / 6080a0 / 804020    time 8249 / 11175 / 8993   inside - outside  2182   (1024 quads of 1x1:  79947)
+       second volume ZERO, ONE                  picture none / inside / outside: 404040 / 406080 / 804020    time 8249 / 11173 / 8991   inside - outside  2182   (1024 quads of 1x1:  79904)
+       second volume SRC_ALPHA, INV_SRC_ALPHA   picture none / inside / outside: 404040 / 406080 / 804020    time 8247 / 11167 / 8993   inside - outside  2174   (1024 quads of 1x1:  79902)
+    translucent list (first volume's alpha 0x80), translucent modifier volume
+       second volume as the first               picture none / inside / outside: 808080 / 416080 / 7f4021    time 8249 / 6263 / 6249   inside - outside    14   (1024 quads of 1x1:      2)
+       second volume ONE, ONE                   picture none / inside / outside: 808080 / 416080 / 7f4021    time 8247 / 6251 / 6249   inside - outside     2   (1024 quads of 1x1:      0)
+       second volume ZERO, ONE                  picture none / inside / outside: 808080 / 416080 / 7f4021    time 8239 / 6269 / 6247   inside - outside    22   (1024 quads of 1x1:      2)
+       second volume SRC_ALPHA, INV_SRC_ALPHA   picture none / inside / outside: 808080 / 416080 / 7f4021    time 8235 / 6247 / 6269   inside - outside   -22   (1024 quads of 1x1:      0)
+
+13. Punch through polygons inside an opaque modifier volume are shaded twice: inside - outside is the TSP's work
+    for them and nothing else. Polygons with two volumes (the second like the first), sheet over the tile.
+    'twin': the same layout in the opaque list by the twin method (difference to the twin + B).
+    format                           layout           inside-outside     twin  outside-none
+    untextured flat                  1 quad 32x32               2172     2235           752
+    untextured flat                  4 quads 8x32               2544     2593           844
+    untextured flat                  64 quads 4x4              10058    10101           852
+    untextured flat                  32 quads 32x1              5037     5079           866
+    untextured flat                  32 quads 1x32             16492    16517           844
+    untextured flat                  1024 quads 1x1            79946    79949           851
+    565 gouraud                      1 quad 32x32               2294     2409           744
+    565 gouraud                      4 quads 8x32               3132     3259           866
+    565 gouraud                      64 quads 4x4              12452    12521           896
+    565 gouraud                      32 quads 32x1              6268     6330           864
+    565 gouraud                      32 quads 1x32             20358    20413           866
+    565 gouraud                      1024 quads 1x1            98422    98457           870
+    565 flat offset                  1 quad 32x32               2318     2543           746
+    565 flat offset                  4 quads 8x32               3174     4207           844
+    565 flat offset                  64 quads 4x4              12456    16625           866
+    565 flat offset                  32 quads 32x1              6296     8370           866
+    565 flat offset                  32 quads 1x32             20358    27175           884
+    565 flat offset                  1024 quads 1x1            98385   131227           881
+    565 gouraud bilinear             1 quad 32x32               2648     2744           754
+    565 gouraud bilinear             4 quads 8x32               3523     3705           913
+    565 gouraud bilinear             64 quads 4x4              12456    12523           892
+    565 gouraud bilinear             32 quads 32x1              6308     6359           868
+    565 gouraud bilinear             32 quads 1x32             20376    20405           868
+    565 gouraud bilinear             1024 quads 1x1            98418    98491           900
+    palette 8 bpp gouraud            1 quad 32x32               4320     4417           746
+    palette 8 bpp gouraud            4 quads 8x32               4306     4395           868
+    palette 8 bpp gouraud            64 quads 4x4              12440    12511           853
+    palette 8 bpp gouraud            32 quads 32x1              6318     6377           866
+    palette 8 bpp gouraud            32 quads 1x32             20368    20407           856
+    palette 8 bpp gouraud            1024 quads 1x1            98436    98441           860
+    565 gouraud, 8 texels a pixel    1 quad 32x32               7264     7315           724
+    565 gouraud, 8 texels a pixel    4 quads 8x32               7226     7429           868
+    565 gouraud, 8 texels a pixel    64 quads 4x4              12452    12528           896
+    565 gouraud, 8 texels a pixel    32 quads 32x1              8192     8537           864
+    565 gouraud, 8 texels a pixel    32 quads 1x32             20386    20439           874
+    565 gouraud, 8 texels a pixel    1024 quads 1x1            98438    98483           832
+    per seen triangle (1024 quads of 1x1 / 1024), counts:  untextured flat: 78.07  565 gouraud: 96.12  565 flat offset: 96.08  565 gouraud bilinear: 96.11  palette 8 bpp gouraud: 96.13  565 gouraud, 8 texels : 96.13
+    with the shadow bit and cheap shadow instead of two volumes: inside - outside  sprite: 2170  quad: 2175  1024 quads: 79873  565 quad: 2302  1024 565 quads: 98415
+    the sheet covers w x h at the corner of one such quad over the tile: inside - outside, counts
+                            32x32   32x16   32x8    32x4    32x2    32x1    16x32    8x32    4x32    2x32    1x32   16x16    8x8     4x4     2x2     1x1  
+    untextured                2184    1162     662     392     264     250    1212     674     506     448     399     660     278     192     168     166
+    565 Gouraud               2292    1316     784     550     430     360    1356     848     670     600     582     796     426     304     282     306
+    translucent polygons with cheap shadow, sheet in the translucent modifier volume list: none / inside / outside
+       untextured quad        8249 / 6253 / 6261   picture 76baba / 76baba / 76baba
+       1024 untextured quads  153449 / 153359 / 153363   picture 409f9f / 409f9f / 409f9f
+       565 quad               8303 / 6471 / 6471   picture 6a1da7 / 6a1da7 / 6a1da7
+
+14. Translucent modifier volumes. A half transparent quad over the tile, 0x404040 / 0x406080 / 0x804020 with no
+    sheet / inside / outside, over the background (0xc0c0c0) or over an opaque quad (0xffffff at the pixel read);
+    a sheet in the translucent modifier volume list. Pixel (20, 20) and the TSP's bit for: no sheet / inside /
+    outside / inside with the sheet behind the quad.
+    no shadow bit                over the background  sorted per pixel 808080 / 8090a0 / a08070 / 8090a0    8239 / 8269 / 8249 / 8249
+    no shadow bit                over the background  pre-sorted       808080 / 8090a0 / a08070 / 8090a0    8235 / 8261 / 8275 / 9283
+    no shadow bit                over the opaque quad sorted per pixel 9f9f9f / 9fafbf / bf9f8f / 9fafbf    8305 / 8297 / 8319 / 8305
+    no shadow bit                over the opaque quad pre-sorted       9f9f9f / 9fafbf / bf9f8f / 9fafbf    8319 / 8325 / 8319 / 9339
+    shadow bit, cheap shadow     over the background  sorted per pixel 808080 / 707880 / a08070 / 8090a0    8241 / 8253 / 8257 / 8253
+    shadow bit, cheap shadow     over the background  pre-sorted       808080 / 8090a0 / a08070 / 8090a0    8239 / 8267 / 8263 / 9283
+    shadow bit, cheap shadow     over the opaque quad sorted per pixel 9f9f9f / 8f979f / bf9f8f / 9fafbf    8305 / 8303 / 8305 / 8305
+    shadow bit, cheap shadow     over the opaque quad pre-sorted       9f9f9f / 9fafbf / bf9f8f / 9fafbf    8307 / 8331 / 8331 / 9337
+    two volumes, second 0x202020 over the background  sorted per pixel 808080 / 202020 / a08070 / 8090a0    8241 / 8251 / 8263 / 8249
+    two volumes, second 0x202020 over the background  pre-sorted       808080 / 8090a0 / a08070 / 8090a0    8235 / 8275 / 8259 / 9283
+    two volumes, second 0x202020 over the opaque quad sorted per pixel 9f9f9f / 202020 / bf9f8f / 9fafbf    8305 / 8303 / 8303 / 8303
+    two volumes, second 0x202020 over the opaque quad pre-sorted       9f9f9f / 9fafbf / bf9f8f / 9fafbf    8317 / 8333 / 8331 / 9341
+    bit 0 of ISP_FEED_CFG set: the same pictures in 48 of 48 scenes
+    A sequence (a quad with two volumes; every render of the program before it was pre-sorted):
+       0: pre-sorted        sheet     over an opaque quad   picture 9fafbf   time 8249
+       1: pre-sorted        sheet     over the background   picture 416180   time 6249
+       2: sorted per pixel  no sheet  over the background   picture 808080   time 8235
+       3: pre-sorted        sheet     over the background   picture 8090a0   time 8275
+       4: sorted per pixel  sheet     over the background   picture 202020   time 8267
+       5: pre-sorted        sheet     over the background   picture 8090a0   time 8275
+       6: pre-sorted        no sheet  over the background   picture 808080   time 8247
+       7: pre-sorted        sheet     over the background   picture 8090a0   time 8257
+       8: pre-sorted        sheet     over an opaque quad   picture 9fafbf   time 8325
+       9: sorted per pixel  sheet     over an opaque quad   picture 202020   time 8309
+
+15. Is the background drawn when the tile has no opaque list? Its colour changes from scene to scene (0xc0c0c0,
+    0xc0ffc0, 0xffc0c0). Pixel (20, 20) and the TSP's bit, sorted per pixel / pre-sorted.
+    pointers to five empty lists                                             c0c0c0 c0ffc0 ffc0c0   c0c0c0 c0ffc0 ffc0c0    5995 / 5997
+    no list pointer at all                                                   c0c0c0 c0ffc0 ffc0c0   c0c0c0 c0ffc0 ffc0c0    5711 / 5715
+    no pointer to the opaque list, the others present                        c0c0c0 c0ffc0 ffc0c0   c0c0c0 c0ffc0 ffc0c0    5941 / 5943
+    the same with a half transparent quad 0x406080 in the translucent list   8090a0 80afa0 9f90a0   8090a0 80afa0 9f90a0    8169 / 8189
+    five pointers and that quad                                              8090a0 80afa0 9f90a0   8090a0 80afa0 9f90a0    8245 / 8251
+
+16. The region array entry's "keep Z" bit. All entries are of tile (0, 0); 0888 framebuffer. Pixels (0, 0) and
+    (20, 20) for the background colours 0xc0c0c0 / 0xc0ffc0 / 0xffc0c0 (rendered in that order), and the TSP's bit.
+     0 the tile as usual, five empty lists                                                             c0c0c0,c0c0c0  c0ffc0,c0ffc0  ffc0c0,ffc0c0    5995
+     1 keep Z, five empty lists                                                                        ffc0c0,ffc0c0  ffc0c0,ffc0c0  ffc0c0,ffc0c0    3641
+     2 keep Z, no list pointer                                                                         ffc0c0,ffc0c0  ffc0c0,ffc0c0  ffc0c0,ffc0c0    3379
+     3 an entry in front that draws nothing (not written out), then the tile                           c0c0c0,c0c0c0  c0ffc0,c0ffc0  ffc0c0,ffc0c0    7793
+     4 that entry with keep Z, then the tile                                                           c0c0c0,c0c0c0  c0ffc0,c0ffc0  ffc0c0,ffc0c0    6029
+     5 four such entries with keep Z, then the tile                                                    c0c0c0,c0c0c0  c0ffc0,c0ffc0  ffc0c0,ffc0c0    6137
+     6 a white sprite over the tile; then a second entry, keep Z, a quad 0x406080 BEHIND it (GREATER)  ffffff,ffffff  ffffff,ffffff  ffffff,ffffff    8673
+     7 the same, the second entry without keep Z                                                       406080,406080  406080,406080  406080,406080    8669
+     8 the same with keep Z and the quad in FRONT                                                      406080,406080  406080,406080  406080,406080    8669
+     9 as the first of these three, the first entry not written out                                    ffffff,ffffff  ffffff,ffffff  ffffff,ffffff    5963
+    10 background only, not written out; then keep Z and a 16x16 quad 0x406080 at the corner           406080,c0c0c0  406080,c0ffc0  406080,ffc0c0    6249
+    11 the same, the first entry written out                                                           406080,ffc0c0  406080,ffc0c0  406080,ffc0c0    8448
+    12 keep Z alone, the 16x16 quad                                                                    406080,ffc0c0  406080,ffc0c0  406080,ffc0c0    4447
+    13 keep Z alone, the white sprite over the tile                                                    ffffff,ffffff  ffffff,ffffff  ffffff,ffffff    5885
+    14 the white sprite over the tile, as usual                                                        ffffff,ffffff  ffffff,ffffff  ffffff,ffffff    5949
+    the background costs a tile 2354 counts; an entry that draws nothing 1798, with keep Z 34 (36 each of four); a write-out 2710
+
+17. The palette's entry format (PAL_RAM_CTRL): the background polygon's TSP time per entry, counts a pixel
+    format                                        ARGB1555    RGB565  ARGB4444  ARGB8888
+    palette 4 bpp gouraud                            2.027     2.021     2.020     3.998
+    palette 8 bpp gouraud                            2.029     2.021     2.027     4.014
+    palette 8 bpp gouraud bilinear                   2.091     2.092     2.088     4.002
+    palette 4 bpp gouraud bilinear                   2.193     2.194     2.196     4.011
+    palette 8 bpp VQ gouraud                         2.029     2.021     2.026     4.010
+    palette 8 bpp gouraud, 8 texels a pixel          6.531     6.532     6.522     6.551
+    565 gouraud                                      2.021     2.022     2.022     2.031
+
+18. Where the bilinear footprint starts: the background's texture stepped s texels a pixel along x, offset o.
+    TSP time per entry, counts a pixel. s 2: o 0 = every footprint starts at an even x, o 1 = at an odd x;
+    s 4: o 0 and 2 = odd, o 1 and 3 = even.
+    format                                        s1  s2 even   s2 odd   s4 odd  s4 even   s4 odd  s4 even
+    YUV422 gouraud bilinear                     4.011    4.018    4.018    6.283    4.116    6.340    4.626
+    YUV422 gouraud                              2.021    2.521    2.511    2.814    2.809    2.822    2.821
+    565 gouraud bilinear                        2.222    3.118    3.157    4.037    4.042    4.633    4.635
+    YUV422 not twiddled gouraud bilinear        4.139    4.426    4.485    5.110    5.090    5.109    5.113
+    565 not twiddled gouraud bilinear           4.144    4.420    4.463    5.105    5.109    5.090    5.104
+    565 gouraud                                 2.021    2.523    2.519    2.828    2.814    2.798    2.842
+    YUV422 VQ gouraud bilinear                  4.001    5.053    5.178    7.333    4.529    7.723    4.541
+
+19. Where the bilinear footprint starts, in x and in y: the background's texture stepped along both. TSP time
+    per entry, CLOCKS a pixel. e = the footprint starts at an even texel, o = at an odd one (x then y).
+                                                 1x1  2x2 ee  2x2 oe  2x2 eo  2x2 oo  4x4 ee  4x4 oe  4x4 eo  4x4 oo   2x1 e   2x1 o   4x1 e   4x1 o
+    YUV422 bilinear                             2.00    2.01    2.01    2.00    2.01    2.13    3.14    2.13    3.14    2.00    2.01    2.05    3.15
+    565 bilinear                                1.11    1.57    1.86    1.57    1.86    2.14    2.14    2.13    2.13    1.56    1.58    2.02    2.02
+    YUV422 point                                1.01    1.57    1.57    1.57    1.57    2.14    2.14    2.14    2.14    1.26    1.26    1.41    1.41
+    palette 8 bpp bilinear, 8888 entries        2.00    2.00    2.00    2.00    2.01    2.14    2.14    2.13    2.13    2.01    2.00    2.00    2.00
+    palette 8 bpp bilinear, 565 entries         1.05    1.26    1.55    1.30    1.61    2.14    2.14    2.14    2.14    1.21    1.43    1.37    1.85
+    palette 8 bpp point, 8888 entries           2.00    2.00    2.00    2.00    2.00    2.14    2.13    2.13    2.14    2.00    2.00    2.01    2.00
+    palette 8 bpp point, 565 entries            1.01    1.26    1.26    1.26    1.26    2.14    2.13    2.14    2.14    1.13    1.13    1.20    1.20

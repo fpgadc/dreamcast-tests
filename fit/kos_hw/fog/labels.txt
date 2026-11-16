@@ -1,0 +1,640 @@
+LABEL 0 0 1 1 TR table fog, linear, squares 0..3
+LABEL 0 1 1 1 TR table fog, linear, squares 4..7
+LABEL 0 10 1 1 TR table fog, linear, squares 40..43
+LABEL 0 100 1 1 OP table fog, linear, squares 80..83
+LABEL 0 101 1 1 OP table fog, linear, squares 84..87
+LABEL 0 102 1 1 OP table fog, linear, squares 88..91
+LABEL 0 103 1 1 OP table fog, linear, squares 92..95
+LABEL 0 104 1 1 OP table fog, linear, squares 96..99
+LABEL 0 105 1 1 OP table fog, linear, squares 100..103
+LABEL 0 106 1 1 OP table fog, linear, squares 104..107
+LABEL 0 107 1 1 OP table fog, linear, squares 108..111
+LABEL 0 108 1 1 OP table fog, linear, squares 112..115
+LABEL 0 109 1 1 OP table fog, linear, squares 116..119
+LABEL 0 11 1 1 TR table fog, linear, squares 44..47
+LABEL 0 110 1 1 OP table fog, linear, squares 120..123
+LABEL 0 111 1 1 OP table fog, linear, squares 124..127
+LABEL 0 112 1 1 OP table fog, linear, squares 128..131
+LABEL 0 113 1 1 OP table fog, linear, squares 132..135
+LABEL 0 114 1 1 OP table fog, linear, squares 136..139
+LABEL 0 115 1 1 OP table fog, linear, squares 140..143
+LABEL 0 116 1 1 OP table fog, linear, squares 144..147
+LABEL 0 117 1 1 OP table fog, linear, squares 148..151
+LABEL 0 118 1 1 OP table fog, linear, squares 152..155
+LABEL 0 119 1 1 OP table fog, linear, squares 156..159
+LABEL 0 12 1 1 TR table fog, linear, squares 48..51
+LABEL 0 120 1 1 OP table fog, linear, squares 160..163
+LABEL 0 121 1 1 OP table fog, linear, squares 164..167
+LABEL 0 122 1 1 OP table fog, linear, squares 168..171
+LABEL 0 123 1 1 OP table fog, linear, squares 172..175
+LABEL 0 124 1 1 OP table fog, linear, squares 176..179
+LABEL 0 125 1 1 OP table fog, linear, squares 180..183
+LABEL 0 126 1 1 OP table fog, linear, squares 184..187
+LABEL 0 127 1 1 OP table fog, linear, squares 188..191
+LABEL 0 128 1 1 OP table fog, linear, squares 192..195
+LABEL 0 129 1 1 OP table fog, linear, squares 196..199
+LABEL 0 13 1 1 TR table fog, linear, squares 52..55
+LABEL 0 130 1 1 OP table fog, linear, squares 200..203
+LABEL 0 131 1 1 OP table fog, linear, squares 204..207
+LABEL 0 132 1 1 OP table fog, linear, squares 208..211
+LABEL 0 133 1 1 OP table fog, linear, squares 212..215
+LABEL 0 134 1 1 OP table fog, linear, squares 216..219
+LABEL 0 135 1 1 OP table fog, linear, squares 220..223
+LABEL 0 136 1 1 OP table fog, linear, squares 224..227
+LABEL 0 137 1 1 OP table fog, linear, squares 228..231
+LABEL 0 138 1 1 OP table fog, linear, squares 232..235
+LABEL 0 139 1 1 OP table fog, linear, squares 236..239
+LABEL 0 14 1 1 TR table fog, linear, squares 56..59
+LABEL 0 140 1 1 OP table fog, linear, squares 240..243
+LABEL 0 141 1 1 OP table fog, linear, squares 244..247
+LABEL 0 142 1 1 OP table fog, linear, squares 248..251
+LABEL 0 143 1 1 OP table fog, linear, squares 252..255
+LABEL 0 15 1 1 TR table fog, linear, squares 60..63
+LABEL 0 16 1 1 TR table fog, linear, squares 64..67
+LABEL 0 17 1 1 TR table fog, linear, squares 68..71
+LABEL 0 18 1 1 TR table fog, linear, squares 72..75
+LABEL 0 19 1 1 TR table fog, linear, squares 76..79
+LABEL 0 2 1 1 TR table fog, linear, squares 8..11
+LABEL 0 20 1 1 TR table fog, linear, squares 80..83
+LABEL 0 21 1 1 TR table fog, linear, squares 84..87
+LABEL 0 22 1 1 TR table fog, linear, squares 88..91
+LABEL 0 23 1 1 TR table fog, linear, squares 92..95
+LABEL 0 24 1 1 TR table fog, linear, squares 96..99
+LABEL 0 25 1 1 TR table fog, linear, squares 100..103
+LABEL 0 26 1 1 TR table fog, linear, squares 104..107
+LABEL 0 27 1 1 TR table fog, linear, squares 108..111
+LABEL 0 28 1 1 TR table fog, linear, squares 112..115
+LABEL 0 29 1 1 TR table fog, linear, squares 116..119
+LABEL 0 3 1 1 TR table fog, linear, squares 12..15
+LABEL 0 30 1 1 TR table fog, linear, squares 120..123
+LABEL 0 31 1 1 TR table fog, linear, squares 124..127
+LABEL 0 32 1 1 TR table fog, linear, squares 128..131
+LABEL 0 33 1 1 TR table fog, linear, squares 132..135
+LABEL 0 34 1 1 TR table fog, linear, squares 136..139
+LABEL 0 35 1 1 TR table fog, linear, squares 140..143
+LABEL 0 36 1 1 TR table fog, linear, squares 144..147
+LABEL 0 37 1 1 TR table fog, linear, squares 148..151
+LABEL 0 38 1 1 TR table fog, linear, squares 152..155
+LABEL 0 39 1 1 TR table fog, linear, squares 156..159
+LABEL 0 4 1 1 TR table fog, linear, squares 16..19
+LABEL 0 40 1 1 TR table fog, linear, squares 160..163
+LABEL 0 41 1 1 TR table fog, linear, squares 164..167
+LABEL 0 42 1 1 TR table fog, linear, squares 168..171
+LABEL 0 43 1 1 TR table fog, linear, squares 172..175
+LABEL 0 44 1 1 TR table fog, linear, squares 176..179
+LABEL 0 45 1 1 TR table fog, linear, squares 180..183
+LABEL 0 46 1 1 TR table fog, linear, squares 184..187
+LABEL 0 47 1 1 TR table fog, linear, squares 188..191
+LABEL 0 48 1 1 TR table fog, linear, squares 192..195
+LABEL 0 49 1 1 TR table fog, linear, squares 196..199
+LABEL 0 5 1 1 TR table fog, linear, squares 20..23
+LABEL 0 50 1 1 TR table fog, linear, squares 200..203
+LABEL 0 51 1 1 TR table fog, linear, squares 204..207
+LABEL 0 52 1 1 TR table fog, linear, squares 208..211
+LABEL 0 53 1 1 TR table fog, linear, squares 212..215
+LABEL 0 54 1 1 TR table fog, linear, squares 216..219
+LABEL 0 55 1 1 TR table fog, linear, squares 220..223
+LABEL 0 56 1 1 TR table fog, linear, squares 224..227
+LABEL 0 57 1 1 TR table fog, linear, squares 228..231
+LABEL 0 58 1 1 TR table fog, linear, squares 232..235
+LABEL 0 59 1 1 TR table fog, linear, squares 236..239
+LABEL 0 6 1 1 TR table fog, linear, squares 24..27
+LABEL 0 60 1 1 TR table fog, linear, squares 240..243
+LABEL 0 61 1 1 TR table fog, linear, squares 244..247
+LABEL 0 62 1 1 TR table fog, linear, squares 248..251
+LABEL 0 63 1 1 TR table fog, linear, squares 252..255
+LABEL 0 7 1 1 TR table fog, linear, squares 28..31
+LABEL 0 8 1 1 TR table fog, linear, squares 32..35
+LABEL 0 80 1 1 OP table fog, linear, squares 0..3
+LABEL 0 81 1 1 OP table fog, linear, squares 4..7
+LABEL 0 82 1 1 OP table fog, linear, squares 8..11
+LABEL 0 83 1 1 OP table fog, linear, squares 12..15
+LABEL 0 84 1 1 OP table fog, linear, squares 16..19
+LABEL 0 85 1 1 OP table fog, linear, squares 20..23
+LABEL 0 86 1 1 OP table fog, linear, squares 24..27
+LABEL 0 87 1 1 OP table fog, linear, squares 28..31
+LABEL 0 88 1 1 OP table fog, linear, squares 32..35
+LABEL 0 89 1 1 OP table fog, linear, squares 36..39
+LABEL 0 9 1 1 TR table fog, linear, squares 36..39
+LABEL 0 90 1 1 OP table fog, linear, squares 40..43
+LABEL 0 91 1 1 OP table fog, linear, squares 44..47
+LABEL 0 92 1 1 OP table fog, linear, squares 48..51
+LABEL 0 93 1 1 OP table fog, linear, squares 52..55
+LABEL 0 94 1 1 OP table fog, linear, squares 56..59
+LABEL 0 95 1 1 OP table fog, linear, squares 60..63
+LABEL 0 96 1 1 OP table fog, linear, squares 64..67
+LABEL 0 97 1 1 OP table fog, linear, squares 68..71
+LABEL 0 98 1 1 OP table fog, linear, squares 72..75
+LABEL 0 99 1 1 OP table fog, linear, squares 76..79
+LABEL 1 0 1 1 TR table fog, sawtooth, squares 0..3
+LABEL 1 1 1 1 TR table fog, sawtooth, squares 4..7
+LABEL 1 10 1 1 TR table fog, sawtooth, squares 40..43
+LABEL 1 100 1 1 OP table fog, sawtooth, squares 80..83
+LABEL 1 101 1 1 OP table fog, sawtooth, squares 84..87
+LABEL 1 102 1 1 OP table fog, sawtooth, squares 88..91
+LABEL 1 103 1 1 OP table fog, sawtooth, squares 92..95
+LABEL 1 104 1 1 OP table fog, sawtooth, squares 96..99
+LABEL 1 105 1 1 OP table fog, sawtooth, squares 100..103
+LABEL 1 106 1 1 OP table fog, sawtooth, squares 104..107
+LABEL 1 107 1 1 OP table fog, sawtooth, squares 108..111
+LABEL 1 108 1 1 OP table fog, sawtooth, squares 112..115
+LABEL 1 109 1 1 OP table fog, sawtooth, squares 116..119
+LABEL 1 11 1 1 TR table fog, sawtooth, squares 44..47
+LABEL 1 110 1 1 OP table fog, sawtooth, squares 120..123
+LABEL 1 111 1 1 OP table fog, sawtooth, squares 124..127
+LABEL 1 112 1 1 OP table fog, sawtooth, squares 128..131
+LABEL 1 113 1 1 OP table fog, sawtooth, squares 132..135
+LABEL 1 114 1 1 OP table fog, sawtooth, squares 136..139
+LABEL 1 115 1 1 OP table fog, sawtooth, squares 140..143
+LABEL 1 116 1 1 OP table fog, sawtooth, squares 144..147
+LABEL 1 117 1 1 OP table fog, sawtooth, squares 148..151
+LABEL 1 118 1 1 OP table fog, sawtooth, squares 152..155
+LABEL 1 119 1 1 OP table fog, sawtooth, squares 156..159
+LABEL 1 12 1 1 TR table fog, sawtooth, squares 48..51
+LABEL 1 120 1 1 OP table fog, sawtooth, squares 160..163
+LABEL 1 121 1 1 OP table fog, sawtooth, squares 164..167
+LABEL 1 122 1 1 OP table fog, sawtooth, squares 168..171
+LABEL 1 123 1 1 OP table fog, sawtooth, squares 172..175
+LABEL 1 124 1 1 OP table fog, sawtooth, squares 176..179
+LABEL 1 125 1 1 OP table fog, sawtooth, squares 180..183
+LABEL 1 126 1 1 OP table fog, sawtooth, squares 184..187
+LABEL 1 127 1 1 OP table fog, sawtooth, squares 188..191
+LABEL 1 128 1 1 OP table fog, sawtooth, squares 192..195
+LABEL 1 129 1 1 OP table fog, sawtooth, squares 196..199
+LABEL 1 13 1 1 TR table fog, sawtooth, squares 52..55
+LABEL 1 130 1 1 OP table fog, sawtooth, squares 200..203
+LABEL 1 131 1 1 OP table fog, sawtooth, squares 204..207
+LABEL 1 132 1 1 OP table fog, sawtooth, squares 208..211
+LABEL 1 133 1 1 OP table fog, sawtooth, squares 212..215
+LABEL 1 134 1 1 OP table fog, sawtooth, squares 216..219
+LABEL 1 135 1 1 OP table fog, sawtooth, squares 220..223
+LABEL 1 136 1 1 OP table fog, sawtooth, squares 224..227
+LABEL 1 137 1 1 OP table fog, sawtooth, squares 228..231
+LABEL 1 138 1 1 OP table fog, sawtooth, squares 232..235
+LABEL 1 139 1 1 OP table fog, sawtooth, squares 236..239
+LABEL 1 14 1 1 TR table fog, sawtooth, squares 56..59
+LABEL 1 140 1 1 OP table fog, sawtooth, squares 240..243
+LABEL 1 141 1 1 OP table fog, sawtooth, squares 244..247
+LABEL 1 142 1 1 OP table fog, sawtooth, squares 248..251
+LABEL 1 143 1 1 OP table fog, sawtooth, squares 252..255
+LABEL 1 15 1 1 TR table fog, sawtooth, squares 60..63
+LABEL 1 16 1 1 TR table fog, sawtooth, squares 64..67
+LABEL 1 17 1 1 TR table fog, sawtooth, squares 68..71
+LABEL 1 18 1 1 TR table fog, sawtooth, squares 72..75
+LABEL 1 19 1 1 TR table fog, sawtooth, squares 76..79
+LABEL 1 2 1 1 TR table fog, sawtooth, squares 8..11
+LABEL 1 20 1 1 TR table fog, sawtooth, squares 80..83
+LABEL 1 21 1 1 TR table fog, sawtooth, squares 84..87
+LABEL 1 22 1 1 TR table fog, sawtooth, squares 88..91
+LABEL 1 23 1 1 TR table fog, sawtooth, squares 92..95
+LABEL 1 24 1 1 TR table fog, sawtooth, squares 96..99
+LABEL 1 25 1 1 TR table fog, sawtooth, squares 100..103
+LABEL 1 26 1 1 TR table fog, sawtooth, squares 104..107
+LABEL 1 27 1 1 TR table fog, sawtooth, squares 108..111
+LABEL 1 28 1 1 TR table fog, sawtooth, squares 112..115
+LABEL 1 29 1 1 TR table fog, sawtooth, squares 116..119
+LABEL 1 3 1 1 TR table fog, sawtooth, squares 12..15
+LABEL 1 30 1 1 TR table fog, sawtooth, squares 120..123
+LABEL 1 31 1 1 TR table fog, sawtooth, squares 124..127
+LABEL 1 32 1 1 TR table fog, sawtooth, squares 128..131
+LABEL 1 33 1 1 TR table fog, sawtooth, squares 132..135
+LABEL 1 34 1 1 TR table fog, sawtooth, squares 136..139
+LABEL 1 35 1 1 TR table fog, sawtooth, squares 140..143
+LABEL 1 36 1 1 TR table fog, sawtooth, squares 144..147
+LABEL 1 37 1 1 TR table fog, sawtooth, squares 148..151
+LABEL 1 38 1 1 TR table fog, sawtooth, squares 152..155
+LABEL 1 39 1 1 TR table fog, sawtooth, squares 156..159
+LABEL 1 4 1 1 TR table fog, sawtooth, squares 16..19
+LABEL 1 40 1 1 TR table fog, sawtooth, squares 160..163
+LABEL 1 41 1 1 TR table fog, sawtooth, squares 164..167
+LABEL 1 42 1 1 TR table fog, sawtooth, squares 168..171
+LABEL 1 43 1 1 TR table fog, sawtooth, squares 172..175
+LABEL 1 44 1 1 TR table fog, sawtooth, squares 176..179
+LABEL 1 45 1 1 TR table fog, sawtooth, squares 180..183
+LABEL 1 46 1 1 TR table fog, sawtooth, squares 184..187
+LABEL 1 47 1 1 TR table fog, sawtooth, squares 188..191
+LABEL 1 48 1 1 TR table fog, sawtooth, squares 192..195
+LABEL 1 49 1 1 TR table fog, sawtooth, squares 196..199
+LABEL 1 5 1 1 TR table fog, sawtooth, squares 20..23
+LABEL 1 50 1 1 TR table fog, sawtooth, squares 200..203
+LABEL 1 51 1 1 TR table fog, sawtooth, squares 204..207
+LABEL 1 52 1 1 TR table fog, sawtooth, squares 208..211
+LABEL 1 53 1 1 TR table fog, sawtooth, squares 212..215
+LABEL 1 54 1 1 TR table fog, sawtooth, squares 216..219
+LABEL 1 55 1 1 TR table fog, sawtooth, squares 220..223
+LABEL 1 56 1 1 TR table fog, sawtooth, squares 224..227
+LABEL 1 57 1 1 TR table fog, sawtooth, squares 228..231
+LABEL 1 58 1 1 TR table fog, sawtooth, squares 232..235
+LABEL 1 59 1 1 TR table fog, sawtooth, squares 236..239
+LABEL 1 6 1 1 TR table fog, sawtooth, squares 24..27
+LABEL 1 60 1 1 TR table fog, sawtooth, squares 240..243
+LABEL 1 61 1 1 TR table fog, sawtooth, squares 244..247
+LABEL 1 62 1 1 TR table fog, sawtooth, squares 248..251
+LABEL 1 63 1 1 TR table fog, sawtooth, squares 252..255
+LABEL 1 7 1 1 TR table fog, sawtooth, squares 28..31
+LABEL 1 8 1 1 TR table fog, sawtooth, squares 32..35
+LABEL 1 80 1 1 OP table fog, sawtooth, squares 0..3
+LABEL 1 81 1 1 OP table fog, sawtooth, squares 4..7
+LABEL 1 82 1 1 OP table fog, sawtooth, squares 8..11
+LABEL 1 83 1 1 OP table fog, sawtooth, squares 12..15
+LABEL 1 84 1 1 OP table fog, sawtooth, squares 16..19
+LABEL 1 85 1 1 OP table fog, sawtooth, squares 20..23
+LABEL 1 86 1 1 OP table fog, sawtooth, squares 24..27
+LABEL 1 87 1 1 OP table fog, sawtooth, squares 28..31
+LABEL 1 88 1 1 OP table fog, sawtooth, squares 32..35
+LABEL 1 89 1 1 OP table fog, sawtooth, squares 36..39
+LABEL 1 9 1 1 TR table fog, sawtooth, squares 36..39
+LABEL 1 90 1 1 OP table fog, sawtooth, squares 40..43
+LABEL 1 91 1 1 OP table fog, sawtooth, squares 44..47
+LABEL 1 92 1 1 OP table fog, sawtooth, squares 48..51
+LABEL 1 93 1 1 OP table fog, sawtooth, squares 52..55
+LABEL 1 94 1 1 OP table fog, sawtooth, squares 56..59
+LABEL 1 95 1 1 OP table fog, sawtooth, squares 60..63
+LABEL 1 96 1 1 OP table fog, sawtooth, squares 64..67
+LABEL 1 97 1 1 OP table fog, sawtooth, squares 68..71
+LABEL 1 98 1 1 OP table fog, sawtooth, squares 72..75
+LABEL 1 99 1 1 OP table fog, sawtooth, squares 76..79
+LABEL 2 0 1 1 TR vertex fog, squares 0..3
+LABEL 2 1 1 1 TR vertex fog, squares 4..7
+LABEL 2 10 1 1 TR vertex fog, squares 40..43
+LABEL 2 100 1 1 OP vertex fog, squares 80..83
+LABEL 2 101 1 1 OP vertex fog, squares 84..87
+LABEL 2 102 1 1 OP vertex fog, squares 88..91
+LABEL 2 103 1 1 OP vertex fog, squares 92..95
+LABEL 2 104 1 1 OP vertex fog, squares 96..99
+LABEL 2 105 1 1 OP vertex fog, squares 100..103
+LABEL 2 106 1 1 OP vertex fog, squares 104..107
+LABEL 2 107 1 1 OP vertex fog, squares 108..111
+LABEL 2 108 1 1 OP vertex fog, squares 112..115
+LABEL 2 109 1 1 OP vertex fog, squares 116..119
+LABEL 2 11 1 1 TR vertex fog, squares 44..47
+LABEL 2 110 1 1 OP vertex fog, squares 120..123
+LABEL 2 111 1 1 OP vertex fog, squares 124..127
+LABEL 2 112 1 1 OP vertex fog, squares 128..131
+LABEL 2 113 1 1 OP vertex fog, squares 132..135
+LABEL 2 114 1 1 OP vertex fog, squares 136..139
+LABEL 2 115 1 1 OP vertex fog, squares 140..143
+LABEL 2 116 1 1 OP vertex fog, squares 144..147
+LABEL 2 117 1 1 OP vertex fog, squares 148..151
+LABEL 2 118 1 1 OP vertex fog, squares 152..155
+LABEL 2 119 1 1 OP vertex fog, squares 156..159
+LABEL 2 12 1 1 TR vertex fog, squares 48..51
+LABEL 2 120 1 1 OP vertex fog, squares 160..163
+LABEL 2 121 1 1 OP vertex fog, squares 164..167
+LABEL 2 122 1 1 OP vertex fog, squares 168..171
+LABEL 2 123 1 1 OP vertex fog, squares 172..175
+LABEL 2 124 1 1 OP vertex fog, squares 176..179
+LABEL 2 125 1 1 OP vertex fog, squares 180..183
+LABEL 2 126 1 1 OP vertex fog, squares 184..187
+LABEL 2 127 1 1 OP vertex fog, squares 188..191
+LABEL 2 128 1 1 OP vertex fog, squares 192..195
+LABEL 2 129 1 1 OP vertex fog, squares 196..199
+LABEL 2 13 1 1 TR vertex fog, squares 52..55
+LABEL 2 130 1 1 OP vertex fog, squares 200..203
+LABEL 2 131 1 1 OP vertex fog, squares 204..207
+LABEL 2 132 1 1 OP vertex fog, squares 208..211
+LABEL 2 133 1 1 OP vertex fog, squares 212..215
+LABEL 2 134 1 1 OP vertex fog, squares 216..219
+LABEL 2 135 1 1 OP vertex fog, squares 220..223
+LABEL 2 136 1 1 OP vertex fog, squares 224..227
+LABEL 2 137 1 1 OP vertex fog, squares 228..231
+LABEL 2 138 1 1 OP vertex fog, squares 232..235
+LABEL 2 139 1 1 OP vertex fog, squares 236..239
+LABEL 2 14 1 1 TR vertex fog, squares 56..59
+LABEL 2 140 1 1 OP vertex fog, squares 240..243
+LABEL 2 141 1 1 OP vertex fog, squares 244..247
+LABEL 2 142 1 1 OP vertex fog, squares 248..251
+LABEL 2 143 1 1 OP vertex fog, squares 252..255
+LABEL 2 15 1 1 TR vertex fog, squares 60..63
+LABEL 2 16 1 1 TR vertex fog, squares 64..67
+LABEL 2 17 1 1 TR vertex fog, squares 68..71
+LABEL 2 18 1 1 TR vertex fog, squares 72..75
+LABEL 2 19 1 1 TR vertex fog, squares 76..79
+LABEL 2 2 1 1 TR vertex fog, squares 8..11
+LABEL 2 20 1 1 TR vertex fog, squares 80..83
+LABEL 2 21 1 1 TR vertex fog, squares 84..87
+LABEL 2 22 1 1 TR vertex fog, squares 88..91
+LABEL 2 23 1 1 TR vertex fog, squares 92..95
+LABEL 2 24 1 1 TR vertex fog, squares 96..99
+LABEL 2 25 1 1 TR vertex fog, squares 100..103
+LABEL 2 26 1 1 TR vertex fog, squares 104..107
+LABEL 2 27 1 1 TR vertex fog, squares 108..111
+LABEL 2 28 1 1 TR vertex fog, squares 112..115
+LABEL 2 29 1 1 TR vertex fog, squares 116..119
+LABEL 2 3 1 1 TR vertex fog, squares 12..15
+LABEL 2 30 1 1 TR vertex fog, squares 120..123
+LABEL 2 31 1 1 TR vertex fog, squares 124..127
+LABEL 2 32 1 1 TR vertex fog, squares 128..131
+LABEL 2 33 1 1 TR vertex fog, squares 132..135
+LABEL 2 34 1 1 TR vertex fog, squares 136..139
+LABEL 2 35 1 1 TR vertex fog, squares 140..143
+LABEL 2 36 1 1 TR vertex fog, squares 144..147
+LABEL 2 37 1 1 TR vertex fog, squares 148..151
+LABEL 2 38 1 1 TR vertex fog, squares 152..155
+LABEL 2 39 1 1 TR vertex fog, squares 156..159
+LABEL 2 4 1 1 TR vertex fog, squares 16..19
+LABEL 2 40 1 1 TR vertex fog, squares 160..163
+LABEL 2 41 1 1 TR vertex fog, squares 164..167
+LABEL 2 42 1 1 TR vertex fog, squares 168..171
+LABEL 2 43 1 1 TR vertex fog, squares 172..175
+LABEL 2 44 1 1 TR vertex fog, squares 176..179
+LABEL 2 45 1 1 TR vertex fog, squares 180..183
+LABEL 2 46 1 1 TR vertex fog, squares 184..187
+LABEL 2 47 1 1 TR vertex fog, squares 188..191
+LABEL 2 48 1 1 TR vertex fog, squares 192..195
+LABEL 2 49 1 1 TR vertex fog, squares 196..199
+LABEL 2 5 1 1 TR vertex fog, squares 20..23
+LABEL 2 50 1 1 TR vertex fog, squares 200..203
+LABEL 2 51 1 1 TR vertex fog, squares 204..207
+LABEL 2 52 1 1 TR vertex fog, squares 208..211
+LABEL 2 53 1 1 TR vertex fog, squares 212..215
+LABEL 2 54 1 1 TR vertex fog, squares 216..219
+LABEL 2 55 1 1 TR vertex fog, squares 220..223
+LABEL 2 56 1 1 TR vertex fog, squares 224..227
+LABEL 2 57 1 1 TR vertex fog, squares 228..231
+LABEL 2 58 1 1 TR vertex fog, squares 232..235
+LABEL 2 59 1 1 TR vertex fog, squares 236..239
+LABEL 2 6 1 1 TR vertex fog, squares 24..27
+LABEL 2 60 1 1 TR vertex fog, squares 240..243
+LABEL 2 61 1 1 TR vertex fog, squares 244..247
+LABEL 2 62 1 1 TR vertex fog, squares 248..251
+LABEL 2 63 1 1 TR vertex fog, squares 252..255
+LABEL 2 7 1 1 TR vertex fog, squares 28..31
+LABEL 2 8 1 1 TR vertex fog, squares 32..35
+LABEL 2 80 1 1 OP vertex fog, squares 0..3
+LABEL 2 81 1 1 OP vertex fog, squares 4..7
+LABEL 2 82 1 1 OP vertex fog, squares 8..11
+LABEL 2 83 1 1 OP vertex fog, squares 12..15
+LABEL 2 84 1 1 OP vertex fog, squares 16..19
+LABEL 2 85 1 1 OP vertex fog, squares 20..23
+LABEL 2 86 1 1 OP vertex fog, squares 24..27
+LABEL 2 87 1 1 OP vertex fog, squares 28..31
+LABEL 2 88 1 1 OP vertex fog, squares 32..35
+LABEL 2 89 1 1 OP vertex fog, squares 36..39
+LABEL 2 9 1 1 TR vertex fog, squares 36..39
+LABEL 2 90 1 1 OP vertex fog, squares 40..43
+LABEL 2 91 1 1 OP vertex fog, squares 44..47
+LABEL 2 92 1 1 OP vertex fog, squares 48..51
+LABEL 2 93 1 1 OP vertex fog, squares 52..55
+LABEL 2 94 1 1 OP vertex fog, squares 56..59
+LABEL 2 95 1 1 OP vertex fog, squares 60..63
+LABEL 2 96 1 1 OP vertex fog, squares 64..67
+LABEL 2 97 1 1 OP vertex fog, squares 68..71
+LABEL 2 98 1 1 OP vertex fog, squares 72..75
+LABEL 2 99 1 1 OP vertex fog, squares 76..79
+LABEL 3 0 1 1 TR table fog mode 2, squares 0..3
+LABEL 3 1 1 1 TR table fog mode 2, squares 4..7
+LABEL 3 10 1 1 TR table fog mode 2, squares 40..43
+LABEL 3 100 1 1 OP table fog mode 2, squares 80..83
+LABEL 3 101 1 1 OP table fog mode 2, squares 84..87
+LABEL 3 102 1 1 OP table fog mode 2, squares 88..91
+LABEL 3 103 1 1 OP table fog mode 2, squares 92..95
+LABEL 3 104 1 1 OP table fog mode 2, squares 96..99
+LABEL 3 105 1 1 OP table fog mode 2, squares 100..103
+LABEL 3 106 1 1 OP table fog mode 2, squares 104..107
+LABEL 3 107 1 1 OP table fog mode 2, squares 108..111
+LABEL 3 108 1 1 OP table fog mode 2, squares 112..115
+LABEL 3 109 1 1 OP table fog mode 2, squares 116..119
+LABEL 3 11 1 1 TR table fog mode 2, squares 44..47
+LABEL 3 110 1 1 OP table fog mode 2, squares 120..123
+LABEL 3 111 1 1 OP table fog mode 2, squares 124..127
+LABEL 3 112 1 1 OP table fog mode 2, squares 128..131
+LABEL 3 113 1 1 OP table fog mode 2, squares 132..135
+LABEL 3 114 1 1 OP table fog mode 2, squares 136..139
+LABEL 3 115 1 1 OP table fog mode 2, squares 140..143
+LABEL 3 116 1 1 OP table fog mode 2, squares 144..147
+LABEL 3 117 1 1 OP table fog mode 2, squares 148..151
+LABEL 3 118 1 1 OP table fog mode 2, squares 152..155
+LABEL 3 119 1 1 OP table fog mode 2, squares 156..159
+LABEL 3 12 1 1 TR table fog mode 2, squares 48..51
+LABEL 3 120 1 1 OP table fog mode 2, squares 160..163
+LABEL 3 121 1 1 OP table fog mode 2, squares 164..167
+LABEL 3 122 1 1 OP table fog mode 2, squares 168..171
+LABEL 3 123 1 1 OP table fog mode 2, squares 172..175
+LABEL 3 124 1 1 OP table fog mode 2, squares 176..179
+LABEL 3 125 1 1 OP table fog mode 2, squares 180..183
+LABEL 3 126 1 1 OP table fog mode 2, squares 184..187
+LABEL 3 127 1 1 OP table fog mode 2, squares 188..191
+LABEL 3 128 1 1 OP table fog mode 2, squares 192..195
+LABEL 3 129 1 1 OP table fog mode 2, squares 196..199
+LABEL 3 13 1 1 TR table fog mode 2, squares 52..55
+LABEL 3 130 1 1 OP table fog mode 2, squares 200..203
+LABEL 3 131 1 1 OP table fog mode 2, squares 204..207
+LABEL 3 132 1 1 OP table fog mode 2, squares 208..211
+LABEL 3 133 1 1 OP table fog mode 2, squares 212..215
+LABEL 3 134 1 1 OP table fog mode 2, squares 216..219
+LABEL 3 135 1 1 OP table fog mode 2, squares 220..223
+LABEL 3 136 1 1 OP table fog mode 2, squares 224..227
+LABEL 3 137 1 1 OP table fog mode 2, squares 228..231
+LABEL 3 138 1 1 OP table fog mode 2, squares 232..235
+LABEL 3 139 1 1 OP table fog mode 2, squares 236..239
+LABEL 3 14 1 1 TR table fog mode 2, squares 56..59
+LABEL 3 140 1 1 OP table fog mode 2, squares 240..243
+LABEL 3 141 1 1 OP table fog mode 2, squares 244..247
+LABEL 3 142 1 1 OP table fog mode 2, squares 248..251
+LABEL 3 143 1 1 OP table fog mode 2, squares 252..255
+LABEL 3 15 1 1 TR table fog mode 2, squares 60..63
+LABEL 3 16 1 1 TR table fog mode 2, squares 64..67
+LABEL 3 17 1 1 TR table fog mode 2, squares 68..71
+LABEL 3 18 1 1 TR table fog mode 2, squares 72..75
+LABEL 3 19 1 1 TR table fog mode 2, squares 76..79
+LABEL 3 2 1 1 TR table fog mode 2, squares 8..11
+LABEL 3 20 1 1 TR table fog mode 2, squares 80..83
+LABEL 3 21 1 1 TR table fog mode 2, squares 84..87
+LABEL 3 22 1 1 TR table fog mode 2, squares 88..91
+LABEL 3 23 1 1 TR table fog mode 2, squares 92..95
+LABEL 3 24 1 1 TR table fog mode 2, squares 96..99
+LABEL 3 25 1 1 TR table fog mode 2, squares 100..103
+LABEL 3 26 1 1 TR table fog mode 2, squares 104..107
+LABEL 3 27 1 1 TR table fog mode 2, squares 108..111
+LABEL 3 28 1 1 TR table fog mode 2, squares 112..115
+LABEL 3 29 1 1 TR table fog mode 2, squares 116..119
+LABEL 3 3 1 1 TR table fog mode 2, squares 12..15
+LABEL 3 30 1 1 TR table fog mode 2, squares 120..123
+LABEL 3 31 1 1 TR table fog mode 2, squares 124..127
+LABEL 3 32 1 1 TR table fog mode 2, squares 128..131
+LABEL 3 33 1 1 TR table fog mode 2, squares 132..135
+LABEL 3 34 1 1 TR table fog mode 2, squares 136..139
+LABEL 3 35 1 1 TR table fog mode 2, squares 140..143
+LABEL 3 36 1 1 TR table fog mode 2, squares 144..147
+LABEL 3 37 1 1 TR table fog mode 2, squares 148..151
+LABEL 3 38 1 1 TR table fog mode 2, squares 152..155
+LABEL 3 39 1 1 TR table fog mode 2, squares 156..159
+LABEL 3 4 1 1 TR table fog mode 2, squares 16..19
+LABEL 3 40 1 1 TR table fog mode 2, squares 160..163
+LABEL 3 41 1 1 TR table fog mode 2, squares 164..167
+LABEL 3 42 1 1 TR table fog mode 2, squares 168..171
+LABEL 3 43 1 1 TR table fog mode 2, squares 172..175
+LABEL 3 44 1 1 TR table fog mode 2, squares 176..179
+LABEL 3 45 1 1 TR table fog mode 2, squares 180..183
+LABEL 3 46 1 1 TR table fog mode 2, squares 184..187
+LABEL 3 47 1 1 TR table fog mode 2, squares 188..191
+LABEL 3 48 1 1 TR table fog mode 2, squares 192..195
+LABEL 3 49 1 1 TR table fog mode 2, squares 196..199
+LABEL 3 5 1 1 TR table fog mode 2, squares 20..23
+LABEL 3 50 1 1 TR table fog mode 2, squares 200..203
+LABEL 3 51 1 1 TR table fog mode 2, squares 204..207
+LABEL 3 52 1 1 TR table fog mode 2, squares 208..211
+LABEL 3 53 1 1 TR table fog mode 2, squares 212..215
+LABEL 3 54 1 1 TR table fog mode 2, squares 216..219
+LABEL 3 55 1 1 TR table fog mode 2, squares 220..223
+LABEL 3 56 1 1 TR table fog mode 2, squares 224..227
+LABEL 3 57 1 1 TR table fog mode 2, squares 228..231
+LABEL 3 58 1 1 TR table fog mode 2, squares 232..235
+LABEL 3 59 1 1 TR table fog mode 2, squares 236..239
+LABEL 3 6 1 1 TR table fog mode 2, squares 24..27
+LABEL 3 60 1 1 TR table fog mode 2, squares 240..243
+LABEL 3 61 1 1 TR table fog mode 2, squares 244..247
+LABEL 3 62 1 1 TR table fog mode 2, squares 248..251
+LABEL 3 63 1 1 TR table fog mode 2, squares 252..255
+LABEL 3 7 1 1 TR table fog mode 2, squares 28..31
+LABEL 3 8 1 1 TR table fog mode 2, squares 32..35
+LABEL 3 80 1 1 OP table fog mode 2, squares 0..3
+LABEL 3 81 1 1 OP table fog mode 2, squares 4..7
+LABEL 3 82 1 1 OP table fog mode 2, squares 8..11
+LABEL 3 83 1 1 OP table fog mode 2, squares 12..15
+LABEL 3 84 1 1 OP table fog mode 2, squares 16..19
+LABEL 3 85 1 1 OP table fog mode 2, squares 20..23
+LABEL 3 86 1 1 OP table fog mode 2, squares 24..27
+LABEL 3 87 1 1 OP table fog mode 2, squares 28..31
+LABEL 3 88 1 1 OP table fog mode 2, squares 32..35
+LABEL 3 89 1 1 OP table fog mode 2, squares 36..39
+LABEL 3 9 1 1 TR table fog mode 2, squares 36..39
+LABEL 3 90 1 1 OP table fog mode 2, squares 40..43
+LABEL 3 91 1 1 OP table fog mode 2, squares 44..47
+LABEL 3 92 1 1 OP table fog mode 2, squares 48..51
+LABEL 3 93 1 1 OP table fog mode 2, squares 52..55
+LABEL 3 94 1 1 OP table fog mode 2, squares 56..59
+LABEL 3 95 1 1 OP table fog mode 2, squares 60..63
+LABEL 3 96 1 1 OP table fog mode 2, squares 64..67
+LABEL 3 97 1 1 OP table fog mode 2, squares 68..71
+LABEL 3 98 1 1 OP table fog mode 2, squares 72..75
+LABEL 3 99 1 1 OP table fog mode 2, squares 76..79
+LABEL 4 0 1 1 TR no fog, squares 0..3
+LABEL 4 1 1 1 TR no fog, squares 4..7
+LABEL 4 10 1 1 TR no fog, squares 40..43
+LABEL 4 100 1 1 OP no fog, squares 80..83
+LABEL 4 101 1 1 OP no fog, squares 84..87
+LABEL 4 102 1 1 OP no fog, squares 88..91
+LABEL 4 103 1 1 OP no fog, squares 92..95
+LABEL 4 104 1 1 OP no fog, squares 96..99
+LABEL 4 105 1 1 OP no fog, squares 100..103
+LABEL 4 106 1 1 OP no fog, squares 104..107
+LABEL 4 107 1 1 OP no fog, squares 108..111
+LABEL 4 108 1 1 OP no fog, squares 112..115
+LABEL 4 109 1 1 OP no fog, squares 116..119
+LABEL 4 11 1 1 TR no fog, squares 44..47
+LABEL 4 110 1 1 OP no fog, squares 120..123
+LABEL 4 111 1 1 OP no fog, squares 124..127
+LABEL 4 112 1 1 OP no fog, squares 128..131
+LABEL 4 113 1 1 OP no fog, squares 132..135
+LABEL 4 114 1 1 OP no fog, squares 136..139
+LABEL 4 115 1 1 OP no fog, squares 140..143
+LABEL 4 116 1 1 OP no fog, squares 144..147
+LABEL 4 117 1 1 OP no fog, squares 148..151
+LABEL 4 118 1 1 OP no fog, squares 152..155
+LABEL 4 119 1 1 OP no fog, squares 156..159
+LABEL 4 12 1 1 TR no fog, squares 48..51
+LABEL 4 120 1 1 OP no fog, squares 160..163
+LABEL 4 121 1 1 OP no fog, squares 164..167
+LABEL 4 122 1 1 OP no fog, squares 168..171
+LABEL 4 123 1 1 OP no fog, squares 172..175
+LABEL 4 124 1 1 OP no fog, squares 176..179
+LABEL 4 125 1 1 OP no fog, squares 180..183
+LABEL 4 126 1 1 OP no fog, squares 184..187
+LABEL 4 127 1 1 OP no fog, squares 188..191
+LABEL 4 128 1 1 OP no fog, squares 192..195
+LABEL 4 129 1 1 OP no fog, squares 196..199
+LABEL 4 13 1 1 TR no fog, squares 52..55
+LABEL 4 130 1 1 OP no fog, squares 200..203
+LABEL 4 131 1 1 OP no fog, squares 204..207
+LABEL 4 132 1 1 OP no fog, squares 208..211
+LABEL 4 133 1 1 OP no fog, squares 212..215
+LABEL 4 134 1 1 OP no fog, squares 216..219
+LABEL 4 135 1 1 OP no fog, squares 220..223
+LABEL 4 136 1 1 OP no fog, squares 224..227
+LABEL 4 137 1 1 OP no fog, squares 228..231
+LABEL 4 138 1 1 OP no fog, squares 232..235
+LABEL 4 139 1 1 OP no fog, squares 236..239
+LABEL 4 14 1 1 TR no fog, squares 56..59
+LABEL 4 140 1 1 OP no fog, squares 240..243
+LABEL 4 141 1 1 OP no fog, squares 244..247
+LABEL 4 142 1 1 OP no fog, squares 248..251
+LABEL 4 143 1 1 OP no fog, squares 252..255
+LABEL 4 15 1 1 TR no fog, squares 60..63
+LABEL 4 16 1 1 TR no fog, squares 64..67
+LABEL 4 17 1 1 TR no fog, squares 68..71
+LABEL 4 18 1 1 TR no fog, squares 72..75
+LABEL 4 19 1 1 TR no fog, squares 76..79
+LABEL 4 2 1 1 TR no fog, squares 8..11
+LABEL 4 20 1 1 TR no fog, squares 80..83
+LABEL 4 21 1 1 TR no fog, squares 84..87
+LABEL 4 22 1 1 TR no fog, squares 88..91
+LABEL 4 23 1 1 TR no fog, squares 92..95
+LABEL 4 24 1 1 TR no fog, squares 96..99
+LABEL 4 25 1 1 TR no fog, squares 100..103
+LABEL 4 26 1 1 TR no fog, squares 104..107
+LABEL 4 27 1 1 TR no fog, squares 108..111
+LABEL 4 28 1 1 TR no fog, squares 112..115
+LABEL 4 29 1 1 TR no fog, squares 116..119
+LABEL 4 3 1 1 TR no fog, squares 12..15
+LABEL 4 30 1 1 TR no fog, squares 120..123
+LABEL 4 31 1 1 TR no fog, squares 124..127
+LABEL 4 32 1 1 TR no fog, squares 128..131
+LABEL 4 33 1 1 TR no fog, squares 132..135
+LABEL 4 34 1 1 TR no fog, squares 136..139
+LABEL 4 35 1 1 TR no fog, squares 140..143
+LABEL 4 36 1 1 TR no fog, squares 144..147
+LABEL 4 37 1 1 TR no fog, squares 148..151
+LABEL 4 38 1 1 TR no fog, squares 152..155
+LABEL 4 39 1 1 TR no fog, squares 156..159
+LABEL 4 4 1 1 TR no fog, squares 16..19
+LABEL 4 40 1 1 TR no fog, squares 160..163
+LABEL 4 41 1 1 TR no fog, squares 164..167
+LABEL 4 42 1 1 TR no fog, squares 168..171
+LABEL 4 43 1 1 TR no fog, squares 172..175
+LABEL 4 44 1 1 TR no fog, squares 176..179
+LABEL 4 45 1 1 TR no fog, squares 180..183
+LABEL 4 46 1 1 TR no fog, squares 184..187
+LABEL 4 47 1 1 TR no fog, squares 188..191
+LABEL 4 48 1 1 TR no fog, squares 192..195
+LABEL 4 49 1 1 TR no fog, squares 196..199
+LABEL 4 5 1 1 TR no fog, squares 20..23
+LABEL 4 50 1 1 TR no fog, squares 200..203
+LABEL 4 51 1 1 TR no fog, squares 204..207
+LABEL 4 52 1 1 TR no fog, squares 208..211
+LABEL 4 53 1 1 TR no fog, squares 212..215
+LABEL 4 54 1 1 TR no fog, squares 216..219
+LABEL 4 55 1 1 TR no fog, squares 220..223
+LABEL 4 56 1 1 TR no fog, squares 224..227
+LABEL 4 57 1 1 TR no fog, squares 228..231
+LABEL 4 58 1 1 TR no fog, squares 232..235
+LABEL 4 59 1 1 TR no fog, squares 236..239
+LABEL 4 6 1 1 TR no fog, squares 24..27
+LABEL 4 60 1 1 TR no fog, squares 240..243
+LABEL 4 61 1 1 TR no fog, squares 244..247
+LABEL 4 62 1 1 TR no fog, squares 248..251
+LABEL 4 63 1 1 TR no fog, squares 252..255
+LABEL 4 7 1 1 TR no fog, squares 28..31
+LABEL 4 8 1 1 TR no fog, squares 32..35
+LABEL 4 80 1 1 OP no fog, squares 0..3
+LABEL 4 81 1 1 OP no fog, squares 4..7
+LABEL 4 82 1 1 OP no fog, squares 8..11
+LABEL 4 83 1 1 OP no fog, squares 12..15
+LABEL 4 84 1 1 OP no fog, squares 16..19
+LABEL 4 85 1 1 OP no fog, squares 20..23
+LABEL 4 86 1 1 OP no fog, squares 24..27
+LABEL 4 87 1 1 OP no fog, squares 28..31
+LABEL 4 88 1 1 OP no fog, squares 32..35
+LABEL 4 89 1 1 OP no fog, squares 36..39
+LABEL 4 9 1 1 TR no fog, squares 36..39
+LABEL 4 90 1 1 OP no fog, squares 40..43
+LABEL 4 91 1 1 OP no fog, squares 44..47
+LABEL 4 92 1 1 OP no fog, squares 48..51
+LABEL 4 93 1 1 OP no fog, squares 52..55
+LABEL 4 94 1 1 OP no fog, squares 56..59
+LABEL 4 95 1 1 OP no fog, squares 60..63
+LABEL 4 96 1 1 OP no fog, squares 64..67
+LABEL 4 97 1 1 OP no fog, squares 68..71
+LABEL 4 98 1 1 OP no fog, squares 72..75
+LABEL 4 99 1 1 OP no fog, squares 76..79

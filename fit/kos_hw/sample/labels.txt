@@ -1,0 +1,250 @@
+LABEL 0 0 1 1 point 4x, u shifted -8/8 px
+LABEL 0 1 1 1 point 4x, u shifted -7/8 px
+LABEL 0 10 1 1 point 4x, u shifted +2/8 px
+LABEL 0 11 1 1 point 4x, u shifted +3/8 px
+LABEL 0 12 1 1 point 4x, u shifted +4/8 px
+LABEL 0 13 1 1 point 4x, u shifted +5/8 px
+LABEL 0 14 1 1 point 4x, u shifted +6/8 px
+LABEL 0 15 1 1 point 4x, u shifted +7/8 px
+LABEL 0 16 1 1 point 4x, u shifted +8/8 px
+LABEL 0 2 1 1 point 4x, u shifted -6/8 px
+LABEL 0 20 1 1 point 4x, v shifted -8/8 px
+LABEL 0 21 1 1 point 4x, v shifted -7/8 px
+LABEL 0 22 1 1 point 4x, v shifted -6/8 px
+LABEL 0 23 1 1 point 4x, v shifted -5/8 px
+LABEL 0 24 1 1 point 4x, v shifted -4/8 px
+LABEL 0 25 1 1 point 4x, v shifted -3/8 px
+LABEL 0 26 1 1 point 4x, v shifted -2/8 px
+LABEL 0 27 1 1 point 4x, v shifted -1/8 px
+LABEL 0 28 1 1 point 4x, v shifted +0/8 px
+LABEL 0 29 1 1 point 4x, v shifted +1/8 px
+LABEL 0 3 1 1 point 4x, u shifted -5/8 px
+LABEL 0 30 1 1 point 4x, v shifted +2/8 px
+LABEL 0 31 1 1 point 4x, v shifted +3/8 px
+LABEL 0 32 1 1 point 4x, v shifted +4/8 px
+LABEL 0 33 1 1 point 4x, v shifted +5/8 px
+LABEL 0 34 1 1 point 4x, v shifted +6/8 px
+LABEL 0 35 1 1 point 4x, v shifted +7/8 px
+LABEL 0 36 1 1 point 4x, v shifted +8/8 px
+LABEL 0 4 1 1 point 4x, u shifted -4/8 px
+LABEL 0 40 1 1 point 4x, u and v shifted -8/8 px
+LABEL 0 41 1 1 point 4x, u and v shifted -7/8 px
+LABEL 0 42 1 1 point 4x, u and v shifted -6/8 px
+LABEL 0 43 1 1 point 4x, u and v shifted -5/8 px
+LABEL 0 44 1 1 point 4x, u and v shifted -4/8 px
+LABEL 0 45 1 1 point 4x, u and v shifted -3/8 px
+LABEL 0 46 1 1 point 4x, u and v shifted -2/8 px
+LABEL 0 47 1 1 point 4x, u and v shifted -1/8 px
+LABEL 0 48 1 1 point 4x, u and v shifted +0/8 px
+LABEL 0 49 1 1 point 4x, u and v shifted +1/8 px
+LABEL 0 5 1 1 point 4x, u shifted -3/8 px
+LABEL 0 50 1 1 point 4x, u and v shifted +2/8 px
+LABEL 0 51 1 1 point 4x, u and v shifted +3/8 px
+LABEL 0 52 1 1 point 4x, u and v shifted +4/8 px
+LABEL 0 53 1 1 point 4x, u and v shifted +5/8 px
+LABEL 0 54 1 1 point 4x, u and v shifted +6/8 px
+LABEL 0 55 1 1 point 4x, u and v shifted +7/8 px
+LABEL 0 56 1 1 point 4x, u and v shifted +8/8 px
+LABEL 0 6 1 1 point 4x, u shifted -2/8 px
+LABEL 0 60 1 1 point 1:1, u shifted -8/8 texel
+LABEL 0 61 1 1 point 1:1, u shifted -7/8 texel
+LABEL 0 62 1 1 point 1:1, u shifted -6/8 texel
+LABEL 0 63 1 1 point 1:1, u shifted -5/8 texel
+LABEL 0 64 1 1 point 1:1, u shifted -4/8 texel
+LABEL 0 65 1 1 point 1:1, u shifted -3/8 texel
+LABEL 0 66 1 1 point 1:1, u shifted -2/8 texel
+LABEL 0 67 1 1 point 1:1, u shifted -1/8 texel
+LABEL 0 68 1 1 point 1:1, u shifted +0/8 texel
+LABEL 0 69 1 1 point 1:1, u shifted +1/8 texel
+LABEL 0 7 1 1 point 4x, u shifted -1/8 px
+LABEL 0 70 1 1 point 1:1, u shifted +2/8 texel
+LABEL 0 71 1 1 point 1:1, u shifted +3/8 texel
+LABEL 0 72 1 1 point 1:1, u shifted +4/8 texel
+LABEL 0 73 1 1 point 1:1, u shifted +5/8 texel
+LABEL 0 74 1 1 point 1:1, u shifted +6/8 texel
+LABEL 0 75 1 1 point 1:1, u shifted +7/8 texel
+LABEL 0 76 1 1 point 1:1, u shifted +8/8 texel
+LABEL 0 8 1 1 point 4x, u shifted +0/8 px
+LABEL 0 80 1 1 point half size, u shifted -8/8 texel
+LABEL 0 81 1 1 point half size, u shifted -7/8 texel
+LABEL 0 82 1 1 point half size, u shifted -6/8 texel
+LABEL 0 83 1 1 point half size, u shifted -5/8 texel
+LABEL 0 84 1 1 point half size, u shifted -4/8 texel
+LABEL 0 85 1 1 point half size, u shifted -3/8 texel
+LABEL 0 86 1 1 point half size, u shifted -2/8 texel
+LABEL 0 87 1 1 point half size, u shifted -1/8 texel
+LABEL 0 88 1 1 point half size, u shifted +0/8 texel
+LABEL 0 89 1 1 point half size, u shifted +1/8 texel
+LABEL 0 9 1 1 point 4x, u shifted +1/8 px
+LABEL 0 90 1 1 point half size, u shifted +2/8 texel
+LABEL 0 91 1 1 point half size, u shifted +3/8 texel
+LABEL 0 92 1 1 point half size, u shifted +4/8 texel
+LABEL 0 93 1 1 point half size, u shifted +5/8 texel
+LABEL 0 94 1 1 point half size, u shifted +6/8 texel
+LABEL 0 95 1 1 point half size, u shifted +7/8 texel
+LABEL 0 96 1 1 point half size, u shifted +8/8 texel
+LABEL 1 0 1 1 bilinear 4x, u shifted -8/8 px
+LABEL 1 1 1 1 bilinear 4x, u shifted -7/8 px
+LABEL 1 10 1 1 bilinear 4x, u shifted +2/8 px
+LABEL 1 11 1 1 bilinear 4x, u shifted +3/8 px
+LABEL 1 12 1 1 bilinear 4x, u shifted +4/8 px
+LABEL 1 13 1 1 bilinear 4x, u shifted +5/8 px
+LABEL 1 14 1 1 bilinear 4x, u shifted +6/8 px
+LABEL 1 15 1 1 bilinear 4x, u shifted +7/8 px
+LABEL 1 16 1 1 bilinear 4x, u shifted +8/8 px
+LABEL 1 2 1 1 bilinear 4x, u shifted -6/8 px
+LABEL 1 20 1 1 bilinear 4x, v shifted -8/8 px
+LABEL 1 21 1 1 bilinear 4x, v shifted -7/8 px
+LABEL 1 22 1 1 bilinear 4x, v shifted -6/8 px
+LABEL 1 23 1 1 bilinear 4x, v shifted -5/8 px
+LABEL 1 24 1 1 bilinear 4x, v shifted -4/8 px
+LABEL 1 25 1 1 bilinear 4x, v shifted -3/8 px
+LABEL 1 26 1 1 bilinear 4x, v shifted -2/8 px
+LABEL 1 27 1 1 bilinear 4x, v shifted -1/8 px
+LABEL 1 28 1 1 bilinear 4x, v shifted +0/8 px
+LABEL 1 29 1 1 bilinear 4x, v shifted +1/8 px
+LABEL 1 3 1 1 bilinear 4x, u shifted -5/8 px
+LABEL 1 30 1 1 bilinear 4x, v shifted +2/8 px
+LABEL 1 31 1 1 bilinear 4x, v shifted +3/8 px
+LABEL 1 32 1 1 bilinear 4x, v shifted +4/8 px
+LABEL 1 33 1 1 bilinear 4x, v shifted +5/8 px
+LABEL 1 34 1 1 bilinear 4x, v shifted +6/8 px
+LABEL 1 35 1 1 bilinear 4x, v shifted +7/8 px
+LABEL 1 36 1 1 bilinear 4x, v shifted +8/8 px
+LABEL 1 4 1 1 bilinear 4x, u shifted -4/8 px
+LABEL 1 40 1 1 bilinear 4x, u and v shifted -8/8 px
+LABEL 1 41 1 1 bilinear 4x, u and v shifted -7/8 px
+LABEL 1 42 1 1 bilinear 4x, u and v shifted -6/8 px
+LABEL 1 43 1 1 bilinear 4x, u and v shifted -5/8 px
+LABEL 1 44 1 1 bilinear 4x, u and v shifted -4/8 px
+LABEL 1 45 1 1 bilinear 4x, u and v shifted -3/8 px
+LABEL 1 46 1 1 bilinear 4x, u and v shifted -2/8 px
+LABEL 1 47 1 1 bilinear 4x, u and v shifted -1/8 px
+LABEL 1 48 1 1 bilinear 4x, u and v shifted +0/8 px
+LABEL 1 49 1 1 bilinear 4x, u and v shifted +1/8 px
+LABEL 1 5 1 1 bilinear 4x, u shifted -3/8 px
+LABEL 1 50 1 1 bilinear 4x, u and v shifted +2/8 px
+LABEL 1 51 1 1 bilinear 4x, u and v shifted +3/8 px
+LABEL 1 52 1 1 bilinear 4x, u and v shifted +4/8 px
+LABEL 1 53 1 1 bilinear 4x, u and v shifted +5/8 px
+LABEL 1 54 1 1 bilinear 4x, u and v shifted +6/8 px
+LABEL 1 55 1 1 bilinear 4x, u and v shifted +7/8 px
+LABEL 1 56 1 1 bilinear 4x, u and v shifted +8/8 px
+LABEL 1 6 1 1 bilinear 4x, u shifted -2/8 px
+LABEL 1 60 1 1 bilinear 1:1, u shifted -8/8 texel
+LABEL 1 61 1 1 bilinear 1:1, u shifted -7/8 texel
+LABEL 1 62 1 1 bilinear 1:1, u shifted -6/8 texel
+LABEL 1 63 1 1 bilinear 1:1, u shifted -5/8 texel
+LABEL 1 64 1 1 bilinear 1:1, u shifted -4/8 texel
+LABEL 1 65 1 1 bilinear 1:1, u shifted -3/8 texel
+LABEL 1 66 1 1 bilinear 1:1, u shifted -2/8 texel
+LABEL 1 67 1 1 bilinear 1:1, u shifted -1/8 texel
+LABEL 1 68 1 1 bilinear 1:1, u shifted +0/8 texel
+LABEL 1 69 1 1 bilinear 1:1, u shifted +1/8 texel
+LABEL 1 7 1 1 bilinear 4x, u shifted -1/8 px
+LABEL 1 70 1 1 bilinear 1:1, u shifted +2/8 texel
+LABEL 1 71 1 1 bilinear 1:1, u shifted +3/8 texel
+LABEL 1 72 1 1 bilinear 1:1, u shifted +4/8 texel
+LABEL 1 73 1 1 bilinear 1:1, u shifted +5/8 texel
+LABEL 1 74 1 1 bilinear 1:1, u shifted +6/8 texel
+LABEL 1 75 1 1 bilinear 1:1, u shifted +7/8 texel
+LABEL 1 76 1 1 bilinear 1:1, u shifted +8/8 texel
+LABEL 1 8 1 1 bilinear 4x, u shifted +0/8 px
+LABEL 1 80 1 1 bilinear half size, u shifted -8/8 texel
+LABEL 1 81 1 1 bilinear half size, u shifted -7/8 texel
+LABEL 1 82 1 1 bilinear half size, u shifted -6/8 texel
+LABEL 1 83 1 1 bilinear half size, u shifted -5/8 texel
+LABEL 1 84 1 1 bilinear half size, u shifted -4/8 texel
+LABEL 1 85 1 1 bilinear half size, u shifted -3/8 texel
+LABEL 1 86 1 1 bilinear half size, u shifted -2/8 texel
+LABEL 1 87 1 1 bilinear half size, u shifted -1/8 texel
+LABEL 1 88 1 1 bilinear half size, u shifted +0/8 texel
+LABEL 1 89 1 1 bilinear half size, u shifted +1/8 texel
+LABEL 1 9 1 1 bilinear 4x, u shifted +1/8 px
+LABEL 1 90 1 1 bilinear half size, u shifted +2/8 texel
+LABEL 1 91 1 1 bilinear half size, u shifted +3/8 texel
+LABEL 1 92 1 1 bilinear half size, u shifted +4/8 texel
+LABEL 1 93 1 1 bilinear half size, u shifted +5/8 texel
+LABEL 1 94 1 1 bilinear half size, u shifted +6/8 texel
+LABEL 1 95 1 1 bilinear half size, u shifted +7/8 texel
+LABEL 1 96 1 1 bilinear half size, u shifted +8/8 texel
+LABEL 2 0 1 1 bilinear 0->255 along u, start +0/256 texel
+LABEL 2 1 1 1 bilinear 0->255 along u, start +1/256 texel
+LABEL 2 10 1 1 bilinear 255->0 along u, start +2/256 texel
+LABEL 2 11 1 1 bilinear 255->0 along u, start +3/256 texel
+LABEL 2 12 1 1 bilinear 255->0 along u, start +4/256 texel
+LABEL 2 13 1 1 bilinear 255->0 along u, start +5/256 texel
+LABEL 2 14 1 1 bilinear 255->0 along u, start +6/256 texel
+LABEL 2 15 1 1 bilinear 255->0 along u, start +7/256 texel
+LABEL 2 16 1 1 bilinear 0->8 along u, start +0/256 texel
+LABEL 2 17 1 1 bilinear 0->8 along u, start +1/256 texel
+LABEL 2 18 1 1 bilinear 0->8 along u, start +2/256 texel
+LABEL 2 19 1 1 bilinear 0->8 along u, start +3/256 texel
+LABEL 2 2 1 1 bilinear 0->255 along u, start +2/256 texel
+LABEL 2 20 1 1 bilinear 0->8 along u, start +4/256 texel
+LABEL 2 21 1 1 bilinear 0->8 along u, start +5/256 texel
+LABEL 2 22 1 1 bilinear 0->8 along u, start +6/256 texel
+LABEL 2 23 1 1 bilinear 0->8 along u, start +7/256 texel
+LABEL 2 24 1 1 bilinear 64->192 along u, start +0/256 texel
+LABEL 2 25 1 1 bilinear 64->192 along u, start +1/256 texel
+LABEL 2 26 1 1 bilinear 64->192 along u, start +2/256 texel
+LABEL 2 27 1 1 bilinear 64->192 along u, start +3/256 texel
+LABEL 2 28 1 1 bilinear 64->192 along u, start +4/256 texel
+LABEL 2 29 1 1 bilinear 64->192 along u, start +5/256 texel
+LABEL 2 3 1 1 bilinear 0->255 along u, start +3/256 texel
+LABEL 2 30 1 1 bilinear 64->192 along u, start +6/256 texel
+LABEL 2 31 1 1 bilinear 64->192 along u, start +7/256 texel
+LABEL 2 4 1 1 bilinear 0->255 along u, start +4/256 texel
+LABEL 2 40 1 1 bilinear 0->255 along v, start +0/256 texel
+LABEL 2 41 1 1 bilinear 0->255 along v, start +1/256 texel
+LABEL 2 42 1 1 bilinear 0->255 along v, start +2/256 texel
+LABEL 2 43 1 1 bilinear 0->255 along v, start +3/256 texel
+LABEL 2 44 1 1 bilinear 0->255 along v, start +4/256 texel
+LABEL 2 45 1 1 bilinear 0->255 along v, start +5/256 texel
+LABEL 2 46 1 1 bilinear 0->255 along v, start +6/256 texel
+LABEL 2 47 1 1 bilinear 0->255 along v, start +7/256 texel
+LABEL 2 48 1 1 bilinear 255->0 along v, start +0/256 texel
+LABEL 2 49 1 1 bilinear 255->0 along v, start +1/256 texel
+LABEL 2 5 1 1 bilinear 0->255 along u, start +5/256 texel
+LABEL 2 50 1 1 bilinear 255->0 along v, start +2/256 texel
+LABEL 2 51 1 1 bilinear 255->0 along v, start +3/256 texel
+LABEL 2 52 1 1 bilinear 255->0 along v, start +4/256 texel
+LABEL 2 53 1 1 bilinear 255->0 along v, start +5/256 texel
+LABEL 2 54 1 1 bilinear 255->0 along v, start +6/256 texel
+LABEL 2 55 1 1 bilinear 255->0 along v, start +7/256 texel
+LABEL 2 56 1 1 bilinear 0->8 along v, start +0/256 texel
+LABEL 2 57 1 1 bilinear 0->8 along v, start +1/256 texel
+LABEL 2 58 1 1 bilinear 0->8 along v, start +2/256 texel
+LABEL 2 59 1 1 bilinear 0->8 along v, start +3/256 texel
+LABEL 2 6 1 1 bilinear 0->255 along u, start +6/256 texel
+LABEL 2 60 1 1 bilinear 0->8 along v, start +4/256 texel
+LABEL 2 61 1 1 bilinear 0->8 along v, start +5/256 texel
+LABEL 2 62 1 1 bilinear 0->8 along v, start +6/256 texel
+LABEL 2 63 1 1 bilinear 0->8 along v, start +7/256 texel
+LABEL 2 64 1 1 bilinear 64->192 along v, start +0/256 texel
+LABEL 2 65 1 1 bilinear 64->192 along v, start +1/256 texel
+LABEL 2 66 1 1 bilinear 64->192 along v, start +2/256 texel
+LABEL 2 67 1 1 bilinear 64->192 along v, start +3/256 texel
+LABEL 2 68 1 1 bilinear 64->192 along v, start +4/256 texel
+LABEL 2 69 1 1 bilinear 64->192 along v, start +5/256 texel
+LABEL 2 7 1 1 bilinear 0->255 along u, start +7/256 texel
+LABEL 2 70 1 1 bilinear 64->192 along v, start +6/256 texel
+LABEL 2 71 1 1 bilinear 64->192 along v, start +7/256 texel
+LABEL 2 8 1 1 bilinear 255->0 along u, start +0/256 texel
+LABEL 2 9 1 1 bilinear 255->0 along u, start +1/256 texel
+LABEL 3 0 2 2 wrap: flip none clamp none
+LABEL 3 10 2 2 wrap: flip V clamp V
+LABEL 3 12 2 2 wrap: flip V clamp U
+LABEL 3 14 2 2 wrap: flip V clamp UV
+LABEL 3 2 2 2 wrap: flip none clamp V
+LABEL 3 4 2 2 wrap: flip none clamp U
+LABEL 3 6 2 2 wrap: flip none clamp UV
+LABEL 3 8 2 2 wrap: flip V clamp none
+LABEL 3 80 2 2 wrap: flip U clamp none
+LABEL 3 82 2 2 wrap: flip U clamp V
+LABEL 3 84 2 2 wrap: flip U clamp U
+LABEL 3 86 2 2 wrap: flip U clamp UV
+LABEL 3 88 2 2 wrap: flip UV clamp none
+LABEL 3 90 2 2 wrap: flip UV clamp V
+LABEL 3 92 2 2 wrap: flip UV clamp U
+LABEL 3 94 2 2 wrap: flip UV clamp UV

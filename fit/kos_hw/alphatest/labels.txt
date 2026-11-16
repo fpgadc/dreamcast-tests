@@ -1,0 +1,960 @@
+LABEL 0 0 1 1 ref 0, texture alpha 0..3
+LABEL 0 1 1 1 ref 0, texture alpha 4..7
+LABEL 0 10 1 1 ref 0, texture alpha 40..43
+LABEL 0 100 1 1 ref 0, vertex alpha 80..83
+LABEL 0 101 1 1 ref 0, vertex alpha 84..87
+LABEL 0 102 1 1 ref 0, vertex alpha 88..91
+LABEL 0 103 1 1 ref 0, vertex alpha 92..95
+LABEL 0 104 1 1 ref 0, vertex alpha 96..99
+LABEL 0 105 1 1 ref 0, vertex alpha 100..103
+LABEL 0 106 1 1 ref 0, vertex alpha 104..107
+LABEL 0 107 1 1 ref 0, vertex alpha 108..111
+LABEL 0 108 1 1 ref 0, vertex alpha 112..115
+LABEL 0 109 1 1 ref 0, vertex alpha 116..119
+LABEL 0 11 1 1 ref 0, texture alpha 44..47
+LABEL 0 110 1 1 ref 0, vertex alpha 120..123
+LABEL 0 111 1 1 ref 0, vertex alpha 124..127
+LABEL 0 112 1 1 ref 0, vertex alpha 128..131
+LABEL 0 113 1 1 ref 0, vertex alpha 132..135
+LABEL 0 114 1 1 ref 0, vertex alpha 136..139
+LABEL 0 115 1 1 ref 0, vertex alpha 140..143
+LABEL 0 116 1 1 ref 0, vertex alpha 144..147
+LABEL 0 117 1 1 ref 0, vertex alpha 148..151
+LABEL 0 118 1 1 ref 0, vertex alpha 152..155
+LABEL 0 119 1 1 ref 0, vertex alpha 156..159
+LABEL 0 12 1 1 ref 0, texture alpha 48..51
+LABEL 0 120 1 1 ref 0, vertex alpha 160..163
+LABEL 0 121 1 1 ref 0, vertex alpha 164..167
+LABEL 0 122 1 1 ref 0, vertex alpha 168..171
+LABEL 0 123 1 1 ref 0, vertex alpha 172..175
+LABEL 0 124 1 1 ref 0, vertex alpha 176..179
+LABEL 0 125 1 1 ref 0, vertex alpha 180..183
+LABEL 0 126 1 1 ref 0, vertex alpha 184..187
+LABEL 0 127 1 1 ref 0, vertex alpha 188..191
+LABEL 0 128 1 1 ref 0, vertex alpha 192..195
+LABEL 0 129 1 1 ref 0, vertex alpha 196..199
+LABEL 0 13 1 1 ref 0, texture alpha 52..55
+LABEL 0 130 1 1 ref 0, vertex alpha 200..203
+LABEL 0 131 1 1 ref 0, vertex alpha 204..207
+LABEL 0 132 1 1 ref 0, vertex alpha 208..211
+LABEL 0 133 1 1 ref 0, vertex alpha 212..215
+LABEL 0 134 1 1 ref 0, vertex alpha 216..219
+LABEL 0 135 1 1 ref 0, vertex alpha 220..223
+LABEL 0 136 1 1 ref 0, vertex alpha 224..227
+LABEL 0 137 1 1 ref 0, vertex alpha 228..231
+LABEL 0 138 1 1 ref 0, vertex alpha 232..235
+LABEL 0 139 1 1 ref 0, vertex alpha 236..239
+LABEL 0 14 1 1 ref 0, texture alpha 56..59
+LABEL 0 140 1 1 ref 0, vertex alpha 240..243
+LABEL 0 141 1 1 ref 0, vertex alpha 244..247
+LABEL 0 142 1 1 ref 0, vertex alpha 248..251
+LABEL 0 143 1 1 ref 0, vertex alpha 252..255
+LABEL 0 15 1 1 ref 0, texture alpha 60..63
+LABEL 0 16 1 1 ref 0, texture alpha 64..67
+LABEL 0 160 1 1 ref 0, texel 255 x vertex alpha 0..3
+LABEL 0 161 1 1 ref 0, texel 255 x vertex alpha 4..7
+LABEL 0 162 1 1 ref 0, texel 255 x vertex alpha 8..11
+LABEL 0 163 1 1 ref 0, texel 255 x vertex alpha 12..15
+LABEL 0 164 1 1 ref 0, texel 255 x vertex alpha 16..19
+LABEL 0 165 1 1 ref 0, texel 255 x vertex alpha 20..23
+LABEL 0 166 1 1 ref 0, texel 255 x vertex alpha 24..27
+LABEL 0 167 1 1 ref 0, texel 255 x vertex alpha 28..31
+LABEL 0 168 1 1 ref 0, texel 255 x vertex alpha 32..35
+LABEL 0 169 1 1 ref 0, texel 255 x vertex alpha 36..39
+LABEL 0 17 1 1 ref 0, texture alpha 68..71
+LABEL 0 170 1 1 ref 0, texel 255 x vertex alpha 40..43
+LABEL 0 171 1 1 ref 0, texel 255 x vertex alpha 44..47
+LABEL 0 172 1 1 ref 0, texel 255 x vertex alpha 48..51
+LABEL 0 173 1 1 ref 0, texel 255 x vertex alpha 52..55
+LABEL 0 174 1 1 ref 0, texel 255 x vertex alpha 56..59
+LABEL 0 175 1 1 ref 0, texel 255 x vertex alpha 60..63
+LABEL 0 176 1 1 ref 0, texel 255 x vertex alpha 64..67
+LABEL 0 177 1 1 ref 0, texel 255 x vertex alpha 68..71
+LABEL 0 178 1 1 ref 0, texel 255 x vertex alpha 72..75
+LABEL 0 179 1 1 ref 0, texel 255 x vertex alpha 76..79
+LABEL 0 18 1 1 ref 0, texture alpha 72..75
+LABEL 0 180 1 1 ref 0, texel 255 x vertex alpha 80..83
+LABEL 0 181 1 1 ref 0, texel 255 x vertex alpha 84..87
+LABEL 0 182 1 1 ref 0, texel 255 x vertex alpha 88..91
+LABEL 0 183 1 1 ref 0, texel 255 x vertex alpha 92..95
+LABEL 0 184 1 1 ref 0, texel 255 x vertex alpha 96..99
+LABEL 0 185 1 1 ref 0, texel 255 x vertex alpha 100..103
+LABEL 0 186 1 1 ref 0, texel 255 x vertex alpha 104..107
+LABEL 0 187 1 1 ref 0, texel 255 x vertex alpha 108..111
+LABEL 0 188 1 1 ref 0, texel 255 x vertex alpha 112..115
+LABEL 0 189 1 1 ref 0, texel 255 x vertex alpha 116..119
+LABEL 0 19 1 1 ref 0, texture alpha 76..79
+LABEL 0 190 1 1 ref 0, texel 255 x vertex alpha 120..123
+LABEL 0 191 1 1 ref 0, texel 255 x vertex alpha 124..127
+LABEL 0 192 1 1 ref 0, texel 255 x vertex alpha 128..131
+LABEL 0 193 1 1 ref 0, texel 255 x vertex alpha 132..135
+LABEL 0 194 1 1 ref 0, texel 255 x vertex alpha 136..139
+LABEL 0 195 1 1 ref 0, texel 255 x vertex alpha 140..143
+LABEL 0 196 1 1 ref 0, texel 255 x vertex alpha 144..147
+LABEL 0 197 1 1 ref 0, texel 255 x vertex alpha 148..151
+LABEL 0 198 1 1 ref 0, texel 255 x vertex alpha 152..155
+LABEL 0 199 1 1 ref 0, texel 255 x vertex alpha 156..159
+LABEL 0 2 1 1 ref 0, texture alpha 8..11
+LABEL 0 20 1 1 ref 0, texture alpha 80..83
+LABEL 0 200 1 1 ref 0, texel 255 x vertex alpha 160..163
+LABEL 0 201 1 1 ref 0, texel 255 x vertex alpha 164..167
+LABEL 0 202 1 1 ref 0, texel 255 x vertex alpha 168..171
+LABEL 0 203 1 1 ref 0, texel 255 x vertex alpha 172..175
+LABEL 0 204 1 1 ref 0, texel 255 x vertex alpha 176..179
+LABEL 0 205 1 1 ref 0, texel 255 x vertex alpha 180..183
+LABEL 0 206 1 1 ref 0, texel 255 x vertex alpha 184..187
+LABEL 0 207 1 1 ref 0, texel 255 x vertex alpha 188..191
+LABEL 0 208 1 1 ref 0, texel 255 x vertex alpha 192..195
+LABEL 0 209 1 1 ref 0, texel 255 x vertex alpha 196..199
+LABEL 0 21 1 1 ref 0, texture alpha 84..87
+LABEL 0 210 1 1 ref 0, texel 255 x vertex alpha 200..203
+LABEL 0 211 1 1 ref 0, texel 255 x vertex alpha 204..207
+LABEL 0 212 1 1 ref 0, texel 255 x vertex alpha 208..211
+LABEL 0 213 1 1 ref 0, texel 255 x vertex alpha 212..215
+LABEL 0 214 1 1 ref 0, texel 255 x vertex alpha 216..219
+LABEL 0 215 1 1 ref 0, texel 255 x vertex alpha 220..223
+LABEL 0 216 1 1 ref 0, texel 255 x vertex alpha 224..227
+LABEL 0 217 1 1 ref 0, texel 255 x vertex alpha 228..231
+LABEL 0 218 1 1 ref 0, texel 255 x vertex alpha 232..235
+LABEL 0 219 1 1 ref 0, texel 255 x vertex alpha 236..239
+LABEL 0 22 1 1 ref 0, texture alpha 88..91
+LABEL 0 220 1 1 ref 0, texel 255 x vertex alpha 240..243
+LABEL 0 221 1 1 ref 0, texel 255 x vertex alpha 244..247
+LABEL 0 222 1 1 ref 0, texel 255 x vertex alpha 248..251
+LABEL 0 223 1 1 ref 0, texel 255 x vertex alpha 252..255
+LABEL 0 23 1 1 ref 0, texture alpha 92..95
+LABEL 0 24 1 1 ref 0, texture alpha 96..99
+LABEL 0 25 1 1 ref 0, texture alpha 100..103
+LABEL 0 26 1 1 ref 0, texture alpha 104..107
+LABEL 0 27 1 1 ref 0, texture alpha 108..111
+LABEL 0 28 1 1 ref 0, texture alpha 112..115
+LABEL 0 29 1 1 ref 0, texture alpha 116..119
+LABEL 0 3 1 1 ref 0, texture alpha 12..15
+LABEL 0 30 1 1 ref 0, texture alpha 120..123
+LABEL 0 31 1 1 ref 0, texture alpha 124..127
+LABEL 0 32 1 1 ref 0, texture alpha 128..131
+LABEL 0 33 1 1 ref 0, texture alpha 132..135
+LABEL 0 34 1 1 ref 0, texture alpha 136..139
+LABEL 0 35 1 1 ref 0, texture alpha 140..143
+LABEL 0 36 1 1 ref 0, texture alpha 144..147
+LABEL 0 37 1 1 ref 0, texture alpha 148..151
+LABEL 0 38 1 1 ref 0, texture alpha 152..155
+LABEL 0 39 1 1 ref 0, texture alpha 156..159
+LABEL 0 4 1 1 ref 0, texture alpha 16..19
+LABEL 0 40 1 1 ref 0, texture alpha 160..163
+LABEL 0 41 1 1 ref 0, texture alpha 164..167
+LABEL 0 42 1 1 ref 0, texture alpha 168..171
+LABEL 0 43 1 1 ref 0, texture alpha 172..175
+LABEL 0 44 1 1 ref 0, texture alpha 176..179
+LABEL 0 45 1 1 ref 0, texture alpha 180..183
+LABEL 0 46 1 1 ref 0, texture alpha 184..187
+LABEL 0 47 1 1 ref 0, texture alpha 188..191
+LABEL 0 48 1 1 ref 0, texture alpha 192..195
+LABEL 0 49 1 1 ref 0, texture alpha 196..199
+LABEL 0 5 1 1 ref 0, texture alpha 20..23
+LABEL 0 50 1 1 ref 0, texture alpha 200..203
+LABEL 0 51 1 1 ref 0, texture alpha 204..207
+LABEL 0 52 1 1 ref 0, texture alpha 208..211
+LABEL 0 53 1 1 ref 0, texture alpha 212..215
+LABEL 0 54 1 1 ref 0, texture alpha 216..219
+LABEL 0 55 1 1 ref 0, texture alpha 220..223
+LABEL 0 56 1 1 ref 0, texture alpha 224..227
+LABEL 0 57 1 1 ref 0, texture alpha 228..231
+LABEL 0 58 1 1 ref 0, texture alpha 232..235
+LABEL 0 59 1 1 ref 0, texture alpha 236..239
+LABEL 0 6 1 1 ref 0, texture alpha 24..27
+LABEL 0 60 1 1 ref 0, texture alpha 240..243
+LABEL 0 61 1 1 ref 0, texture alpha 244..247
+LABEL 0 62 1 1 ref 0, texture alpha 248..251
+LABEL 0 63 1 1 ref 0, texture alpha 252..255
+LABEL 0 7 1 1 ref 0, texture alpha 28..31
+LABEL 0 8 1 1 ref 0, texture alpha 32..35
+LABEL 0 80 1 1 ref 0, vertex alpha 0..3
+LABEL 0 81 1 1 ref 0, vertex alpha 4..7
+LABEL 0 82 1 1 ref 0, vertex alpha 8..11
+LABEL 0 83 1 1 ref 0, vertex alpha 12..15
+LABEL 0 84 1 1 ref 0, vertex alpha 16..19
+LABEL 0 85 1 1 ref 0, vertex alpha 20..23
+LABEL 0 86 1 1 ref 0, vertex alpha 24..27
+LABEL 0 87 1 1 ref 0, vertex alpha 28..31
+LABEL 0 88 1 1 ref 0, vertex alpha 32..35
+LABEL 0 89 1 1 ref 0, vertex alpha 36..39
+LABEL 0 9 1 1 ref 0, texture alpha 36..39
+LABEL 0 90 1 1 ref 0, vertex alpha 40..43
+LABEL 0 91 1 1 ref 0, vertex alpha 44..47
+LABEL 0 92 1 1 ref 0, vertex alpha 48..51
+LABEL 0 93 1 1 ref 0, vertex alpha 52..55
+LABEL 0 94 1 1 ref 0, vertex alpha 56..59
+LABEL 0 95 1 1 ref 0, vertex alpha 60..63
+LABEL 0 96 1 1 ref 0, vertex alpha 64..67
+LABEL 0 97 1 1 ref 0, vertex alpha 68..71
+LABEL 0 98 1 1 ref 0, vertex alpha 72..75
+LABEL 0 99 1 1 ref 0, vertex alpha 76..79
+LABEL 1 0 1 1 ref 1, texture alpha 0..3
+LABEL 1 1 1 1 ref 1, texture alpha 4..7
+LABEL 1 10 1 1 ref 1, texture alpha 40..43
+LABEL 1 100 1 1 ref 1, vertex alpha 80..83
+LABEL 1 101 1 1 ref 1, vertex alpha 84..87
+LABEL 1 102 1 1 ref 1, vertex alpha 88..91
+LABEL 1 103 1 1 ref 1, vertex alpha 92..95
+LABEL 1 104 1 1 ref 1, vertex alpha 96..99
+LABEL 1 105 1 1 ref 1, vertex alpha 100..103
+LABEL 1 106 1 1 ref 1, vertex alpha 104..107
+LABEL 1 107 1 1 ref 1, vertex alpha 108..111
+LABEL 1 108 1 1 ref 1, vertex alpha 112..115
+LABEL 1 109 1 1 ref 1, vertex alpha 116..119
+LABEL 1 11 1 1 ref 1, texture alpha 44..47
+LABEL 1 110 1 1 ref 1, vertex alpha 120..123
+LABEL 1 111 1 1 ref 1, vertex alpha 124..127
+LABEL 1 112 1 1 ref 1, vertex alpha 128..131
+LABEL 1 113 1 1 ref 1, vertex alpha 132..135
+LABEL 1 114 1 1 ref 1, vertex alpha 136..139
+LABEL 1 115 1 1 ref 1, vertex alpha 140..143
+LABEL 1 116 1 1 ref 1, vertex alpha 144..147
+LABEL 1 117 1 1 ref 1, vertex alpha 148..151
+LABEL 1 118 1 1 ref 1, vertex alpha 152..155
+LABEL 1 119 1 1 ref 1, vertex alpha 156..159
+LABEL 1 12 1 1 ref 1, texture alpha 48..51
+LABEL 1 120 1 1 ref 1, vertex alpha 160..163
+LABEL 1 121 1 1 ref 1, vertex alpha 164..167
+LABEL 1 122 1 1 ref 1, vertex alpha 168..171
+LABEL 1 123 1 1 ref 1, vertex alpha 172..175
+LABEL 1 124 1 1 ref 1, vertex alpha 176..179
+LABEL 1 125 1 1 ref 1, vertex alpha 180..183
+LABEL 1 126 1 1 ref 1, vertex alpha 184..187
+LABEL 1 127 1 1 ref 1, vertex alpha 188..191
+LABEL 1 128 1 1 ref 1, vertex alpha 192..195
+LABEL 1 129 1 1 ref 1, vertex alpha 196..199
+LABEL 1 13 1 1 ref 1, texture alpha 52..55
+LABEL 1 130 1 1 ref 1, vertex alpha 200..203
+LABEL 1 131 1 1 ref 1, vertex alpha 204..207
+LABEL 1 132 1 1 ref 1, vertex alpha 208..211
+LABEL 1 133 1 1 ref 1, vertex alpha 212..215
+LABEL 1 134 1 1 ref 1, vertex alpha 216..219
+LABEL 1 135 1 1 ref 1, vertex alpha 220..223
+LABEL 1 136 1 1 ref 1, vertex alpha 224..227
+LABEL 1 137 1 1 ref 1, vertex alpha 228..231
+LABEL 1 138 1 1 ref 1, vertex alpha 232..235
+LABEL 1 139 1 1 ref 1, vertex alpha 236..239
+LABEL 1 14 1 1 ref 1, texture alpha 56..59
+LABEL 1 140 1 1 ref 1, vertex alpha 240..243
+LABEL 1 141 1 1 ref 1, vertex alpha 244..247
+LABEL 1 142 1 1 ref 1, vertex alpha 248..251
+LABEL 1 143 1 1 ref 1, vertex alpha 252..255
+LABEL 1 15 1 1 ref 1, texture alpha 60..63
+LABEL 1 16 1 1 ref 1, texture alpha 64..67
+LABEL 1 160 1 1 ref 1, texel 255 x vertex alpha 0..3
+LABEL 1 161 1 1 ref 1, texel 255 x vertex alpha 4..7
+LABEL 1 162 1 1 ref 1, texel 255 x vertex alpha 8..11
+LABEL 1 163 1 1 ref 1, texel 255 x vertex alpha 12..15
+LABEL 1 164 1 1 ref 1, texel 255 x vertex alpha 16..19
+LABEL 1 165 1 1 ref 1, texel 255 x vertex alpha 20..23
+LABEL 1 166 1 1 ref 1, texel 255 x vertex alpha 24..27
+LABEL 1 167 1 1 ref 1, texel 255 x vertex alpha 28..31
+LABEL 1 168 1 1 ref 1, texel 255 x vertex alpha 32..35
+LABEL 1 169 1 1 ref 1, texel 255 x vertex alpha 36..39
+LABEL 1 17 1 1 ref 1, texture alpha 68..71
+LABEL 1 170 1 1 ref 1, texel 255 x vertex alpha 40..43
+LABEL 1 171 1 1 ref 1, texel 255 x vertex alpha 44..47
+LABEL 1 172 1 1 ref 1, texel 255 x vertex alpha 48..51
+LABEL 1 173 1 1 ref 1, texel 255 x vertex alpha 52..55
+LABEL 1 174 1 1 ref 1, texel 255 x vertex alpha 56..59
+LABEL 1 175 1 1 ref 1, texel 255 x vertex alpha 60..63
+LABEL 1 176 1 1 ref 1, texel 255 x vertex alpha 64..67
+LABEL 1 177 1 1 ref 1, texel 255 x vertex alpha 68..71
+LABEL 1 178 1 1 ref 1, texel 255 x vertex alpha 72..75
+LABEL 1 179 1 1 ref 1, texel 255 x vertex alpha 76..79
+LABEL 1 18 1 1 ref 1, texture alpha 72..75
+LABEL 1 180 1 1 ref 1, texel 255 x vertex alpha 80..83
+LABEL 1 181 1 1 ref 1, texel 255 x vertex alpha 84..87
+LABEL 1 182 1 1 ref 1, texel 255 x vertex alpha 88..91
+LABEL 1 183 1 1 ref 1, texel 255 x vertex alpha 92..95
+LABEL 1 184 1 1 ref 1, texel 255 x vertex alpha 96..99
+LABEL 1 185 1 1 ref 1, texel 255 x vertex alpha 100..103
+LABEL 1 186 1 1 ref 1, texel 255 x vertex alpha 104..107
+LABEL 1 187 1 1 ref 1, texel 255 x vertex alpha 108..111
+LABEL 1 188 1 1 ref 1, texel 255 x vertex alpha 112..115
+LABEL 1 189 1 1 ref 1, texel 255 x vertex alpha 116..119
+LABEL 1 19 1 1 ref 1, texture alpha 76..79
+LABEL 1 190 1 1 ref 1, texel 255 x vertex alpha 120..123
+LABEL 1 191 1 1 ref 1, texel 255 x vertex alpha 124..127
+LABEL 1 192 1 1 ref 1, texel 255 x vertex alpha 128..131
+LABEL 1 193 1 1 ref 1, texel 255 x vertex alpha 132..135
+LABEL 1 194 1 1 ref 1, texel 255 x vertex alpha 136..139
+LABEL 1 195 1 1 ref 1, texel 255 x vertex alpha 140..143
+LABEL 1 196 1 1 ref 1, texel 255 x vertex alpha 144..147
+LABEL 1 197 1 1 ref 1, texel 255 x vertex alpha 148..151
+LABEL 1 198 1 1 ref 1, texel 255 x vertex alpha 152..155
+LABEL 1 199 1 1 ref 1, texel 255 x vertex alpha 156..159
+LABEL 1 2 1 1 ref 1, texture alpha 8..11
+LABEL 1 20 1 1 ref 1, texture alpha 80..83
+LABEL 1 200 1 1 ref 1, texel 255 x vertex alpha 160..163
+LABEL 1 201 1 1 ref 1, texel 255 x vertex alpha 164..167
+LABEL 1 202 1 1 ref 1, texel 255 x vertex alpha 168..171
+LABEL 1 203 1 1 ref 1, texel 255 x vertex alpha 172..175
+LABEL 1 204 1 1 ref 1, texel 255 x vertex alpha 176..179
+LABEL 1 205 1 1 ref 1, texel 255 x vertex alpha 180..183
+LABEL 1 206 1 1 ref 1, texel 255 x vertex alpha 184..187
+LABEL 1 207 1 1 ref 1, texel 255 x vertex alpha 188..191
+LABEL 1 208 1 1 ref 1, texel 255 x vertex alpha 192..195
+LABEL 1 209 1 1 ref 1, texel 255 x vertex alpha 196..199
+LABEL 1 21 1 1 ref 1, texture alpha 84..87
+LABEL 1 210 1 1 ref 1, texel 255 x vertex alpha 200..203
+LABEL 1 211 1 1 ref 1, texel 255 x vertex alpha 204..207
+LABEL 1 212 1 1 ref 1, texel 255 x vertex alpha 208..211
+LABEL 1 213 1 1 ref 1, texel 255 x vertex alpha 212..215
+LABEL 1 214 1 1 ref 1, texel 255 x vertex alpha 216..219
+LABEL 1 215 1 1 ref 1, texel 255 x vertex alpha 220..223
+LABEL 1 216 1 1 ref 1, texel 255 x vertex alpha 224..227
+LABEL 1 217 1 1 ref 1, texel 255 x vertex alpha 228..231
+LABEL 1 218 1 1 ref 1, texel 255 x vertex alpha 232..235
+LABEL 1 219 1 1 ref 1, texel 255 x vertex alpha 236..239
+LABEL 1 22 1 1 ref 1, texture alpha 88..91
+LABEL 1 220 1 1 ref 1, texel 255 x vertex alpha 240..243
+LABEL 1 221 1 1 ref 1, texel 255 x vertex alpha 244..247
+LABEL 1 222 1 1 ref 1, texel 255 x vertex alpha 248..251
+LABEL 1 223 1 1 ref 1, texel 255 x vertex alpha 252..255
+LABEL 1 23 1 1 ref 1, texture alpha 92..95
+LABEL 1 24 1 1 ref 1, texture alpha 96..99
+LABEL 1 25 1 1 ref 1, texture alpha 100..103
+LABEL 1 26 1 1 ref 1, texture alpha 104..107
+LABEL 1 27 1 1 ref 1, texture alpha 108..111
+LABEL 1 28 1 1 ref 1, texture alpha 112..115
+LABEL 1 29 1 1 ref 1, texture alpha 116..119
+LABEL 1 3 1 1 ref 1, texture alpha 12..15
+LABEL 1 30 1 1 ref 1, texture alpha 120..123
+LABEL 1 31 1 1 ref 1, texture alpha 124..127
+LABEL 1 32 1 1 ref 1, texture alpha 128..131
+LABEL 1 33 1 1 ref 1, texture alpha 132..135
+LABEL 1 34 1 1 ref 1, texture alpha 136..139
+LABEL 1 35 1 1 ref 1, texture alpha 140..143
+LABEL 1 36 1 1 ref 1, texture alpha 144..147
+LABEL 1 37 1 1 ref 1, texture alpha 148..151
+LABEL 1 38 1 1 ref 1, texture alpha 152..155
+LABEL 1 39 1 1 ref 1, texture alpha 156..159
+LABEL 1 4 1 1 ref 1, texture alpha 16..19
+LABEL 1 40 1 1 ref 1, texture alpha 160..163
+LABEL 1 41 1 1 ref 1, texture alpha 164..167
+LABEL 1 42 1 1 ref 1, texture alpha 168..171
+LABEL 1 43 1 1 ref 1, texture alpha 172..175
+LABEL 1 44 1 1 ref 1, texture alpha 176..179
+LABEL 1 45 1 1 ref 1, texture alpha 180..183
+LABEL 1 46 1 1 ref 1, texture alpha 184..187
+LABEL 1 47 1 1 ref 1, texture alpha 188..191
+LABEL 1 48 1 1 ref 1, texture alpha 192..195
+LABEL 1 49 1 1 ref 1, texture alpha 196..199
+LABEL 1 5 1 1 ref 1, texture alpha 20..23
+LABEL 1 50 1 1 ref 1, texture alpha 200..203
+LABEL 1 51 1 1 ref 1, texture alpha 204..207
+LABEL 1 52 1 1 ref 1, texture alpha 208..211
+LABEL 1 53 1 1 ref 1, texture alpha 212..215
+LABEL 1 54 1 1 ref 1, texture alpha 216..219
+LABEL 1 55 1 1 ref 1, texture alpha 220..223
+LABEL 1 56 1 1 ref 1, texture alpha 224..227
+LABEL 1 57 1 1 ref 1, texture alpha 228..231
+LABEL 1 58 1 1 ref 1, texture alpha 232..235
+LABEL 1 59 1 1 ref 1, texture alpha 236..239
+LABEL 1 6 1 1 ref 1, texture alpha 24..27
+LABEL 1 60 1 1 ref 1, texture alpha 240..243
+LABEL 1 61 1 1 ref 1, texture alpha 244..247
+LABEL 1 62 1 1 ref 1, texture alpha 248..251
+LABEL 1 63 1 1 ref 1, texture alpha 252..255
+LABEL 1 7 1 1 ref 1, texture alpha 28..31
+LABEL 1 8 1 1 ref 1, texture alpha 32..35
+LABEL 1 80 1 1 ref 1, vertex alpha 0..3
+LABEL 1 81 1 1 ref 1, vertex alpha 4..7
+LABEL 1 82 1 1 ref 1, vertex alpha 8..11
+LABEL 1 83 1 1 ref 1, vertex alpha 12..15
+LABEL 1 84 1 1 ref 1, vertex alpha 16..19
+LABEL 1 85 1 1 ref 1, vertex alpha 20..23
+LABEL 1 86 1 1 ref 1, vertex alpha 24..27
+LABEL 1 87 1 1 ref 1, vertex alpha 28..31
+LABEL 1 88 1 1 ref 1, vertex alpha 32..35
+LABEL 1 89 1 1 ref 1, vertex alpha 36..39
+LABEL 1 9 1 1 ref 1, texture alpha 36..39
+LABEL 1 90 1 1 ref 1, vertex alpha 40..43
+LABEL 1 91 1 1 ref 1, vertex alpha 44..47
+LABEL 1 92 1 1 ref 1, vertex alpha 48..51
+LABEL 1 93 1 1 ref 1, vertex alpha 52..55
+LABEL 1 94 1 1 ref 1, vertex alpha 56..59
+LABEL 1 95 1 1 ref 1, vertex alpha 60..63
+LABEL 1 96 1 1 ref 1, vertex alpha 64..67
+LABEL 1 97 1 1 ref 1, vertex alpha 68..71
+LABEL 1 98 1 1 ref 1, vertex alpha 72..75
+LABEL 1 99 1 1 ref 1, vertex alpha 76..79
+LABEL 2 0 1 1 ref 127, texture alpha 0..3
+LABEL 2 1 1 1 ref 127, texture alpha 4..7
+LABEL 2 10 1 1 ref 127, texture alpha 40..43
+LABEL 2 100 1 1 ref 127, vertex alpha 80..83
+LABEL 2 101 1 1 ref 127, vertex alpha 84..87
+LABEL 2 102 1 1 ref 127, vertex alpha 88..91
+LABEL 2 103 1 1 ref 127, vertex alpha 92..95
+LABEL 2 104 1 1 ref 127, vertex alpha 96..99
+LABEL 2 105 1 1 ref 127, vertex alpha 100..103
+LABEL 2 106 1 1 ref 127, vertex alpha 104..107
+LABEL 2 107 1 1 ref 127, vertex alpha 108..111
+LABEL 2 108 1 1 ref 127, vertex alpha 112..115
+LABEL 2 109 1 1 ref 127, vertex alpha 116..119
+LABEL 2 11 1 1 ref 127, texture alpha 44..47
+LABEL 2 110 1 1 ref 127, vertex alpha 120..123
+LABEL 2 111 1 1 ref 127, vertex alpha 124..127
+LABEL 2 112 1 1 ref 127, vertex alpha 128..131
+LABEL 2 113 1 1 ref 127, vertex alpha 132..135
+LABEL 2 114 1 1 ref 127, vertex alpha 136..139
+LABEL 2 115 1 1 ref 127, vertex alpha 140..143
+LABEL 2 116 1 1 ref 127, vertex alpha 144..147
+LABEL 2 117 1 1 ref 127, vertex alpha 148..151
+LABEL 2 118 1 1 ref 127, vertex alpha 152..155
+LABEL 2 119 1 1 ref 127, vertex alpha 156..159
+LABEL 2 12 1 1 ref 127, texture alpha 48..51
+LABEL 2 120 1 1 ref 127, vertex alpha 160..163
+LABEL 2 121 1 1 ref 127, vertex alpha 164..167
+LABEL 2 122 1 1 ref 127, vertex alpha 168..171
+LABEL 2 123 1 1 ref 127, vertex alpha 172..175
+LABEL 2 124 1 1 ref 127, vertex alpha 176..179
+LABEL 2 125 1 1 ref 127, vertex alpha 180..183
+LABEL 2 126 1 1 ref 127, vertex alpha 184..187
+LABEL 2 127 1 1 ref 127, vertex alpha 188..191
+LABEL 2 128 1 1 ref 127, vertex alpha 192..195
+LABEL 2 129 1 1 ref 127, vertex alpha 196..199
+LABEL 2 13 1 1 ref 127, texture alpha 52..55
+LABEL 2 130 1 1 ref 127, vertex alpha 200..203
+LABEL 2 131 1 1 ref 127, vertex alpha 204..207
+LABEL 2 132 1 1 ref 127, vertex alpha 208..211
+LABEL 2 133 1 1 ref 127, vertex alpha 212..215
+LABEL 2 134 1 1 ref 127, vertex alpha 216..219
+LABEL 2 135 1 1 ref 127, vertex alpha 220..223
+LABEL 2 136 1 1 ref 127, vertex alpha 224..227
+LABEL 2 137 1 1 ref 127, vertex alpha 228..231
+LABEL 2 138 1 1 ref 127, vertex alpha 232..235
+LABEL 2 139 1 1 ref 127, vertex alpha 236..239
+LABEL 2 14 1 1 ref 127, texture alpha 56..59
+LABEL 2 140 1 1 ref 127, vertex alpha 240..243
+LABEL 2 141 1 1 ref 127, vertex alpha 244..247
+LABEL 2 142 1 1 ref 127, vertex alpha 248..251
+LABEL 2 143 1 1 ref 127, vertex alpha 252..255
+LABEL 2 15 1 1 ref 127, texture alpha 60..63
+LABEL 2 16 1 1 ref 127, texture alpha 64..67
+LABEL 2 160 1 1 ref 127, texel 255 x vertex alpha 0..3
+LABEL 2 161 1 1 ref 127, texel 255 x vertex alpha 4..7
+LABEL 2 162 1 1 ref 127, texel 255 x vertex alpha 8..11
+LABEL 2 163 1 1 ref 127, texel 255 x vertex alpha 12..15
+LABEL 2 164 1 1 ref 127, texel 255 x vertex alpha 16..19
+LABEL 2 165 1 1 ref 127, texel 255 x vertex alpha 20..23
+LABEL 2 166 1 1 ref 127, texel 255 x vertex alpha 24..27
+LABEL 2 167 1 1 ref 127, texel 255 x vertex alpha 28..31
+LABEL 2 168 1 1 ref 127, texel 255 x vertex alpha 32..35
+LABEL 2 169 1 1 ref 127, texel 255 x vertex alpha 36..39
+LABEL 2 17 1 1 ref 127, texture alpha 68..71
+LABEL 2 170 1 1 ref 127, texel 255 x vertex alpha 40..43
+LABEL 2 171 1 1 ref 127, texel 255 x vertex alpha 44..47
+LABEL 2 172 1 1 ref 127, texel 255 x vertex alpha 48..51
+LABEL 2 173 1 1 ref 127, texel 255 x vertex alpha 52..55
+LABEL 2 174 1 1 ref 127, texel 255 x vertex alpha 56..59
+LABEL 2 175 1 1 ref 127, texel 255 x vertex alpha 60..63
+LABEL 2 176 1 1 ref 127, texel 255 x vertex alpha 64..67
+LABEL 2 177 1 1 ref 127, texel 255 x vertex alpha 68..71
+LABEL 2 178 1 1 ref 127, texel 255 x vertex alpha 72..75
+LABEL 2 179 1 1 ref 127, texel 255 x vertex alpha 76..79
+LABEL 2 18 1 1 ref 127, texture alpha 72..75
+LABEL 2 180 1 1 ref 127, texel 255 x vertex alpha 80..83
+LABEL 2 181 1 1 ref 127, texel 255 x vertex alpha 84..87
+LABEL 2 182 1 1 ref 127, texel 255 x vertex alpha 88..91
+LABEL 2 183 1 1 ref 127, texel 255 x vertex alpha 92..95
+LABEL 2 184 1 1 ref 127, texel 255 x vertex alpha 96..99
+LABEL 2 185 1 1 ref 127, texel 255 x vertex alpha 100..103
+LABEL 2 186 1 1 ref 127, texel 255 x vertex alpha 104..107
+LABEL 2 187 1 1 ref 127, texel 255 x vertex alpha 108..111
+LABEL 2 188 1 1 ref 127, texel 255 x vertex alpha 112..115
+LABEL 2 189 1 1 ref 127, texel 255 x vertex alpha 116..119
+LABEL 2 19 1 1 ref 127, texture alpha 76..79
+LABEL 2 190 1 1 ref 127, texel 255 x vertex alpha 120..123
+LABEL 2 191 1 1 ref 127, texel 255 x vertex alpha 124..127
+LABEL 2 192 1 1 ref 127, texel 255 x vertex alpha 128..131
+LABEL 2 193 1 1 ref 127, texel 255 x vertex alpha 132..135
+LABEL 2 194 1 1 ref 127, texel 255 x vertex alpha 136..139
+LABEL 2 195 1 1 ref 127, texel 255 x vertex alpha 140..143
+LABEL 2 196 1 1 ref 127, texel 255 x vertex alpha 144..147
+LABEL 2 197 1 1 ref 127, texel 255 x vertex alpha 148..151
+LABEL 2 198 1 1 ref 127, texel 255 x vertex alpha 152..155
+LABEL 2 199 1 1 ref 127, texel 255 x vertex alpha 156..159
+LABEL 2 2 1 1 ref 127, texture alpha 8..11
+LABEL 2 20 1 1 ref 127, texture alpha 80..83
+LABEL 2 200 1 1 ref 127, texel 255 x vertex alpha 160..163
+LABEL 2 201 1 1 ref 127, texel 255 x vertex alpha 164..167
+LABEL 2 202 1 1 ref 127, texel 255 x vertex alpha 168..171
+LABEL 2 203 1 1 ref 127, texel 255 x vertex alpha 172..175
+LABEL 2 204 1 1 ref 127, texel 255 x vertex alpha 176..179
+LABEL 2 205 1 1 ref 127, texel 255 x vertex alpha 180..183
+LABEL 2 206 1 1 ref 127, texel 255 x vertex alpha 184..187
+LABEL 2 207 1 1 ref 127, texel 255 x vertex alpha 188..191
+LABEL 2 208 1 1 ref 127, texel 255 x vertex alpha 192..195
+LABEL 2 209 1 1 ref 127, texel 255 x vertex alpha 196..199
+LABEL 2 21 1 1 ref 127, texture alpha 84..87
+LABEL 2 210 1 1 ref 127, texel 255 x vertex alpha 200..203
+LABEL 2 211 1 1 ref 127, texel 255 x vertex alpha 204..207
+LABEL 2 212 1 1 ref 127, texel 255 x vertex alpha 208..211
+LABEL 2 213 1 1 ref 127, texel 255 x vertex alpha 212..215
+LABEL 2 214 1 1 ref 127, texel 255 x vertex alpha 216..219
+LABEL 2 215 1 1 ref 127, texel 255 x vertex alpha 220..223
+LABEL 2 216 1 1 ref 127, texel 255 x vertex alpha 224..227
+LABEL 2 217 1 1 ref 127, texel 255 x vertex alpha 228..231
+LABEL 2 218 1 1 ref 127, texel 255 x vertex alpha 232..235
+LABEL 2 219 1 1 ref 127, texel 255 x vertex alpha 236..239
+LABEL 2 22 1 1 ref 127, texture alpha 88..91
+LABEL 2 220 1 1 ref 127, texel 255 x vertex alpha 240..243
+LABEL 2 221 1 1 ref 127, texel 255 x vertex alpha 244..247
+LABEL 2 222 1 1 ref 127, texel 255 x vertex alpha 248..251
+LABEL 2 223 1 1 ref 127, texel 255 x vertex alpha 252..255
+LABEL 2 23 1 1 ref 127, texture alpha 92..95
+LABEL 2 24 1 1 ref 127, texture alpha 96..99
+LABEL 2 25 1 1 ref 127, texture alpha 100..103
+LABEL 2 26 1 1 ref 127, texture alpha 104..107
+LABEL 2 27 1 1 ref 127, texture alpha 108..111
+LABEL 2 28 1 1 ref 127, texture alpha 112..115
+LABEL 2 29 1 1 ref 127, texture alpha 116..119
+LABEL 2 3 1 1 ref 127, texture alpha 12..15
+LABEL 2 30 1 1 ref 127, texture alpha 120..123
+LABEL 2 31 1 1 ref 127, texture alpha 124..127
+LABEL 2 32 1 1 ref 127, texture alpha 128..131
+LABEL 2 33 1 1 ref 127, texture alpha 132..135
+LABEL 2 34 1 1 ref 127, texture alpha 136..139
+LABEL 2 35 1 1 ref 127, texture alpha 140..143
+LABEL 2 36 1 1 ref 127, texture alpha 144..147
+LABEL 2 37 1 1 ref 127, texture alpha 148..151
+LABEL 2 38 1 1 ref 127, texture alpha 152..155
+LABEL 2 39 1 1 ref 127, texture alpha 156..159
+LABEL 2 4 1 1 ref 127, texture alpha 16..19
+LABEL 2 40 1 1 ref 127, texture alpha 160..163
+LABEL 2 41 1 1 ref 127, texture alpha 164..167
+LABEL 2 42 1 1 ref 127, texture alpha 168..171
+LABEL 2 43 1 1 ref 127, texture alpha 172..175
+LABEL 2 44 1 1 ref 127, texture alpha 176..179
+LABEL 2 45 1 1 ref 127, texture alpha 180..183
+LABEL 2 46 1 1 ref 127, texture alpha 184..187
+LABEL 2 47 1 1 ref 127, texture alpha 188..191
+LABEL 2 48 1 1 ref 127, texture alpha 192..195
+LABEL 2 49 1 1 ref 127, texture alpha 196..199
+LABEL 2 5 1 1 ref 127, texture alpha 20..23
+LABEL 2 50 1 1 ref 127, texture alpha 200..203
+LABEL 2 51 1 1 ref 127, texture alpha 204..207
+LABEL 2 52 1 1 ref 127, texture alpha 208..211
+LABEL 2 53 1 1 ref 127, texture alpha 212..215
+LABEL 2 54 1 1 ref 127, texture alpha 216..219
+LABEL 2 55 1 1 ref 127, texture alpha 220..223
+LABEL 2 56 1 1 ref 127, texture alpha 224..227
+LABEL 2 57 1 1 ref 127, texture alpha 228..231
+LABEL 2 58 1 1 ref 127, texture alpha 232..235
+LABEL 2 59 1 1 ref 127, texture alpha 236..239
+LABEL 2 6 1 1 ref 127, texture alpha 24..27
+LABEL 2 60 1 1 ref 127, texture alpha 240..243
+LABEL 2 61 1 1 ref 127, texture alpha 244..247
+LABEL 2 62 1 1 ref 127, texture alpha 248..251
+LABEL 2 63 1 1 ref 127, texture alpha 252..255
+LABEL 2 7 1 1 ref 127, texture alpha 28..31
+LABEL 2 8 1 1 ref 127, texture alpha 32..35
+LABEL 2 80 1 1 ref 127, vertex alpha 0..3
+LABEL 2 81 1 1 ref 127, vertex alpha 4..7
+LABEL 2 82 1 1 ref 127, vertex alpha 8..11
+LABEL 2 83 1 1 ref 127, vertex alpha 12..15
+LABEL 2 84 1 1 ref 127, vertex alpha 16..19
+LABEL 2 85 1 1 ref 127, vertex alpha 20..23
+LABEL 2 86 1 1 ref 127, vertex alpha 24..27
+LABEL 2 87 1 1 ref 127, vertex alpha 28..31
+LABEL 2 88 1 1 ref 127, vertex alpha 32..35
+LABEL 2 89 1 1 ref 127, vertex alpha 36..39
+LABEL 2 9 1 1 ref 127, texture alpha 36..39
+LABEL 2 90 1 1 ref 127, vertex alpha 40..43
+LABEL 2 91 1 1 ref 127, vertex alpha 44..47
+LABEL 2 92 1 1 ref 127, vertex alpha 48..51
+LABEL 2 93 1 1 ref 127, vertex alpha 52..55
+LABEL 2 94 1 1 ref 127, vertex alpha 56..59
+LABEL 2 95 1 1 ref 127, vertex alpha 60..63
+LABEL 2 96 1 1 ref 127, vertex alpha 64..67
+LABEL 2 97 1 1 ref 127, vertex alpha 68..71
+LABEL 2 98 1 1 ref 127, vertex alpha 72..75
+LABEL 2 99 1 1 ref 127, vertex alpha 76..79
+LABEL 3 0 1 1 ref 128, texture alpha 0..3
+LABEL 3 1 1 1 ref 128, texture alpha 4..7
+LABEL 3 10 1 1 ref 128, texture alpha 40..43
+LABEL 3 100 1 1 ref 128, vertex alpha 80..83
+LABEL 3 101 1 1 ref 128, vertex alpha 84..87
+LABEL 3 102 1 1 ref 128, vertex alpha 88..91
+LABEL 3 103 1 1 ref 128, vertex alpha 92..95
+LABEL 3 104 1 1 ref 128, vertex alpha 96..99
+LABEL 3 105 1 1 ref 128, vertex alpha 100..103
+LABEL 3 106 1 1 ref 128, vertex alpha 104..107
+LABEL 3 107 1 1 ref 128, vertex alpha 108..111
+LABEL 3 108 1 1 ref 128, vertex alpha 112..115
+LABEL 3 109 1 1 ref 128, vertex alpha 116..119
+LABEL 3 11 1 1 ref 128, texture alpha 44..47
+LABEL 3 110 1 1 ref 128, vertex alpha 120..123
+LABEL 3 111 1 1 ref 128, vertex alpha 124..127
+LABEL 3 112 1 1 ref 128, vertex alpha 128..131
+LABEL 3 113 1 1 ref 128, vertex alpha 132..135
+LABEL 3 114 1 1 ref 128, vertex alpha 136..139
+LABEL 3 115 1 1 ref 128, vertex alpha 140..143
+LABEL 3 116 1 1 ref 128, vertex alpha 144..147
+LABEL 3 117 1 1 ref 128, vertex alpha 148..151
+LABEL 3 118 1 1 ref 128, vertex alpha 152..155
+LABEL 3 119 1 1 ref 128, vertex alpha 156..159
+LABEL 3 12 1 1 ref 128, texture alpha 48..51
+LABEL 3 120 1 1 ref 128, vertex alpha 160..163
+LABEL 3 121 1 1 ref 128, vertex alpha 164..167
+LABEL 3 122 1 1 ref 128, vertex alpha 168..171
+LABEL 3 123 1 1 ref 128, vertex alpha 172..175
+LABEL 3 124 1 1 ref 128, vertex alpha 176..179
+LABEL 3 125 1 1 ref 128, vertex alpha 180..183
+LABEL 3 126 1 1 ref 128, vertex alpha 184..187
+LABEL 3 127 1 1 ref 128, vertex alpha 188..191
+LABEL 3 128 1 1 ref 128, vertex alpha 192..195
+LABEL 3 129 1 1 ref 128, vertex alpha 196..199
+LABEL 3 13 1 1 ref 128, texture alpha 52..55
+LABEL 3 130 1 1 ref 128, vertex alpha 200..203
+LABEL 3 131 1 1 ref 128, vertex alpha 204..207
+LABEL 3 132 1 1 ref 128, vertex alpha 208..211
+LABEL 3 133 1 1 ref 128, vertex alpha 212..215
+LABEL 3 134 1 1 ref 128, vertex alpha 216..219
+LABEL 3 135 1 1 ref 128, vertex alpha 220..223
+LABEL 3 136 1 1 ref 128, vertex alpha 224..227
+LABEL 3 137 1 1 ref 128, vertex alpha 228..231
+LABEL 3 138 1 1 ref 128, vertex alpha 232..235
+LABEL 3 139 1 1 ref 128, vertex alpha 236..239
+LABEL 3 14 1 1 ref 128, texture alpha 56..59
+LABEL 3 140 1 1 ref 128, vertex alpha 240..243
+LABEL 3 141 1 1 ref 128, vertex alpha 244..247
+LABEL 3 142 1 1 ref 128, vertex alpha 248..251
+LABEL 3 143 1 1 ref 128, vertex alpha 252..255
+LABEL 3 15 1 1 ref 128, texture alpha 60..63
+LABEL 3 16 1 1 ref 128, texture alpha 64..67
+LABEL 3 160 1 1 ref 128, texel 255 x vertex alpha 0..3
+LABEL 3 161 1 1 ref 128, texel 255 x vertex alpha 4..7
+LABEL 3 162 1 1 ref 128, texel 255 x vertex alpha 8..11
+LABEL 3 163 1 1 ref 128, texel 255 x vertex alpha 12..15
+LABEL 3 164 1 1 ref 128, texel 255 x vertex alpha 16..19
+LABEL 3 165 1 1 ref 128, texel 255 x vertex alpha 20..23
+LABEL 3 166 1 1 ref 128, texel 255 x vertex alpha 24..27
+LABEL 3 167 1 1 ref 128, texel 255 x vertex alpha 28..31
+LABEL 3 168 1 1 ref 128, texel 255 x vertex alpha 32..35
+LABEL 3 169 1 1 ref 128, texel 255 x vertex alpha 36..39
+LABEL 3 17 1 1 ref 128, texture alpha 68..71
+LABEL 3 170 1 1 ref 128, texel 255 x vertex alpha 40..43
+LABEL 3 171 1 1 ref 128, texel 255 x vertex alpha 44..47
+LABEL 3 172 1 1 ref 128, texel 255 x vertex alpha 48..51
+LABEL 3 173 1 1 ref 128, texel 255 x vertex alpha 52..55
+LABEL 3 174 1 1 ref 128, texel 255 x vertex alpha 56..59
+LABEL 3 175 1 1 ref 128, texel 255 x vertex alpha 60..63
+LABEL 3 176 1 1 ref 128, texel 255 x vertex alpha 64..67
+LABEL 3 177 1 1 ref 128, texel 255 x vertex alpha 68..71
+LABEL 3 178 1 1 ref 128, texel 255 x vertex alpha 72..75
+LABEL 3 179 1 1 ref 128, texel 255 x vertex alpha 76..79
+LABEL 3 18 1 1 ref 128, texture alpha 72..75
+LABEL 3 180 1 1 ref 128, texel 255 x vertex alpha 80..83
+LABEL 3 181 1 1 ref 128, texel 255 x vertex alpha 84..87
+LABEL 3 182 1 1 ref 128, texel 255 x vertex alpha 88..91
+LABEL 3 183 1 1 ref 128, texel 255 x vertex alpha 92..95
+LABEL 3 184 1 1 ref 128, texel 255 x vertex alpha 96..99
+LABEL 3 185 1 1 ref 128, texel 255 x vertex alpha 100..103
+LABEL 3 186 1 1 ref 128, texel 255 x vertex alpha 104..107
+LABEL 3 187 1 1 ref 128, texel 255 x vertex alpha 108..111
+LABEL 3 188 1 1 ref 128, texel 255 x vertex alpha 112..115
+LABEL 3 189 1 1 ref 128, texel 255 x vertex alpha 116..119
+LABEL 3 19 1 1 ref 128, texture alpha 76..79
+LABEL 3 190 1 1 ref 128, texel 255 x vertex alpha 120..123
+LABEL 3 191 1 1 ref 128, texel 255 x vertex alpha 124..127
+LABEL 3 192 1 1 ref 128, texel 255 x vertex alpha 128..131
+LABEL 3 193 1 1 ref 128, texel 255 x vertex alpha 132..135
+LABEL 3 194 1 1 ref 128, texel 255 x vertex alpha 136..139
+LABEL 3 195 1 1 ref 128, texel 255 x vertex alpha 140..143
+LABEL 3 196 1 1 ref 128, texel 255 x vertex alpha 144..147
+LABEL 3 197 1 1 ref 128, texel 255 x vertex alpha 148..151
+LABEL 3 198 1 1 ref 128, texel 255 x vertex alpha 152..155
+LABEL 3 199 1 1 ref 128, texel 255 x vertex alpha 156..159
+LABEL 3 2 1 1 ref 128, texture alpha 8..11
+LABEL 3 20 1 1 ref 128, texture alpha 80..83
+LABEL 3 200 1 1 ref 128, texel 255 x vertex alpha 160..163
+LABEL 3 201 1 1 ref 128, texel 255 x vertex alpha 164..167
+LABEL 3 202 1 1 ref 128, texel 255 x vertex alpha 168..171
+LABEL 3 203 1 1 ref 128, texel 255 x vertex alpha 172..175
+LABEL 3 204 1 1 ref 128, texel 255 x vertex alpha 176..179
+LABEL 3 205 1 1 ref 128, texel 255 x vertex alpha 180..183
+LABEL 3 206 1 1 ref 128, texel 255 x vertex alpha 184..187
+LABEL 3 207 1 1 ref 128, texel 255 x vertex alpha 188..191
+LABEL 3 208 1 1 ref 128, texel 255 x vertex alpha 192..195
+LABEL 3 209 1 1 ref 128, texel 255 x vertex alpha 196..199
+LABEL 3 21 1 1 ref 128, texture alpha 84..87
+LABEL 3 210 1 1 ref 128, texel 255 x vertex alpha 200..203
+LABEL 3 211 1 1 ref 128, texel 255 x vertex alpha 204..207
+LABEL 3 212 1 1 ref 128, texel 255 x vertex alpha 208..211
+LABEL 3 213 1 1 ref 128, texel 255 x vertex alpha 212..215
+LABEL 3 214 1 1 ref 128, texel 255 x vertex alpha 216..219
+LABEL 3 215 1 1 ref 128, texel 255 x vertex alpha 220..223
+LABEL 3 216 1 1 ref 128, texel 255 x vertex alpha 224..227
+LABEL 3 217 1 1 ref 128, texel 255 x vertex alpha 228..231
+LABEL 3 218 1 1 ref 128, texel 255 x vertex alpha 232..235
+LABEL 3 219 1 1 ref 128, texel 255 x vertex alpha 236..239
+LABEL 3 22 1 1 ref 128, texture alpha 88..91
+LABEL 3 220 1 1 ref 128, texel 255 x vertex alpha 240..243
+LABEL 3 221 1 1 ref 128, texel 255 x vertex alpha 244..247
+LABEL 3 222 1 1 ref 128, texel 255 x vertex alpha 248..251
+LABEL 3 223 1 1 ref 128, texel 255 x vertex alpha 252..255
+LABEL 3 23 1 1 ref 128, texture alpha 92..95
+LABEL 3 24 1 1 ref 128, texture alpha 96..99
+LABEL 3 25 1 1 ref 128, texture alpha 100..103
+LABEL 3 26 1 1 ref 128, texture alpha 104..107
+LABEL 3 27 1 1 ref 128, texture alpha 108..111
+LABEL 3 28 1 1 ref 128, texture alpha 112..115
+LABEL 3 29 1 1 ref 128, texture alpha 116..119
+LABEL 3 3 1 1 ref 128, texture alpha 12..15
+LABEL 3 30 1 1 ref 128, texture alpha 120..123
+LABEL 3 31 1 1 ref 128, texture alpha 124..127
+LABEL 3 32 1 1 ref 128, texture alpha 128..131
+LABEL 3 33 1 1 ref 128, texture alpha 132..135
+LABEL 3 34 1 1 ref 128, texture alpha 136..139
+LABEL 3 35 1 1 ref 128, texture alpha 140..143
+LABEL 3 36 1 1 ref 128, texture alpha 144..147
+LABEL 3 37 1 1 ref 128, texture alpha 148..151
+LABEL 3 38 1 1 ref 128, texture alpha 152..155
+LABEL 3 39 1 1 ref 128, texture alpha 156..159
+LABEL 3 4 1 1 ref 128, texture alpha 16..19
+LABEL 3 40 1 1 ref 128, texture alpha 160..163
+LABEL 3 41 1 1 ref 128, texture alpha 164..167
+LABEL 3 42 1 1 ref 128, texture alpha 168..171
+LABEL 3 43 1 1 ref 128, texture alpha 172..175
+LABEL 3 44 1 1 ref 128, texture alpha 176..179
+LABEL 3 45 1 1 ref 128, texture alpha 180..183
+LABEL 3 46 1 1 ref 128, texture alpha 184..187
+LABEL 3 47 1 1 ref 128, texture alpha 188..191
+LABEL 3 48 1 1 ref 128, texture alpha 192..195
+LABEL 3 49 1 1 ref 128, texture alpha 196..199
+LABEL 3 5 1 1 ref 128, texture alpha 20..23
+LABEL 3 50 1 1 ref 128, texture alpha 200..203
+LABEL 3 51 1 1 ref 128, texture alpha 204..207
+LABEL 3 52 1 1 ref 128, texture alpha 208..211
+LABEL 3 53 1 1 ref 128, texture alpha 212..215
+LABEL 3 54 1 1 ref 128, texture alpha 216..219
+LABEL 3 55 1 1 ref 128, texture alpha 220..223
+LABEL 3 56 1 1 ref 128, texture alpha 224..227
+LABEL 3 57 1 1 ref 128, texture alpha 228..231
+LABEL 3 58 1 1 ref 128, texture alpha 232..235
+LABEL 3 59 1 1 ref 128, texture alpha 236..239
+LABEL 3 6 1 1 ref 128, texture alpha 24..27
+LABEL 3 60 1 1 ref 128, texture alpha 240..243
+LABEL 3 61 1 1 ref 128, texture alpha 244..247
+LABEL 3 62 1 1 ref 128, texture alpha 248..251
+LABEL 3 63 1 1 ref 128, texture alpha 252..255
+LABEL 3 7 1 1 ref 128, texture alpha 28..31
+LABEL 3 8 1 1 ref 128, texture alpha 32..35
+LABEL 3 80 1 1 ref 128, vertex alpha 0..3
+LABEL 3 81 1 1 ref 128, vertex alpha 4..7
+LABEL 3 82 1 1 ref 128, vertex alpha 8..11
+LABEL 3 83 1 1 ref 128, vertex alpha 12..15
+LABEL 3 84 1 1 ref 128, vertex alpha 16..19
+LABEL 3 85 1 1 ref 128, vertex alpha 20..23
+LABEL 3 86 1 1 ref 128, vertex alpha 24..27
+LABEL 3 87 1 1 ref 128, vertex alpha 28..31
+LABEL 3 88 1 1 ref 128, vertex alpha 32..35
+LABEL 3 89 1 1 ref 128, vertex alpha 36..39
+LABEL 3 9 1 1 ref 128, texture alpha 36..39
+LABEL 3 90 1 1 ref 128, vertex alpha 40..43
+LABEL 3 91 1 1 ref 128, vertex alpha 44..47
+LABEL 3 92 1 1 ref 128, vertex alpha 48..51
+LABEL 3 93 1 1 ref 128, vertex alpha 52..55
+LABEL 3 94 1 1 ref 128, vertex alpha 56..59
+LABEL 3 95 1 1 ref 128, vertex alpha 60..63
+LABEL 3 96 1 1 ref 128, vertex alpha 64..67
+LABEL 3 97 1 1 ref 128, vertex alpha 68..71
+LABEL 3 98 1 1 ref 128, vertex alpha 72..75
+LABEL 3 99 1 1 ref 128, vertex alpha 76..79
+LABEL 4 0 1 1 ref 255, texture alpha 0..3
+LABEL 4 1 1 1 ref 255, texture alpha 4..7
+LABEL 4 10 1 1 ref 255, texture alpha 40..43
+LABEL 4 100 1 1 ref 255, vertex alpha 80..83
+LABEL 4 101 1 1 ref 255, vertex alpha 84..87
+LABEL 4 102 1 1 ref 255, vertex alpha 88..91
+LABEL 4 103 1 1 ref 255, vertex alpha 92..95
+LABEL 4 104 1 1 ref 255, vertex alpha 96..99
+LABEL 4 105 1 1 ref 255, vertex alpha 100..103
+LABEL 4 106 1 1 ref 255, vertex alpha 104..107
+LABEL 4 107 1 1 ref 255, vertex alpha 108..111
+LABEL 4 108 1 1 ref 255, vertex alpha 112..115
+LABEL 4 109 1 1 ref 255, vertex alpha 116..119
+LABEL 4 11 1 1 ref 255, texture alpha 44..47
+LABEL 4 110 1 1 ref 255, vertex alpha 120..123
+LABEL 4 111 1 1 ref 255, vertex alpha 124..127
+LABEL 4 112 1 1 ref 255, vertex alpha 128..131
+LABEL 4 113 1 1 ref 255, vertex alpha 132..135
+LABEL 4 114 1 1 ref 255, vertex alpha 136..139
+LABEL 4 115 1 1 ref 255, vertex alpha 140..143
+LABEL 4 116 1 1 ref 255, vertex alpha 144..147
+LABEL 4 117 1 1 ref 255, vertex alpha 148..151
+LABEL 4 118 1 1 ref 255, vertex alpha 152..155
+LABEL 4 119 1 1 ref 255, vertex alpha 156..159
+LABEL 4 12 1 1 ref 255, texture alpha 48..51
+LABEL 4 120 1 1 ref 255, vertex alpha 160..163
+LABEL 4 121 1 1 ref 255, vertex alpha 164..167
+LABEL 4 122 1 1 ref 255, vertex alpha 168..171
+LABEL 4 123 1 1 ref 255, vertex alpha 172..175
+LABEL 4 124 1 1 ref 255, vertex alpha 176..179
+LABEL 4 125 1 1 ref 255, vertex alpha 180..183
+LABEL 4 126 1 1 ref 255, vertex alpha 184..187
+LABEL 4 127 1 1 ref 255, vertex alpha 188..191
+LABEL 4 128 1 1 ref 255, vertex alpha 192..195
+LABEL 4 129 1 1 ref 255, vertex alpha 196..199
+LABEL 4 13 1 1 ref 255, texture alpha 52..55
+LABEL 4 130 1 1 ref 255, vertex alpha 200..203
+LABEL 4 131 1 1 ref 255, vertex alpha 204..207
+LABEL 4 132 1 1 ref 255, vertex alpha 208..211
+LABEL 4 133 1 1 ref 255, vertex alpha 212..215
+LABEL 4 134 1 1 ref 255, vertex alpha 216..219
+LABEL 4 135 1 1 ref 255, vertex alpha 220..223
+LABEL 4 136 1 1 ref 255, vertex alpha 224..227
+LABEL 4 137 1 1 ref 255, vertex alpha 228..231
+LABEL 4 138 1 1 ref 255, vertex alpha 232..235
+LABEL 4 139 1 1 ref 255, vertex alpha 236..239
+LABEL 4 14 1 1 ref 255, texture alpha 56..59
+LABEL 4 140 1 1 ref 255, vertex alpha 240..243
+LABEL 4 141 1 1 ref 255, vertex alpha 244..247
+LABEL 4 142 1 1 ref 255, vertex alpha 248..251
+LABEL 4 143 1 1 ref 255, vertex alpha 252..255
+LABEL 4 15 1 1 ref 255, texture alpha 60..63
+LABEL 4 16 1 1 ref 255, texture alpha 64..67
+LABEL 4 160 1 1 ref 255, texel 255 x vertex alpha 0..3
+LABEL 4 161 1 1 ref 255, texel 255 x vertex alpha 4..7
+LABEL 4 162 1 1 ref 255, texel 255 x vertex alpha 8..11
+LABEL 4 163 1 1 ref 255, texel 255 x vertex alpha 12..15
+LABEL 4 164 1 1 ref 255, texel 255 x vertex alpha 16..19
+LABEL 4 165 1 1 ref 255, texel 255 x vertex alpha 20..23
+LABEL 4 166 1 1 ref 255, texel 255 x vertex alpha 24..27
+LABEL 4 167 1 1 ref 255, texel 255 x vertex alpha 28..31
+LABEL 4 168 1 1 ref 255, texel 255 x vertex alpha 32..35
+LABEL 4 169 1 1 ref 255, texel 255 x vertex alpha 36..39
+LABEL 4 17 1 1 ref 255, texture alpha 68..71
+LABEL 4 170 1 1 ref 255, texel 255 x vertex alpha 40..43
+LABEL 4 171 1 1 ref 255, texel 255 x vertex alpha 44..47
+LABEL 4 172 1 1 ref 255, texel 255 x vertex alpha 48..51
+LABEL 4 173 1 1 ref 255, texel 255 x vertex alpha 52..55
+LABEL 4 174 1 1 ref 255, texel 255 x vertex alpha 56..59
+LABEL 4 175 1 1 ref 255, texel 255 x vertex alpha 60..63
+LABEL 4 176 1 1 ref 255, texel 255 x vertex alpha 64..67
+LABEL 4 177 1 1 ref 255, texel 255 x vertex alpha 68..71
+LABEL 4 178 1 1 ref 255, texel 255 x vertex alpha 72..75
+LABEL 4 179 1 1 ref 255, texel 255 x vertex alpha 76..79
+LABEL 4 18 1 1 ref 255, texture alpha 72..75
+LABEL 4 180 1 1 ref 255, texel 255 x vertex alpha 80..83
+LABEL 4 181 1 1 ref 255, texel 255 x vertex alpha 84..87
+LABEL 4 182 1 1 ref 255, texel 255 x vertex alpha 88..91
+LABEL 4 183 1 1 ref 255, texel 255 x vertex alpha 92..95
+LABEL 4 184 1 1 ref 255, texel 255 x vertex alpha 96..99
+LABEL 4 185 1 1 ref 255, texel 255 x vertex alpha 100..103
+LABEL 4 186 1 1 ref 255, texel 255 x vertex alpha 104..107
+LABEL 4 187 1 1 ref 255, texel 255 x vertex alpha 108..111
+LABEL 4 188 1 1 ref 255, texel 255 x vertex alpha 112..115
+LABEL 4 189 1 1 ref 255, texel 255 x vertex alpha 116..119
+LABEL 4 19 1 1 ref 255, texture alpha 76..79
+LABEL 4 190 1 1 ref 255, texel 255 x vertex alpha 120..123
+LABEL 4 191 1 1 ref 255, texel 255 x vertex alpha 124..127
+LABEL 4 192 1 1 ref 255, texel 255 x vertex alpha 128..131
+LABEL 4 193 1 1 ref 255, texel 255 x vertex alpha 132..135
+LABEL 4 194 1 1 ref 255, texel 255 x vertex alpha 136..139
+LABEL 4 195 1 1 ref 255, texel 255 x vertex alpha 140..143
+LABEL 4 196 1 1 ref 255, texel 255 x vertex alpha 144..147
+LABEL 4 197 1 1 ref 255, texel 255 x vertex alpha 148..151
+LABEL 4 198 1 1 ref 255, texel 255 x vertex alpha 152..155
+LABEL 4 199 1 1 ref 255, texel 255 x vertex alpha 156..159
+LABEL 4 2 1 1 ref 255, texture alpha 8..11
+LABEL 4 20 1 1 ref 255, texture alpha 80..83
+LABEL 4 200 1 1 ref 255, texel 255 x vertex alpha 160..163
+LABEL 4 201 1 1 ref 255, texel 255 x vertex alpha 164..167
+LABEL 4 202 1 1 ref 255, texel 255 x vertex alpha 168..171
+LABEL 4 203 1 1 ref 255, texel 255 x vertex alpha 172..175
+LABEL 4 204 1 1 ref 255, texel 255 x vertex alpha 176..179
+LABEL 4 205 1 1 ref 255, texel 255 x vertex alpha 180..183
+LABEL 4 206 1 1 ref 255, texel 255 x vertex alpha 184..187
+LABEL 4 207 1 1 ref 255, texel 255 x vertex alpha 188..191
+LABEL 4 208 1 1 ref 255, texel 255 x vertex alpha 192..195
+LABEL 4 209 1 1 ref 255, texel 255 x vertex alpha 196..199
+LABEL 4 21 1 1 ref 255, texture alpha 84..87
+LABEL 4 210 1 1 ref 255, texel 255 x vertex alpha 200..203
+LABEL 4 211 1 1 ref 255, texel 255 x vertex alpha 204..207
+LABEL 4 212 1 1 ref 255, texel 255 x vertex alpha 208..211
+LABEL 4 213 1 1 ref 255, texel 255 x vertex alpha 212..215
+LABEL 4 214 1 1 ref 255, texel 255 x vertex alpha 216..219
+LABEL 4 215 1 1 ref 255, texel 255 x vertex alpha 220..223
+LABEL 4 216 1 1 ref 255, texel 255 x vertex alpha 224..227
+LABEL 4 217 1 1 ref 255, texel 255 x vertex alpha 228..231
+LABEL 4 218 1 1 ref 255, texel 255 x vertex alpha 232..235
+LABEL 4 219 1 1 ref 255, texel 255 x vertex alpha 236..239
+LABEL 4 22 1 1 ref 255, texture alpha 88..91
+LABEL 4 220 1 1 ref 255, texel 255 x vertex alpha 240..243
+LABEL 4 221 1 1 ref 255, texel 255 x vertex alpha 244..247
+LABEL 4 222 1 1 ref 255, texel 255 x vertex alpha 248..251
+LABEL 4 223 1 1 ref 255, texel 255 x vertex alpha 252..255
+LABEL 4 23 1 1 ref 255, texture alpha 92..95
+LABEL 4 24 1 1 ref 255, texture alpha 96..99
+LABEL 4 25 1 1 ref 255, texture alpha 100..103
+LABEL 4 26 1 1 ref 255, texture alpha 104..107
+LABEL 4 27 1 1 ref 255, texture alpha 108..111
+LABEL 4 28 1 1 ref 255, texture alpha 112..115
+LABEL 4 29 1 1 ref 255, texture alpha 116..119
+LABEL 4 3 1 1 ref 255, texture alpha 12..15
+LABEL 4 30 1 1 ref 255, texture alpha 120..123
+LABEL 4 31 1 1 ref 255, texture alpha 124..127
+LABEL 4 32 1 1 ref 255, texture alpha 128..131
+LABEL 4 33 1 1 ref 255, texture alpha 132..135
+LABEL 4 34 1 1 ref 255, texture alpha 136..139
+LABEL 4 35 1 1 ref 255, texture alpha 140..143
+LABEL 4 36 1 1 ref 255, texture alpha 144..147
+LABEL 4 37 1 1 ref 255, texture alpha 148..151
+LABEL 4 38 1 1 ref 255, texture alpha 152..155
+LABEL 4 39 1 1 ref 255, texture alpha 156..159
+LABEL 4 4 1 1 ref 255, texture alpha 16..19
+LABEL 4 40 1 1 ref 255, texture alpha 160..163
+LABEL 4 41 1 1 ref 255, texture alpha 164..167
+LABEL 4 42 1 1 ref 255, texture alpha 168..171
+LABEL 4 43 1 1 ref 255, texture alpha 172..175
+LABEL 4 44 1 1 ref 255, texture alpha 176..179
+LABEL 4 45 1 1 ref 255, texture alpha 180..183
+LABEL 4 46 1 1 ref 255, texture alpha 184..187
+LABEL 4 47 1 1 ref 255, texture alpha 188..191
+LABEL 4 48 1 1 ref 255, texture alpha 192..195
+LABEL 4 49 1 1 ref 255, texture alpha 196..199
+LABEL 4 5 1 1 ref 255, texture alpha 20..23
+LABEL 4 50 1 1 ref 255, texture alpha 200..203
+LABEL 4 51 1 1 ref 255, texture alpha 204..207
+LABEL 4 52 1 1 ref 255, texture alpha 208..211
+LABEL 4 53 1 1 ref 255, texture alpha 212..215
+LABEL 4 54 1 1 ref 255, texture alpha 216..219
+LABEL 4 55 1 1 ref 255, texture alpha 220..223
+LABEL 4 56 1 1 ref 255, texture alpha 224..227
+LABEL 4 57 1 1 ref 255, texture alpha 228..231
+LABEL 4 58 1 1 ref 255, texture alpha 232..235
+LABEL 4 59 1 1 ref 255, texture alpha 236..239
+LABEL 4 6 1 1 ref 255, texture alpha 24..27
+LABEL 4 60 1 1 ref 255, texture alpha 240..243
+LABEL 4 61 1 1 ref 255, texture alpha 244..247
+LABEL 4 62 1 1 ref 255, texture alpha 248..251
+LABEL 4 63 1 1 ref 255, texture alpha 252..255
+LABEL 4 7 1 1 ref 255, texture alpha 28..31
+LABEL 4 8 1 1 ref 255, texture alpha 32..35
+LABEL 4 80 1 1 ref 255, vertex alpha 0..3
+LABEL 4 81 1 1 ref 255, vertex alpha 4..7
+LABEL 4 82 1 1 ref 255, vertex alpha 8..11
+LABEL 4 83 1 1 ref 255, vertex alpha 12..15
+LABEL 4 84 1 1 ref 255, vertex alpha 16..19
+LABEL 4 85 1 1 ref 255, vertex alpha 20..23
+LABEL 4 86 1 1 ref 255, vertex alpha 24..27
+LABEL 4 87 1 1 ref 255, vertex alpha 28..31
+LABEL 4 88 1 1 ref 255, vertex alpha 32..35
+LABEL 4 89 1 1 ref 255, vertex alpha 36..39
+LABEL 4 9 1 1 ref 255, texture alpha 36..39
+LABEL 4 90 1 1 ref 255, vertex alpha 40..43
+LABEL 4 91 1 1 ref 255, vertex alpha 44..47
+LABEL 4 92 1 1 ref 255, vertex alpha 48..51
+LABEL 4 93 1 1 ref 255, vertex alpha 52..55
+LABEL 4 94 1 1 ref 255, vertex alpha 56..59
+LABEL 4 95 1 1 ref 255, vertex alpha 60..63
+LABEL 4 96 1 1 ref 255, vertex alpha 64..67
+LABEL 4 97 1 1 ref 255, vertex alpha 68..71
+LABEL 4 98 1 1 ref 255, vertex alpha 72..75
+LABEL 4 99 1 1 ref 255, vertex alpha 76..79

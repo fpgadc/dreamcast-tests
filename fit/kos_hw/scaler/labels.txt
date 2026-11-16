@@ -1,0 +1,75 @@
+LABEL 0 0 20 1 scaler 00400, horizontal lines, row 0
+LABEL 0 100 20 1 scaler 00400, checkerboard, row 5
+LABEL 0 120 20 1 scaler 00400, ramp, row 6
+LABEL 0 140 20 1 scaler 00400, ramp, row 7
+LABEL 0 160 20 1 scaler 00400, color blocks, row 8
+LABEL 0 180 20 1 scaler 00400, color blocks, row 9
+LABEL 0 20 20 1 scaler 00400, horizontal lines, row 1
+LABEL 0 200 20 1 scaler 00400, color blocks, row 10
+LABEL 0 220 20 1 scaler 00400, color blocks, row 11
+LABEL 0 240 20 1 scaler 00400, color blocks, row 12
+LABEL 0 260 20 1 scaler 00400, color blocks, row 13
+LABEL 0 280 20 1 scaler 00400, color blocks, row 14
+LABEL 0 40 20 1 scaler 00400, vertical lines, row 2
+LABEL 0 60 20 1 scaler 00400, vertical lines, row 3
+LABEL 0 80 20 1 scaler 00400, checkerboard, row 4
+LABEL 1 0 20 1 scaler 00401, horizontal lines, row 0
+LABEL 1 100 20 1 scaler 00401, checkerboard, row 5
+LABEL 1 120 20 1 scaler 00401, ramp, row 6
+LABEL 1 140 20 1 scaler 00401, ramp, row 7
+LABEL 1 160 20 1 scaler 00401, color blocks, row 8
+LABEL 1 180 20 1 scaler 00401, color blocks, row 9
+LABEL 1 20 20 1 scaler 00401, horizontal lines, row 1
+LABEL 1 200 20 1 scaler 00401, color blocks, row 10
+LABEL 1 220 20 1 scaler 00401, color blocks, row 11
+LABEL 1 240 20 1 scaler 00401, color blocks, row 12
+LABEL 1 260 20 1 scaler 00401, color blocks, row 13
+LABEL 1 280 20 1 scaler 00401, color blocks, row 14
+LABEL 1 40 20 1 scaler 00401, vertical lines, row 2
+LABEL 1 60 20 1 scaler 00401, vertical lines, row 3
+LABEL 1 80 20 1 scaler 00401, checkerboard, row 4
+LABEL 2 0 20 1 scaler 00800, horizontal lines, row 0
+LABEL 2 100 20 1 scaler 00800, checkerboard, row 5
+LABEL 2 120 20 1 scaler 00800, ramp, row 6
+LABEL 2 140 20 1 scaler 00800, ramp, row 7
+LABEL 2 160 20 1 scaler 00800, color blocks, row 8
+LABEL 2 180 20 1 scaler 00800, color blocks, row 9
+LABEL 2 20 20 1 scaler 00800, horizontal lines, row 1
+LABEL 2 200 20 1 scaler 00800, color blocks, row 10
+LABEL 2 220 20 1 scaler 00800, color blocks, row 11
+LABEL 2 240 20 1 scaler 00800, color blocks, row 12
+LABEL 2 260 20 1 scaler 00800, color blocks, row 13
+LABEL 2 280 20 1 scaler 00800, color blocks, row 14
+LABEL 2 40 20 1 scaler 00800, vertical lines, row 2
+LABEL 2 60 20 1 scaler 00800, vertical lines, row 3
+LABEL 2 80 20 1 scaler 00800, checkerboard, row 4
+LABEL 3 0 20 1 scaler 00600, horizontal lines, row 0
+LABEL 3 100 20 1 scaler 00600, checkerboard, row 5
+LABEL 3 120 20 1 scaler 00600, ramp, row 6
+LABEL 3 140 20 1 scaler 00600, ramp, row 7
+LABEL 3 160 20 1 scaler 00600, color blocks, row 8
+LABEL 3 180 20 1 scaler 00600, color blocks, row 9
+LABEL 3 20 20 1 scaler 00600, horizontal lines, row 1
+LABEL 3 200 20 1 scaler 00600, color blocks, row 10
+LABEL 3 220 20 1 scaler 00600, color blocks, row 11
+LABEL 3 240 20 1 scaler 00600, color blocks, row 12
+LABEL 3 260 20 1 scaler 00600, color blocks, row 13
+LABEL 3 280 20 1 scaler 00600, color blocks, row 14
+LABEL 3 40 20 1 scaler 00600, vertical lines, row 2
+LABEL 3 60 20 1 scaler 00600, vertical lines, row 3
+LABEL 3 80 20 1 scaler 00600, checkerboard, row 4
+LABEL 4 0 20 1 scaler 10400, horizontal lines, row 0
+LABEL 4 100 20 1 scaler 10400, checkerboard, row 5
+LABEL 4 120 20 1 scaler 10400, ramp, row 6
+LABEL 4 140 20 1 scaler 10400, ramp, row 7
+LABEL 4 160 20 1 scaler 10400, color blocks, row 8
+LABEL 4 180 20 1 scaler 10400, color blocks, row 9
+LABEL 4 20 20 1 scaler 10400, horizontal lines, row 1
+LABEL 4 200 20 1 scaler 10400, color blocks, row 10
+LABEL 4 220 20 1 scaler 10400, color blocks, row 11
+LABEL 4 240 20 1 scaler 10400, color blocks, row 12
+LABEL 4 260 20 1 scaler 10400, color blocks, row 13
+LABEL 4 280 20 1 scaler 10400, color blocks, row 14
+LABEL 4 40 20 1 scaler 10400, vertical lines, row 2
+LABEL 4 60 20 1 scaler 10400, vertical lines, row 3
+LABEL 4 80 20 1 scaler 10400, checkerboard, row 4

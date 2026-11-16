@@ -1,0 +1,1083 @@
+LABEL 0 0 1 1 mip point, bias 1/4, 32x32 px
+LABEL 0 1 1 1 mip point, bias 1/4, 24x24 px
+LABEL 0 10 1 1 mip point, bias 1/4, 32x4 px
+LABEL 0 100 1 1 mip point, bias 6/4, 32x32 px
+LABEL 0 101 1 1 mip point, bias 6/4, 24x24 px
+LABEL 0 102 1 1 mip point, bias 6/4, 16x16 px
+LABEL 0 103 1 1 mip point, bias 6/4, 12x12 px
+LABEL 0 104 1 1 mip point, bias 6/4, 8x8 px
+LABEL 0 105 1 1 mip point, bias 6/4, 6x6 px
+LABEL 0 106 1 1 mip point, bias 6/4, 4x4 px
+LABEL 0 107 1 1 mip point, bias 6/4, 3x3 px
+LABEL 0 108 1 1 mip point, bias 6/4, 2x2 px
+LABEL 0 109 1 1 mip point, bias 6/4, 1x1 px
+LABEL 0 11 1 1 mip point, bias 1/4, 4x32 px
+LABEL 0 110 1 1 mip point, bias 6/4, 32x4 px
+LABEL 0 111 1 1 mip point, bias 6/4, 4x32 px
+LABEL 0 112 1 1 mip point, bias 6/4, 16x2 px
+LABEL 0 113 1 1 mip point, bias 6/4, 2x16 px
+LABEL 0 114 1 1 mip point, bias 6/4, 32x16 px
+LABEL 0 115 1 1 mip point, bias 6/4, 16x32 px
+LABEL 0 116 1 1 mip point, bias 6/4, 8x1 px
+LABEL 0 117 1 1 mip point, bias 6/4, 1x8 px
+LABEL 0 12 1 1 mip point, bias 1/4, 16x2 px
+LABEL 0 120 1 1 mip point, bias 7/4, 32x32 px
+LABEL 0 121 1 1 mip point, bias 7/4, 24x24 px
+LABEL 0 122 1 1 mip point, bias 7/4, 16x16 px
+LABEL 0 123 1 1 mip point, bias 7/4, 12x12 px
+LABEL 0 124 1 1 mip point, bias 7/4, 8x8 px
+LABEL 0 125 1 1 mip point, bias 7/4, 6x6 px
+LABEL 0 126 1 1 mip point, bias 7/4, 4x4 px
+LABEL 0 127 1 1 mip point, bias 7/4, 3x3 px
+LABEL 0 128 1 1 mip point, bias 7/4, 2x2 px
+LABEL 0 129 1 1 mip point, bias 7/4, 1x1 px
+LABEL 0 13 1 1 mip point, bias 1/4, 2x16 px
+LABEL 0 130 1 1 mip point, bias 7/4, 32x4 px
+LABEL 0 131 1 1 mip point, bias 7/4, 4x32 px
+LABEL 0 132 1 1 mip point, bias 7/4, 16x2 px
+LABEL 0 133 1 1 mip point, bias 7/4, 2x16 px
+LABEL 0 134 1 1 mip point, bias 7/4, 32x16 px
+LABEL 0 135 1 1 mip point, bias 7/4, 16x32 px
+LABEL 0 136 1 1 mip point, bias 7/4, 8x1 px
+LABEL 0 137 1 1 mip point, bias 7/4, 1x8 px
+LABEL 0 14 1 1 mip point, bias 1/4, 32x16 px
+LABEL 0 140 1 1 mip point, bias 8/4, 32x32 px
+LABEL 0 141 1 1 mip point, bias 8/4, 24x24 px
+LABEL 0 142 1 1 mip point, bias 8/4, 16x16 px
+LABEL 0 143 1 1 mip point, bias 8/4, 12x12 px
+LABEL 0 144 1 1 mip point, bias 8/4, 8x8 px
+LABEL 0 145 1 1 mip point, bias 8/4, 6x6 px
+LABEL 0 146 1 1 mip point, bias 8/4, 4x4 px
+LABEL 0 147 1 1 mip point, bias 8/4, 3x3 px
+LABEL 0 148 1 1 mip point, bias 8/4, 2x2 px
+LABEL 0 149 1 1 mip point, bias 8/4, 1x1 px
+LABEL 0 15 1 1 mip point, bias 1/4, 16x32 px
+LABEL 0 150 1 1 mip point, bias 8/4, 32x4 px
+LABEL 0 151 1 1 mip point, bias 8/4, 4x32 px
+LABEL 0 152 1 1 mip point, bias 8/4, 16x2 px
+LABEL 0 153 1 1 mip point, bias 8/4, 2x16 px
+LABEL 0 154 1 1 mip point, bias 8/4, 32x16 px
+LABEL 0 155 1 1 mip point, bias 8/4, 16x32 px
+LABEL 0 156 1 1 mip point, bias 8/4, 8x1 px
+LABEL 0 157 1 1 mip point, bias 8/4, 1x8 px
+LABEL 0 16 1 1 mip point, bias 1/4, 8x1 px
+LABEL 0 160 1 1 mip point, bias 9/4, 32x32 px
+LABEL 0 161 1 1 mip point, bias 9/4, 24x24 px
+LABEL 0 162 1 1 mip point, bias 9/4, 16x16 px
+LABEL 0 163 1 1 mip point, bias 9/4, 12x12 px
+LABEL 0 164 1 1 mip point, bias 9/4, 8x8 px
+LABEL 0 165 1 1 mip point, bias 9/4, 6x6 px
+LABEL 0 166 1 1 mip point, bias 9/4, 4x4 px
+LABEL 0 167 1 1 mip point, bias 9/4, 3x3 px
+LABEL 0 168 1 1 mip point, bias 9/4, 2x2 px
+LABEL 0 169 1 1 mip point, bias 9/4, 1x1 px
+LABEL 0 17 1 1 mip point, bias 1/4, 1x8 px
+LABEL 0 170 1 1 mip point, bias 9/4, 32x4 px
+LABEL 0 171 1 1 mip point, bias 9/4, 4x32 px
+LABEL 0 172 1 1 mip point, bias 9/4, 16x2 px
+LABEL 0 173 1 1 mip point, bias 9/4, 2x16 px
+LABEL 0 174 1 1 mip point, bias 9/4, 32x16 px
+LABEL 0 175 1 1 mip point, bias 9/4, 16x32 px
+LABEL 0 176 1 1 mip point, bias 9/4, 8x1 px
+LABEL 0 177 1 1 mip point, bias 9/4, 1x8 px
+LABEL 0 180 1 1 mip point, bias 10/4, 32x32 px
+LABEL 0 181 1 1 mip point, bias 10/4, 24x24 px
+LABEL 0 182 1 1 mip point, bias 10/4, 16x16 px
+LABEL 0 183 1 1 mip point, bias 10/4, 12x12 px
+LABEL 0 184 1 1 mip point, bias 10/4, 8x8 px
+LABEL 0 185 1 1 mip point, bias 10/4, 6x6 px
+LABEL 0 186 1 1 mip point, bias 10/4, 4x4 px
+LABEL 0 187 1 1 mip point, bias 10/4, 3x3 px
+LABEL 0 188 1 1 mip point, bias 10/4, 2x2 px
+LABEL 0 189 1 1 mip point, bias 10/4, 1x1 px
+LABEL 0 190 1 1 mip point, bias 10/4, 32x4 px
+LABEL 0 191 1 1 mip point, bias 10/4, 4x32 px
+LABEL 0 192 1 1 mip point, bias 10/4, 16x2 px
+LABEL 0 193 1 1 mip point, bias 10/4, 2x16 px
+LABEL 0 194 1 1 mip point, bias 10/4, 32x16 px
+LABEL 0 195 1 1 mip point, bias 10/4, 16x32 px
+LABEL 0 196 1 1 mip point, bias 10/4, 8x1 px
+LABEL 0 197 1 1 mip point, bias 10/4, 1x8 px
+LABEL 0 2 1 1 mip point, bias 1/4, 16x16 px
+LABEL 0 20 1 1 mip point, bias 2/4, 32x32 px
+LABEL 0 200 1 1 mip point, bias 11/4, 32x32 px
+LABEL 0 201 1 1 mip point, bias 11/4, 24x24 px
+LABEL 0 202 1 1 mip point, bias 11/4, 16x16 px
+LABEL 0 203 1 1 mip point, bias 11/4, 12x12 px
+LABEL 0 204 1 1 mip point, bias 11/4, 8x8 px
+LABEL 0 205 1 1 mip point, bias 11/4, 6x6 px
+LABEL 0 206 1 1 mip point, bias 11/4, 4x4 px
+LABEL 0 207 1 1 mip point, bias 11/4, 3x3 px
+LABEL 0 208 1 1 mip point, bias 11/4, 2x2 px
+LABEL 0 209 1 1 mip point, bias 11/4, 1x1 px
+LABEL 0 21 1 1 mip point, bias 2/4, 24x24 px
+LABEL 0 210 1 1 mip point, bias 11/4, 32x4 px
+LABEL 0 211 1 1 mip point, bias 11/4, 4x32 px
+LABEL 0 212 1 1 mip point, bias 11/4, 16x2 px
+LABEL 0 213 1 1 mip point, bias 11/4, 2x16 px
+LABEL 0 214 1 1 mip point, bias 11/4, 32x16 px
+LABEL 0 215 1 1 mip point, bias 11/4, 16x32 px
+LABEL 0 216 1 1 mip point, bias 11/4, 8x1 px
+LABEL 0 217 1 1 mip point, bias 11/4, 1x8 px
+LABEL 0 22 1 1 mip point, bias 2/4, 16x16 px
+LABEL 0 220 1 1 mip point, bias 12/4, 32x32 px
+LABEL 0 221 1 1 mip point, bias 12/4, 24x24 px
+LABEL 0 222 1 1 mip point, bias 12/4, 16x16 px
+LABEL 0 223 1 1 mip point, bias 12/4, 12x12 px
+LABEL 0 224 1 1 mip point, bias 12/4, 8x8 px
+LABEL 0 225 1 1 mip point, bias 12/4, 6x6 px
+LABEL 0 226 1 1 mip point, bias 12/4, 4x4 px
+LABEL 0 227 1 1 mip point, bias 12/4, 3x3 px
+LABEL 0 228 1 1 mip point, bias 12/4, 2x2 px
+LABEL 0 229 1 1 mip point, bias 12/4, 1x1 px
+LABEL 0 23 1 1 mip point, bias 2/4, 12x12 px
+LABEL 0 230 1 1 mip point, bias 12/4, 32x4 px
+LABEL 0 231 1 1 mip point, bias 12/4, 4x32 px
+LABEL 0 232 1 1 mip point, bias 12/4, 16x2 px
+LABEL 0 233 1 1 mip point, bias 12/4, 2x16 px
+LABEL 0 234 1 1 mip point, bias 12/4, 32x16 px
+LABEL 0 235 1 1 mip point, bias 12/4, 16x32 px
+LABEL 0 236 1 1 mip point, bias 12/4, 8x1 px
+LABEL 0 237 1 1 mip point, bias 12/4, 1x8 px
+LABEL 0 24 1 1 mip point, bias 2/4, 8x8 px
+LABEL 0 240 1 1 mip point, bias 13/4, 32x32 px
+LABEL 0 241 1 1 mip point, bias 13/4, 24x24 px
+LABEL 0 242 1 1 mip point, bias 13/4, 16x16 px
+LABEL 0 243 1 1 mip point, bias 13/4, 12x12 px
+LABEL 0 244 1 1 mip point, bias 13/4, 8x8 px
+LABEL 0 245 1 1 mip point, bias 13/4, 6x6 px
+LABEL 0 246 1 1 mip point, bias 13/4, 4x4 px
+LABEL 0 247 1 1 mip point, bias 13/4, 3x3 px
+LABEL 0 248 1 1 mip point, bias 13/4, 2x2 px
+LABEL 0 249 1 1 mip point, bias 13/4, 1x1 px
+LABEL 0 25 1 1 mip point, bias 2/4, 6x6 px
+LABEL 0 250 1 1 mip point, bias 13/4, 32x4 px
+LABEL 0 251 1 1 mip point, bias 13/4, 4x32 px
+LABEL 0 252 1 1 mip point, bias 13/4, 16x2 px
+LABEL 0 253 1 1 mip point, bias 13/4, 2x16 px
+LABEL 0 254 1 1 mip point, bias 13/4, 32x16 px
+LABEL 0 255 1 1 mip point, bias 13/4, 16x32 px
+LABEL 0 256 1 1 mip point, bias 13/4, 8x1 px
+LABEL 0 257 1 1 mip point, bias 13/4, 1x8 px
+LABEL 0 26 1 1 mip point, bias 2/4, 4x4 px
+LABEL 0 260 1 1 mip point, bias 14/4, 32x32 px
+LABEL 0 261 1 1 mip point, bias 14/4, 24x24 px
+LABEL 0 262 1 1 mip point, bias 14/4, 16x16 px
+LABEL 0 263 1 1 mip point, bias 14/4, 12x12 px
+LABEL 0 264 1 1 mip point, bias 14/4, 8x8 px
+LABEL 0 265 1 1 mip point, bias 14/4, 6x6 px
+LABEL 0 266 1 1 mip point, bias 14/4, 4x4 px
+LABEL 0 267 1 1 mip point, bias 14/4, 3x3 px
+LABEL 0 268 1 1 mip point, bias 14/4, 2x2 px
+LABEL 0 269 1 1 mip point, bias 14/4, 1x1 px
+LABEL 0 27 1 1 mip point, bias 2/4, 3x3 px
+LABEL 0 270 1 1 mip point, bias 14/4, 32x4 px
+LABEL 0 271 1 1 mip point, bias 14/4, 4x32 px
+LABEL 0 272 1 1 mip point, bias 14/4, 16x2 px
+LABEL 0 273 1 1 mip point, bias 14/4, 2x16 px
+LABEL 0 274 1 1 mip point, bias 14/4, 32x16 px
+LABEL 0 275 1 1 mip point, bias 14/4, 16x32 px
+LABEL 0 276 1 1 mip point, bias 14/4, 8x1 px
+LABEL 0 277 1 1 mip point, bias 14/4, 1x8 px
+LABEL 0 28 1 1 mip point, bias 2/4, 2x2 px
+LABEL 0 280 1 1 mip point, bias 15/4, 32x32 px
+LABEL 0 281 1 1 mip point, bias 15/4, 24x24 px
+LABEL 0 282 1 1 mip point, bias 15/4, 16x16 px
+LABEL 0 283 1 1 mip point, bias 15/4, 12x12 px
+LABEL 0 284 1 1 mip point, bias 15/4, 8x8 px
+LABEL 0 285 1 1 mip point, bias 15/4, 6x6 px
+LABEL 0 286 1 1 mip point, bias 15/4, 4x4 px
+LABEL 0 287 1 1 mip point, bias 15/4, 3x3 px
+LABEL 0 288 1 1 mip point, bias 15/4, 2x2 px
+LABEL 0 289 1 1 mip point, bias 15/4, 1x1 px
+LABEL 0 29 1 1 mip point, bias 2/4, 1x1 px
+LABEL 0 290 1 1 mip point, bias 15/4, 32x4 px
+LABEL 0 291 1 1 mip point, bias 15/4, 4x32 px
+LABEL 0 292 1 1 mip point, bias 15/4, 16x2 px
+LABEL 0 293 1 1 mip point, bias 15/4, 2x16 px
+LABEL 0 294 1 1 mip point, bias 15/4, 32x16 px
+LABEL 0 295 1 1 mip point, bias 15/4, 16x32 px
+LABEL 0 296 1 1 mip point, bias 15/4, 8x1 px
+LABEL 0 297 1 1 mip point, bias 15/4, 1x8 px
+LABEL 0 3 1 1 mip point, bias 1/4, 12x12 px
+LABEL 0 30 1 1 mip point, bias 2/4, 32x4 px
+LABEL 0 31 1 1 mip point, bias 2/4, 4x32 px
+LABEL 0 32 1 1 mip point, bias 2/4, 16x2 px
+LABEL 0 33 1 1 mip point, bias 2/4, 2x16 px
+LABEL 0 34 1 1 mip point, bias 2/4, 32x16 px
+LABEL 0 35 1 1 mip point, bias 2/4, 16x32 px
+LABEL 0 36 1 1 mip point, bias 2/4, 8x1 px
+LABEL 0 37 1 1 mip point, bias 2/4, 1x8 px
+LABEL 0 4 1 1 mip point, bias 1/4, 8x8 px
+LABEL 0 40 1 1 mip point, bias 3/4, 32x32 px
+LABEL 0 41 1 1 mip point, bias 3/4, 24x24 px
+LABEL 0 42 1 1 mip point, bias 3/4, 16x16 px
+LABEL 0 43 1 1 mip point, bias 3/4, 12x12 px
+LABEL 0 44 1 1 mip point, bias 3/4, 8x8 px
+LABEL 0 45 1 1 mip point, bias 3/4, 6x6 px
+LABEL 0 46 1 1 mip point, bias 3/4, 4x4 px
+LABEL 0 47 1 1 mip point, bias 3/4, 3x3 px
+LABEL 0 48 1 1 mip point, bias 3/4, 2x2 px
+LABEL 0 49 1 1 mip point, bias 3/4, 1x1 px
+LABEL 0 5 1 1 mip point, bias 1/4, 6x6 px
+LABEL 0 50 1 1 mip point, bias 3/4, 32x4 px
+LABEL 0 51 1 1 mip point, bias 3/4, 4x32 px
+LABEL 0 52 1 1 mip point, bias 3/4, 16x2 px
+LABEL 0 53 1 1 mip point, bias 3/4, 2x16 px
+LABEL 0 54 1 1 mip point, bias 3/4, 32x16 px
+LABEL 0 55 1 1 mip point, bias 3/4, 16x32 px
+LABEL 0 56 1 1 mip point, bias 3/4, 8x1 px
+LABEL 0 57 1 1 mip point, bias 3/4, 1x8 px
+LABEL 0 6 1 1 mip point, bias 1/4, 4x4 px
+LABEL 0 60 1 1 mip point, bias 4/4, 32x32 px
+LABEL 0 61 1 1 mip point, bias 4/4, 24x24 px
+LABEL 0 62 1 1 mip point, bias 4/4, 16x16 px
+LABEL 0 63 1 1 mip point, bias 4/4, 12x12 px
+LABEL 0 64 1 1 mip point, bias 4/4, 8x8 px
+LABEL 0 65 1 1 mip point, bias 4/4, 6x6 px
+LABEL 0 66 1 1 mip point, bias 4/4, 4x4 px
+LABEL 0 67 1 1 mip point, bias 4/4, 3x3 px
+LABEL 0 68 1 1 mip point, bias 4/4, 2x2 px
+LABEL 0 69 1 1 mip point, bias 4/4, 1x1 px
+LABEL 0 7 1 1 mip point, bias 1/4, 3x3 px
+LABEL 0 70 1 1 mip point, bias 4/4, 32x4 px
+LABEL 0 71 1 1 mip point, bias 4/4, 4x32 px
+LABEL 0 72 1 1 mip point, bias 4/4, 16x2 px
+LABEL 0 73 1 1 mip point, bias 4/4, 2x16 px
+LABEL 0 74 1 1 mip point, bias 4/4, 32x16 px
+LABEL 0 75 1 1 mip point, bias 4/4, 16x32 px
+LABEL 0 76 1 1 mip point, bias 4/4, 8x1 px
+LABEL 0 77 1 1 mip point, bias 4/4, 1x8 px
+LABEL 0 8 1 1 mip point, bias 1/4, 2x2 px
+LABEL 0 80 1 1 mip point, bias 5/4, 32x32 px
+LABEL 0 81 1 1 mip point, bias 5/4, 24x24 px
+LABEL 0 82 1 1 mip point, bias 5/4, 16x16 px
+LABEL 0 83 1 1 mip point, bias 5/4, 12x12 px
+LABEL 0 84 1 1 mip point, bias 5/4, 8x8 px
+LABEL 0 85 1 1 mip point, bias 5/4, 6x6 px
+LABEL 0 86 1 1 mip point, bias 5/4, 4x4 px
+LABEL 0 87 1 1 mip point, bias 5/4, 3x3 px
+LABEL 0 88 1 1 mip point, bias 5/4, 2x2 px
+LABEL 0 89 1 1 mip point, bias 5/4, 1x1 px
+LABEL 0 9 1 1 mip point, bias 1/4, 1x1 px
+LABEL 0 90 1 1 mip point, bias 5/4, 32x4 px
+LABEL 0 91 1 1 mip point, bias 5/4, 4x32 px
+LABEL 0 92 1 1 mip point, bias 5/4, 16x2 px
+LABEL 0 93 1 1 mip point, bias 5/4, 2x16 px
+LABEL 0 94 1 1 mip point, bias 5/4, 32x16 px
+LABEL 0 95 1 1 mip point, bias 5/4, 16x32 px
+LABEL 0 96 1 1 mip point, bias 5/4, 8x1 px
+LABEL 0 97 1 1 mip point, bias 5/4, 1x8 px
+LABEL 1 0 1 1 mip trilinear 1, bias 1/4, 32x32 px
+LABEL 1 1 1 1 mip trilinear 1, bias 1/4, 24x24 px
+LABEL 1 10 1 1 mip trilinear 1, bias 1/4, 32x4 px
+LABEL 1 100 1 1 mip trilinear 1, bias 6/4, 32x32 px
+LABEL 1 101 1 1 mip trilinear 1, bias 6/4, 24x24 px
+LABEL 1 102 1 1 mip trilinear 1, bias 6/4, 16x16 px
+LABEL 1 103 1 1 mip trilinear 1, bias 6/4, 12x12 px
+LABEL 1 104 1 1 mip trilinear 1, bias 6/4, 8x8 px
+LABEL 1 105 1 1 mip trilinear 1, bias 6/4, 6x6 px
+LABEL 1 106 1 1 mip trilinear 1, bias 6/4, 4x4 px
+LABEL 1 107 1 1 mip trilinear 1, bias 6/4, 3x3 px
+LABEL 1 108 1 1 mip trilinear 1, bias 6/4, 2x2 px
+LABEL 1 109 1 1 mip trilinear 1, bias 6/4, 1x1 px
+LABEL 1 11 1 1 mip trilinear 1, bias 1/4, 4x32 px
+LABEL 1 110 1 1 mip trilinear 1, bias 6/4, 32x4 px
+LABEL 1 111 1 1 mip trilinear 1, bias 6/4, 4x32 px
+LABEL 1 112 1 1 mip trilinear 1, bias 6/4, 16x2 px
+LABEL 1 113 1 1 mip trilinear 1, bias 6/4, 2x16 px
+LABEL 1 114 1 1 mip trilinear 1, bias 6/4, 32x16 px
+LABEL 1 115 1 1 mip trilinear 1, bias 6/4, 16x32 px
+LABEL 1 116 1 1 mip trilinear 1, bias 6/4, 8x1 px
+LABEL 1 117 1 1 mip trilinear 1, bias 6/4, 1x8 px
+LABEL 1 12 1 1 mip trilinear 1, bias 1/4, 16x2 px
+LABEL 1 120 1 1 mip trilinear 1, bias 7/4, 32x32 px
+LABEL 1 121 1 1 mip trilinear 1, bias 7/4, 24x24 px
+LABEL 1 122 1 1 mip trilinear 1, bias 7/4, 16x16 px
+LABEL 1 123 1 1 mip trilinear 1, bias 7/4, 12x12 px
+LABEL 1 124 1 1 mip trilinear 1, bias 7/4, 8x8 px
+LABEL 1 125 1 1 mip trilinear 1, bias 7/4, 6x6 px
+LABEL 1 126 1 1 mip trilinear 1, bias 7/4, 4x4 px
+LABEL 1 127 1 1 mip trilinear 1, bias 7/4, 3x3 px
+LABEL 1 128 1 1 mip trilinear 1, bias 7/4, 2x2 px
+LABEL 1 129 1 1 mip trilinear 1, bias 7/4, 1x1 px
+LABEL 1 13 1 1 mip trilinear 1, bias 1/4, 2x16 px
+LABEL 1 130 1 1 mip trilinear 1, bias 7/4, 32x4 px
+LABEL 1 131 1 1 mip trilinear 1, bias 7/4, 4x32 px
+LABEL 1 132 1 1 mip trilinear 1, bias 7/4, 16x2 px
+LABEL 1 133 1 1 mip trilinear 1, bias 7/4, 2x16 px
+LABEL 1 134 1 1 mip trilinear 1, bias 7/4, 32x16 px
+LABEL 1 135 1 1 mip trilinear 1, bias 7/4, 16x32 px
+LABEL 1 136 1 1 mip trilinear 1, bias 7/4, 8x1 px
+LABEL 1 137 1 1 mip trilinear 1, bias 7/4, 1x8 px
+LABEL 1 14 1 1 mip trilinear 1, bias 1/4, 32x16 px
+LABEL 1 140 1 1 mip trilinear 1, bias 8/4, 32x32 px
+LABEL 1 141 1 1 mip trilinear 1, bias 8/4, 24x24 px
+LABEL 1 142 1 1 mip trilinear 1, bias 8/4, 16x16 px
+LABEL 1 143 1 1 mip trilinear 1, bias 8/4, 12x12 px
+LABEL 1 144 1 1 mip trilinear 1, bias 8/4, 8x8 px
+LABEL 1 145 1 1 mip trilinear 1, bias 8/4, 6x6 px
+LABEL 1 146 1 1 mip trilinear 1, bias 8/4, 4x4 px
+LABEL 1 147 1 1 mip trilinear 1, bias 8/4, 3x3 px
+LABEL 1 148 1 1 mip trilinear 1, bias 8/4, 2x2 px
+LABEL 1 149 1 1 mip trilinear 1, bias 8/4, 1x1 px
+LABEL 1 15 1 1 mip trilinear 1, bias 1/4, 16x32 px
+LABEL 1 150 1 1 mip trilinear 1, bias 8/4, 32x4 px
+LABEL 1 151 1 1 mip trilinear 1, bias 8/4, 4x32 px
+LABEL 1 152 1 1 mip trilinear 1, bias 8/4, 16x2 px
+LABEL 1 153 1 1 mip trilinear 1, bias 8/4, 2x16 px
+LABEL 1 154 1 1 mip trilinear 1, bias 8/4, 32x16 px
+LABEL 1 155 1 1 mip trilinear 1, bias 8/4, 16x32 px
+LABEL 1 156 1 1 mip trilinear 1, bias 8/4, 8x1 px
+LABEL 1 157 1 1 mip trilinear 1, bias 8/4, 1x8 px
+LABEL 1 16 1 1 mip trilinear 1, bias 1/4, 8x1 px
+LABEL 1 160 1 1 mip trilinear 1, bias 9/4, 32x32 px
+LABEL 1 161 1 1 mip trilinear 1, bias 9/4, 24x24 px
+LABEL 1 162 1 1 mip trilinear 1, bias 9/4, 16x16 px
+LABEL 1 163 1 1 mip trilinear 1, bias 9/4, 12x12 px
+LABEL 1 164 1 1 mip trilinear 1, bias 9/4, 8x8 px
+LABEL 1 165 1 1 mip trilinear 1, bias 9/4, 6x6 px
+LABEL 1 166 1 1 mip trilinear 1, bias 9/4, 4x4 px
+LABEL 1 167 1 1 mip trilinear 1, bias 9/4, 3x3 px
+LABEL 1 168 1 1 mip trilinear 1, bias 9/4, 2x2 px
+LABEL 1 169 1 1 mip trilinear 1, bias 9/4, 1x1 px
+LABEL 1 17 1 1 mip trilinear 1, bias 1/4, 1x8 px
+LABEL 1 170 1 1 mip trilinear 1, bias 9/4, 32x4 px
+LABEL 1 171 1 1 mip trilinear 1, bias 9/4, 4x32 px
+LABEL 1 172 1 1 mip trilinear 1, bias 9/4, 16x2 px
+LABEL 1 173 1 1 mip trilinear 1, bias 9/4, 2x16 px
+LABEL 1 174 1 1 mip trilinear 1, bias 9/4, 32x16 px
+LABEL 1 175 1 1 mip trilinear 1, bias 9/4, 16x32 px
+LABEL 1 176 1 1 mip trilinear 1, bias 9/4, 8x1 px
+LABEL 1 177 1 1 mip trilinear 1, bias 9/4, 1x8 px
+LABEL 1 180 1 1 mip trilinear 1, bias 10/4, 32x32 px
+LABEL 1 181 1 1 mip trilinear 1, bias 10/4, 24x24 px
+LABEL 1 182 1 1 mip trilinear 1, bias 10/4, 16x16 px
+LABEL 1 183 1 1 mip trilinear 1, bias 10/4, 12x12 px
+LABEL 1 184 1 1 mip trilinear 1, bias 10/4, 8x8 px
+LABEL 1 185 1 1 mip trilinear 1, bias 10/4, 6x6 px
+LABEL 1 186 1 1 mip trilinear 1, bias 10/4, 4x4 px
+LABEL 1 187 1 1 mip trilinear 1, bias 10/4, 3x3 px
+LABEL 1 188 1 1 mip trilinear 1, bias 10/4, 2x2 px
+LABEL 1 189 1 1 mip trilinear 1, bias 10/4, 1x1 px
+LABEL 1 190 1 1 mip trilinear 1, bias 10/4, 32x4 px
+LABEL 1 191 1 1 mip trilinear 1, bias 10/4, 4x32 px
+LABEL 1 192 1 1 mip trilinear 1, bias 10/4, 16x2 px
+LABEL 1 193 1 1 mip trilinear 1, bias 10/4, 2x16 px
+LABEL 1 194 1 1 mip trilinear 1, bias 10/4, 32x16 px
+LABEL 1 195 1 1 mip trilinear 1, bias 10/4, 16x32 px
+LABEL 1 196 1 1 mip trilinear 1, bias 10/4, 8x1 px
+LABEL 1 197 1 1 mip trilinear 1, bias 10/4, 1x8 px
+LABEL 1 2 1 1 mip trilinear 1, bias 1/4, 16x16 px
+LABEL 1 20 1 1 mip trilinear 1, bias 2/4, 32x32 px
+LABEL 1 200 1 1 mip trilinear 1, bias 11/4, 32x32 px
+LABEL 1 201 1 1 mip trilinear 1, bias 11/4, 24x24 px
+LABEL 1 202 1 1 mip trilinear 1, bias 11/4, 16x16 px
+LABEL 1 203 1 1 mip trilinear 1, bias 11/4, 12x12 px
+LABEL 1 204 1 1 mip trilinear 1, bias 11/4, 8x8 px
+LABEL 1 205 1 1 mip trilinear 1, bias 11/4, 6x6 px
+LABEL 1 206 1 1 mip trilinear 1, bias 11/4, 4x4 px
+LABEL 1 207 1 1 mip trilinear 1, bias 11/4, 3x3 px
+LABEL 1 208 1 1 mip trilinear 1, bias 11/4, 2x2 px
+LABEL 1 209 1 1 mip trilinear 1, bias 11/4, 1x1 px
+LABEL 1 21 1 1 mip trilinear 1, bias 2/4, 24x24 px
+LABEL 1 210 1 1 mip trilinear 1, bias 11/4, 32x4 px
+LABEL 1 211 1 1 mip trilinear 1, bias 11/4, 4x32 px
+LABEL 1 212 1 1 mip trilinear 1, bias 11/4, 16x2 px
+LABEL 1 213 1 1 mip trilinear 1, bias 11/4, 2x16 px
+LABEL 1 214 1 1 mip trilinear 1, bias 11/4, 32x16 px
+LABEL 1 215 1 1 mip trilinear 1, bias 11/4, 16x32 px
+LABEL 1 216 1 1 mip trilinear 1, bias 11/4, 8x1 px
+LABEL 1 217 1 1 mip trilinear 1, bias 11/4, 1x8 px
+LABEL 1 22 1 1 mip trilinear 1, bias 2/4, 16x16 px
+LABEL 1 220 1 1 mip trilinear 1, bias 12/4, 32x32 px
+LABEL 1 221 1 1 mip trilinear 1, bias 12/4, 24x24 px
+LABEL 1 222 1 1 mip trilinear 1, bias 12/4, 16x16 px
+LABEL 1 223 1 1 mip trilinear 1, bias 12/4, 12x12 px
+LABEL 1 224 1 1 mip trilinear 1, bias 12/4, 8x8 px
+LABEL 1 225 1 1 mip trilinear 1, bias 12/4, 6x6 px
+LABEL 1 226 1 1 mip trilinear 1, bias 12/4, 4x4 px
+LABEL 1 227 1 1 mip trilinear 1, bias 12/4, 3x3 px
+LABEL 1 228 1 1 mip trilinear 1, bias 12/4, 2x2 px
+LABEL 1 229 1 1 mip trilinear 1, bias 12/4, 1x1 px
+LABEL 1 23 1 1 mip trilinear 1, bias 2/4, 12x12 px
+LABEL 1 230 1 1 mip trilinear 1, bias 12/4, 32x4 px
+LABEL 1 231 1 1 mip trilinear 1, bias 12/4, 4x32 px
+LABEL 1 232 1 1 mip trilinear 1, bias 12/4, 16x2 px
+LABEL 1 233 1 1 mip trilinear 1, bias 12/4, 2x16 px
+LABEL 1 234 1 1 mip trilinear 1, bias 12/4, 32x16 px
+LABEL 1 235 1 1 mip trilinear 1, bias 12/4, 16x32 px
+LABEL 1 236 1 1 mip trilinear 1, bias 12/4, 8x1 px
+LABEL 1 237 1 1 mip trilinear 1, bias 12/4, 1x8 px
+LABEL 1 24 1 1 mip trilinear 1, bias 2/4, 8x8 px
+LABEL 1 240 1 1 mip trilinear 1, bias 13/4, 32x32 px
+LABEL 1 241 1 1 mip trilinear 1, bias 13/4, 24x24 px
+LABEL 1 242 1 1 mip trilinear 1, bias 13/4, 16x16 px
+LABEL 1 243 1 1 mip trilinear 1, bias 13/4, 12x12 px
+LABEL 1 244 1 1 mip trilinear 1, bias 13/4, 8x8 px
+LABEL 1 245 1 1 mip trilinear 1, bias 13/4, 6x6 px
+LABEL 1 246 1 1 mip trilinear 1, bias 13/4, 4x4 px
+LABEL 1 247 1 1 mip trilinear 1, bias 13/4, 3x3 px
+LABEL 1 248 1 1 mip trilinear 1, bias 13/4, 2x2 px
+LABEL 1 249 1 1 mip trilinear 1, bias 13/4, 1x1 px
+LABEL 1 25 1 1 mip trilinear 1, bias 2/4, 6x6 px
+LABEL 1 250 1 1 mip trilinear 1, bias 13/4, 32x4 px
+LABEL 1 251 1 1 mip trilinear 1, bias 13/4, 4x32 px
+LABEL 1 252 1 1 mip trilinear 1, bias 13/4, 16x2 px
+LABEL 1 253 1 1 mip trilinear 1, bias 13/4, 2x16 px
+LABEL 1 254 1 1 mip trilinear 1, bias 13/4, 32x16 px
+LABEL 1 255 1 1 mip trilinear 1, bias 13/4, 16x32 px
+LABEL 1 256 1 1 mip trilinear 1, bias 13/4, 8x1 px
+LABEL 1 257 1 1 mip trilinear 1, bias 13/4, 1x8 px
+LABEL 1 26 1 1 mip trilinear 1, bias 2/4, 4x4 px
+LABEL 1 260 1 1 mip trilinear 1, bias 14/4, 32x32 px
+LABEL 1 261 1 1 mip trilinear 1, bias 14/4, 24x24 px
+LABEL 1 262 1 1 mip trilinear 1, bias 14/4, 16x16 px
+LABEL 1 263 1 1 mip trilinear 1, bias 14/4, 12x12 px
+LABEL 1 264 1 1 mip trilinear 1, bias 14/4, 8x8 px
+LABEL 1 265 1 1 mip trilinear 1, bias 14/4, 6x6 px
+LABEL 1 266 1 1 mip trilinear 1, bias 14/4, 4x4 px
+LABEL 1 267 1 1 mip trilinear 1, bias 14/4, 3x3 px
+LABEL 1 268 1 1 mip trilinear 1, bias 14/4, 2x2 px
+LABEL 1 269 1 1 mip trilinear 1, bias 14/4, 1x1 px
+LABEL 1 27 1 1 mip trilinear 1, bias 2/4, 3x3 px
+LABEL 1 270 1 1 mip trilinear 1, bias 14/4, 32x4 px
+LABEL 1 271 1 1 mip trilinear 1, bias 14/4, 4x32 px
+LABEL 1 272 1 1 mip trilinear 1, bias 14/4, 16x2 px
+LABEL 1 273 1 1 mip trilinear 1, bias 14/4, 2x16 px
+LABEL 1 274 1 1 mip trilinear 1, bias 14/4, 32x16 px
+LABEL 1 275 1 1 mip trilinear 1, bias 14/4, 16x32 px
+LABEL 1 276 1 1 mip trilinear 1, bias 14/4, 8x1 px
+LABEL 1 277 1 1 mip trilinear 1, bias 14/4, 1x8 px
+LABEL 1 28 1 1 mip trilinear 1, bias 2/4, 2x2 px
+LABEL 1 280 1 1 mip trilinear 1, bias 15/4, 32x32 px
+LABEL 1 281 1 1 mip trilinear 1, bias 15/4, 24x24 px
+LABEL 1 282 1 1 mip trilinear 1, bias 15/4, 16x16 px
+LABEL 1 283 1 1 mip trilinear 1, bias 15/4, 12x12 px
+LABEL 1 284 1 1 mip trilinear 1, bias 15/4, 8x8 px
+LABEL 1 285 1 1 mip trilinear 1, bias 15/4, 6x6 px
+LABEL 1 286 1 1 mip trilinear 1, bias 15/4, 4x4 px
+LABEL 1 287 1 1 mip trilinear 1, bias 15/4, 3x3 px
+LABEL 1 288 1 1 mip trilinear 1, bias 15/4, 2x2 px
+LABEL 1 289 1 1 mip trilinear 1, bias 15/4, 1x1 px
+LABEL 1 29 1 1 mip trilinear 1, bias 2/4, 1x1 px
+LABEL 1 290 1 1 mip trilinear 1, bias 15/4, 32x4 px
+LABEL 1 291 1 1 mip trilinear 1, bias 15/4, 4x32 px
+LABEL 1 292 1 1 mip trilinear 1, bias 15/4, 16x2 px
+LABEL 1 293 1 1 mip trilinear 1, bias 15/4, 2x16 px
+LABEL 1 294 1 1 mip trilinear 1, bias 15/4, 32x16 px
+LABEL 1 295 1 1 mip trilinear 1, bias 15/4, 16x32 px
+LABEL 1 296 1 1 mip trilinear 1, bias 15/4, 8x1 px
+LABEL 1 297 1 1 mip trilinear 1, bias 15/4, 1x8 px
+LABEL 1 3 1 1 mip trilinear 1, bias 1/4, 12x12 px
+LABEL 1 30 1 1 mip trilinear 1, bias 2/4, 32x4 px
+LABEL 1 31 1 1 mip trilinear 1, bias 2/4, 4x32 px
+LABEL 1 32 1 1 mip trilinear 1, bias 2/4, 16x2 px
+LABEL 1 33 1 1 mip trilinear 1, bias 2/4, 2x16 px
+LABEL 1 34 1 1 mip trilinear 1, bias 2/4, 32x16 px
+LABEL 1 35 1 1 mip trilinear 1, bias 2/4, 16x32 px
+LABEL 1 36 1 1 mip trilinear 1, bias 2/4, 8x1 px
+LABEL 1 37 1 1 mip trilinear 1, bias 2/4, 1x8 px
+LABEL 1 4 1 1 mip trilinear 1, bias 1/4, 8x8 px
+LABEL 1 40 1 1 mip trilinear 1, bias 3/4, 32x32 px
+LABEL 1 41 1 1 mip trilinear 1, bias 3/4, 24x24 px
+LABEL 1 42 1 1 mip trilinear 1, bias 3/4, 16x16 px
+LABEL 1 43 1 1 mip trilinear 1, bias 3/4, 12x12 px
+LABEL 1 44 1 1 mip trilinear 1, bias 3/4, 8x8 px
+LABEL 1 45 1 1 mip trilinear 1, bias 3/4, 6x6 px
+LABEL 1 46 1 1 mip trilinear 1, bias 3/4, 4x4 px
+LABEL 1 47 1 1 mip trilinear 1, bias 3/4, 3x3 px
+LABEL 1 48 1 1 mip trilinear 1, bias 3/4, 2x2 px
+LABEL 1 49 1 1 mip trilinear 1, bias 3/4, 1x1 px
+LABEL 1 5 1 1 mip trilinear 1, bias 1/4, 6x6 px
+LABEL 1 50 1 1 mip trilinear 1, bias 3/4, 32x4 px
+LABEL 1 51 1 1 mip trilinear 1, bias 3/4, 4x32 px
+LABEL 1 52 1 1 mip trilinear 1, bias 3/4, 16x2 px
+LABEL 1 53 1 1 mip trilinear 1, bias 3/4, 2x16 px
+LABEL 1 54 1 1 mip trilinear 1, bias 3/4, 32x16 px
+LABEL 1 55 1 1 mip trilinear 1, bias 3/4, 16x32 px
+LABEL 1 56 1 1 mip trilinear 1, bias 3/4, 8x1 px
+LABEL 1 57 1 1 mip trilinear 1, bias 3/4, 1x8 px
+LABEL 1 6 1 1 mip trilinear 1, bias 1/4, 4x4 px
+LABEL 1 60 1 1 mip trilinear 1, bias 4/4, 32x32 px
+LABEL 1 61 1 1 mip trilinear 1, bias 4/4, 24x24 px
+LABEL 1 62 1 1 mip trilinear 1, bias 4/4, 16x16 px
+LABEL 1 63 1 1 mip trilinear 1, bias 4/4, 12x12 px
+LABEL 1 64 1 1 mip trilinear 1, bias 4/4, 8x8 px
+LABEL 1 65 1 1 mip trilinear 1, bias 4/4, 6x6 px
+LABEL 1 66 1 1 mip trilinear 1, bias 4/4, 4x4 px
+LABEL 1 67 1 1 mip trilinear 1, bias 4/4, 3x3 px
+LABEL 1 68 1 1 mip trilinear 1, bias 4/4, 2x2 px
+LABEL 1 69 1 1 mip trilinear 1, bias 4/4, 1x1 px
+LABEL 1 7 1 1 mip trilinear 1, bias 1/4, 3x3 px
+LABEL 1 70 1 1 mip trilinear 1, bias 4/4, 32x4 px
+LABEL 1 71 1 1 mip trilinear 1, bias 4/4, 4x32 px
+LABEL 1 72 1 1 mip trilinear 1, bias 4/4, 16x2 px
+LABEL 1 73 1 1 mip trilinear 1, bias 4/4, 2x16 px
+LABEL 1 74 1 1 mip trilinear 1, bias 4/4, 32x16 px
+LABEL 1 75 1 1 mip trilinear 1, bias 4/4, 16x32 px
+LABEL 1 76 1 1 mip trilinear 1, bias 4/4, 8x1 px
+LABEL 1 77 1 1 mip trilinear 1, bias 4/4, 1x8 px
+LABEL 1 8 1 1 mip trilinear 1, bias 1/4, 2x2 px
+LABEL 1 80 1 1 mip trilinear 1, bias 5/4, 32x32 px
+LABEL 1 81 1 1 mip trilinear 1, bias 5/4, 24x24 px
+LABEL 1 82 1 1 mip trilinear 1, bias 5/4, 16x16 px
+LABEL 1 83 1 1 mip trilinear 1, bias 5/4, 12x12 px
+LABEL 1 84 1 1 mip trilinear 1, bias 5/4, 8x8 px
+LABEL 1 85 1 1 mip trilinear 1, bias 5/4, 6x6 px
+LABEL 1 86 1 1 mip trilinear 1, bias 5/4, 4x4 px
+LABEL 1 87 1 1 mip trilinear 1, bias 5/4, 3x3 px
+LABEL 1 88 1 1 mip trilinear 1, bias 5/4, 2x2 px
+LABEL 1 89 1 1 mip trilinear 1, bias 5/4, 1x1 px
+LABEL 1 9 1 1 mip trilinear 1, bias 1/4, 1x1 px
+LABEL 1 90 1 1 mip trilinear 1, bias 5/4, 32x4 px
+LABEL 1 91 1 1 mip trilinear 1, bias 5/4, 4x32 px
+LABEL 1 92 1 1 mip trilinear 1, bias 5/4, 16x2 px
+LABEL 1 93 1 1 mip trilinear 1, bias 5/4, 2x16 px
+LABEL 1 94 1 1 mip trilinear 1, bias 5/4, 32x16 px
+LABEL 1 95 1 1 mip trilinear 1, bias 5/4, 16x32 px
+LABEL 1 96 1 1 mip trilinear 1, bias 5/4, 8x1 px
+LABEL 1 97 1 1 mip trilinear 1, bias 5/4, 1x8 px
+LABEL 2 0 1 1 mip trilinear 2, bias 1/4, 32x32 px
+LABEL 2 1 1 1 mip trilinear 2, bias 1/4, 24x24 px
+LABEL 2 10 1 1 mip trilinear 2, bias 1/4, 32x4 px
+LABEL 2 100 1 1 mip trilinear 2, bias 6/4, 32x32 px
+LABEL 2 101 1 1 mip trilinear 2, bias 6/4, 24x24 px
+LABEL 2 102 1 1 mip trilinear 2, bias 6/4, 16x16 px
+LABEL 2 103 1 1 mip trilinear 2, bias 6/4, 12x12 px
+LABEL 2 104 1 1 mip trilinear 2, bias 6/4, 8x8 px
+LABEL 2 105 1 1 mip trilinear 2, bias 6/4, 6x6 px
+LABEL 2 106 1 1 mip trilinear 2, bias 6/4, 4x4 px
+LABEL 2 107 1 1 mip trilinear 2, bias 6/4, 3x3 px
+LABEL 2 108 1 1 mip trilinear 2, bias 6/4, 2x2 px
+LABEL 2 109 1 1 mip trilinear 2, bias 6/4, 1x1 px
+LABEL 2 11 1 1 mip trilinear 2, bias 1/4, 4x32 px
+LABEL 2 110 1 1 mip trilinear 2, bias 6/4, 32x4 px
+LABEL 2 111 1 1 mip trilinear 2, bias 6/4, 4x32 px
+LABEL 2 112 1 1 mip trilinear 2, bias 6/4, 16x2 px
+LABEL 2 113 1 1 mip trilinear 2, bias 6/4, 2x16 px
+LABEL 2 114 1 1 mip trilinear 2, bias 6/4, 32x16 px
+LABEL 2 115 1 1 mip trilinear 2, bias 6/4, 16x32 px
+LABEL 2 116 1 1 mip trilinear 2, bias 6/4, 8x1 px
+LABEL 2 117 1 1 mip trilinear 2, bias 6/4, 1x8 px
+LABEL 2 12 1 1 mip trilinear 2, bias 1/4, 16x2 px
+LABEL 2 120 1 1 mip trilinear 2, bias 7/4, 32x32 px
+LABEL 2 121 1 1 mip trilinear 2, bias 7/4, 24x24 px
+LABEL 2 122 1 1 mip trilinear 2, bias 7/4, 16x16 px
+LABEL 2 123 1 1 mip trilinear 2, bias 7/4, 12x12 px
+LABEL 2 124 1 1 mip trilinear 2, bias 7/4, 8x8 px
+LABEL 2 125 1 1 mip trilinear 2, bias 7/4, 6x6 px
+LABEL 2 126 1 1 mip trilinear 2, bias 7/4, 4x4 px
+LABEL 2 127 1 1 mip trilinear 2, bias 7/4, 3x3 px
+LABEL 2 128 1 1 mip trilinear 2, bias 7/4, 2x2 px
+LABEL 2 129 1 1 mip trilinear 2, bias 7/4, 1x1 px
+LABEL 2 13 1 1 mip trilinear 2, bias 1/4, 2x16 px
+LABEL 2 130 1 1 mip trilinear 2, bias 7/4, 32x4 px
+LABEL 2 131 1 1 mip trilinear 2, bias 7/4, 4x32 px
+LABEL 2 132 1 1 mip trilinear 2, bias 7/4, 16x2 px
+LABEL 2 133 1 1 mip trilinear 2, bias 7/4, 2x16 px
+LABEL 2 134 1 1 mip trilinear 2, bias 7/4, 32x16 px
+LABEL 2 135 1 1 mip trilinear 2, bias 7/4, 16x32 px
+LABEL 2 136 1 1 mip trilinear 2, bias 7/4, 8x1 px
+LABEL 2 137 1 1 mip trilinear 2, bias 7/4, 1x8 px
+LABEL 2 14 1 1 mip trilinear 2, bias 1/4, 32x16 px
+LABEL 2 140 1 1 mip trilinear 2, bias 8/4, 32x32 px
+LABEL 2 141 1 1 mip trilinear 2, bias 8/4, 24x24 px
+LABEL 2 142 1 1 mip trilinear 2, bias 8/4, 16x16 px
+LABEL 2 143 1 1 mip trilinear 2, bias 8/4, 12x12 px
+LABEL 2 144 1 1 mip trilinear 2, bias 8/4, 8x8 px
+LABEL 2 145 1 1 mip trilinear 2, bias 8/4, 6x6 px
+LABEL 2 146 1 1 mip trilinear 2, bias 8/4, 4x4 px
+LABEL 2 147 1 1 mip trilinear 2, bias 8/4, 3x3 px
+LABEL 2 148 1 1 mip trilinear 2, bias 8/4, 2x2 px
+LABEL 2 149 1 1 mip trilinear 2, bias 8/4, 1x1 px
+LABEL 2 15 1 1 mip trilinear 2, bias 1/4, 16x32 px
+LABEL 2 150 1 1 mip trilinear 2, bias 8/4, 32x4 px
+LABEL 2 151 1 1 mip trilinear 2, bias 8/4, 4x32 px
+LABEL 2 152 1 1 mip trilinear 2, bias 8/4, 16x2 px
+LABEL 2 153 1 1 mip trilinear 2, bias 8/4, 2x16 px
+LABEL 2 154 1 1 mip trilinear 2, bias 8/4, 32x16 px
+LABEL 2 155 1 1 mip trilinear 2, bias 8/4, 16x32 px
+LABEL 2 156 1 1 mip trilinear 2, bias 8/4, 8x1 px
+LABEL 2 157 1 1 mip trilinear 2, bias 8/4, 1x8 px
+LABEL 2 16 1 1 mip trilinear 2, bias 1/4, 8x1 px
+LABEL 2 160 1 1 mip trilinear 2, bias 9/4, 32x32 px
+LABEL 2 161 1 1 mip trilinear 2, bias 9/4, 24x24 px
+LABEL 2 162 1 1 mip trilinear 2, bias 9/4, 16x16 px
+LABEL 2 163 1 1 mip trilinear 2, bias 9/4, 12x12 px
+LABEL 2 164 1 1 mip trilinear 2, bias 9/4, 8x8 px
+LABEL 2 165 1 1 mip trilinear 2, bias 9/4, 6x6 px
+LABEL 2 166 1 1 mip trilinear 2, bias 9/4, 4x4 px
+LABEL 2 167 1 1 mip trilinear 2, bias 9/4, 3x3 px
+LABEL 2 168 1 1 mip trilinear 2, bias 9/4, 2x2 px
+LABEL 2 169 1 1 mip trilinear 2, bias 9/4, 1x1 px
+LABEL 2 17 1 1 mip trilinear 2, bias 1/4, 1x8 px
+LABEL 2 170 1 1 mip trilinear 2, bias 9/4, 32x4 px
+LABEL 2 171 1 1 mip trilinear 2, bias 9/4, 4x32 px
+LABEL 2 172 1 1 mip trilinear 2, bias 9/4, 16x2 px
+LABEL 2 173 1 1 mip trilinear 2, bias 9/4, 2x16 px
+LABEL 2 174 1 1 mip trilinear 2, bias 9/4, 32x16 px
+LABEL 2 175 1 1 mip trilinear 2, bias 9/4, 16x32 px
+LABEL 2 176 1 1 mip trilinear 2, bias 9/4, 8x1 px
+LABEL 2 177 1 1 mip trilinear 2, bias 9/4, 1x8 px
+LABEL 2 180 1 1 mip trilinear 2, bias 10/4, 32x32 px
+LABEL 2 181 1 1 mip trilinear 2, bias 10/4, 24x24 px
+LABEL 2 182 1 1 mip trilinear 2, bias 10/4, 16x16 px
+LABEL 2 183 1 1 mip trilinear 2, bias 10/4, 12x12 px
+LABEL 2 184 1 1 mip trilinear 2, bias 10/4, 8x8 px
+LABEL 2 185 1 1 mip trilinear 2, bias 10/4, 6x6 px
+LABEL 2 186 1 1 mip trilinear 2, bias 10/4, 4x4 px
+LABEL 2 187 1 1 mip trilinear 2, bias 10/4, 3x3 px
+LABEL 2 188 1 1 mip trilinear 2, bias 10/4, 2x2 px
+LABEL 2 189 1 1 mip trilinear 2, bias 10/4, 1x1 px
+LABEL 2 190 1 1 mip trilinear 2, bias 10/4, 32x4 px
+LABEL 2 191 1 1 mip trilinear 2, bias 10/4, 4x32 px
+LABEL 2 192 1 1 mip trilinear 2, bias 10/4, 16x2 px
+LABEL 2 193 1 1 mip trilinear 2, bias 10/4, 2x16 px
+LABEL 2 194 1 1 mip trilinear 2, bias 10/4, 32x16 px
+LABEL 2 195 1 1 mip trilinear 2, bias 10/4, 16x32 px
+LABEL 2 196 1 1 mip trilinear 2, bias 10/4, 8x1 px
+LABEL 2 197 1 1 mip trilinear 2, bias 10/4, 1x8 px
+LABEL 2 2 1 1 mip trilinear 2, bias 1/4, 16x16 px
+LABEL 2 20 1 1 mip trilinear 2, bias 2/4, 32x32 px
+LABEL 2 200 1 1 mip trilinear 2, bias 11/4, 32x32 px
+LABEL 2 201 1 1 mip trilinear 2, bias 11/4, 24x24 px
+LABEL 2 202 1 1 mip trilinear 2, bias 11/4, 16x16 px
+LABEL 2 203 1 1 mip trilinear 2, bias 11/4, 12x12 px
+LABEL 2 204 1 1 mip trilinear 2, bias 11/4, 8x8 px
+LABEL 2 205 1 1 mip trilinear 2, bias 11/4, 6x6 px
+LABEL 2 206 1 1 mip trilinear 2, bias 11/4, 4x4 px
+LABEL 2 207 1 1 mip trilinear 2, bias 11/4, 3x3 px
+LABEL 2 208 1 1 mip trilinear 2, bias 11/4, 2x2 px
+LABEL 2 209 1 1 mip trilinear 2, bias 11/4, 1x1 px
+LABEL 2 21 1 1 mip trilinear 2, bias 2/4, 24x24 px
+LABEL 2 210 1 1 mip trilinear 2, bias 11/4, 32x4 px
+LABEL 2 211 1 1 mip trilinear 2, bias 11/4, 4x32 px
+LABEL 2 212 1 1 mip trilinear 2, bias 11/4, 16x2 px
+LABEL 2 213 1 1 mip trilinear 2, bias 11/4, 2x16 px
+LABEL 2 214 1 1 mip trilinear 2, bias 11/4, 32x16 px
+LABEL 2 215 1 1 mip trilinear 2, bias 11/4, 16x32 px
+LABEL 2 216 1 1 mip trilinear 2, bias 11/4, 8x1 px
+LABEL 2 217 1 1 mip trilinear 2, bias 11/4, 1x8 px
+LABEL 2 22 1 1 mip trilinear 2, bias 2/4, 16x16 px
+LABEL 2 220 1 1 mip trilinear 2, bias 12/4, 32x32 px
+LABEL 2 221 1 1 mip trilinear 2, bias 12/4, 24x24 px
+LABEL 2 222 1 1 mip trilinear 2, bias 12/4, 16x16 px
+LABEL 2 223 1 1 mip trilinear 2, bias 12/4, 12x12 px
+LABEL 2 224 1 1 mip trilinear 2, bias 12/4, 8x8 px
+LABEL 2 225 1 1 mip trilinear 2, bias 12/4, 6x6 px
+LABEL 2 226 1 1 mip trilinear 2, bias 12/4, 4x4 px
+LABEL 2 227 1 1 mip trilinear 2, bias 12/4, 3x3 px
+LABEL 2 228 1 1 mip trilinear 2, bias 12/4, 2x2 px
+LABEL 2 229 1 1 mip trilinear 2, bias 12/4, 1x1 px
+LABEL 2 23 1 1 mip trilinear 2, bias 2/4, 12x12 px
+LABEL 2 230 1 1 mip trilinear 2, bias 12/4, 32x4 px
+LABEL 2 231 1 1 mip trilinear 2, bias 12/4, 4x32 px
+LABEL 2 232 1 1 mip trilinear 2, bias 12/4, 16x2 px
+LABEL 2 233 1 1 mip trilinear 2, bias 12/4, 2x16 px
+LABEL 2 234 1 1 mip trilinear 2, bias 12/4, 32x16 px
+LABEL 2 235 1 1 mip trilinear 2, bias 12/4, 16x32 px
+LABEL 2 236 1 1 mip trilinear 2, bias 12/4, 8x1 px
+LABEL 2 237 1 1 mip trilinear 2, bias 12/4, 1x8 px
+LABEL 2 24 1 1 mip trilinear 2, bias 2/4, 8x8 px
+LABEL 2 240 1 1 mip trilinear 2, bias 13/4, 32x32 px
+LABEL 2 241 1 1 mip trilinear 2, bias 13/4, 24x24 px
+LABEL 2 242 1 1 mip trilinear 2, bias 13/4, 16x16 px
+LABEL 2 243 1 1 mip trilinear 2, bias 13/4, 12x12 px
+LABEL 2 244 1 1 mip trilinear 2, bias 13/4, 8x8 px
+LABEL 2 245 1 1 mip trilinear 2, bias 13/4, 6x6 px
+LABEL 2 246 1 1 mip trilinear 2, bias 13/4, 4x4 px
+LABEL 2 247 1 1 mip trilinear 2, bias 13/4, 3x3 px
+LABEL 2 248 1 1 mip trilinear 2, bias 13/4, 2x2 px
+LABEL 2 249 1 1 mip trilinear 2, bias 13/4, 1x1 px
+LABEL 2 25 1 1 mip trilinear 2, bias 2/4, 6x6 px
+LABEL 2 250 1 1 mip trilinear 2, bias 13/4, 32x4 px
+LABEL 2 251 1 1 mip trilinear 2, bias 13/4, 4x32 px
+LABEL 2 252 1 1 mip trilinear 2, bias 13/4, 16x2 px
+LABEL 2 253 1 1 mip trilinear 2, bias 13/4, 2x16 px
+LABEL 2 254 1 1 mip trilinear 2, bias 13/4, 32x16 px
+LABEL 2 255 1 1 mip trilinear 2, bias 13/4, 16x32 px
+LABEL 2 256 1 1 mip trilinear 2, bias 13/4, 8x1 px
+LABEL 2 257 1 1 mip trilinear 2, bias 13/4, 1x8 px
+LABEL 2 26 1 1 mip trilinear 2, bias 2/4, 4x4 px
+LABEL 2 260 1 1 mip trilinear 2, bias 14/4, 32x32 px
+LABEL 2 261 1 1 mip trilinear 2, bias 14/4, 24x24 px
+LABEL 2 262 1 1 mip trilinear 2, bias 14/4, 16x16 px
+LABEL 2 263 1 1 mip trilinear 2, bias 14/4, 12x12 px
+LABEL 2 264 1 1 mip trilinear 2, bias 14/4, 8x8 px
+LABEL 2 265 1 1 mip trilinear 2, bias 14/4, 6x6 px
+LABEL 2 266 1 1 mip trilinear 2, bias 14/4, 4x4 px
+LABEL 2 267 1 1 mip trilinear 2, bias 14/4, 3x3 px
+LABEL 2 268 1 1 mip trilinear 2, bias 14/4, 2x2 px
+LABEL 2 269 1 1 mip trilinear 2, bias 14/4, 1x1 px
+LABEL 2 27 1 1 mip trilinear 2, bias 2/4, 3x3 px
+LABEL 2 270 1 1 mip trilinear 2, bias 14/4, 32x4 px
+LABEL 2 271 1 1 mip trilinear 2, bias 14/4, 4x32 px
+LABEL 2 272 1 1 mip trilinear 2, bias 14/4, 16x2 px
+LABEL 2 273 1 1 mip trilinear 2, bias 14/4, 2x16 px
+LABEL 2 274 1 1 mip trilinear 2, bias 14/4, 32x16 px
+LABEL 2 275 1 1 mip trilinear 2, bias 14/4, 16x32 px
+LABEL 2 276 1 1 mip trilinear 2, bias 14/4, 8x1 px
+LABEL 2 277 1 1 mip trilinear 2, bias 14/4, 1x8 px
+LABEL 2 28 1 1 mip trilinear 2, bias 2/4, 2x2 px
+LABEL 2 280 1 1 mip trilinear 2, bias 15/4, 32x32 px
+LABEL 2 281 1 1 mip trilinear 2, bias 15/4, 24x24 px
+LABEL 2 282 1 1 mip trilinear 2, bias 15/4, 16x16 px
+LABEL 2 283 1 1 mip trilinear 2, bias 15/4, 12x12 px
+LABEL 2 284 1 1 mip trilinear 2, bias 15/4, 8x8 px
+LABEL 2 285 1 1 mip trilinear 2, bias 15/4, 6x6 px
+LABEL 2 286 1 1 mip trilinear 2, bias 15/4, 4x4 px
+LABEL 2 287 1 1 mip trilinear 2, bias 15/4, 3x3 px
+LABEL 2 288 1 1 mip trilinear 2, bias 15/4, 2x2 px
+LABEL 2 289 1 1 mip trilinear 2, bias 15/4, 1x1 px
+LABEL 2 29 1 1 mip trilinear 2, bias 2/4, 1x1 px
+LABEL 2 290 1 1 mip trilinear 2, bias 15/4, 32x4 px
+LABEL 2 291 1 1 mip trilinear 2, bias 15/4, 4x32 px
+LABEL 2 292 1 1 mip trilinear 2, bias 15/4, 16x2 px
+LABEL 2 293 1 1 mip trilinear 2, bias 15/4, 2x16 px
+LABEL 2 294 1 1 mip trilinear 2, bias 15/4, 32x16 px
+LABEL 2 295 1 1 mip trilinear 2, bias 15/4, 16x32 px
+LABEL 2 296 1 1 mip trilinear 2, bias 15/4, 8x1 px
+LABEL 2 297 1 1 mip trilinear 2, bias 15/4, 1x8 px
+LABEL 2 3 1 1 mip trilinear 2, bias 1/4, 12x12 px
+LABEL 2 30 1 1 mip trilinear 2, bias 2/4, 32x4 px
+LABEL 2 31 1 1 mip trilinear 2, bias 2/4, 4x32 px
+LABEL 2 32 1 1 mip trilinear 2, bias 2/4, 16x2 px
+LABEL 2 33 1 1 mip trilinear 2, bias 2/4, 2x16 px
+LABEL 2 34 1 1 mip trilinear 2, bias 2/4, 32x16 px
+LABEL 2 35 1 1 mip trilinear 2, bias 2/4, 16x32 px
+LABEL 2 36 1 1 mip trilinear 2, bias 2/4, 8x1 px
+LABEL 2 37 1 1 mip trilinear 2, bias 2/4, 1x8 px
+LABEL 2 4 1 1 mip trilinear 2, bias 1/4, 8x8 px
+LABEL 2 40 1 1 mip trilinear 2, bias 3/4, 32x32 px
+LABEL 2 41 1 1 mip trilinear 2, bias 3/4, 24x24 px
+LABEL 2 42 1 1 mip trilinear 2, bias 3/4, 16x16 px
+LABEL 2 43 1 1 mip trilinear 2, bias 3/4, 12x12 px
+LABEL 2 44 1 1 mip trilinear 2, bias 3/4, 8x8 px
+LABEL 2 45 1 1 mip trilinear 2, bias 3/4, 6x6 px
+LABEL 2 46 1 1 mip trilinear 2, bias 3/4, 4x4 px
+LABEL 2 47 1 1 mip trilinear 2, bias 3/4, 3x3 px
+LABEL 2 48 1 1 mip trilinear 2, bias 3/4, 2x2 px
+LABEL 2 49 1 1 mip trilinear 2, bias 3/4, 1x1 px
+LABEL 2 5 1 1 mip trilinear 2, bias 1/4, 6x6 px
+LABEL 2 50 1 1 mip trilinear 2, bias 3/4, 32x4 px
+LABEL 2 51 1 1 mip trilinear 2, bias 3/4, 4x32 px
+LABEL 2 52 1 1 mip trilinear 2, bias 3/4, 16x2 px
+LABEL 2 53 1 1 mip trilinear 2, bias 3/4, 2x16 px
+LABEL 2 54 1 1 mip trilinear 2, bias 3/4, 32x16 px
+LABEL 2 55 1 1 mip trilinear 2, bias 3/4, 16x32 px
+LABEL 2 56 1 1 mip trilinear 2, bias 3/4, 8x1 px
+LABEL 2 57 1 1 mip trilinear 2, bias 3/4, 1x8 px
+LABEL 2 6 1 1 mip trilinear 2, bias 1/4, 4x4 px
+LABEL 2 60 1 1 mip trilinear 2, bias 4/4, 32x32 px
+LABEL 2 61 1 1 mip trilinear 2, bias 4/4, 24x24 px
+LABEL 2 62 1 1 mip trilinear 2, bias 4/4, 16x16 px
+LABEL 2 63 1 1 mip trilinear 2, bias 4/4, 12x12 px
+LABEL 2 64 1 1 mip trilinear 2, bias 4/4, 8x8 px
+LABEL 2 65 1 1 mip trilinear 2, bias 4/4, 6x6 px
+LABEL 2 66 1 1 mip trilinear 2, bias 4/4, 4x4 px
+LABEL 2 67 1 1 mip trilinear 2, bias 4/4, 3x3 px
+LABEL 2 68 1 1 mip trilinear 2, bias 4/4, 2x2 px
+LABEL 2 69 1 1 mip trilinear 2, bias 4/4, 1x1 px
+LABEL 2 7 1 1 mip trilinear 2, bias 1/4, 3x3 px
+LABEL 2 70 1 1 mip trilinear 2, bias 4/4, 32x4 px
+LABEL 2 71 1 1 mip trilinear 2, bias 4/4, 4x32 px
+LABEL 2 72 1 1 mip trilinear 2, bias 4/4, 16x2 px
+LABEL 2 73 1 1 mip trilinear 2, bias 4/4, 2x16 px
+LABEL 2 74 1 1 mip trilinear 2, bias 4/4, 32x16 px
+LABEL 2 75 1 1 mip trilinear 2, bias 4/4, 16x32 px
+LABEL 2 76 1 1 mip trilinear 2, bias 4/4, 8x1 px
+LABEL 2 77 1 1 mip trilinear 2, bias 4/4, 1x8 px
+LABEL 2 8 1 1 mip trilinear 2, bias 1/4, 2x2 px
+LABEL 2 80 1 1 mip trilinear 2, bias 5/4, 32x32 px
+LABEL 2 81 1 1 mip trilinear 2, bias 5/4, 24x24 px
+LABEL 2 82 1 1 mip trilinear 2, bias 5/4, 16x16 px
+LABEL 2 83 1 1 mip trilinear 2, bias 5/4, 12x12 px
+LABEL 2 84 1 1 mip trilinear 2, bias 5/4, 8x8 px
+LABEL 2 85 1 1 mip trilinear 2, bias 5/4, 6x6 px
+LABEL 2 86 1 1 mip trilinear 2, bias 5/4, 4x4 px
+LABEL 2 87 1 1 mip trilinear 2, bias 5/4, 3x3 px
+LABEL 2 88 1 1 mip trilinear 2, bias 5/4, 2x2 px
+LABEL 2 89 1 1 mip trilinear 2, bias 5/4, 1x1 px
+LABEL 2 9 1 1 mip trilinear 2, bias 1/4, 1x1 px
+LABEL 2 90 1 1 mip trilinear 2, bias 5/4, 32x4 px
+LABEL 2 91 1 1 mip trilinear 2, bias 5/4, 4x32 px
+LABEL 2 92 1 1 mip trilinear 2, bias 5/4, 16x2 px
+LABEL 2 93 1 1 mip trilinear 2, bias 5/4, 2x16 px
+LABEL 2 94 1 1 mip trilinear 2, bias 5/4, 32x16 px
+LABEL 2 95 1 1 mip trilinear 2, bias 5/4, 16x32 px
+LABEL 2 96 1 1 mip trilinear 2, bias 5/4, 8x1 px
+LABEL 2 97 1 1 mip trilinear 2, bias 5/4, 1x8 px
+LABEL 3 0 1 1 mip bilinear, bias 1/4, 32x32 px
+LABEL 3 1 1 1 mip bilinear, bias 1/4, 24x24 px
+LABEL 3 10 1 1 mip bilinear, bias 1/4, 32x4 px
+LABEL 3 100 1 1 mip bilinear, bias 6/4, 32x32 px
+LABEL 3 101 1 1 mip bilinear, bias 6/4, 24x24 px
+LABEL 3 102 1 1 mip bilinear, bias 6/4, 16x16 px
+LABEL 3 103 1 1 mip bilinear, bias 6/4, 12x12 px
+LABEL 3 104 1 1 mip bilinear, bias 6/4, 8x8 px
+LABEL 3 105 1 1 mip bilinear, bias 6/4, 6x6 px
+LABEL 3 106 1 1 mip bilinear, bias 6/4, 4x4 px
+LABEL 3 107 1 1 mip bilinear, bias 6/4, 3x3 px
+LABEL 3 108 1 1 mip bilinear, bias 6/4, 2x2 px
+LABEL 3 109 1 1 mip bilinear, bias 6/4, 1x1 px
+LABEL 3 11 1 1 mip bilinear, bias 1/4, 4x32 px
+LABEL 3 110 1 1 mip bilinear, bias 6/4, 32x4 px
+LABEL 3 111 1 1 mip bilinear, bias 6/4, 4x32 px
+LABEL 3 112 1 1 mip bilinear, bias 6/4, 16x2 px
+LABEL 3 113 1 1 mip bilinear, bias 6/4, 2x16 px
+LABEL 3 114 1 1 mip bilinear, bias 6/4, 32x16 px
+LABEL 3 115 1 1 mip bilinear, bias 6/4, 16x32 px
+LABEL 3 116 1 1 mip bilinear, bias 6/4, 8x1 px
+LABEL 3 117 1 1 mip bilinear, bias 6/4, 1x8 px
+LABEL 3 12 1 1 mip bilinear, bias 1/4, 16x2 px
+LABEL 3 120 1 1 mip bilinear, bias 7/4, 32x32 px
+LABEL 3 121 1 1 mip bilinear, bias 7/4, 24x24 px
+LABEL 3 122 1 1 mip bilinear, bias 7/4, 16x16 px
+LABEL 3 123 1 1 mip bilinear, bias 7/4, 12x12 px
+LABEL 3 124 1 1 mip bilinear, bias 7/4, 8x8 px
+LABEL 3 125 1 1 mip bilinear, bias 7/4, 6x6 px
+LABEL 3 126 1 1 mip bilinear, bias 7/4, 4x4 px
+LABEL 3 127 1 1 mip bilinear, bias 7/4, 3x3 px
+LABEL 3 128 1 1 mip bilinear, bias 7/4, 2x2 px
+LABEL 3 129 1 1 mip bilinear, bias 7/4, 1x1 px
+LABEL 3 13 1 1 mip bilinear, bias 1/4, 2x16 px
+LABEL 3 130 1 1 mip bilinear, bias 7/4, 32x4 px
+LABEL 3 131 1 1 mip bilinear, bias 7/4, 4x32 px
+LABEL 3 132 1 1 mip bilinear, bias 7/4, 16x2 px
+LABEL 3 133 1 1 mip bilinear, bias 7/4, 2x16 px
+LABEL 3 134 1 1 mip bilinear, bias 7/4, 32x16 px
+LABEL 3 135 1 1 mip bilinear, bias 7/4, 16x32 px
+LABEL 3 136 1 1 mip bilinear, bias 7/4, 8x1 px
+LABEL 3 137 1 1 mip bilinear, bias 7/4, 1x8 px
+LABEL 3 14 1 1 mip bilinear, bias 1/4, 32x16 px
+LABEL 3 140 1 1 mip bilinear, bias 8/4, 32x32 px
+LABEL 3 141 1 1 mip bilinear, bias 8/4, 24x24 px
+LABEL 3 142 1 1 mip bilinear, bias 8/4, 16x16 px
+LABEL 3 143 1 1 mip bilinear, bias 8/4, 12x12 px
+LABEL 3 144 1 1 mip bilinear, bias 8/4, 8x8 px
+LABEL 3 145 1 1 mip bilinear, bias 8/4, 6x6 px
+LABEL 3 146 1 1 mip bilinear, bias 8/4, 4x4 px
+LABEL 3 147 1 1 mip bilinear, bias 8/4, 3x3 px
+LABEL 3 148 1 1 mip bilinear, bias 8/4, 2x2 px
+LABEL 3 149 1 1 mip bilinear, bias 8/4, 1x1 px
+LABEL 3 15 1 1 mip bilinear, bias 1/4, 16x32 px
+LABEL 3 150 1 1 mip bilinear, bias 8/4, 32x4 px
+LABEL 3 151 1 1 mip bilinear, bias 8/4, 4x32 px
+LABEL 3 152 1 1 mip bilinear, bias 8/4, 16x2 px
+LABEL 3 153 1 1 mip bilinear, bias 8/4, 2x16 px
+LABEL 3 154 1 1 mip bilinear, bias 8/4, 32x16 px
+LABEL 3 155 1 1 mip bilinear, bias 8/4, 16x32 px
+LABEL 3 156 1 1 mip bilinear, bias 8/4, 8x1 px
+LABEL 3 157 1 1 mip bilinear, bias 8/4, 1x8 px
+LABEL 3 16 1 1 mip bilinear, bias 1/4, 8x1 px
+LABEL 3 160 1 1 mip bilinear, bias 9/4, 32x32 px
+LABEL 3 161 1 1 mip bilinear, bias 9/4, 24x24 px
+LABEL 3 162 1 1 mip bilinear, bias 9/4, 16x16 px
+LABEL 3 163 1 1 mip bilinear, bias 9/4, 12x12 px
+LABEL 3 164 1 1 mip bilinear, bias 9/4, 8x8 px
+LABEL 3 165 1 1 mip bilinear, bias 9/4, 6x6 px
+LABEL 3 166 1 1 mip bilinear, bias 9/4, 4x4 px
+LABEL 3 167 1 1 mip bilinear, bias 9/4, 3x3 px
+LABEL 3 168 1 1 mip bilinear, bias 9/4, 2x2 px
+LABEL 3 169 1 1 mip bilinear, bias 9/4, 1x1 px
+LABEL 3 17 1 1 mip bilinear, bias 1/4, 1x8 px
+LABEL 3 170 1 1 mip bilinear, bias 9/4, 32x4 px
+LABEL 3 171 1 1 mip bilinear, bias 9/4, 4x32 px
+LABEL 3 172 1 1 mip bilinear, bias 9/4, 16x2 px
+LABEL 3 173 1 1 mip bilinear, bias 9/4, 2x16 px
+LABEL 3 174 1 1 mip bilinear, bias 9/4, 32x16 px
+LABEL 3 175 1 1 mip bilinear, bias 9/4, 16x32 px
+LABEL 3 176 1 1 mip bilinear, bias 9/4, 8x1 px
+LABEL 3 177 1 1 mip bilinear, bias 9/4, 1x8 px
+LABEL 3 180 1 1 mip bilinear, bias 10/4, 32x32 px
+LABEL 3 181 1 1 mip bilinear, bias 10/4, 24x24 px
+LABEL 3 182 1 1 mip bilinear, bias 10/4, 16x16 px
+LABEL 3 183 1 1 mip bilinear, bias 10/4, 12x12 px
+LABEL 3 184 1 1 mip bilinear, bias 10/4, 8x8 px
+LABEL 3 185 1 1 mip bilinear, bias 10/4, 6x6 px
+LABEL 3 186 1 1 mip bilinear, bias 10/4, 4x4 px
+LABEL 3 187 1 1 mip bilinear, bias 10/4, 3x3 px
+LABEL 3 188 1 1 mip bilinear, bias 10/4, 2x2 px
+LABEL 3 189 1 1 mip bilinear, bias 10/4, 1x1 px
+LABEL 3 190 1 1 mip bilinear, bias 10/4, 32x4 px
+LABEL 3 191 1 1 mip bilinear, bias 10/4, 4x32 px
+LABEL 3 192 1 1 mip bilinear, bias 10/4, 16x2 px
+LABEL 3 193 1 1 mip bilinear, bias 10/4, 2x16 px
+LABEL 3 194 1 1 mip bilinear, bias 10/4, 32x16 px
+LABEL 3 195 1 1 mip bilinear, bias 10/4, 16x32 px
+LABEL 3 196 1 1 mip bilinear, bias 10/4, 8x1 px
+LABEL 3 197 1 1 mip bilinear, bias 10/4, 1x8 px
+LABEL 3 2 1 1 mip bilinear, bias 1/4, 16x16 px
+LABEL 3 20 1 1 mip bilinear, bias 2/4, 32x32 px
+LABEL 3 200 1 1 mip bilinear, bias 11/4, 32x32 px
+LABEL 3 201 1 1 mip bilinear, bias 11/4, 24x24 px
+LABEL 3 202 1 1 mip bilinear, bias 11/4, 16x16 px
+LABEL 3 203 1 1 mip bilinear, bias 11/4, 12x12 px
+LABEL 3 204 1 1 mip bilinear, bias 11/4, 8x8 px
+LABEL 3 205 1 1 mip bilinear, bias 11/4, 6x6 px
+LABEL 3 206 1 1 mip bilinear, bias 11/4, 4x4 px
+LABEL 3 207 1 1 mip bilinear, bias 11/4, 3x3 px
+LABEL 3 208 1 1 mip bilinear, bias 11/4, 2x2 px
+LABEL 3 209 1 1 mip bilinear, bias 11/4, 1x1 px
+LABEL 3 21 1 1 mip bilinear, bias 2/4, 24x24 px
+LABEL 3 210 1 1 mip bilinear, bias 11/4, 32x4 px
+LABEL 3 211 1 1 mip bilinear, bias 11/4, 4x32 px
+LABEL 3 212 1 1 mip bilinear, bias 11/4, 16x2 px
+LABEL 3 213 1 1 mip bilinear, bias 11/4, 2x16 px
+LABEL 3 214 1 1 mip bilinear, bias 11/4, 32x16 px
+LABEL 3 215 1 1 mip bilinear, bias 11/4, 16x32 px
+LABEL 3 216 1 1 mip bilinear, bias 11/4, 8x1 px
+LABEL 3 217 1 1 mip bilinear, bias 11/4, 1x8 px
+LABEL 3 22 1 1 mip bilinear, bias 2/4, 16x16 px
+LABEL 3 220 1 1 mip bilinear, bias 12/4, 32x32 px
+LABEL 3 221 1 1 mip bilinear, bias 12/4, 24x24 px
+LABEL 3 222 1 1 mip bilinear, bias 12/4, 16x16 px
+LABEL 3 223 1 1 mip bilinear, bias 12/4, 12x12 px
+LABEL 3 224 1 1 mip bilinear, bias 12/4, 8x8 px
+LABEL 3 225 1 1 mip bilinear, bias 12/4, 6x6 px
+LABEL 3 226 1 1 mip bilinear, bias 12/4, 4x4 px
+LABEL 3 227 1 1 mip bilinear, bias 12/4, 3x3 px
+LABEL 3 228 1 1 mip bilinear, bias 12/4, 2x2 px
+LABEL 3 229 1 1 mip bilinear, bias 12/4, 1x1 px
+LABEL 3 23 1 1 mip bilinear, bias 2/4, 12x12 px
+LABEL 3 230 1 1 mip bilinear, bias 12/4, 32x4 px
+LABEL 3 231 1 1 mip bilinear, bias 12/4, 4x32 px
+LABEL 3 232 1 1 mip bilinear, bias 12/4, 16x2 px
+LABEL 3 233 1 1 mip bilinear, bias 12/4, 2x16 px
+LABEL 3 234 1 1 mip bilinear, bias 12/4, 32x16 px
+LABEL 3 235 1 1 mip bilinear, bias 12/4, 16x32 px
+LABEL 3 236 1 1 mip bilinear, bias 12/4, 8x1 px
+LABEL 3 237 1 1 mip bilinear, bias 12/4, 1x8 px
+LABEL 3 24 1 1 mip bilinear, bias 2/4, 8x8 px
+LABEL 3 240 1 1 mip bilinear, bias 13/4, 32x32 px
+LABEL 3 241 1 1 mip bilinear, bias 13/4, 24x24 px
+LABEL 3 242 1 1 mip bilinear, bias 13/4, 16x16 px
+LABEL 3 243 1 1 mip bilinear, bias 13/4, 12x12 px
+LABEL 3 244 1 1 mip bilinear, bias 13/4, 8x8 px
+LABEL 3 245 1 1 mip bilinear, bias 13/4, 6x6 px
+LABEL 3 246 1 1 mip bilinear, bias 13/4, 4x4 px
+LABEL 3 247 1 1 mip bilinear, bias 13/4, 3x3 px
+LABEL 3 248 1 1 mip bilinear, bias 13/4, 2x2 px
+LABEL 3 249 1 1 mip bilinear, bias 13/4, 1x1 px
+LABEL 3 25 1 1 mip bilinear, bias 2/4, 6x6 px
+LABEL 3 250 1 1 mip bilinear, bias 13/4, 32x4 px
+LABEL 3 251 1 1 mip bilinear, bias 13/4, 4x32 px
+LABEL 3 252 1 1 mip bilinear, bias 13/4, 16x2 px
+LABEL 3 253 1 1 mip bilinear, bias 13/4, 2x16 px
+LABEL 3 254 1 1 mip bilinear, bias 13/4, 32x16 px
+LABEL 3 255 1 1 mip bilinear, bias 13/4, 16x32 px
+LABEL 3 256 1 1 mip bilinear, bias 13/4, 8x1 px
+LABEL 3 257 1 1 mip bilinear, bias 13/4, 1x8 px
+LABEL 3 26 1 1 mip bilinear, bias 2/4, 4x4 px
+LABEL 3 260 1 1 mip bilinear, bias 14/4, 32x32 px
+LABEL 3 261 1 1 mip bilinear, bias 14/4, 24x24 px
+LABEL 3 262 1 1 mip bilinear, bias 14/4, 16x16 px
+LABEL 3 263 1 1 mip bilinear, bias 14/4, 12x12 px
+LABEL 3 264 1 1 mip bilinear, bias 14/4, 8x8 px
+LABEL 3 265 1 1 mip bilinear, bias 14/4, 6x6 px
+LABEL 3 266 1 1 mip bilinear, bias 14/4, 4x4 px
+LABEL 3 267 1 1 mip bilinear, bias 14/4, 3x3 px
+LABEL 3 268 1 1 mip bilinear, bias 14/4, 2x2 px
+LABEL 3 269 1 1 mip bilinear, bias 14/4, 1x1 px
+LABEL 3 27 1 1 mip bilinear, bias 2/4, 3x3 px
+LABEL 3 270 1 1 mip bilinear, bias 14/4, 32x4 px
+LABEL 3 271 1 1 mip bilinear, bias 14/4, 4x32 px
+LABEL 3 272 1 1 mip bilinear, bias 14/4, 16x2 px
+LABEL 3 273 1 1 mip bilinear, bias 14/4, 2x16 px
+LABEL 3 274 1 1 mip bilinear, bias 14/4, 32x16 px
+LABEL 3 275 1 1 mip bilinear, bias 14/4, 16x32 px
+LABEL 3 276 1 1 mip bilinear, bias 14/4, 8x1 px
+LABEL 3 277 1 1 mip bilinear, bias 14/4, 1x8 px
+LABEL 3 28 1 1 mip bilinear, bias 2/4, 2x2 px
+LABEL 3 280 1 1 mip bilinear, bias 15/4, 32x32 px
+LABEL 3 281 1 1 mip bilinear, bias 15/4, 24x24 px
+LABEL 3 282 1 1 mip bilinear, bias 15/4, 16x16 px
+LABEL 3 283 1 1 mip bilinear, bias 15/4, 12x12 px
+LABEL 3 284 1 1 mip bilinear, bias 15/4, 8x8 px
+LABEL 3 285 1 1 mip bilinear, bias 15/4, 6x6 px
+LABEL 3 286 1 1 mip bilinear, bias 15/4, 4x4 px
+LABEL 3 287 1 1 mip bilinear, bias 15/4, 3x3 px
+LABEL 3 288 1 1 mip bilinear, bias 15/4, 2x2 px
+LABEL 3 289 1 1 mip bilinear, bias 15/4, 1x1 px
+LABEL 3 29 1 1 mip bilinear, bias 2/4, 1x1 px
+LABEL 3 290 1 1 mip bilinear, bias 15/4, 32x4 px
+LABEL 3 291 1 1 mip bilinear, bias 15/4, 4x32 px
+LABEL 3 292 1 1 mip bilinear, bias 15/4, 16x2 px
+LABEL 3 293 1 1 mip bilinear, bias 15/4, 2x16 px
+LABEL 3 294 1 1 mip bilinear, bias 15/4, 32x16 px
+LABEL 3 295 1 1 mip bilinear, bias 15/4, 16x32 px
+LABEL 3 296 1 1 mip bilinear, bias 15/4, 8x1 px
+LABEL 3 297 1 1 mip bilinear, bias 15/4, 1x8 px
+LABEL 3 3 1 1 mip bilinear, bias 1/4, 12x12 px
+LABEL 3 30 1 1 mip bilinear, bias 2/4, 32x4 px
+LABEL 3 31 1 1 mip bilinear, bias 2/4, 4x32 px
+LABEL 3 32 1 1 mip bilinear, bias 2/4, 16x2 px
+LABEL 3 33 1 1 mip bilinear, bias 2/4, 2x16 px
+LABEL 3 34 1 1 mip bilinear, bias 2/4, 32x16 px
+LABEL 3 35 1 1 mip bilinear, bias 2/4, 16x32 px
+LABEL 3 36 1 1 mip bilinear, bias 2/4, 8x1 px
+LABEL 3 37 1 1 mip bilinear, bias 2/4, 1x8 px
+LABEL 3 4 1 1 mip bilinear, bias 1/4, 8x8 px
+LABEL 3 40 1 1 mip bilinear, bias 3/4, 32x32 px
+LABEL 3 41 1 1 mip bilinear, bias 3/4, 24x24 px
+LABEL 3 42 1 1 mip bilinear, bias 3/4, 16x16 px
+LABEL 3 43 1 1 mip bilinear, bias 3/4, 12x12 px
+LABEL 3 44 1 1 mip bilinear, bias 3/4, 8x8 px
+LABEL 3 45 1 1 mip bilinear, bias 3/4, 6x6 px
+LABEL 3 46 1 1 mip bilinear, bias 3/4, 4x4 px
+LABEL 3 47 1 1 mip bilinear, bias 3/4, 3x3 px
+LABEL 3 48 1 1 mip bilinear, bias 3/4, 2x2 px
+LABEL 3 49 1 1 mip bilinear, bias 3/4, 1x1 px
+LABEL 3 5 1 1 mip bilinear, bias 1/4, 6x6 px
+LABEL 3 50 1 1 mip bilinear, bias 3/4, 32x4 px
+LABEL 3 51 1 1 mip bilinear, bias 3/4, 4x32 px
+LABEL 3 52 1 1 mip bilinear, bias 3/4, 16x2 px
+LABEL 3 53 1 1 mip bilinear, bias 3/4, 2x16 px
+LABEL 3 54 1 1 mip bilinear, bias 3/4, 32x16 px
+LABEL 3 55 1 1 mip bilinear, bias 3/4, 16x32 px
+LABEL 3 56 1 1 mip bilinear, bias 3/4, 8x1 px
+LABEL 3 57 1 1 mip bilinear, bias 3/4, 1x8 px
+LABEL 3 6 1 1 mip bilinear, bias 1/4, 4x4 px
+LABEL 3 60 1 1 mip bilinear, bias 4/4, 32x32 px
+LABEL 3 61 1 1 mip bilinear, bias 4/4, 24x24 px
+LABEL 3 62 1 1 mip bilinear, bias 4/4, 16x16 px
+LABEL 3 63 1 1 mip bilinear, bias 4/4, 12x12 px
+LABEL 3 64 1 1 mip bilinear, bias 4/4, 8x8 px
+LABEL 3 65 1 1 mip bilinear, bias 4/4, 6x6 px
+LABEL 3 66 1 1 mip bilinear, bias 4/4, 4x4 px
+LABEL 3 67 1 1 mip bilinear, bias 4/4, 3x3 px
+LABEL 3 68 1 1 mip bilinear, bias 4/4, 2x2 px
+LABEL 3 69 1 1 mip bilinear, bias 4/4, 1x1 px
+LABEL 3 7 1 1 mip bilinear, bias 1/4, 3x3 px
+LABEL 3 70 1 1 mip bilinear, bias 4/4, 32x4 px
+LABEL 3 71 1 1 mip bilinear, bias 4/4, 4x32 px
+LABEL 3 72 1 1 mip bilinear, bias 4/4, 16x2 px
+LABEL 3 73 1 1 mip bilinear, bias 4/4, 2x16 px
+LABEL 3 74 1 1 mip bilinear, bias 4/4, 32x16 px
+LABEL 3 75 1 1 mip bilinear, bias 4/4, 16x32 px
+LABEL 3 76 1 1 mip bilinear, bias 4/4, 8x1 px
+LABEL 3 77 1 1 mip bilinear, bias 4/4, 1x8 px
+LABEL 3 8 1 1 mip bilinear, bias 1/4, 2x2 px
+LABEL 3 80 1 1 mip bilinear, bias 5/4, 32x32 px
+LABEL 3 81 1 1 mip bilinear, bias 5/4, 24x24 px
+LABEL 3 82 1 1 mip bilinear, bias 5/4, 16x16 px
+LABEL 3 83 1 1 mip bilinear, bias 5/4, 12x12 px
+LABEL 3 84 1 1 mip bilinear, bias 5/4, 8x8 px
+LABEL 3 85 1 1 mip bilinear, bias 5/4, 6x6 px
+LABEL 3 86 1 1 mip bilinear, bias 5/4, 4x4 px
+LABEL 3 87 1 1 mip bilinear, bias 5/4, 3x3 px
+LABEL 3 88 1 1 mip bilinear, bias 5/4, 2x2 px
+LABEL 3 89 1 1 mip bilinear, bias 5/4, 1x1 px
+LABEL 3 9 1 1 mip bilinear, bias 1/4, 1x1 px
+LABEL 3 90 1 1 mip bilinear, bias 5/4, 32x4 px
+LABEL 3 91 1 1 mip bilinear, bias 5/4, 4x32 px
+LABEL 3 92 1 1 mip bilinear, bias 5/4, 16x2 px
+LABEL 3 93 1 1 mip bilinear, bias 5/4, 2x16 px
+LABEL 3 94 1 1 mip bilinear, bias 5/4, 32x16 px
+LABEL 3 95 1 1 mip bilinear, bias 5/4, 16x32 px
+LABEL 3 96 1 1 mip bilinear, bias 5/4, 8x1 px
+LABEL 3 97 1 1 mip bilinear, bias 5/4, 1x8 px
+LABEL 4 0 2 2 VQ 8x8 at 8x, point
+LABEL 4 4 2 2 VQ 8x8 at 8x, bilinear
+LABEL 4 8 4 1 stride 32, 64x8 at 2x, point

@@ -1,0 +1,13 @@
+# Python caches
+__pycache__/
+*.pyc
+
+# compiled from the .cpp next to them (generators and probes on the refsw2 headers)
+/covmeas/gen
+/zmeas/gen
+/zmeas/read
+/uvspan/gen
+/ops/gen
+/model/covprobe
+/model/depthprobe
+/model/tspprobe

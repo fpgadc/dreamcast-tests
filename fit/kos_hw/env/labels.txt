@@ -1,0 +1,208 @@
+LABEL 0 0 1 1 TR replace
+LABEL 0 1 1 1 TR modulate
+LABEL 0 10 1 1 TR decal, vertex alpha
+LABEL 0 11 1 1 TR modulate alpha, vertex alpha
+LABEL 0 12 1 1 TR replace, texture alpha, vertex alpha
+LABEL 0 13 1 1 TR modulate, texture alpha, vertex alpha
+LABEL 0 14 1 1 TR decal, texture alpha, vertex alpha
+LABEL 0 15 1 1 TR modulate alpha, texture alpha, vertex alpha
+LABEL 0 16 1 1 TR replace, offset
+LABEL 0 17 1 1 TR modulate, offset
+LABEL 0 18 1 1 TR decal, offset
+LABEL 0 19 1 1 TR modulate alpha, offset
+LABEL 0 2 1 1 TR decal
+LABEL 0 20 1 1 TR replace, texture alpha, offset
+LABEL 0 21 1 1 TR modulate, texture alpha, offset
+LABEL 0 22 1 1 TR decal, texture alpha, offset
+LABEL 0 23 1 1 TR modulate alpha, texture alpha, offset
+LABEL 0 24 1 1 TR replace, vertex alpha, offset
+LABEL 0 25 1 1 TR modulate, vertex alpha, offset
+LABEL 0 26 1 1 TR decal, vertex alpha, offset
+LABEL 0 27 1 1 TR modulate alpha, vertex alpha, offset
+LABEL 0 28 1 1 TR replace, texture alpha, vertex alpha, offset
+LABEL 0 29 1 1 TR modulate, texture alpha, vertex alpha, offset
+LABEL 0 3 1 1 TR modulate alpha
+LABEL 0 30 1 1 TR decal, texture alpha, vertex alpha, offset
+LABEL 0 31 1 1 TR modulate alpha, texture alpha, vertex alpha, offset
+LABEL 0 4 1 1 TR replace, texture alpha
+LABEL 0 40 1 1 OP replace
+LABEL 0 41 1 1 OP modulate
+LABEL 0 42 1 1 OP decal
+LABEL 0 43 1 1 OP modulate alpha
+LABEL 0 44 1 1 OP replace, texture alpha
+LABEL 0 45 1 1 OP modulate, texture alpha
+LABEL 0 46 1 1 OP decal, texture alpha
+LABEL 0 47 1 1 OP modulate alpha, texture alpha
+LABEL 0 48 1 1 OP replace, vertex alpha
+LABEL 0 49 1 1 OP modulate, vertex alpha
+LABEL 0 5 1 1 TR modulate, texture alpha
+LABEL 0 50 1 1 OP decal, vertex alpha
+LABEL 0 51 1 1 OP modulate alpha, vertex alpha
+LABEL 0 52 1 1 OP replace, texture alpha, vertex alpha
+LABEL 0 53 1 1 OP modulate, texture alpha, vertex alpha
+LABEL 0 54 1 1 OP decal, texture alpha, vertex alpha
+LABEL 0 55 1 1 OP modulate alpha, texture alpha, vertex alpha
+LABEL 0 56 1 1 OP replace, offset
+LABEL 0 57 1 1 OP modulate, offset
+LABEL 0 58 1 1 OP decal, offset
+LABEL 0 59 1 1 OP modulate alpha, offset
+LABEL 0 6 1 1 TR decal, texture alpha
+LABEL 0 60 1 1 OP replace, texture alpha, offset
+LABEL 0 61 1 1 OP modulate, texture alpha, offset
+LABEL 0 62 1 1 OP decal, texture alpha, offset
+LABEL 0 63 1 1 OP modulate alpha, texture alpha, offset
+LABEL 0 64 1 1 OP replace, vertex alpha, offset
+LABEL 0 65 1 1 OP modulate, vertex alpha, offset
+LABEL 0 66 1 1 OP decal, vertex alpha, offset
+LABEL 0 67 1 1 OP modulate alpha, vertex alpha, offset
+LABEL 0 68 1 1 OP replace, texture alpha, vertex alpha, offset
+LABEL 0 69 1 1 OP modulate, texture alpha, vertex alpha, offset
+LABEL 0 7 1 1 TR modulate alpha, texture alpha
+LABEL 0 70 1 1 OP decal, texture alpha, vertex alpha, offset
+LABEL 0 71 1 1 OP modulate alpha, texture alpha, vertex alpha, offset
+LABEL 0 8 1 1 TR replace, vertex alpha
+LABEL 0 9 1 1 TR modulate, vertex alpha
+LABEL 1 0 1 1 TR (alpha) replace
+LABEL 1 1 1 1 TR (alpha) modulate
+LABEL 1 10 1 1 TR (alpha) decal, vertex alpha
+LABEL 1 11 1 1 TR (alpha) modulate alpha, vertex alpha
+LABEL 1 12 1 1 TR (alpha) replace, texture alpha, vertex alpha
+LABEL 1 13 1 1 TR (alpha) modulate, texture alpha, vertex alpha
+LABEL 1 14 1 1 TR (alpha) decal, texture alpha, vertex alpha
+LABEL 1 15 1 1 TR (alpha) modulate alpha, texture alpha, vertex alpha
+LABEL 1 16 1 1 TR (alpha) replace, offset
+LABEL 1 17 1 1 TR (alpha) modulate, offset
+LABEL 1 18 1 1 TR (alpha) decal, offset
+LABEL 1 19 1 1 TR (alpha) modulate alpha, offset
+LABEL 1 2 1 1 TR (alpha) decal
+LABEL 1 20 1 1 TR (alpha) replace, texture alpha, offset
+LABEL 1 21 1 1 TR (alpha) modulate, texture alpha, offset
+LABEL 1 22 1 1 TR (alpha) decal, texture alpha, offset
+LABEL 1 23 1 1 TR (alpha) modulate alpha, texture alpha, offset
+LABEL 1 24 1 1 TR (alpha) replace, vertex alpha, offset
+LABEL 1 25 1 1 TR (alpha) modulate, vertex alpha, offset
+LABEL 1 26 1 1 TR (alpha) decal, vertex alpha, offset
+LABEL 1 27 1 1 TR (alpha) modulate alpha, vertex alpha, offset
+LABEL 1 28 1 1 TR (alpha) replace, texture alpha, vertex alpha, offset
+LABEL 1 29 1 1 TR (alpha) modulate, texture alpha, vertex alpha, offset
+LABEL 1 3 1 1 TR (alpha) modulate alpha
+LABEL 1 30 1 1 TR (alpha) decal, texture alpha, vertex alpha, offset
+LABEL 1 31 1 1 TR (alpha) modulate alpha, texture alpha, vertex alpha, offset
+LABEL 1 4 1 1 TR (alpha) replace, texture alpha
+LABEL 1 40 1 1 OP (alpha) replace
+LABEL 1 41 1 1 OP (alpha) modulate
+LABEL 1 42 1 1 OP (alpha) decal
+LABEL 1 43 1 1 OP (alpha) modulate alpha
+LABEL 1 44 1 1 OP (alpha) replace, texture alpha
+LABEL 1 45 1 1 OP (alpha) modulate, texture alpha
+LABEL 1 46 1 1 OP (alpha) decal, texture alpha
+LABEL 1 47 1 1 OP (alpha) modulate alpha, texture alpha
+LABEL 1 48 1 1 OP (alpha) replace, vertex alpha
+LABEL 1 49 1 1 OP (alpha) modulate, vertex alpha
+LABEL 1 5 1 1 TR (alpha) modulate, texture alpha
+LABEL 1 50 1 1 OP (alpha) decal, vertex alpha
+LABEL 1 51 1 1 OP (alpha) modulate alpha, vertex alpha
+LABEL 1 52 1 1 OP (alpha) replace, texture alpha, vertex alpha
+LABEL 1 53 1 1 OP (alpha) modulate, texture alpha, vertex alpha
+LABEL 1 54 1 1 OP (alpha) decal, texture alpha, vertex alpha
+LABEL 1 55 1 1 OP (alpha) modulate alpha, texture alpha, vertex alpha
+LABEL 1 56 1 1 OP (alpha) replace, offset
+LABEL 1 57 1 1 OP (alpha) modulate, offset
+LABEL 1 58 1 1 OP (alpha) decal, offset
+LABEL 1 59 1 1 OP (alpha) modulate alpha, offset
+LABEL 1 6 1 1 TR (alpha) decal, texture alpha
+LABEL 1 60 1 1 OP (alpha) replace, texture alpha, offset
+LABEL 1 61 1 1 OP (alpha) modulate, texture alpha, offset
+LABEL 1 62 1 1 OP (alpha) decal, texture alpha, offset
+LABEL 1 63 1 1 OP (alpha) modulate alpha, texture alpha, offset
+LABEL 1 64 1 1 OP (alpha) replace, vertex alpha, offset
+LABEL 1 65 1 1 OP (alpha) modulate, vertex alpha, offset
+LABEL 1 66 1 1 OP (alpha) decal, vertex alpha, offset
+LABEL 1 67 1 1 OP (alpha) modulate alpha, vertex alpha, offset
+LABEL 1 68 1 1 OP (alpha) replace, texture alpha, vertex alpha, offset
+LABEL 1 69 1 1 OP (alpha) modulate, texture alpha, vertex alpha, offset
+LABEL 1 7 1 1 TR (alpha) modulate alpha, texture alpha
+LABEL 1 70 1 1 OP (alpha) decal, texture alpha, vertex alpha, offset
+LABEL 1 71 1 1 OP (alpha) modulate alpha, texture alpha, vertex alpha, offset
+LABEL 1 8 1 1 TR (alpha) replace, vertex alpha
+LABEL 1 9 1 1 TR (alpha) modulate, vertex alpha
+LABEL 2 0 2 2 wrap: flip none clamp none
+LABEL 2 10 2 2 wrap: flip V clamp V
+LABEL 2 12 2 2 wrap: flip V clamp U
+LABEL 2 14 2 2 wrap: flip V clamp UV
+LABEL 2 2 2 2 wrap: flip none clamp V
+LABEL 2 4 2 2 wrap: flip none clamp U
+LABEL 2 6 2 2 wrap: flip none clamp UV
+LABEL 2 8 2 2 wrap: flip V clamp none
+LABEL 2 80 2 2 wrap: flip U clamp none
+LABEL 2 82 2 2 wrap: flip U clamp V
+LABEL 2 84 2 2 wrap: flip U clamp U
+LABEL 2 86 2 2 wrap: flip U clamp UV
+LABEL 2 88 2 2 wrap: flip UV clamp none
+LABEL 2 90 2 2 wrap: flip UV clamp V
+LABEL 2 92 2 2 wrap: flip UV clamp U
+LABEL 2 94 2 2 wrap: flip UV clamp UV
+LABEL 3 0 1 1 clamp on, untextured, gray 0..
+LABEL 3 1 1 1 clamp on, untextured, gray 16..
+LABEL 3 10 1 1 clamp on, untextured, gray 160..
+LABEL 3 11 1 1 clamp on, untextured, gray 176..
+LABEL 3 12 1 1 clamp on, untextured, gray 192..
+LABEL 3 13 1 1 clamp on, untextured, gray 208..
+LABEL 3 14 1 1 clamp on, untextured, gray 224..
+LABEL 3 15 1 1 clamp on, untextured, gray 240..
+LABEL 3 2 1 1 clamp on, untextured, gray 32..
+LABEL 3 20 1 1 clamp off, untextured, gray 0..
+LABEL 3 21 1 1 clamp off, untextured, gray 16..
+LABEL 3 22 1 1 clamp off, untextured, gray 32..
+LABEL 3 23 1 1 clamp off, untextured, gray 48..
+LABEL 3 24 1 1 clamp off, untextured, gray 64..
+LABEL 3 25 1 1 clamp off, untextured, gray 80..
+LABEL 3 26 1 1 clamp off, untextured, gray 96..
+LABEL 3 27 1 1 clamp off, untextured, gray 112..
+LABEL 3 28 1 1 clamp off, untextured, gray 128..
+LABEL 3 29 1 1 clamp off, untextured, gray 144..
+LABEL 3 3 1 1 clamp on, untextured, gray 48..
+LABEL 3 30 1 1 clamp off, untextured, gray 160..
+LABEL 3 31 1 1 clamp off, untextured, gray 176..
+LABEL 3 32 1 1 clamp off, untextured, gray 192..
+LABEL 3 33 1 1 clamp off, untextured, gray 208..
+LABEL 3 34 1 1 clamp off, untextured, gray 224..
+LABEL 3 35 1 1 clamp off, untextured, gray 240..
+LABEL 3 4 1 1 clamp on, untextured, gray 64..
+LABEL 3 40 1 1 clamp on, modulate + offset, gray 0..
+LABEL 3 41 1 1 clamp on, modulate + offset, gray 16..
+LABEL 3 42 1 1 clamp on, modulate + offset, gray 32..
+LABEL 3 43 1 1 clamp on, modulate + offset, gray 48..
+LABEL 3 44 1 1 clamp on, modulate + offset, gray 64..
+LABEL 3 45 1 1 clamp on, modulate + offset, gray 80..
+LABEL 3 46 1 1 clamp on, modulate + offset, gray 96..
+LABEL 3 47 1 1 clamp on, modulate + offset, gray 112..
+LABEL 3 48 1 1 clamp on, modulate + offset, gray 128..
+LABEL 3 49 1 1 clamp on, modulate + offset, gray 144..
+LABEL 3 5 1 1 clamp on, untextured, gray 80..
+LABEL 3 50 1 1 clamp on, modulate + offset, gray 160..
+LABEL 3 51 1 1 clamp on, modulate + offset, gray 176..
+LABEL 3 52 1 1 clamp on, modulate + offset, gray 192..
+LABEL 3 53 1 1 clamp on, modulate + offset, gray 208..
+LABEL 3 54 1 1 clamp on, modulate + offset, gray 224..
+LABEL 3 55 1 1 clamp on, modulate + offset, gray 240..
+LABEL 3 6 1 1 clamp on, untextured, gray 96..
+LABEL 3 60 1 1 clamp off, modulate + offset, gray 0..
+LABEL 3 61 1 1 clamp off, modulate + offset, gray 16..
+LABEL 3 62 1 1 clamp off, modulate + offset, gray 32..
+LABEL 3 63 1 1 clamp off, modulate + offset, gray 48..
+LABEL 3 64 1 1 clamp off, modulate + offset, gray 64..
+LABEL 3 65 1 1 clamp off, modulate + offset, gray 80..
+LABEL 3 66 1 1 clamp off, modulate + offset, gray 96..
+LABEL 3 67 1 1 clamp off, modulate + offset, gray 112..
+LABEL 3 68 1 1 clamp off, modulate + offset, gray 128..
+LABEL 3 69 1 1 clamp off, modulate + offset, gray 144..
+LABEL 3 7 1 1 clamp on, untextured, gray 112..
+LABEL 3 70 1 1 clamp off, modulate + offset, gray 160..
+LABEL 3 71 1 1 clamp off, modulate + offset, gray 176..
+LABEL 3 72 1 1 clamp off, modulate + offset, gray 192..
+LABEL 3 73 1 1 clamp off, modulate + offset, gray 208..
+LABEL 3 74 1 1 clamp off, modulate + offset, gray 224..
+LABEL 3 75 1 1 clamp off, modulate + offset, gray 240..
+LABEL 3 8 1 1 clamp on, untextured, gray 128..
+LABEL 3 9 1 1 clamp on, untextured, gray 144..

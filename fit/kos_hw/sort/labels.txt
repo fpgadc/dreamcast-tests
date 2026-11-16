@@ -1,0 +1,56 @@
+LABEL 0 0 1 1 alpha: R 0.3 G 0.5 B 0.7
+LABEL 0 1 1 1 alpha: R 0.3 G 0.7 B 0.5
+LABEL 0 10 1 1 alpha: R and G intersect
+LABEL 0 11 1 1 alpha: R and G intersect, submitted G first
+LABEL 0 12 1 1 alpha: R 0.7 G 0.5 B 0.3, depth write off
+LABEL 0 13 1 1 alpha: R 0.7 G 0.5 B 0.3, compare always
+LABEL 0 2 1 1 alpha: R 0.5 G 0.3 B 0.7
+LABEL 0 20 1 1 alpha: R 0.3 G 0.5 B 0.7, over opaque 0.4
+LABEL 0 21 1 1 alpha: R 0.3 G 0.7 B 0.5, over opaque 0.4
+LABEL 0 22 1 1 alpha: R 0.5 G 0.3 B 0.7, over opaque 0.4
+LABEL 0 23 1 1 alpha: R 0.5 G 0.7 B 0.3, over opaque 0.4
+LABEL 0 24 1 1 alpha: R 0.7 G 0.3 B 0.5, over opaque 0.4
+LABEL 0 25 1 1 alpha: R 0.7 G 0.5 B 0.3, over opaque 0.4
+LABEL 0 26 1 1 alpha: tie R 0.5 G 0.5 B 0.5, over opaque 0.4
+LABEL 0 27 1 1 alpha: tie R 0.5 G 0.5 B 0.7, over opaque 0.4
+LABEL 0 28 1 1 alpha: tie R 0.7 G 0.5 B 0.5, over opaque 0.4
+LABEL 0 29 1 1 alpha: tie R 0.5 G 0.7 B 0.5, over opaque 0.4
+LABEL 0 3 1 1 alpha: R 0.5 G 0.7 B 0.3
+LABEL 0 30 1 1 alpha: R and G intersect, over opaque 0.4
+LABEL 0 31 1 1 alpha: R and G intersect, submitted G first, over opaque 0.4
+LABEL 0 32 1 1 alpha: R 0.7 G 0.5 B 0.3, depth write off, over opaque 0.4
+LABEL 0 33 1 1 alpha: R 0.7 G 0.5 B 0.3, compare always, over opaque 0.4
+LABEL 0 4 1 1 alpha: R 0.7 G 0.3 B 0.5
+LABEL 0 5 1 1 alpha: R 0.7 G 0.5 B 0.3
+LABEL 0 6 1 1 alpha: tie R 0.5 G 0.5 B 0.5
+LABEL 0 7 1 1 alpha: tie R 0.5 G 0.5 B 0.7
+LABEL 0 8 1 1 alpha: tie R 0.7 G 0.5 B 0.5
+LABEL 0 9 1 1 alpha: tie R 0.5 G 0.7 B 0.5
+LABEL 1 0 1 1 add: R 0.3 G 0.5 B 0.7
+LABEL 1 1 1 1 add: R 0.3 G 0.7 B 0.5
+LABEL 1 10 1 1 add: R and G intersect
+LABEL 1 11 1 1 add: R and G intersect, submitted G first
+LABEL 1 12 1 1 add: R 0.7 G 0.5 B 0.3, depth write off
+LABEL 1 13 1 1 add: R 0.7 G 0.5 B 0.3, compare always
+LABEL 1 2 1 1 add: R 0.5 G 0.3 B 0.7
+LABEL 1 20 1 1 add: R 0.3 G 0.5 B 0.7, over opaque 0.4
+LABEL 1 21 1 1 add: R 0.3 G 0.7 B 0.5, over opaque 0.4
+LABEL 1 22 1 1 add: R 0.5 G 0.3 B 0.7, over opaque 0.4
+LABEL 1 23 1 1 add: R 0.5 G 0.7 B 0.3, over opaque 0.4
+LABEL 1 24 1 1 add: R 0.7 G 0.3 B 0.5, over opaque 0.4
+LABEL 1 25 1 1 add: R 0.7 G 0.5 B 0.3, over opaque 0.4
+LABEL 1 26 1 1 add: tie R 0.5 G 0.5 B 0.5, over opaque 0.4
+LABEL 1 27 1 1 add: tie R 0.5 G 0.5 B 0.7, over opaque 0.4
+LABEL 1 28 1 1 add: tie R 0.7 G 0.5 B 0.5, over opaque 0.4
+LABEL 1 29 1 1 add: tie R 0.5 G 0.7 B 0.5, over opaque 0.4
+LABEL 1 3 1 1 add: R 0.5 G 0.7 B 0.3
+LABEL 1 30 1 1 add: R and G intersect, over opaque 0.4
+LABEL 1 31 1 1 add: R and G intersect, submitted G first, over opaque 0.4
+LABEL 1 32 1 1 add: R 0.7 G 0.5 B 0.3, depth write off, over opaque 0.4
+LABEL 1 33 1 1 add: R 0.7 G 0.5 B 0.3, compare always, over opaque 0.4
+LABEL 1 4 1 1 add: R 0.7 G 0.3 B 0.5
+LABEL 1 5 1 1 add: R 0.7 G 0.5 B 0.3
+LABEL 1 6 1 1 add: tie R 0.5 G 0.5 B 0.5
+LABEL 1 7 1 1 add: tie R 0.5 G 0.5 B 0.7
+LABEL 1 8 1 1 add: tie R 0.7 G 0.5 B 0.5
+LABEL 1 9 1 1 add: tie R 0.5 G 0.7 B 0.5

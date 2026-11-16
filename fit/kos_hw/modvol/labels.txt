@@ -1,0 +1,192 @@
+LABEL 0 0 1 1 reg 180, OP cheap shadow, 1 front
+LABEL 0 1 1 1 reg 180, OP cheap shadow, 1 behind
+LABEL 0 100 1 1 reg 180, TR no modifiers, 1 front
+LABEL 0 101 1 1 reg 180, TR no modifiers, 1 behind
+LABEL 0 102 1 1 reg 180, TR no modifiers, 2 front
+LABEL 0 103 1 1 reg 180, TR no modifiers, front + behind
+LABEL 0 104 1 1 reg 180, TR no modifiers, 3 front
+LABEL 0 105 1 1 reg 180, TR no modifiers, 2 volumes
+LABEL 0 106 1 1 reg 180, TR no modifiers, 1 front, exclude
+LABEL 0 107 1 1 reg 180, TR no modifiers, none
+LABEL 0 2 1 1 reg 180, OP cheap shadow, 2 front
+LABEL 0 20 1 1 reg 180, OP two-volume, 1 front
+LABEL 0 21 1 1 reg 180, OP two-volume, 1 behind
+LABEL 0 22 1 1 reg 180, OP two-volume, 2 front
+LABEL 0 23 1 1 reg 180, OP two-volume, front + behind
+LABEL 0 24 1 1 reg 180, OP two-volume, 3 front
+LABEL 0 25 1 1 reg 180, OP two-volume, 2 volumes
+LABEL 0 26 1 1 reg 180, OP two-volume, 1 front, exclude
+LABEL 0 27 1 1 reg 180, OP two-volume, none
+LABEL 0 3 1 1 reg 180, OP cheap shadow, front + behind
+LABEL 0 4 1 1 reg 180, OP cheap shadow, 3 front
+LABEL 0 40 1 1 reg 180, OP no modifiers, 1 front
+LABEL 0 41 1 1 reg 180, OP no modifiers, 1 behind
+LABEL 0 42 1 1 reg 180, OP no modifiers, 2 front
+LABEL 0 43 1 1 reg 180, OP no modifiers, front + behind
+LABEL 0 44 1 1 reg 180, OP no modifiers, 3 front
+LABEL 0 45 1 1 reg 180, OP no modifiers, 2 volumes
+LABEL 0 46 1 1 reg 180, OP no modifiers, 1 front, exclude
+LABEL 0 47 1 1 reg 180, OP no modifiers, none
+LABEL 0 5 1 1 reg 180, OP cheap shadow, 2 volumes
+LABEL 0 6 1 1 reg 180, OP cheap shadow, 1 front, exclude
+LABEL 0 60 1 1 reg 180, TR cheap shadow, 1 front
+LABEL 0 61 1 1 reg 180, TR cheap shadow, 1 behind
+LABEL 0 62 1 1 reg 180, TR cheap shadow, 2 front
+LABEL 0 63 1 1 reg 180, TR cheap shadow, front + behind
+LABEL 0 64 1 1 reg 180, TR cheap shadow, 3 front
+LABEL 0 65 1 1 reg 180, TR cheap shadow, 2 volumes
+LABEL 0 66 1 1 reg 180, TR cheap shadow, 1 front, exclude
+LABEL 0 67 1 1 reg 180, TR cheap shadow, none
+LABEL 0 7 1 1 reg 180, OP cheap shadow, none
+LABEL 0 80 1 1 reg 180, TR two-volume, 1 front
+LABEL 0 81 1 1 reg 180, TR two-volume, 1 behind
+LABEL 0 82 1 1 reg 180, TR two-volume, 2 front
+LABEL 0 83 1 1 reg 180, TR two-volume, front + behind
+LABEL 0 84 1 1 reg 180, TR two-volume, 3 front
+LABEL 0 85 1 1 reg 180, TR two-volume, 2 volumes
+LABEL 0 86 1 1 reg 180, TR two-volume, 1 front, exclude
+LABEL 0 87 1 1 reg 180, TR two-volume, none
+LABEL 1 0 1 1 reg 100, OP cheap shadow, 1 front
+LABEL 1 1 1 1 reg 100, OP cheap shadow, 1 behind
+LABEL 1 100 1 1 reg 100, TR no modifiers, 1 front
+LABEL 1 101 1 1 reg 100, TR no modifiers, 1 behind
+LABEL 1 102 1 1 reg 100, TR no modifiers, 2 front
+LABEL 1 103 1 1 reg 100, TR no modifiers, front + behind
+LABEL 1 104 1 1 reg 100, TR no modifiers, 3 front
+LABEL 1 105 1 1 reg 100, TR no modifiers, 2 volumes
+LABEL 1 106 1 1 reg 100, TR no modifiers, 1 front, exclude
+LABEL 1 107 1 1 reg 100, TR no modifiers, none
+LABEL 1 2 1 1 reg 100, OP cheap shadow, 2 front
+LABEL 1 20 1 1 reg 100, OP two-volume, 1 front
+LABEL 1 21 1 1 reg 100, OP two-volume, 1 behind
+LABEL 1 22 1 1 reg 100, OP two-volume, 2 front
+LABEL 1 23 1 1 reg 100, OP two-volume, front + behind
+LABEL 1 24 1 1 reg 100, OP two-volume, 3 front
+LABEL 1 25 1 1 reg 100, OP two-volume, 2 volumes
+LABEL 1 26 1 1 reg 100, OP two-volume, 1 front, exclude
+LABEL 1 27 1 1 reg 100, OP two-volume, none
+LABEL 1 3 1 1 reg 100, OP cheap shadow, front + behind
+LABEL 1 4 1 1 reg 100, OP cheap shadow, 3 front
+LABEL 1 40 1 1 reg 100, OP no modifiers, 1 front
+LABEL 1 41 1 1 reg 100, OP no modifiers, 1 behind
+LABEL 1 42 1 1 reg 100, OP no modifiers, 2 front
+LABEL 1 43 1 1 reg 100, OP no modifiers, front + behind
+LABEL 1 44 1 1 reg 100, OP no modifiers, 3 front
+LABEL 1 45 1 1 reg 100, OP no modifiers, 2 volumes
+LABEL 1 46 1 1 reg 100, OP no modifiers, 1 front, exclude
+LABEL 1 47 1 1 reg 100, OP no modifiers, none
+LABEL 1 5 1 1 reg 100, OP cheap shadow, 2 volumes
+LABEL 1 6 1 1 reg 100, OP cheap shadow, 1 front, exclude
+LABEL 1 60 1 1 reg 100, TR cheap shadow, 1 front
+LABEL 1 61 1 1 reg 100, TR cheap shadow, 1 behind
+LABEL 1 62 1 1 reg 100, TR cheap shadow, 2 front
+LABEL 1 63 1 1 reg 100, TR cheap shadow, front + behind
+LABEL 1 64 1 1 reg 100, TR cheap shadow, 3 front
+LABEL 1 65 1 1 reg 100, TR cheap shadow, 2 volumes
+LABEL 1 66 1 1 reg 100, TR cheap shadow, 1 front, exclude
+LABEL 1 67 1 1 reg 100, TR cheap shadow, none
+LABEL 1 7 1 1 reg 100, OP cheap shadow, none
+LABEL 1 80 1 1 reg 100, TR two-volume, 1 front
+LABEL 1 81 1 1 reg 100, TR two-volume, 1 behind
+LABEL 1 82 1 1 reg 100, TR two-volume, 2 front
+LABEL 1 83 1 1 reg 100, TR two-volume, front + behind
+LABEL 1 84 1 1 reg 100, TR two-volume, 3 front
+LABEL 1 85 1 1 reg 100, TR two-volume, 2 volumes
+LABEL 1 86 1 1 reg 100, TR two-volume, 1 front, exclude
+LABEL 1 87 1 1 reg 100, TR two-volume, none
+LABEL 2 0 1 1 reg 1ff, OP cheap shadow, 1 front
+LABEL 2 1 1 1 reg 1ff, OP cheap shadow, 1 behind
+LABEL 2 100 1 1 reg 1ff, TR no modifiers, 1 front
+LABEL 2 101 1 1 reg 1ff, TR no modifiers, 1 behind
+LABEL 2 102 1 1 reg 1ff, TR no modifiers, 2 front
+LABEL 2 103 1 1 reg 1ff, TR no modifiers, front + behind
+LABEL 2 104 1 1 reg 1ff, TR no modifiers, 3 front
+LABEL 2 105 1 1 reg 1ff, TR no modifiers, 2 volumes
+LABEL 2 106 1 1 reg 1ff, TR no modifiers, 1 front, exclude
+LABEL 2 107 1 1 reg 1ff, TR no modifiers, none
+LABEL 2 2 1 1 reg 1ff, OP cheap shadow, 2 front
+LABEL 2 20 1 1 reg 1ff, OP two-volume, 1 front
+LABEL 2 21 1 1 reg 1ff, OP two-volume, 1 behind
+LABEL 2 22 1 1 reg 1ff, OP two-volume, 2 front
+LABEL 2 23 1 1 reg 1ff, OP two-volume, front + behind
+LABEL 2 24 1 1 reg 1ff, OP two-volume, 3 front
+LABEL 2 25 1 1 reg 1ff, OP two-volume, 2 volumes
+LABEL 2 26 1 1 reg 1ff, OP two-volume, 1 front, exclude
+LABEL 2 27 1 1 reg 1ff, OP two-volume, none
+LABEL 2 3 1 1 reg 1ff, OP cheap shadow, front + behind
+LABEL 2 4 1 1 reg 1ff, OP cheap shadow, 3 front
+LABEL 2 40 1 1 reg 1ff, OP no modifiers, 1 front
+LABEL 2 41 1 1 reg 1ff, OP no modifiers, 1 behind
+LABEL 2 42 1 1 reg 1ff, OP no modifiers, 2 front
+LABEL 2 43 1 1 reg 1ff, OP no modifiers, front + behind
+LABEL 2 44 1 1 reg 1ff, OP no modifiers, 3 front
+LABEL 2 45 1 1 reg 1ff, OP no modifiers, 2 volumes
+LABEL 2 46 1 1 reg 1ff, OP no modifiers, 1 front, exclude
+LABEL 2 47 1 1 reg 1ff, OP no modifiers, none
+LABEL 2 5 1 1 reg 1ff, OP cheap shadow, 2 volumes
+LABEL 2 6 1 1 reg 1ff, OP cheap shadow, 1 front, exclude
+LABEL 2 60 1 1 reg 1ff, TR cheap shadow, 1 front
+LABEL 2 61 1 1 reg 1ff, TR cheap shadow, 1 behind
+LABEL 2 62 1 1 reg 1ff, TR cheap shadow, 2 front
+LABEL 2 63 1 1 reg 1ff, TR cheap shadow, front + behind
+LABEL 2 64 1 1 reg 1ff, TR cheap shadow, 3 front
+LABEL 2 65 1 1 reg 1ff, TR cheap shadow, 2 volumes
+LABEL 2 66 1 1 reg 1ff, TR cheap shadow, 1 front, exclude
+LABEL 2 67 1 1 reg 1ff, TR cheap shadow, none
+LABEL 2 7 1 1 reg 1ff, OP cheap shadow, none
+LABEL 2 80 1 1 reg 1ff, TR two-volume, 1 front
+LABEL 2 81 1 1 reg 1ff, TR two-volume, 1 behind
+LABEL 2 82 1 1 reg 1ff, TR two-volume, 2 front
+LABEL 2 83 1 1 reg 1ff, TR two-volume, front + behind
+LABEL 2 84 1 1 reg 1ff, TR two-volume, 3 front
+LABEL 2 85 1 1 reg 1ff, TR two-volume, 2 volumes
+LABEL 2 86 1 1 reg 1ff, TR two-volume, 1 front, exclude
+LABEL 2 87 1 1 reg 1ff, TR two-volume, none
+LABEL 3 0 1 1 reg 080, OP cheap shadow, 1 front
+LABEL 3 1 1 1 reg 080, OP cheap shadow, 1 behind
+LABEL 3 100 1 1 reg 080, TR no modifiers, 1 front
+LABEL 3 101 1 1 reg 080, TR no modifiers, 1 behind
+LABEL 3 102 1 1 reg 080, TR no modifiers, 2 front
+LABEL 3 103 1 1 reg 080, TR no modifiers, front + behind
+LABEL 3 104 1 1 reg 080, TR no modifiers, 3 front
+LABEL 3 105 1 1 reg 080, TR no modifiers, 2 volumes
+LABEL 3 106 1 1 reg 080, TR no modifiers, 1 front, exclude
+LABEL 3 107 1 1 reg 080, TR no modifiers, none
+LABEL 3 2 1 1 reg 080, OP cheap shadow, 2 front
+LABEL 3 20 1 1 reg 080, OP two-volume, 1 front
+LABEL 3 21 1 1 reg 080, OP two-volume, 1 behind
+LABEL 3 22 1 1 reg 080, OP two-volume, 2 front
+LABEL 3 23 1 1 reg 080, OP two-volume, front + behind
+LABEL 3 24 1 1 reg 080, OP two-volume, 3 front
+LABEL 3 25 1 1 reg 080, OP two-volume, 2 volumes
+LABEL 3 26 1 1 reg 080, OP two-volume, 1 front, exclude
+LABEL 3 27 1 1 reg 080, OP two-volume, none
+LABEL 3 3 1 1 reg 080, OP cheap shadow, front + behind
+LABEL 3 4 1 1 reg 080, OP cheap shadow, 3 front
+LABEL 3 40 1 1 reg 080, OP no modifiers, 1 front
+LABEL 3 41 1 1 reg 080, OP no modifiers, 1 behind
+LABEL 3 42 1 1 reg 080, OP no modifiers, 2 front
+LABEL 3 43 1 1 reg 080, OP no modifiers, front + behind
+LABEL 3 44 1 1 reg 080, OP no modifiers, 3 front
+LABEL 3 45 1 1 reg 080, OP no modifiers, 2 volumes
+LABEL 3 46 1 1 reg 080, OP no modifiers, 1 front, exclude
+LABEL 3 47 1 1 reg 080, OP no modifiers, none
+LABEL 3 5 1 1 reg 080, OP cheap shadow, 2 volumes
+LABEL 3 6 1 1 reg 080, OP cheap shadow, 1 front, exclude
+LABEL 3 60 1 1 reg 080, TR cheap shadow, 1 front
+LABEL 3 61 1 1 reg 080, TR cheap shadow, 1 behind
+LABEL 3 62 1 1 reg 080, TR cheap shadow, 2 front
+LABEL 3 63 1 1 reg 080, TR cheap shadow, front + behind
+LABEL 3 64 1 1 reg 080, TR cheap shadow, 3 front
+LABEL 3 65 1 1 reg 080, TR cheap shadow, 2 volumes
+LABEL 3 66 1 1 reg 080, TR cheap shadow, 1 front, exclude
+LABEL 3 67 1 1 reg 080, TR cheap shadow, none
+LABEL 3 7 1 1 reg 080, OP cheap shadow, none
+LABEL 3 80 1 1 reg 080, TR two-volume, 1 front
+LABEL 3 81 1 1 reg 080, TR two-volume, 1 behind
+LABEL 3 82 1 1 reg 080, TR two-volume, 2 front
+LABEL 3 83 1 1 reg 080, TR two-volume, front + behind
+LABEL 3 84 1 1 reg 080, TR two-volume, 3 front
+LABEL 3 85 1 1 reg 080, TR two-volume, 2 volumes
+LABEL 3 86 1 1 reg 080, TR two-volume, 1 front, exclude
+LABEL 3 87 1 1 reg 080, TR two-volume, none

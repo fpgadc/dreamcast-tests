@@ -1,0 +1,1040 @@
+LABEL 0 0 1 1 quad 8x8 at +0/16, +0/16
+LABEL 0 1 1 1 quad 8x8 at +1/16, +0/16
+LABEL 0 10 1 1 quad 8x8 at +10/16, +0/16
+LABEL 0 100 1 1 quad 8x8 at +0/16, +5/16
+LABEL 0 101 1 1 quad 8x8 at +1/16, +5/16
+LABEL 0 102 1 1 quad 8x8 at +2/16, +5/16
+LABEL 0 103 1 1 quad 8x8 at +3/16, +5/16
+LABEL 0 104 1 1 quad 8x8 at +4/16, +5/16
+LABEL 0 105 1 1 quad 8x8 at +5/16, +5/16
+LABEL 0 106 1 1 quad 8x8 at +6/16, +5/16
+LABEL 0 107 1 1 quad 8x8 at +7/16, +5/16
+LABEL 0 108 1 1 quad 8x8 at +8/16, +5/16
+LABEL 0 109 1 1 quad 8x8 at +9/16, +5/16
+LABEL 0 11 1 1 quad 8x8 at +11/16, +0/16
+LABEL 0 110 1 1 quad 8x8 at +10/16, +5/16
+LABEL 0 111 1 1 quad 8x8 at +11/16, +5/16
+LABEL 0 112 1 1 quad 8x8 at +12/16, +5/16
+LABEL 0 113 1 1 quad 8x8 at +13/16, +5/16
+LABEL 0 114 1 1 quad 8x8 at +14/16, +5/16
+LABEL 0 115 1 1 quad 8x8 at +15/16, +5/16
+LABEL 0 12 1 1 quad 8x8 at +12/16, +0/16
+LABEL 0 120 1 1 quad 8x8 at +0/16, +6/16
+LABEL 0 121 1 1 quad 8x8 at +1/16, +6/16
+LABEL 0 122 1 1 quad 8x8 at +2/16, +6/16
+LABEL 0 123 1 1 quad 8x8 at +3/16, +6/16
+LABEL 0 124 1 1 quad 8x8 at +4/16, +6/16
+LABEL 0 125 1 1 quad 8x8 at +5/16, +6/16
+LABEL 0 126 1 1 quad 8x8 at +6/16, +6/16
+LABEL 0 127 1 1 quad 8x8 at +7/16, +6/16
+LABEL 0 128 1 1 quad 8x8 at +8/16, +6/16
+LABEL 0 129 1 1 quad 8x8 at +9/16, +6/16
+LABEL 0 13 1 1 quad 8x8 at +13/16, +0/16
+LABEL 0 130 1 1 quad 8x8 at +10/16, +6/16
+LABEL 0 131 1 1 quad 8x8 at +11/16, +6/16
+LABEL 0 132 1 1 quad 8x8 at +12/16, +6/16
+LABEL 0 133 1 1 quad 8x8 at +13/16, +6/16
+LABEL 0 134 1 1 quad 8x8 at +14/16, +6/16
+LABEL 0 135 1 1 quad 8x8 at +15/16, +6/16
+LABEL 0 14 1 1 quad 8x8 at +14/16, +0/16
+LABEL 0 140 1 1 quad 8x8 at +0/16, +7/16
+LABEL 0 141 1 1 quad 8x8 at +1/16, +7/16
+LABEL 0 142 1 1 quad 8x8 at +2/16, +7/16
+LABEL 0 143 1 1 quad 8x8 at +3/16, +7/16
+LABEL 0 144 1 1 quad 8x8 at +4/16, +7/16
+LABEL 0 145 1 1 quad 8x8 at +5/16, +7/16
+LABEL 0 146 1 1 quad 8x8 at +6/16, +7/16
+LABEL 0 147 1 1 quad 8x8 at +7/16, +7/16
+LABEL 0 148 1 1 quad 8x8 at +8/16, +7/16
+LABEL 0 149 1 1 quad 8x8 at +9/16, +7/16
+LABEL 0 15 1 1 quad 8x8 at +15/16, +0/16
+LABEL 0 150 1 1 quad 8x8 at +10/16, +7/16
+LABEL 0 151 1 1 quad 8x8 at +11/16, +7/16
+LABEL 0 152 1 1 quad 8x8 at +12/16, +7/16
+LABEL 0 153 1 1 quad 8x8 at +13/16, +7/16
+LABEL 0 154 1 1 quad 8x8 at +14/16, +7/16
+LABEL 0 155 1 1 quad 8x8 at +15/16, +7/16
+LABEL 0 160 1 1 quad 8x8 at +0/16, +8/16
+LABEL 0 161 1 1 quad 8x8 at +1/16, +8/16
+LABEL 0 162 1 1 quad 8x8 at +2/16, +8/16
+LABEL 0 163 1 1 quad 8x8 at +3/16, +8/16
+LABEL 0 164 1 1 quad 8x8 at +4/16, +8/16
+LABEL 0 165 1 1 quad 8x8 at +5/16, +8/16
+LABEL 0 166 1 1 quad 8x8 at +6/16, +8/16
+LABEL 0 167 1 1 quad 8x8 at +7/16, +8/16
+LABEL 0 168 1 1 quad 8x8 at +8/16, +8/16
+LABEL 0 169 1 1 quad 8x8 at +9/16, +8/16
+LABEL 0 170 1 1 quad 8x8 at +10/16, +8/16
+LABEL 0 171 1 1 quad 8x8 at +11/16, +8/16
+LABEL 0 172 1 1 quad 8x8 at +12/16, +8/16
+LABEL 0 173 1 1 quad 8x8 at +13/16, +8/16
+LABEL 0 174 1 1 quad 8x8 at +14/16, +8/16
+LABEL 0 175 1 1 quad 8x8 at +15/16, +8/16
+LABEL 0 180 1 1 quad 8x8 at +0/16, +9/16
+LABEL 0 181 1 1 quad 8x8 at +1/16, +9/16
+LABEL 0 182 1 1 quad 8x8 at +2/16, +9/16
+LABEL 0 183 1 1 quad 8x8 at +3/16, +9/16
+LABEL 0 184 1 1 quad 8x8 at +4/16, +9/16
+LABEL 0 185 1 1 quad 8x8 at +5/16, +9/16
+LABEL 0 186 1 1 quad 8x8 at +6/16, +9/16
+LABEL 0 187 1 1 quad 8x8 at +7/16, +9/16
+LABEL 0 188 1 1 quad 8x8 at +8/16, +9/16
+LABEL 0 189 1 1 quad 8x8 at +9/16, +9/16
+LABEL 0 190 1 1 quad 8x8 at +10/16, +9/16
+LABEL 0 191 1 1 quad 8x8 at +11/16, +9/16
+LABEL 0 192 1 1 quad 8x8 at +12/16, +9/16
+LABEL 0 193 1 1 quad 8x8 at +13/16, +9/16
+LABEL 0 194 1 1 quad 8x8 at +14/16, +9/16
+LABEL 0 195 1 1 quad 8x8 at +15/16, +9/16
+LABEL 0 2 1 1 quad 8x8 at +2/16, +0/16
+LABEL 0 20 1 1 quad 8x8 at +0/16, +1/16
+LABEL 0 200 1 1 quad 8x8 at +0/16, +10/16
+LABEL 0 201 1 1 quad 8x8 at +1/16, +10/16
+LABEL 0 202 1 1 quad 8x8 at +2/16, +10/16
+LABEL 0 203 1 1 quad 8x8 at +3/16, +10/16
+LABEL 0 204 1 1 quad 8x8 at +4/16, +10/16
+LABEL 0 205 1 1 quad 8x8 at +5/16, +10/16
+LABEL 0 206 1 1 quad 8x8 at +6/16, +10/16
+LABEL 0 207 1 1 quad 8x8 at +7/16, +10/16
+LABEL 0 208 1 1 quad 8x8 at +8/16, +10/16
+LABEL 0 209 1 1 quad 8x8 at +9/16, +10/16
+LABEL 0 21 1 1 quad 8x8 at +1/16, +1/16
+LABEL 0 210 1 1 quad 8x8 at +10/16, +10/16
+LABEL 0 211 1 1 quad 8x8 at +11/16, +10/16
+LABEL 0 212 1 1 quad 8x8 at +12/16, +10/16
+LABEL 0 213 1 1 quad 8x8 at +13/16, +10/16
+LABEL 0 214 1 1 quad 8x8 at +14/16, +10/16
+LABEL 0 215 1 1 quad 8x8 at +15/16, +10/16
+LABEL 0 22 1 1 quad 8x8 at +2/16, +1/16
+LABEL 0 220 1 1 quad 8x8 at +0/16, +11/16
+LABEL 0 221 1 1 quad 8x8 at +1/16, +11/16
+LABEL 0 222 1 1 quad 8x8 at +2/16, +11/16
+LABEL 0 223 1 1 quad 8x8 at +3/16, +11/16
+LABEL 0 224 1 1 quad 8x8 at +4/16, +11/16
+LABEL 0 225 1 1 quad 8x8 at +5/16, +11/16
+LABEL 0 226 1 1 quad 8x8 at +6/16, +11/16
+LABEL 0 227 1 1 quad 8x8 at +7/16, +11/16
+LABEL 0 228 1 1 quad 8x8 at +8/16, +11/16
+LABEL 0 229 1 1 quad 8x8 at +9/16, +11/16
+LABEL 0 23 1 1 quad 8x8 at +3/16, +1/16
+LABEL 0 230 1 1 quad 8x8 at +10/16, +11/16
+LABEL 0 231 1 1 quad 8x8 at +11/16, +11/16
+LABEL 0 232 1 1 quad 8x8 at +12/16, +11/16
+LABEL 0 233 1 1 quad 8x8 at +13/16, +11/16
+LABEL 0 234 1 1 quad 8x8 at +14/16, +11/16
+LABEL 0 235 1 1 quad 8x8 at +15/16, +11/16
+LABEL 0 24 1 1 quad 8x8 at +4/16, +1/16
+LABEL 0 240 1 1 quad 8x8 at +0/16, +12/16
+LABEL 0 241 1 1 quad 8x8 at +1/16, +12/16
+LABEL 0 242 1 1 quad 8x8 at +2/16, +12/16
+LABEL 0 243 1 1 quad 8x8 at +3/16, +12/16
+LABEL 0 244 1 1 quad 8x8 at +4/16, +12/16
+LABEL 0 245 1 1 quad 8x8 at +5/16, +12/16
+LABEL 0 246 1 1 quad 8x8 at +6/16, +12/16
+LABEL 0 247 1 1 quad 8x8 at +7/16, +12/16
+LABEL 0 248 1 1 quad 8x8 at +8/16, +12/16
+LABEL 0 249 1 1 quad 8x8 at +9/16, +12/16
+LABEL 0 25 1 1 quad 8x8 at +5/16, +1/16
+LABEL 0 250 1 1 quad 8x8 at +10/16, +12/16
+LABEL 0 251 1 1 quad 8x8 at +11/16, +12/16
+LABEL 0 252 1 1 quad 8x8 at +12/16, +12/16
+LABEL 0 253 1 1 quad 8x8 at +13/16, +12/16
+LABEL 0 254 1 1 quad 8x8 at +14/16, +12/16
+LABEL 0 255 1 1 quad 8x8 at +15/16, +12/16
+LABEL 0 26 1 1 quad 8x8 at +6/16, +1/16
+LABEL 0 260 1 1 quad 8x8 at +0/16, +13/16
+LABEL 0 261 1 1 quad 8x8 at +1/16, +13/16
+LABEL 0 262 1 1 quad 8x8 at +2/16, +13/16
+LABEL 0 263 1 1 quad 8x8 at +3/16, +13/16
+LABEL 0 264 1 1 quad 8x8 at +4/16, +13/16
+LABEL 0 265 1 1 quad 8x8 at +5/16, +13/16
+LABEL 0 266 1 1 quad 8x8 at +6/16, +13/16
+LABEL 0 267 1 1 quad 8x8 at +7/16, +13/16
+LABEL 0 268 1 1 quad 8x8 at +8/16, +13/16
+LABEL 0 269 1 1 quad 8x8 at +9/16, +13/16
+LABEL 0 27 1 1 quad 8x8 at +7/16, +1/16
+LABEL 0 270 1 1 quad 8x8 at +10/16, +13/16
+LABEL 0 271 1 1 quad 8x8 at +11/16, +13/16
+LABEL 0 272 1 1 quad 8x8 at +12/16, +13/16
+LABEL 0 273 1 1 quad 8x8 at +13/16, +13/16
+LABEL 0 274 1 1 quad 8x8 at +14/16, +13/16
+LABEL 0 275 1 1 quad 8x8 at +15/16, +13/16
+LABEL 0 28 1 1 quad 8x8 at +8/16, +1/16
+LABEL 0 280 1 1 quad 8x8 at +0/16, +14/16
+LABEL 0 281 1 1 quad 8x8 at +1/16, +14/16
+LABEL 0 282 1 1 quad 8x8 at +2/16, +14/16
+LABEL 0 283 1 1 quad 8x8 at +3/16, +14/16
+LABEL 0 284 1 1 quad 8x8 at +4/16, +14/16
+LABEL 0 285 1 1 quad 8x8 at +5/16, +14/16
+LABEL 0 286 1 1 quad 8x8 at +6/16, +14/16
+LABEL 0 287 1 1 quad 8x8 at +7/16, +14/16
+LABEL 0 288 1 1 quad 8x8 at +8/16, +14/16
+LABEL 0 289 1 1 quad 8x8 at +9/16, +14/16
+LABEL 0 29 1 1 quad 8x8 at +9/16, +1/16
+LABEL 0 290 1 1 quad 8x8 at +10/16, +14/16
+LABEL 0 291 1 1 quad 8x8 at +11/16, +14/16
+LABEL 0 292 1 1 quad 8x8 at +12/16, +14/16
+LABEL 0 293 1 1 quad 8x8 at +13/16, +14/16
+LABEL 0 294 1 1 quad 8x8 at +14/16, +14/16
+LABEL 0 295 1 1 quad 8x8 at +15/16, +14/16
+LABEL 0 3 1 1 quad 8x8 at +3/16, +0/16
+LABEL 0 30 1 1 quad 8x8 at +10/16, +1/16
+LABEL 0 31 1 1 quad 8x8 at +11/16, +1/16
+LABEL 0 32 1 1 quad 8x8 at +12/16, +1/16
+LABEL 0 33 1 1 quad 8x8 at +13/16, +1/16
+LABEL 0 34 1 1 quad 8x8 at +14/16, +1/16
+LABEL 0 35 1 1 quad 8x8 at +15/16, +1/16
+LABEL 0 4 1 1 quad 8x8 at +4/16, +0/16
+LABEL 0 40 1 1 quad 8x8 at +0/16, +2/16
+LABEL 0 41 1 1 quad 8x8 at +1/16, +2/16
+LABEL 0 42 1 1 quad 8x8 at +2/16, +2/16
+LABEL 0 43 1 1 quad 8x8 at +3/16, +2/16
+LABEL 0 44 1 1 quad 8x8 at +4/16, +2/16
+LABEL 0 45 1 1 quad 8x8 at +5/16, +2/16
+LABEL 0 46 1 1 quad 8x8 at +6/16, +2/16
+LABEL 0 47 1 1 quad 8x8 at +7/16, +2/16
+LABEL 0 48 1 1 quad 8x8 at +8/16, +2/16
+LABEL 0 49 1 1 quad 8x8 at +9/16, +2/16
+LABEL 0 5 1 1 quad 8x8 at +5/16, +0/16
+LABEL 0 50 1 1 quad 8x8 at +10/16, +2/16
+LABEL 0 51 1 1 quad 8x8 at +11/16, +2/16
+LABEL 0 52 1 1 quad 8x8 at +12/16, +2/16
+LABEL 0 53 1 1 quad 8x8 at +13/16, +2/16
+LABEL 0 54 1 1 quad 8x8 at +14/16, +2/16
+LABEL 0 55 1 1 quad 8x8 at +15/16, +2/16
+LABEL 0 6 1 1 quad 8x8 at +6/16, +0/16
+LABEL 0 60 1 1 quad 8x8 at +0/16, +3/16
+LABEL 0 61 1 1 quad 8x8 at +1/16, +3/16
+LABEL 0 62 1 1 quad 8x8 at +2/16, +3/16
+LABEL 0 63 1 1 quad 8x8 at +3/16, +3/16
+LABEL 0 64 1 1 quad 8x8 at +4/16, +3/16
+LABEL 0 65 1 1 quad 8x8 at +5/16, +3/16
+LABEL 0 66 1 1 quad 8x8 at +6/16, +3/16
+LABEL 0 67 1 1 quad 8x8 at +7/16, +3/16
+LABEL 0 68 1 1 quad 8x8 at +8/16, +3/16
+LABEL 0 69 1 1 quad 8x8 at +9/16, +3/16
+LABEL 0 7 1 1 quad 8x8 at +7/16, +0/16
+LABEL 0 70 1 1 quad 8x8 at +10/16, +3/16
+LABEL 0 71 1 1 quad 8x8 at +11/16, +3/16
+LABEL 0 72 1 1 quad 8x8 at +12/16, +3/16
+LABEL 0 73 1 1 quad 8x8 at +13/16, +3/16
+LABEL 0 74 1 1 quad 8x8 at +14/16, +3/16
+LABEL 0 75 1 1 quad 8x8 at +15/16, +3/16
+LABEL 0 8 1 1 quad 8x8 at +8/16, +0/16
+LABEL 0 80 1 1 quad 8x8 at +0/16, +4/16
+LABEL 0 81 1 1 quad 8x8 at +1/16, +4/16
+LABEL 0 82 1 1 quad 8x8 at +2/16, +4/16
+LABEL 0 83 1 1 quad 8x8 at +3/16, +4/16
+LABEL 0 84 1 1 quad 8x8 at +4/16, +4/16
+LABEL 0 85 1 1 quad 8x8 at +5/16, +4/16
+LABEL 0 86 1 1 quad 8x8 at +6/16, +4/16
+LABEL 0 87 1 1 quad 8x8 at +7/16, +4/16
+LABEL 0 88 1 1 quad 8x8 at +8/16, +4/16
+LABEL 0 89 1 1 quad 8x8 at +9/16, +4/16
+LABEL 0 9 1 1 quad 8x8 at +9/16, +0/16
+LABEL 0 90 1 1 quad 8x8 at +10/16, +4/16
+LABEL 0 91 1 1 quad 8x8 at +11/16, +4/16
+LABEL 0 92 1 1 quad 8x8 at +12/16, +4/16
+LABEL 0 93 1 1 quad 8x8 at +13/16, +4/16
+LABEL 0 94 1 1 quad 8x8 at +14/16, +4/16
+LABEL 0 95 1 1 quad 8x8 at +15/16, +4/16
+LABEL 1 0 1 1 triangle at +0/16, +0/16
+LABEL 1 1 1 1 triangle at +1/16, +0/16
+LABEL 1 10 1 1 triangle at +10/16, +0/16
+LABEL 1 100 1 1 triangle at +0/16, +5/16
+LABEL 1 101 1 1 triangle at +1/16, +5/16
+LABEL 1 102 1 1 triangle at +2/16, +5/16
+LABEL 1 103 1 1 triangle at +3/16, +5/16
+LABEL 1 104 1 1 triangle at +4/16, +5/16
+LABEL 1 105 1 1 triangle at +5/16, +5/16
+LABEL 1 106 1 1 triangle at +6/16, +5/16
+LABEL 1 107 1 1 triangle at +7/16, +5/16
+LABEL 1 108 1 1 triangle at +8/16, +5/16
+LABEL 1 109 1 1 triangle at +9/16, +5/16
+LABEL 1 11 1 1 triangle at +11/16, +0/16
+LABEL 1 110 1 1 triangle at +10/16, +5/16
+LABEL 1 111 1 1 triangle at +11/16, +5/16
+LABEL 1 112 1 1 triangle at +12/16, +5/16
+LABEL 1 113 1 1 triangle at +13/16, +5/16
+LABEL 1 114 1 1 triangle at +14/16, +5/16
+LABEL 1 115 1 1 triangle at +15/16, +5/16
+LABEL 1 12 1 1 triangle at +12/16, +0/16
+LABEL 1 120 1 1 triangle at +0/16, +6/16
+LABEL 1 121 1 1 triangle at +1/16, +6/16
+LABEL 1 122 1 1 triangle at +2/16, +6/16
+LABEL 1 123 1 1 triangle at +3/16, +6/16
+LABEL 1 124 1 1 triangle at +4/16, +6/16
+LABEL 1 125 1 1 triangle at +5/16, +6/16
+LABEL 1 126 1 1 triangle at +6/16, +6/16
+LABEL 1 127 1 1 triangle at +7/16, +6/16
+LABEL 1 128 1 1 triangle at +8/16, +6/16
+LABEL 1 129 1 1 triangle at +9/16, +6/16
+LABEL 1 13 1 1 triangle at +13/16, +0/16
+LABEL 1 130 1 1 triangle at +10/16, +6/16
+LABEL 1 131 1 1 triangle at +11/16, +6/16
+LABEL 1 132 1 1 triangle at +12/16, +6/16
+LABEL 1 133 1 1 triangle at +13/16, +6/16
+LABEL 1 134 1 1 triangle at +14/16, +6/16
+LABEL 1 135 1 1 triangle at +15/16, +6/16
+LABEL 1 14 1 1 triangle at +14/16, +0/16
+LABEL 1 140 1 1 triangle at +0/16, +7/16
+LABEL 1 141 1 1 triangle at +1/16, +7/16
+LABEL 1 142 1 1 triangle at +2/16, +7/16
+LABEL 1 143 1 1 triangle at +3/16, +7/16
+LABEL 1 144 1 1 triangle at +4/16, +7/16
+LABEL 1 145 1 1 triangle at +5/16, +7/16
+LABEL 1 146 1 1 triangle at +6/16, +7/16
+LABEL 1 147 1 1 triangle at +7/16, +7/16
+LABEL 1 148 1 1 triangle at +8/16, +7/16
+LABEL 1 149 1 1 triangle at +9/16, +7/16
+LABEL 1 15 1 1 triangle at +15/16, +0/16
+LABEL 1 150 1 1 triangle at +10/16, +7/16
+LABEL 1 151 1 1 triangle at +11/16, +7/16
+LABEL 1 152 1 1 triangle at +12/16, +7/16
+LABEL 1 153 1 1 triangle at +13/16, +7/16
+LABEL 1 154 1 1 triangle at +14/16, +7/16
+LABEL 1 155 1 1 triangle at +15/16, +7/16
+LABEL 1 160 1 1 triangle at +0/16, +8/16
+LABEL 1 161 1 1 triangle at +1/16, +8/16
+LABEL 1 162 1 1 triangle at +2/16, +8/16
+LABEL 1 163 1 1 triangle at +3/16, +8/16
+LABEL 1 164 1 1 triangle at +4/16, +8/16
+LABEL 1 165 1 1 triangle at +5/16, +8/16
+LABEL 1 166 1 1 triangle at +6/16, +8/16
+LABEL 1 167 1 1 triangle at +7/16, +8/16
+LABEL 1 168 1 1 triangle at +8/16, +8/16
+LABEL 1 169 1 1 triangle at +9/16, +8/16
+LABEL 1 170 1 1 triangle at +10/16, +8/16
+LABEL 1 171 1 1 triangle at +11/16, +8/16
+LABEL 1 172 1 1 triangle at +12/16, +8/16
+LABEL 1 173 1 1 triangle at +13/16, +8/16
+LABEL 1 174 1 1 triangle at +14/16, +8/16
+LABEL 1 175 1 1 triangle at +15/16, +8/16
+LABEL 1 180 1 1 triangle at +0/16, +9/16
+LABEL 1 181 1 1 triangle at +1/16, +9/16
+LABEL 1 182 1 1 triangle at +2/16, +9/16
+LABEL 1 183 1 1 triangle at +3/16, +9/16
+LABEL 1 184 1 1 triangle at +4/16, +9/16
+LABEL 1 185 1 1 triangle at +5/16, +9/16
+LABEL 1 186 1 1 triangle at +6/16, +9/16
+LABEL 1 187 1 1 triangle at +7/16, +9/16
+LABEL 1 188 1 1 triangle at +8/16, +9/16
+LABEL 1 189 1 1 triangle at +9/16, +9/16
+LABEL 1 190 1 1 triangle at +10/16, +9/16
+LABEL 1 191 1 1 triangle at +11/16, +9/16
+LABEL 1 192 1 1 triangle at +12/16, +9/16
+LABEL 1 193 1 1 triangle at +13/16, +9/16
+LABEL 1 194 1 1 triangle at +14/16, +9/16
+LABEL 1 195 1 1 triangle at +15/16, +9/16
+LABEL 1 2 1 1 triangle at +2/16, +0/16
+LABEL 1 20 1 1 triangle at +0/16, +1/16
+LABEL 1 200 1 1 triangle at +0/16, +10/16
+LABEL 1 201 1 1 triangle at +1/16, +10/16
+LABEL 1 202 1 1 triangle at +2/16, +10/16
+LABEL 1 203 1 1 triangle at +3/16, +10/16
+LABEL 1 204 1 1 triangle at +4/16, +10/16
+LABEL 1 205 1 1 triangle at +5/16, +10/16
+LABEL 1 206 1 1 triangle at +6/16, +10/16
+LABEL 1 207 1 1 triangle at +7/16, +10/16
+LABEL 1 208 1 1 triangle at +8/16, +10/16
+LABEL 1 209 1 1 triangle at +9/16, +10/16
+LABEL 1 21 1 1 triangle at +1/16, +1/16
+LABEL 1 210 1 1 triangle at +10/16, +10/16
+LABEL 1 211 1 1 triangle at +11/16, +10/16
+LABEL 1 212 1 1 triangle at +12/16, +10/16
+LABEL 1 213 1 1 triangle at +13/16, +10/16
+LABEL 1 214 1 1 triangle at +14/16, +10/16
+LABEL 1 215 1 1 triangle at +15/16, +10/16
+LABEL 1 22 1 1 triangle at +2/16, +1/16
+LABEL 1 220 1 1 triangle at +0/16, +11/16
+LABEL 1 221 1 1 triangle at +1/16, +11/16
+LABEL 1 222 1 1 triangle at +2/16, +11/16
+LABEL 1 223 1 1 triangle at +3/16, +11/16
+LABEL 1 224 1 1 triangle at +4/16, +11/16
+LABEL 1 225 1 1 triangle at +5/16, +11/16
+LABEL 1 226 1 1 triangle at +6/16, +11/16
+LABEL 1 227 1 1 triangle at +7/16, +11/16
+LABEL 1 228 1 1 triangle at +8/16, +11/16
+LABEL 1 229 1 1 triangle at +9/16, +11/16
+LABEL 1 23 1 1 triangle at +3/16, +1/16
+LABEL 1 230 1 1 triangle at +10/16, +11/16
+LABEL 1 231 1 1 triangle at +11/16, +11/16
+LABEL 1 232 1 1 triangle at +12/16, +11/16
+LABEL 1 233 1 1 triangle at +13/16, +11/16
+LABEL 1 234 1 1 triangle at +14/16, +11/16
+LABEL 1 235 1 1 triangle at +15/16, +11/16
+LABEL 1 24 1 1 triangle at +4/16, +1/16
+LABEL 1 240 1 1 triangle at +0/16, +12/16
+LABEL 1 241 1 1 triangle at +1/16, +12/16
+LABEL 1 242 1 1 triangle at +2/16, +12/16
+LABEL 1 243 1 1 triangle at +3/16, +12/16
+LABEL 1 244 1 1 triangle at +4/16, +12/16
+LABEL 1 245 1 1 triangle at +5/16, +12/16
+LABEL 1 246 1 1 triangle at +6/16, +12/16
+LABEL 1 247 1 1 triangle at +7/16, +12/16
+LABEL 1 248 1 1 triangle at +8/16, +12/16
+LABEL 1 249 1 1 triangle at +9/16, +12/16
+LABEL 1 25 1 1 triangle at +5/16, +1/16
+LABEL 1 250 1 1 triangle at +10/16, +12/16
+LABEL 1 251 1 1 triangle at +11/16, +12/16
+LABEL 1 252 1 1 triangle at +12/16, +12/16
+LABEL 1 253 1 1 triangle at +13/16, +12/16
+LABEL 1 254 1 1 triangle at +14/16, +12/16
+LABEL 1 255 1 1 triangle at +15/16, +12/16
+LABEL 1 26 1 1 triangle at +6/16, +1/16
+LABEL 1 260 1 1 triangle at +0/16, +13/16
+LABEL 1 261 1 1 triangle at +1/16, +13/16
+LABEL 1 262 1 1 triangle at +2/16, +13/16
+LABEL 1 263 1 1 triangle at +3/16, +13/16
+LABEL 1 264 1 1 triangle at +4/16, +13/16
+LABEL 1 265 1 1 triangle at +5/16, +13/16
+LABEL 1 266 1 1 triangle at +6/16, +13/16
+LABEL 1 267 1 1 triangle at +7/16, +13/16
+LABEL 1 268 1 1 triangle at +8/16, +13/16
+LABEL 1 269 1 1 triangle at +9/16, +13/16
+LABEL 1 27 1 1 triangle at +7/16, +1/16
+LABEL 1 270 1 1 triangle at +10/16, +13/16
+LABEL 1 271 1 1 triangle at +11/16, +13/16
+LABEL 1 272 1 1 triangle at +12/16, +13/16
+LABEL 1 273 1 1 triangle at +13/16, +13/16
+LABEL 1 274 1 1 triangle at +14/16, +13/16
+LABEL 1 275 1 1 triangle at +15/16, +13/16
+LABEL 1 28 1 1 triangle at +8/16, +1/16
+LABEL 1 280 1 1 triangle at +0/16, +14/16
+LABEL 1 281 1 1 triangle at +1/16, +14/16
+LABEL 1 282 1 1 triangle at +2/16, +14/16
+LABEL 1 283 1 1 triangle at +3/16, +14/16
+LABEL 1 284 1 1 triangle at +4/16, +14/16
+LABEL 1 285 1 1 triangle at +5/16, +14/16
+LABEL 1 286 1 1 triangle at +6/16, +14/16
+LABEL 1 287 1 1 triangle at +7/16, +14/16
+LABEL 1 288 1 1 triangle at +8/16, +14/16
+LABEL 1 289 1 1 triangle at +9/16, +14/16
+LABEL 1 29 1 1 triangle at +9/16, +1/16
+LABEL 1 290 1 1 triangle at +10/16, +14/16
+LABEL 1 291 1 1 triangle at +11/16, +14/16
+LABEL 1 292 1 1 triangle at +12/16, +14/16
+LABEL 1 293 1 1 triangle at +13/16, +14/16
+LABEL 1 294 1 1 triangle at +14/16, +14/16
+LABEL 1 295 1 1 triangle at +15/16, +14/16
+LABEL 1 3 1 1 triangle at +3/16, +0/16
+LABEL 1 30 1 1 triangle at +10/16, +1/16
+LABEL 1 31 1 1 triangle at +11/16, +1/16
+LABEL 1 32 1 1 triangle at +12/16, +1/16
+LABEL 1 33 1 1 triangle at +13/16, +1/16
+LABEL 1 34 1 1 triangle at +14/16, +1/16
+LABEL 1 35 1 1 triangle at +15/16, +1/16
+LABEL 1 4 1 1 triangle at +4/16, +0/16
+LABEL 1 40 1 1 triangle at +0/16, +2/16
+LABEL 1 41 1 1 triangle at +1/16, +2/16
+LABEL 1 42 1 1 triangle at +2/16, +2/16
+LABEL 1 43 1 1 triangle at +3/16, +2/16
+LABEL 1 44 1 1 triangle at +4/16, +2/16
+LABEL 1 45 1 1 triangle at +5/16, +2/16
+LABEL 1 46 1 1 triangle at +6/16, +2/16
+LABEL 1 47 1 1 triangle at +7/16, +2/16
+LABEL 1 48 1 1 triangle at +8/16, +2/16
+LABEL 1 49 1 1 triangle at +9/16, +2/16
+LABEL 1 5 1 1 triangle at +5/16, +0/16
+LABEL 1 50 1 1 triangle at +10/16, +2/16
+LABEL 1 51 1 1 triangle at +11/16, +2/16
+LABEL 1 52 1 1 triangle at +12/16, +2/16
+LABEL 1 53 1 1 triangle at +13/16, +2/16
+LABEL 1 54 1 1 triangle at +14/16, +2/16
+LABEL 1 55 1 1 triangle at +15/16, +2/16
+LABEL 1 6 1 1 triangle at +6/16, +0/16
+LABEL 1 60 1 1 triangle at +0/16, +3/16
+LABEL 1 61 1 1 triangle at +1/16, +3/16
+LABEL 1 62 1 1 triangle at +2/16, +3/16
+LABEL 1 63 1 1 triangle at +3/16, +3/16
+LABEL 1 64 1 1 triangle at +4/16, +3/16
+LABEL 1 65 1 1 triangle at +5/16, +3/16
+LABEL 1 66 1 1 triangle at +6/16, +3/16
+LABEL 1 67 1 1 triangle at +7/16, +3/16
+LABEL 1 68 1 1 triangle at +8/16, +3/16
+LABEL 1 69 1 1 triangle at +9/16, +3/16
+LABEL 1 7 1 1 triangle at +7/16, +0/16
+LABEL 1 70 1 1 triangle at +10/16, +3/16
+LABEL 1 71 1 1 triangle at +11/16, +3/16
+LABEL 1 72 1 1 triangle at +12/16, +3/16
+LABEL 1 73 1 1 triangle at +13/16, +3/16
+LABEL 1 74 1 1 triangle at +14/16, +3/16
+LABEL 1 75 1 1 triangle at +15/16, +3/16
+LABEL 1 8 1 1 triangle at +8/16, +0/16
+LABEL 1 80 1 1 triangle at +0/16, +4/16
+LABEL 1 81 1 1 triangle at +1/16, +4/16
+LABEL 1 82 1 1 triangle at +2/16, +4/16
+LABEL 1 83 1 1 triangle at +3/16, +4/16
+LABEL 1 84 1 1 triangle at +4/16, +4/16
+LABEL 1 85 1 1 triangle at +5/16, +4/16
+LABEL 1 86 1 1 triangle at +6/16, +4/16
+LABEL 1 87 1 1 triangle at +7/16, +4/16
+LABEL 1 88 1 1 triangle at +8/16, +4/16
+LABEL 1 89 1 1 triangle at +9/16, +4/16
+LABEL 1 9 1 1 triangle at +9/16, +0/16
+LABEL 1 90 1 1 triangle at +10/16, +4/16
+LABEL 1 91 1 1 triangle at +11/16, +4/16
+LABEL 1 92 1 1 triangle at +12/16, +4/16
+LABEL 1 93 1 1 triangle at +13/16, +4/16
+LABEL 1 94 1 1 triangle at +14/16, +4/16
+LABEL 1 95 1 1 triangle at +15/16, +4/16
+LABEL 2 0 1 1 two triangles, shape 0
+LABEL 2 1 1 1 two triangles, shape 1
+LABEL 2 10 1 1 two triangles, shape 10
+LABEL 2 100 1 1 two triangles, shape 100
+LABEL 2 101 1 1 two triangles, shape 101
+LABEL 2 102 1 1 two triangles, shape 102
+LABEL 2 103 1 1 two triangles, shape 103
+LABEL 2 104 1 1 two triangles, shape 104
+LABEL 2 105 1 1 two triangles, shape 105
+LABEL 2 106 1 1 two triangles, shape 106
+LABEL 2 107 1 1 two triangles, shape 107
+LABEL 2 108 1 1 two triangles, shape 108
+LABEL 2 109 1 1 two triangles, shape 109
+LABEL 2 11 1 1 two triangles, shape 11
+LABEL 2 110 1 1 two triangles, shape 110
+LABEL 2 111 1 1 two triangles, shape 111
+LABEL 2 112 1 1 two triangles, shape 112
+LABEL 2 113 1 1 two triangles, shape 113
+LABEL 2 114 1 1 two triangles, shape 114
+LABEL 2 115 1 1 two triangles, shape 115
+LABEL 2 116 1 1 two triangles, shape 116
+LABEL 2 117 1 1 two triangles, shape 117
+LABEL 2 118 1 1 two triangles, shape 118
+LABEL 2 119 1 1 two triangles, shape 119
+LABEL 2 12 1 1 two triangles, shape 12
+LABEL 2 120 1 1 two triangles, shape 120
+LABEL 2 121 1 1 two triangles, shape 121
+LABEL 2 122 1 1 two triangles, shape 122
+LABEL 2 123 1 1 two triangles, shape 123
+LABEL 2 124 1 1 two triangles, shape 124
+LABEL 2 125 1 1 two triangles, shape 125
+LABEL 2 126 1 1 two triangles, shape 126
+LABEL 2 127 1 1 two triangles, shape 127
+LABEL 2 128 1 1 two triangles, shape 128
+LABEL 2 129 1 1 two triangles, shape 129
+LABEL 2 13 1 1 two triangles, shape 13
+LABEL 2 130 1 1 two triangles, shape 130
+LABEL 2 131 1 1 two triangles, shape 131
+LABEL 2 132 1 1 two triangles, shape 132
+LABEL 2 133 1 1 two triangles, shape 133
+LABEL 2 134 1 1 two triangles, shape 134
+LABEL 2 135 1 1 two triangles, shape 135
+LABEL 2 136 1 1 two triangles, shape 136
+LABEL 2 137 1 1 two triangles, shape 137
+LABEL 2 138 1 1 two triangles, shape 138
+LABEL 2 139 1 1 two triangles, shape 139
+LABEL 2 14 1 1 two triangles, shape 14
+LABEL 2 140 1 1 two triangles, shape 140
+LABEL 2 141 1 1 two triangles, shape 141
+LABEL 2 142 1 1 two triangles, shape 142
+LABEL 2 143 1 1 two triangles, shape 143
+LABEL 2 144 1 1 two triangles, shape 144
+LABEL 2 145 1 1 two triangles, shape 145
+LABEL 2 146 1 1 two triangles, shape 146
+LABEL 2 147 1 1 two triangles, shape 147
+LABEL 2 148 1 1 two triangles, shape 148
+LABEL 2 149 1 1 two triangles, shape 149
+LABEL 2 15 1 1 two triangles, shape 15
+LABEL 2 150 1 1 two triangles, shape 150
+LABEL 2 151 1 1 two triangles, shape 151
+LABEL 2 152 1 1 two triangles, shape 152
+LABEL 2 153 1 1 two triangles, shape 153
+LABEL 2 154 1 1 two triangles, shape 154
+LABEL 2 155 1 1 two triangles, shape 155
+LABEL 2 156 1 1 two triangles, shape 156
+LABEL 2 157 1 1 two triangles, shape 157
+LABEL 2 158 1 1 two triangles, shape 158
+LABEL 2 159 1 1 two triangles, shape 159
+LABEL 2 16 1 1 two triangles, shape 16
+LABEL 2 160 1 1 two triangles, shape 160
+LABEL 2 161 1 1 two triangles, shape 161
+LABEL 2 162 1 1 two triangles, shape 162
+LABEL 2 163 1 1 two triangles, shape 163
+LABEL 2 164 1 1 two triangles, shape 164
+LABEL 2 165 1 1 two triangles, shape 165
+LABEL 2 166 1 1 two triangles, shape 166
+LABEL 2 167 1 1 two triangles, shape 167
+LABEL 2 168 1 1 two triangles, shape 168
+LABEL 2 169 1 1 two triangles, shape 169
+LABEL 2 17 1 1 two triangles, shape 17
+LABEL 2 170 1 1 two triangles, shape 170
+LABEL 2 171 1 1 two triangles, shape 171
+LABEL 2 172 1 1 two triangles, shape 172
+LABEL 2 173 1 1 two triangles, shape 173
+LABEL 2 174 1 1 two triangles, shape 174
+LABEL 2 175 1 1 two triangles, shape 175
+LABEL 2 176 1 1 two triangles, shape 176
+LABEL 2 177 1 1 two triangles, shape 177
+LABEL 2 178 1 1 two triangles, shape 178
+LABEL 2 179 1 1 two triangles, shape 179
+LABEL 2 18 1 1 two triangles, shape 18
+LABEL 2 180 1 1 two triangles, shape 180
+LABEL 2 181 1 1 two triangles, shape 181
+LABEL 2 182 1 1 two triangles, shape 182
+LABEL 2 183 1 1 two triangles, shape 183
+LABEL 2 184 1 1 two triangles, shape 184
+LABEL 2 185 1 1 two triangles, shape 185
+LABEL 2 186 1 1 two triangles, shape 186
+LABEL 2 187 1 1 two triangles, shape 187
+LABEL 2 188 1 1 two triangles, shape 188
+LABEL 2 189 1 1 two triangles, shape 189
+LABEL 2 19 1 1 two triangles, shape 19
+LABEL 2 190 1 1 two triangles, shape 190
+LABEL 2 191 1 1 two triangles, shape 191
+LABEL 2 192 1 1 two triangles, shape 192
+LABEL 2 193 1 1 two triangles, shape 193
+LABEL 2 194 1 1 two triangles, shape 194
+LABEL 2 195 1 1 two triangles, shape 195
+LABEL 2 196 1 1 two triangles, shape 196
+LABEL 2 197 1 1 two triangles, shape 197
+LABEL 2 198 1 1 two triangles, shape 198
+LABEL 2 199 1 1 two triangles, shape 199
+LABEL 2 2 1 1 two triangles, shape 2
+LABEL 2 20 1 1 two triangles, shape 20
+LABEL 2 200 1 1 two triangles, shape 200
+LABEL 2 201 1 1 two triangles, shape 201
+LABEL 2 202 1 1 two triangles, shape 202
+LABEL 2 203 1 1 two triangles, shape 203
+LABEL 2 204 1 1 two triangles, shape 204
+LABEL 2 205 1 1 two triangles, shape 205
+LABEL 2 206 1 1 two triangles, shape 206
+LABEL 2 207 1 1 two triangles, shape 207
+LABEL 2 208 1 1 two triangles, shape 208
+LABEL 2 209 1 1 two triangles, shape 209
+LABEL 2 21 1 1 two triangles, shape 21
+LABEL 2 210 1 1 two triangles, shape 210
+LABEL 2 211 1 1 two triangles, shape 211
+LABEL 2 212 1 1 two triangles, shape 212
+LABEL 2 213 1 1 two triangles, shape 213
+LABEL 2 214 1 1 two triangles, shape 214
+LABEL 2 215 1 1 two triangles, shape 215
+LABEL 2 216 1 1 two triangles, shape 216
+LABEL 2 217 1 1 two triangles, shape 217
+LABEL 2 218 1 1 two triangles, shape 218
+LABEL 2 219 1 1 two triangles, shape 219
+LABEL 2 22 1 1 two triangles, shape 22
+LABEL 2 220 1 1 two triangles, shape 220
+LABEL 2 221 1 1 two triangles, shape 221
+LABEL 2 222 1 1 two triangles, shape 222
+LABEL 2 223 1 1 two triangles, shape 223
+LABEL 2 224 1 1 two triangles, shape 224
+LABEL 2 225 1 1 two triangles, shape 225
+LABEL 2 226 1 1 two triangles, shape 226
+LABEL 2 227 1 1 two triangles, shape 227
+LABEL 2 228 1 1 two triangles, shape 228
+LABEL 2 229 1 1 two triangles, shape 229
+LABEL 2 23 1 1 two triangles, shape 23
+LABEL 2 230 1 1 two triangles, shape 230
+LABEL 2 231 1 1 two triangles, shape 231
+LABEL 2 232 1 1 two triangles, shape 232
+LABEL 2 233 1 1 two triangles, shape 233
+LABEL 2 234 1 1 two triangles, shape 234
+LABEL 2 235 1 1 two triangles, shape 235
+LABEL 2 236 1 1 two triangles, shape 236
+LABEL 2 237 1 1 two triangles, shape 237
+LABEL 2 238 1 1 two triangles, shape 238
+LABEL 2 239 1 1 two triangles, shape 239
+LABEL 2 24 1 1 two triangles, shape 24
+LABEL 2 25 1 1 two triangles, shape 25
+LABEL 2 26 1 1 two triangles, shape 26
+LABEL 2 27 1 1 two triangles, shape 27
+LABEL 2 28 1 1 two triangles, shape 28
+LABEL 2 29 1 1 two triangles, shape 29
+LABEL 2 3 1 1 two triangles, shape 3
+LABEL 2 30 1 1 two triangles, shape 30
+LABEL 2 31 1 1 two triangles, shape 31
+LABEL 2 32 1 1 two triangles, shape 32
+LABEL 2 33 1 1 two triangles, shape 33
+LABEL 2 34 1 1 two triangles, shape 34
+LABEL 2 35 1 1 two triangles, shape 35
+LABEL 2 36 1 1 two triangles, shape 36
+LABEL 2 37 1 1 two triangles, shape 37
+LABEL 2 38 1 1 two triangles, shape 38
+LABEL 2 39 1 1 two triangles, shape 39
+LABEL 2 4 1 1 two triangles, shape 4
+LABEL 2 40 1 1 two triangles, shape 40
+LABEL 2 41 1 1 two triangles, shape 41
+LABEL 2 42 1 1 two triangles, shape 42
+LABEL 2 43 1 1 two triangles, shape 43
+LABEL 2 44 1 1 two triangles, shape 44
+LABEL 2 45 1 1 two triangles, shape 45
+LABEL 2 46 1 1 two triangles, shape 46
+LABEL 2 47 1 1 two triangles, shape 47
+LABEL 2 48 1 1 two triangles, shape 48
+LABEL 2 49 1 1 two triangles, shape 49
+LABEL 2 5 1 1 two triangles, shape 5
+LABEL 2 50 1 1 two triangles, shape 50
+LABEL 2 51 1 1 two triangles, shape 51
+LABEL 2 52 1 1 two triangles, shape 52
+LABEL 2 53 1 1 two triangles, shape 53
+LABEL 2 54 1 1 two triangles, shape 54
+LABEL 2 55 1 1 two triangles, shape 55
+LABEL 2 56 1 1 two triangles, shape 56
+LABEL 2 57 1 1 two triangles, shape 57
+LABEL 2 58 1 1 two triangles, shape 58
+LABEL 2 59 1 1 two triangles, shape 59
+LABEL 2 6 1 1 two triangles, shape 6
+LABEL 2 60 1 1 two triangles, shape 60
+LABEL 2 61 1 1 two triangles, shape 61
+LABEL 2 62 1 1 two triangles, shape 62
+LABEL 2 63 1 1 two triangles, shape 63
+LABEL 2 64 1 1 two triangles, shape 64
+LABEL 2 65 1 1 two triangles, shape 65
+LABEL 2 66 1 1 two triangles, shape 66
+LABEL 2 67 1 1 two triangles, shape 67
+LABEL 2 68 1 1 two triangles, shape 68
+LABEL 2 69 1 1 two triangles, shape 69
+LABEL 2 7 1 1 two triangles, shape 7
+LABEL 2 70 1 1 two triangles, shape 70
+LABEL 2 71 1 1 two triangles, shape 71
+LABEL 2 72 1 1 two triangles, shape 72
+LABEL 2 73 1 1 two triangles, shape 73
+LABEL 2 74 1 1 two triangles, shape 74
+LABEL 2 75 1 1 two triangles, shape 75
+LABEL 2 76 1 1 two triangles, shape 76
+LABEL 2 77 1 1 two triangles, shape 77
+LABEL 2 78 1 1 two triangles, shape 78
+LABEL 2 79 1 1 two triangles, shape 79
+LABEL 2 8 1 1 two triangles, shape 8
+LABEL 2 80 1 1 two triangles, shape 80
+LABEL 2 81 1 1 two triangles, shape 81
+LABEL 2 82 1 1 two triangles, shape 82
+LABEL 2 83 1 1 two triangles, shape 83
+LABEL 2 84 1 1 two triangles, shape 84
+LABEL 2 85 1 1 two triangles, shape 85
+LABEL 2 86 1 1 two triangles, shape 86
+LABEL 2 87 1 1 two triangles, shape 87
+LABEL 2 88 1 1 two triangles, shape 88
+LABEL 2 89 1 1 two triangles, shape 89
+LABEL 2 9 1 1 two triangles, shape 9
+LABEL 2 90 1 1 two triangles, shape 90
+LABEL 2 91 1 1 two triangles, shape 91
+LABEL 2 92 1 1 two triangles, shape 92
+LABEL 2 93 1 1 two triangles, shape 93
+LABEL 2 94 1 1 two triangles, shape 94
+LABEL 2 95 1 1 two triangles, shape 95
+LABEL 2 96 1 1 two triangles, shape 96
+LABEL 2 97 1 1 two triangles, shape 97
+LABEL 2 98 1 1 two triangles, shape 98
+LABEL 2 99 1 1 two triangles, shape 99
+LABEL 3 0 1 1 strip, shape 0
+LABEL 3 1 1 1 strip, shape 1
+LABEL 3 10 1 1 strip, shape 10
+LABEL 3 100 1 1 strip, shape 100
+LABEL 3 101 1 1 strip, shape 101
+LABEL 3 102 1 1 strip, shape 102
+LABEL 3 103 1 1 strip, shape 103
+LABEL 3 104 1 1 strip, shape 104
+LABEL 3 105 1 1 strip, shape 105
+LABEL 3 106 1 1 strip, shape 106
+LABEL 3 107 1 1 strip, shape 107
+LABEL 3 108 1 1 strip, shape 108
+LABEL 3 109 1 1 strip, shape 109
+LABEL 3 11 1 1 strip, shape 11
+LABEL 3 110 1 1 strip, shape 110
+LABEL 3 111 1 1 strip, shape 111
+LABEL 3 112 1 1 strip, shape 112
+LABEL 3 113 1 1 strip, shape 113
+LABEL 3 114 1 1 strip, shape 114
+LABEL 3 115 1 1 strip, shape 115
+LABEL 3 116 1 1 strip, shape 116
+LABEL 3 117 1 1 strip, shape 117
+LABEL 3 118 1 1 strip, shape 118
+LABEL 3 119 1 1 strip, shape 119
+LABEL 3 12 1 1 strip, shape 12
+LABEL 3 120 1 1 strip, shape 120
+LABEL 3 121 1 1 strip, shape 121
+LABEL 3 122 1 1 strip, shape 122
+LABEL 3 123 1 1 strip, shape 123
+LABEL 3 124 1 1 strip, shape 124
+LABEL 3 125 1 1 strip, shape 125
+LABEL 3 126 1 1 strip, shape 126
+LABEL 3 127 1 1 strip, shape 127
+LABEL 3 128 1 1 strip, shape 128
+LABEL 3 129 1 1 strip, shape 129
+LABEL 3 13 1 1 strip, shape 13
+LABEL 3 130 1 1 strip, shape 130
+LABEL 3 131 1 1 strip, shape 131
+LABEL 3 132 1 1 strip, shape 132
+LABEL 3 133 1 1 strip, shape 133
+LABEL 3 134 1 1 strip, shape 134
+LABEL 3 135 1 1 strip, shape 135
+LABEL 3 136 1 1 strip, shape 136
+LABEL 3 137 1 1 strip, shape 137
+LABEL 3 138 1 1 strip, shape 138
+LABEL 3 139 1 1 strip, shape 139
+LABEL 3 14 1 1 strip, shape 14
+LABEL 3 140 1 1 strip, shape 140
+LABEL 3 141 1 1 strip, shape 141
+LABEL 3 142 1 1 strip, shape 142
+LABEL 3 143 1 1 strip, shape 143
+LABEL 3 144 1 1 strip, shape 144
+LABEL 3 145 1 1 strip, shape 145
+LABEL 3 146 1 1 strip, shape 146
+LABEL 3 147 1 1 strip, shape 147
+LABEL 3 148 1 1 strip, shape 148
+LABEL 3 149 1 1 strip, shape 149
+LABEL 3 15 1 1 strip, shape 15
+LABEL 3 150 1 1 strip, shape 150
+LABEL 3 151 1 1 strip, shape 151
+LABEL 3 152 1 1 strip, shape 152
+LABEL 3 153 1 1 strip, shape 153
+LABEL 3 154 1 1 strip, shape 154
+LABEL 3 155 1 1 strip, shape 155
+LABEL 3 156 1 1 strip, shape 156
+LABEL 3 157 1 1 strip, shape 157
+LABEL 3 158 1 1 strip, shape 158
+LABEL 3 159 1 1 strip, shape 159
+LABEL 3 16 1 1 strip, shape 16
+LABEL 3 160 1 1 strip, shape 160
+LABEL 3 161 1 1 strip, shape 161
+LABEL 3 162 1 1 strip, shape 162
+LABEL 3 163 1 1 strip, shape 163
+LABEL 3 164 1 1 strip, shape 164
+LABEL 3 165 1 1 strip, shape 165
+LABEL 3 166 1 1 strip, shape 166
+LABEL 3 167 1 1 strip, shape 167
+LABEL 3 168 1 1 strip, shape 168
+LABEL 3 169 1 1 strip, shape 169
+LABEL 3 17 1 1 strip, shape 17
+LABEL 3 170 1 1 strip, shape 170
+LABEL 3 171 1 1 strip, shape 171
+LABEL 3 172 1 1 strip, shape 172
+LABEL 3 173 1 1 strip, shape 173
+LABEL 3 174 1 1 strip, shape 174
+LABEL 3 175 1 1 strip, shape 175
+LABEL 3 176 1 1 strip, shape 176
+LABEL 3 177 1 1 strip, shape 177
+LABEL 3 178 1 1 strip, shape 178
+LABEL 3 179 1 1 strip, shape 179
+LABEL 3 18 1 1 strip, shape 18
+LABEL 3 180 1 1 strip, shape 180
+LABEL 3 181 1 1 strip, shape 181
+LABEL 3 182 1 1 strip, shape 182
+LABEL 3 183 1 1 strip, shape 183
+LABEL 3 184 1 1 strip, shape 184
+LABEL 3 185 1 1 strip, shape 185
+LABEL 3 186 1 1 strip, shape 186
+LABEL 3 187 1 1 strip, shape 187
+LABEL 3 188 1 1 strip, shape 188
+LABEL 3 189 1 1 strip, shape 189
+LABEL 3 19 1 1 strip, shape 19
+LABEL 3 190 1 1 strip, shape 190
+LABEL 3 191 1 1 strip, shape 191
+LABEL 3 192 1 1 strip, shape 192
+LABEL 3 193 1 1 strip, shape 193
+LABEL 3 194 1 1 strip, shape 194
+LABEL 3 195 1 1 strip, shape 195
+LABEL 3 196 1 1 strip, shape 196
+LABEL 3 197 1 1 strip, shape 197
+LABEL 3 198 1 1 strip, shape 198
+LABEL 3 199 1 1 strip, shape 199
+LABEL 3 2 1 1 strip, shape 2
+LABEL 3 20 1 1 strip, shape 20
+LABEL 3 200 1 1 strip, shape 200
+LABEL 3 201 1 1 strip, shape 201
+LABEL 3 202 1 1 strip, shape 202
+LABEL 3 203 1 1 strip, shape 203
+LABEL 3 204 1 1 strip, shape 204
+LABEL 3 205 1 1 strip, shape 205
+LABEL 3 206 1 1 strip, shape 206
+LABEL 3 207 1 1 strip, shape 207
+LABEL 3 208 1 1 strip, shape 208
+LABEL 3 209 1 1 strip, shape 209
+LABEL 3 21 1 1 strip, shape 21
+LABEL 3 210 1 1 strip, shape 210
+LABEL 3 211 1 1 strip, shape 211
+LABEL 3 212 1 1 strip, shape 212
+LABEL 3 213 1 1 strip, shape 213
+LABEL 3 214 1 1 strip, shape 214
+LABEL 3 215 1 1 strip, shape 215
+LABEL 3 216 1 1 strip, shape 216
+LABEL 3 217 1 1 strip, shape 217
+LABEL 3 218 1 1 strip, shape 218
+LABEL 3 219 1 1 strip, shape 219
+LABEL 3 22 1 1 strip, shape 22
+LABEL 3 220 1 1 strip, shape 220
+LABEL 3 221 1 1 strip, shape 221
+LABEL 3 222 1 1 strip, shape 222
+LABEL 3 223 1 1 strip, shape 223
+LABEL 3 224 1 1 strip, shape 224
+LABEL 3 225 1 1 strip, shape 225
+LABEL 3 226 1 1 strip, shape 226
+LABEL 3 227 1 1 strip, shape 227
+LABEL 3 228 1 1 strip, shape 228
+LABEL 3 229 1 1 strip, shape 229
+LABEL 3 23 1 1 strip, shape 23
+LABEL 3 230 1 1 strip, shape 230
+LABEL 3 231 1 1 strip, shape 231
+LABEL 3 232 1 1 strip, shape 232
+LABEL 3 233 1 1 strip, shape 233
+LABEL 3 234 1 1 strip, shape 234
+LABEL 3 235 1 1 strip, shape 235
+LABEL 3 236 1 1 strip, shape 236
+LABEL 3 237 1 1 strip, shape 237
+LABEL 3 238 1 1 strip, shape 238
+LABEL 3 239 1 1 strip, shape 239
+LABEL 3 24 1 1 strip, shape 24
+LABEL 3 25 1 1 strip, shape 25
+LABEL 3 26 1 1 strip, shape 26
+LABEL 3 27 1 1 strip, shape 27
+LABEL 3 28 1 1 strip, shape 28
+LABEL 3 29 1 1 strip, shape 29
+LABEL 3 3 1 1 strip, shape 3
+LABEL 3 30 1 1 strip, shape 30
+LABEL 3 31 1 1 strip, shape 31
+LABEL 3 32 1 1 strip, shape 32
+LABEL 3 33 1 1 strip, shape 33
+LABEL 3 34 1 1 strip, shape 34
+LABEL 3 35 1 1 strip, shape 35
+LABEL 3 36 1 1 strip, shape 36
+LABEL 3 37 1 1 strip, shape 37
+LABEL 3 38 1 1 strip, shape 38
+LABEL 3 39 1 1 strip, shape 39
+LABEL 3 4 1 1 strip, shape 4
+LABEL 3 40 1 1 strip, shape 40
+LABEL 3 41 1 1 strip, shape 41
+LABEL 3 42 1 1 strip, shape 42
+LABEL 3 43 1 1 strip, shape 43
+LABEL 3 44 1 1 strip, shape 44
+LABEL 3 45 1 1 strip, shape 45
+LABEL 3 46 1 1 strip, shape 46
+LABEL 3 47 1 1 strip, shape 47
+LABEL 3 48 1 1 strip, shape 48
+LABEL 3 49 1 1 strip, shape 49
+LABEL 3 5 1 1 strip, shape 5
+LABEL 3 50 1 1 strip, shape 50
+LABEL 3 51 1 1 strip, shape 51
+LABEL 3 52 1 1 strip, shape 52
+LABEL 3 53 1 1 strip, shape 53
+LABEL 3 54 1 1 strip, shape 54
+LABEL 3 55 1 1 strip, shape 55
+LABEL 3 56 1 1 strip, shape 56
+LABEL 3 57 1 1 strip, shape 57
+LABEL 3 58 1 1 strip, shape 58
+LABEL 3 59 1 1 strip, shape 59
+LABEL 3 6 1 1 strip, shape 6
+LABEL 3 60 1 1 strip, shape 60
+LABEL 3 61 1 1 strip, shape 61
+LABEL 3 62 1 1 strip, shape 62
+LABEL 3 63 1 1 strip, shape 63
+LABEL 3 64 1 1 strip, shape 64
+LABEL 3 65 1 1 strip, shape 65
+LABEL 3 66 1 1 strip, shape 66
+LABEL 3 67 1 1 strip, shape 67
+LABEL 3 68 1 1 strip, shape 68
+LABEL 3 69 1 1 strip, shape 69
+LABEL 3 7 1 1 strip, shape 7
+LABEL 3 70 1 1 strip, shape 70
+LABEL 3 71 1 1 strip, shape 71
+LABEL 3 72 1 1 strip, shape 72
+LABEL 3 73 1 1 strip, shape 73
+LABEL 3 74 1 1 strip, shape 74
+LABEL 3 75 1 1 strip, shape 75
+LABEL 3 76 1 1 strip, shape 76
+LABEL 3 77 1 1 strip, shape 77
+LABEL 3 78 1 1 strip, shape 78
+LABEL 3 79 1 1 strip, shape 79
+LABEL 3 8 1 1 strip, shape 8
+LABEL 3 80 1 1 strip, shape 80
+LABEL 3 81 1 1 strip, shape 81
+LABEL 3 82 1 1 strip, shape 82
+LABEL 3 83 1 1 strip, shape 83
+LABEL 3 84 1 1 strip, shape 84
+LABEL 3 85 1 1 strip, shape 85
+LABEL 3 86 1 1 strip, shape 86
+LABEL 3 87 1 1 strip, shape 87
+LABEL 3 88 1 1 strip, shape 88
+LABEL 3 89 1 1 strip, shape 89
+LABEL 3 9 1 1 strip, shape 9
+LABEL 3 90 1 1 strip, shape 90
+LABEL 3 91 1 1 strip, shape 91
+LABEL 3 92 1 1 strip, shape 92
+LABEL 3 93 1 1 strip, shape 93
+LABEL 3 94 1 1 strip, shape 94
+LABEL 3 95 1 1 strip, shape 95
+LABEL 3 96 1 1 strip, shape 96
+LABEL 3 97 1 1 strip, shape 97
+LABEL 3 98 1 1 strip, shape 98
+LABEL 3 99 1 1 strip, shape 99
+LABEL 4 0 1 1 cull none, cw, leg 16 px
+LABEL 4 1 1 1 cull none, cw, leg 8 px
+LABEL 4 10 1 1 cull none, ccw, leg 16 px
+LABEL 4 11 1 1 cull none, ccw, leg 8 px
+LABEL 4 12 1 1 cull none, ccw, leg 4 px
+LABEL 4 13 1 1 cull none, ccw, leg 2 px
+LABEL 4 14 1 1 cull none, ccw, leg 1 px
+LABEL 4 15 1 1 cull none, ccw, leg 0.5 px
+LABEL 4 16 1 1 cull none, ccw, leg 0.25 px
+LABEL 4 17 1 1 cull none, ccw, leg 0.125 px
+LABEL 4 18 1 1 cull none, ccw, leg 0.0625 px
+LABEL 4 19 1 1 cull none, ccw, leg 0.03125 px
+LABEL 4 2 1 1 cull none, cw, leg 4 px
+LABEL 4 20 1 1 cull small, cw, leg 16 px
+LABEL 4 21 1 1 cull small, cw, leg 8 px
+LABEL 4 22 1 1 cull small, cw, leg 4 px
+LABEL 4 23 1 1 cull small, cw, leg 2 px
+LABEL 4 24 1 1 cull small, cw, leg 1 px
+LABEL 4 25 1 1 cull small, cw, leg 0.5 px
+LABEL 4 26 1 1 cull small, cw, leg 0.25 px
+LABEL 4 27 1 1 cull small, cw, leg 0.125 px
+LABEL 4 28 1 1 cull small, cw, leg 0.0625 px
+LABEL 4 29 1 1 cull small, cw, leg 0.03125 px
+LABEL 4 3 1 1 cull none, cw, leg 2 px
+LABEL 4 30 1 1 cull small, ccw, leg 16 px
+LABEL 4 31 1 1 cull small, ccw, leg 8 px
+LABEL 4 32 1 1 cull small, ccw, leg 4 px
+LABEL 4 33 1 1 cull small, ccw, leg 2 px
+LABEL 4 34 1 1 cull small, ccw, leg 1 px
+LABEL 4 35 1 1 cull small, ccw, leg 0.5 px
+LABEL 4 36 1 1 cull small, ccw, leg 0.25 px
+LABEL 4 37 1 1 cull small, ccw, leg 0.125 px
+LABEL 4 38 1 1 cull small, ccw, leg 0.0625 px
+LABEL 4 39 1 1 cull small, ccw, leg 0.03125 px
+LABEL 4 4 1 1 cull none, cw, leg 1 px
+LABEL 4 40 1 1 cull ccw, cw, leg 16 px
+LABEL 4 41 1 1 cull ccw, cw, leg 8 px
+LABEL 4 42 1 1 cull ccw, cw, leg 4 px
+LABEL 4 43 1 1 cull ccw, cw, leg 2 px
+LABEL 4 44 1 1 cull ccw, cw, leg 1 px
+LABEL 4 45 1 1 cull ccw, cw, leg 0.5 px
+LABEL 4 46 1 1 cull ccw, cw, leg 0.25 px
+LABEL 4 47 1 1 cull ccw, cw, leg 0.125 px
+LABEL 4 48 1 1 cull ccw, cw, leg 0.0625 px
+LABEL 4 49 1 1 cull ccw, cw, leg 0.03125 px
+LABEL 4 5 1 1 cull none, cw, leg 0.5 px
+LABEL 4 50 1 1 cull ccw, ccw, leg 16 px
+LABEL 4 51 1 1 cull ccw, ccw, leg 8 px
+LABEL 4 52 1 1 cull ccw, ccw, leg 4 px
+LABEL 4 53 1 1 cull ccw, ccw, leg 2 px
+LABEL 4 54 1 1 cull ccw, ccw, leg 1 px
+LABEL 4 55 1 1 cull ccw, ccw, leg 0.5 px
+LABEL 4 56 1 1 cull ccw, ccw, leg 0.25 px
+LABEL 4 57 1 1 cull ccw, ccw, leg 0.125 px
+LABEL 4 58 1 1 cull ccw, ccw, leg 0.0625 px
+LABEL 4 59 1 1 cull ccw, ccw, leg 0.03125 px
+LABEL 4 6 1 1 cull none, cw, leg 0.25 px
+LABEL 4 60 1 1 cull cw, cw, leg 16 px
+LABEL 4 61 1 1 cull cw, cw, leg 8 px
+LABEL 4 62 1 1 cull cw, cw, leg 4 px
+LABEL 4 63 1 1 cull cw, cw, leg 2 px
+LABEL 4 64 1 1 cull cw, cw, leg 1 px
+LABEL 4 65 1 1 cull cw, cw, leg 0.5 px
+LABEL 4 66 1 1 cull cw, cw, leg 0.25 px
+LABEL 4 67 1 1 cull cw, cw, leg 0.125 px
+LABEL 4 68 1 1 cull cw, cw, leg 0.0625 px
+LABEL 4 69 1 1 cull cw, cw, leg 0.03125 px
+LABEL 4 7 1 1 cull none, cw, leg 0.125 px
+LABEL 4 70 1 1 cull cw, ccw, leg 16 px
+LABEL 4 71 1 1 cull cw, ccw, leg 8 px
+LABEL 4 72 1 1 cull cw, ccw, leg 4 px
+LABEL 4 73 1 1 cull cw, ccw, leg 2 px
+LABEL 4 74 1 1 cull cw, ccw, leg 1 px
+LABEL 4 75 1 1 cull cw, ccw, leg 0.5 px
+LABEL 4 76 1 1 cull cw, ccw, leg 0.25 px
+LABEL 4 77 1 1 cull cw, ccw, leg 0.125 px
+LABEL 4 78 1 1 cull cw, ccw, leg 0.0625 px
+LABEL 4 79 1 1 cull cw, ccw, leg 0.03125 px
+LABEL 4 8 1 1 cull none, cw, leg 0.0625 px
+LABEL 4 9 1 1 cull none, cw, leg 0.03125 px

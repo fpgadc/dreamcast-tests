@@ -1,0 +1,1080 @@
+LABEL 0 0 1 1 reg 0: quad at +0/8, +0/8
+LABEL 0 1 1 1 reg 0: quad at +1/8, +0/8
+LABEL 0 10 1 1 reg 0: gouraud 1
+LABEL 0 100 1 1 reg 0: quad at +0/8, +5/8
+LABEL 0 101 1 1 reg 0: quad at +1/8, +5/8
+LABEL 0 102 1 1 reg 0: quad at +2/8, +5/8
+LABEL 0 103 1 1 reg 0: quad at +3/8, +5/8
+LABEL 0 104 1 1 reg 0: quad at +4/8, +5/8
+LABEL 0 105 1 1 reg 0: quad at +5/8, +5/8
+LABEL 0 106 1 1 reg 0: quad at +6/8, +5/8
+LABEL 0 107 1 1 reg 0: quad at +7/8, +5/8
+LABEL 0 109 1 1 reg 0: point 1:1, u shifted -4/8
+LABEL 0 11 1 1 reg 0: gouraud 2
+LABEL 0 110 1 1 reg 0: point 1:1, u shifted -3/8
+LABEL 0 111 1 1 reg 0: point 1:1, u shifted -2/8
+LABEL 0 112 1 1 reg 0: point 1:1, u shifted -1/8
+LABEL 0 113 1 1 reg 0: point 1:1, u shifted +0/8
+LABEL 0 114 1 1 reg 0: point 1:1, u shifted +1/8
+LABEL 0 115 1 1 reg 0: point 1:1, u shifted +2/8
+LABEL 0 116 1 1 reg 0: point 1:1, u shifted +3/8
+LABEL 0 117 1 1 reg 0: point 1:1, u shifted +4/8
+LABEL 0 12 1 1 reg 0: gouraud 3
+LABEL 0 120 1 1 reg 0: quad at +0/8, +6/8
+LABEL 0 121 1 1 reg 0: quad at +1/8, +6/8
+LABEL 0 122 1 1 reg 0: quad at +2/8, +6/8
+LABEL 0 123 1 1 reg 0: quad at +3/8, +6/8
+LABEL 0 124 1 1 reg 0: quad at +4/8, +6/8
+LABEL 0 125 1 1 reg 0: quad at +5/8, +6/8
+LABEL 0 126 1 1 reg 0: quad at +6/8, +6/8
+LABEL 0 127 1 1 reg 0: quad at +7/8, +6/8
+LABEL 0 129 1 1 reg 0: bilinear step along u, start +0/128
+LABEL 0 13 1 1 reg 0: gouraud 4
+LABEL 0 130 1 1 reg 0: bilinear step along u, start +1/128
+LABEL 0 131 1 1 reg 0: bilinear step along u, start +2/128
+LABEL 0 132 1 1 reg 0: bilinear step along u, start +3/128
+LABEL 0 133 1 1 reg 0: bilinear step along v, start +0/128
+LABEL 0 134 1 1 reg 0: bilinear step along v, start +1/128
+LABEL 0 135 1 1 reg 0: bilinear step along v, start +2/128
+LABEL 0 136 1 1 reg 0: bilinear step along v, start +3/128
+LABEL 0 14 1 1 reg 0: gouraud 5
+LABEL 0 140 1 1 reg 0: quad at +0/8, +7/8
+LABEL 0 141 1 1 reg 0: quad at +1/8, +7/8
+LABEL 0 142 1 1 reg 0: quad at +2/8, +7/8
+LABEL 0 143 1 1 reg 0: quad at +3/8, +7/8
+LABEL 0 144 1 1 reg 0: quad at +4/8, +7/8
+LABEL 0 145 1 1 reg 0: quad at +5/8, +7/8
+LABEL 0 146 1 1 reg 0: quad at +6/8, +7/8
+LABEL 0 147 1 1 reg 0: quad at +7/8, +7/8
+LABEL 0 149 1 1 reg 0: perspective 0
+LABEL 0 150 1 1 reg 0: perspective 1
+LABEL 0 151 1 1 reg 0: perspective 2
+LABEL 0 152 1 1 reg 0: perspective 3
+LABEL 0 160 1 1 reg 0: depth slope x, k 2
+LABEL 0 161 1 1 reg 0: depth slope x, k 4
+LABEL 0 162 1 1 reg 0: depth slope x, k 6
+LABEL 0 163 1 1 reg 0: depth slope x, k 8
+LABEL 0 164 1 1 reg 0: depth slope y, k 2
+LABEL 0 165 1 1 reg 0: depth slope y, k 4
+LABEL 0 166 1 1 reg 0: depth slope y, k 6
+LABEL 0 167 1 1 reg 0: depth slope y, k 8
+LABEL 0 2 1 1 reg 0: quad at +2/8, +0/8
+LABEL 0 20 1 1 reg 0: quad at +0/8, +1/8
+LABEL 0 21 1 1 reg 0: quad at +1/8, +1/8
+LABEL 0 22 1 1 reg 0: quad at +2/8, +1/8
+LABEL 0 23 1 1 reg 0: quad at +3/8, +1/8
+LABEL 0 24 1 1 reg 0: quad at +4/8, +1/8
+LABEL 0 25 1 1 reg 0: quad at +5/8, +1/8
+LABEL 0 26 1 1 reg 0: quad at +6/8, +1/8
+LABEL 0 27 1 1 reg 0: quad at +7/8, +1/8
+LABEL 0 29 1 1 reg 0: point 4x, u shifted -4/8
+LABEL 0 3 1 1 reg 0: quad at +3/8, +0/8
+LABEL 0 30 1 1 reg 0: point 4x, u shifted -3/8
+LABEL 0 31 1 1 reg 0: point 4x, u shifted -2/8
+LABEL 0 32 1 1 reg 0: point 4x, u shifted -1/8
+LABEL 0 33 1 1 reg 0: point 4x, u shifted +0/8
+LABEL 0 34 1 1 reg 0: point 4x, u shifted +1/8
+LABEL 0 35 1 1 reg 0: point 4x, u shifted +2/8
+LABEL 0 36 1 1 reg 0: point 4x, u shifted +3/8
+LABEL 0 37 1 1 reg 0: point 4x, u shifted +4/8
+LABEL 0 4 1 1 reg 0: quad at +4/8, +0/8
+LABEL 0 40 1 1 reg 0: quad at +0/8, +2/8
+LABEL 0 41 1 1 reg 0: quad at +1/8, +2/8
+LABEL 0 42 1 1 reg 0: quad at +2/8, +2/8
+LABEL 0 43 1 1 reg 0: quad at +3/8, +2/8
+LABEL 0 44 1 1 reg 0: quad at +4/8, +2/8
+LABEL 0 45 1 1 reg 0: quad at +5/8, +2/8
+LABEL 0 46 1 1 reg 0: quad at +6/8, +2/8
+LABEL 0 47 1 1 reg 0: quad at +7/8, +2/8
+LABEL 0 49 1 1 reg 0: point 4x, v shifted -4/8
+LABEL 0 5 1 1 reg 0: quad at +5/8, +0/8
+LABEL 0 50 1 1 reg 0: point 4x, v shifted -3/8
+LABEL 0 51 1 1 reg 0: point 4x, v shifted -2/8
+LABEL 0 52 1 1 reg 0: point 4x, v shifted -1/8
+LABEL 0 53 1 1 reg 0: point 4x, v shifted +0/8
+LABEL 0 54 1 1 reg 0: point 4x, v shifted +1/8
+LABEL 0 55 1 1 reg 0: point 4x, v shifted +2/8
+LABEL 0 56 1 1 reg 0: point 4x, v shifted +3/8
+LABEL 0 57 1 1 reg 0: point 4x, v shifted +4/8
+LABEL 0 6 1 1 reg 0: quad at +6/8, +0/8
+LABEL 0 60 1 1 reg 0: quad at +0/8, +3/8
+LABEL 0 61 1 1 reg 0: quad at +1/8, +3/8
+LABEL 0 62 1 1 reg 0: quad at +2/8, +3/8
+LABEL 0 63 1 1 reg 0: quad at +3/8, +3/8
+LABEL 0 64 1 1 reg 0: quad at +4/8, +3/8
+LABEL 0 65 1 1 reg 0: quad at +5/8, +3/8
+LABEL 0 66 1 1 reg 0: quad at +6/8, +3/8
+LABEL 0 67 1 1 reg 0: quad at +7/8, +3/8
+LABEL 0 69 1 1 reg 0: bilinear 4x, u shifted -4/8
+LABEL 0 7 1 1 reg 0: quad at +7/8, +0/8
+LABEL 0 70 1 1 reg 0: bilinear 4x, u shifted -3/8
+LABEL 0 71 1 1 reg 0: bilinear 4x, u shifted -2/8
+LABEL 0 72 1 1 reg 0: bilinear 4x, u shifted -1/8
+LABEL 0 73 1 1 reg 0: bilinear 4x, u shifted +0/8
+LABEL 0 74 1 1 reg 0: bilinear 4x, u shifted +1/8
+LABEL 0 75 1 1 reg 0: bilinear 4x, u shifted +2/8
+LABEL 0 76 1 1 reg 0: bilinear 4x, u shifted +3/8
+LABEL 0 77 1 1 reg 0: bilinear 4x, u shifted +4/8
+LABEL 0 80 1 1 reg 0: quad at +0/8, +4/8
+LABEL 0 81 1 1 reg 0: quad at +1/8, +4/8
+LABEL 0 82 1 1 reg 0: quad at +2/8, +4/8
+LABEL 0 83 1 1 reg 0: quad at +3/8, +4/8
+LABEL 0 84 1 1 reg 0: quad at +4/8, +4/8
+LABEL 0 85 1 1 reg 0: quad at +5/8, +4/8
+LABEL 0 86 1 1 reg 0: quad at +6/8, +4/8
+LABEL 0 87 1 1 reg 0: quad at +7/8, +4/8
+LABEL 0 89 1 1 reg 0: bilinear 4x, v shifted -4/8
+LABEL 0 9 1 1 reg 0: gouraud 0
+LABEL 0 90 1 1 reg 0: bilinear 4x, v shifted -3/8
+LABEL 0 91 1 1 reg 0: bilinear 4x, v shifted -2/8
+LABEL 0 92 1 1 reg 0: bilinear 4x, v shifted -1/8
+LABEL 0 93 1 1 reg 0: bilinear 4x, v shifted +0/8
+LABEL 0 94 1 1 reg 0: bilinear 4x, v shifted +1/8
+LABEL 0 95 1 1 reg 0: bilinear 4x, v shifted +2/8
+LABEL 0 96 1 1 reg 0: bilinear 4x, v shifted +3/8
+LABEL 0 97 1 1 reg 0: bilinear 4x, v shifted +4/8
+LABEL 1 0 1 1 reg 1: quad at +0/8, +0/8
+LABEL 1 1 1 1 reg 1: quad at +1/8, +0/8
+LABEL 1 10 1 1 reg 1: gouraud 1
+LABEL 1 100 1 1 reg 1: quad at +0/8, +5/8
+LABEL 1 101 1 1 reg 1: quad at +1/8, +5/8
+LABEL 1 102 1 1 reg 1: quad at +2/8, +5/8
+LABEL 1 103 1 1 reg 1: quad at +3/8, +5/8
+LABEL 1 104 1 1 reg 1: quad at +4/8, +5/8
+LABEL 1 105 1 1 reg 1: quad at +5/8, +5/8
+LABEL 1 106 1 1 reg 1: quad at +6/8, +5/8
+LABEL 1 107 1 1 reg 1: quad at +7/8, +5/8
+LABEL 1 109 1 1 reg 1: point 1:1, u shifted -4/8
+LABEL 1 11 1 1 reg 1: gouraud 2
+LABEL 1 110 1 1 reg 1: point 1:1, u shifted -3/8
+LABEL 1 111 1 1 reg 1: point 1:1, u shifted -2/8
+LABEL 1 112 1 1 reg 1: point 1:1, u shifted -1/8
+LABEL 1 113 1 1 reg 1: point 1:1, u shifted +0/8
+LABEL 1 114 1 1 reg 1: point 1:1, u shifted +1/8
+LABEL 1 115 1 1 reg 1: point 1:1, u shifted +2/8
+LABEL 1 116 1 1 reg 1: point 1:1, u shifted +3/8
+LABEL 1 117 1 1 reg 1: point 1:1, u shifted +4/8
+LABEL 1 12 1 1 reg 1: gouraud 3
+LABEL 1 120 1 1 reg 1: quad at +0/8, +6/8
+LABEL 1 121 1 1 reg 1: quad at +1/8, +6/8
+LABEL 1 122 1 1 reg 1: quad at +2/8, +6/8
+LABEL 1 123 1 1 reg 1: quad at +3/8, +6/8
+LABEL 1 124 1 1 reg 1: quad at +4/8, +6/8
+LABEL 1 125 1 1 reg 1: quad at +5/8, +6/8
+LABEL 1 126 1 1 reg 1: quad at +6/8, +6/8
+LABEL 1 127 1 1 reg 1: quad at +7/8, +6/8
+LABEL 1 129 1 1 reg 1: bilinear step along u, start +0/128
+LABEL 1 13 1 1 reg 1: gouraud 4
+LABEL 1 130 1 1 reg 1: bilinear step along u, start +1/128
+LABEL 1 131 1 1 reg 1: bilinear step along u, start +2/128
+LABEL 1 132 1 1 reg 1: bilinear step along u, start +3/128
+LABEL 1 133 1 1 reg 1: bilinear step along v, start +0/128
+LABEL 1 134 1 1 reg 1: bilinear step along v, start +1/128
+LABEL 1 135 1 1 reg 1: bilinear step along v, start +2/128
+LABEL 1 136 1 1 reg 1: bilinear step along v, start +3/128
+LABEL 1 14 1 1 reg 1: gouraud 5
+LABEL 1 140 1 1 reg 1: quad at +0/8, +7/8
+LABEL 1 141 1 1 reg 1: quad at +1/8, +7/8
+LABEL 1 142 1 1 reg 1: quad at +2/8, +7/8
+LABEL 1 143 1 1 reg 1: quad at +3/8, +7/8
+LABEL 1 144 1 1 reg 1: quad at +4/8, +7/8
+LABEL 1 145 1 1 reg 1: quad at +5/8, +7/8
+LABEL 1 146 1 1 reg 1: quad at +6/8, +7/8
+LABEL 1 147 1 1 reg 1: quad at +7/8, +7/8
+LABEL 1 149 1 1 reg 1: perspective 0
+LABEL 1 150 1 1 reg 1: perspective 1
+LABEL 1 151 1 1 reg 1: perspective 2
+LABEL 1 152 1 1 reg 1: perspective 3
+LABEL 1 160 1 1 reg 1: depth slope x, k 2
+LABEL 1 161 1 1 reg 1: depth slope x, k 4
+LABEL 1 162 1 1 reg 1: depth slope x, k 6
+LABEL 1 163 1 1 reg 1: depth slope x, k 8
+LABEL 1 164 1 1 reg 1: depth slope y, k 2
+LABEL 1 165 1 1 reg 1: depth slope y, k 4
+LABEL 1 166 1 1 reg 1: depth slope y, k 6
+LABEL 1 167 1 1 reg 1: depth slope y, k 8
+LABEL 1 2 1 1 reg 1: quad at +2/8, +0/8
+LABEL 1 20 1 1 reg 1: quad at +0/8, +1/8
+LABEL 1 21 1 1 reg 1: quad at +1/8, +1/8
+LABEL 1 22 1 1 reg 1: quad at +2/8, +1/8
+LABEL 1 23 1 1 reg 1: quad at +3/8, +1/8
+LABEL 1 24 1 1 reg 1: quad at +4/8, +1/8
+LABEL 1 25 1 1 reg 1: quad at +5/8, +1/8
+LABEL 1 26 1 1 reg 1: quad at +6/8, +1/8
+LABEL 1 27 1 1 reg 1: quad at +7/8, +1/8
+LABEL 1 29 1 1 reg 1: point 4x, u shifted -4/8
+LABEL 1 3 1 1 reg 1: quad at +3/8, +0/8
+LABEL 1 30 1 1 reg 1: point 4x, u shifted -3/8
+LABEL 1 31 1 1 reg 1: point 4x, u shifted -2/8
+LABEL 1 32 1 1 reg 1: point 4x, u shifted -1/8
+LABEL 1 33 1 1 reg 1: point 4x, u shifted +0/8
+LABEL 1 34 1 1 reg 1: point 4x, u shifted +1/8
+LABEL 1 35 1 1 reg 1: point 4x, u shifted +2/8
+LABEL 1 36 1 1 reg 1: point 4x, u shifted +3/8
+LABEL 1 37 1 1 reg 1: point 4x, u shifted +4/8
+LABEL 1 4 1 1 reg 1: quad at +4/8, +0/8
+LABEL 1 40 1 1 reg 1: quad at +0/8, +2/8
+LABEL 1 41 1 1 reg 1: quad at +1/8, +2/8
+LABEL 1 42 1 1 reg 1: quad at +2/8, +2/8
+LABEL 1 43 1 1 reg 1: quad at +3/8, +2/8
+LABEL 1 44 1 1 reg 1: quad at +4/8, +2/8
+LABEL 1 45 1 1 reg 1: quad at +5/8, +2/8
+LABEL 1 46 1 1 reg 1: quad at +6/8, +2/8
+LABEL 1 47 1 1 reg 1: quad at +7/8, +2/8
+LABEL 1 49 1 1 reg 1: point 4x, v shifted -4/8
+LABEL 1 5 1 1 reg 1: quad at +5/8, +0/8
+LABEL 1 50 1 1 reg 1: point 4x, v shifted -3/8
+LABEL 1 51 1 1 reg 1: point 4x, v shifted -2/8
+LABEL 1 52 1 1 reg 1: point 4x, v shifted -1/8
+LABEL 1 53 1 1 reg 1: point 4x, v shifted +0/8
+LABEL 1 54 1 1 reg 1: point 4x, v shifted +1/8
+LABEL 1 55 1 1 reg 1: point 4x, v shifted +2/8
+LABEL 1 56 1 1 reg 1: point 4x, v shifted +3/8
+LABEL 1 57 1 1 reg 1: point 4x, v shifted +4/8
+LABEL 1 6 1 1 reg 1: quad at +6/8, +0/8
+LABEL 1 60 1 1 reg 1: quad at +0/8, +3/8
+LABEL 1 61 1 1 reg 1: quad at +1/8, +3/8
+LABEL 1 62 1 1 reg 1: quad at +2/8, +3/8
+LABEL 1 63 1 1 reg 1: quad at +3/8, +3/8
+LABEL 1 64 1 1 reg 1: quad at +4/8, +3/8
+LABEL 1 65 1 1 reg 1: quad at +5/8, +3/8
+LABEL 1 66 1 1 reg 1: quad at +6/8, +3/8
+LABEL 1 67 1 1 reg 1: quad at +7/8, +3/8
+LABEL 1 69 1 1 reg 1: bilinear 4x, u shifted -4/8
+LABEL 1 7 1 1 reg 1: quad at +7/8, +0/8
+LABEL 1 70 1 1 reg 1: bilinear 4x, u shifted -3/8
+LABEL 1 71 1 1 reg 1: bilinear 4x, u shifted -2/8
+LABEL 1 72 1 1 reg 1: bilinear 4x, u shifted -1/8
+LABEL 1 73 1 1 reg 1: bilinear 4x, u shifted +0/8
+LABEL 1 74 1 1 reg 1: bilinear 4x, u shifted +1/8
+LABEL 1 75 1 1 reg 1: bilinear 4x, u shifted +2/8
+LABEL 1 76 1 1 reg 1: bilinear 4x, u shifted +3/8
+LABEL 1 77 1 1 reg 1: bilinear 4x, u shifted +4/8
+LABEL 1 80 1 1 reg 1: quad at +0/8, +4/8
+LABEL 1 81 1 1 reg 1: quad at +1/8, +4/8
+LABEL 1 82 1 1 reg 1: quad at +2/8, +4/8
+LABEL 1 83 1 1 reg 1: quad at +3/8, +4/8
+LABEL 1 84 1 1 reg 1: quad at +4/8, +4/8
+LABEL 1 85 1 1 reg 1: quad at +5/8, +4/8
+LABEL 1 86 1 1 reg 1: quad at +6/8, +4/8
+LABEL 1 87 1 1 reg 1: quad at +7/8, +4/8
+LABEL 1 89 1 1 reg 1: bilinear 4x, v shifted -4/8
+LABEL 1 9 1 1 reg 1: gouraud 0
+LABEL 1 90 1 1 reg 1: bilinear 4x, v shifted -3/8
+LABEL 1 91 1 1 reg 1: bilinear 4x, v shifted -2/8
+LABEL 1 92 1 1 reg 1: bilinear 4x, v shifted -1/8
+LABEL 1 93 1 1 reg 1: bilinear 4x, v shifted +0/8
+LABEL 1 94 1 1 reg 1: bilinear 4x, v shifted +1/8
+LABEL 1 95 1 1 reg 1: bilinear 4x, v shifted +2/8
+LABEL 1 96 1 1 reg 1: bilinear 4x, v shifted +3/8
+LABEL 1 97 1 1 reg 1: bilinear 4x, v shifted +4/8
+LABEL 2 0 1 1 reg 2: quad at +0/8, +0/8
+LABEL 2 1 1 1 reg 2: quad at +1/8, +0/8
+LABEL 2 10 1 1 reg 2: gouraud 1
+LABEL 2 100 1 1 reg 2: quad at +0/8, +5/8
+LABEL 2 101 1 1 reg 2: quad at +1/8, +5/8
+LABEL 2 102 1 1 reg 2: quad at +2/8, +5/8
+LABEL 2 103 1 1 reg 2: quad at +3/8, +5/8
+LABEL 2 104 1 1 reg 2: quad at +4/8, +5/8
+LABEL 2 105 1 1 reg 2: quad at +5/8, +5/8
+LABEL 2 106 1 1 reg 2: quad at +6/8, +5/8
+LABEL 2 107 1 1 reg 2: quad at +7/8, +5/8
+LABEL 2 109 1 1 reg 2: point 1:1, u shifted -4/8
+LABEL 2 11 1 1 reg 2: gouraud 2
+LABEL 2 110 1 1 reg 2: point 1:1, u shifted -3/8
+LABEL 2 111 1 1 reg 2: point 1:1, u shifted -2/8
+LABEL 2 112 1 1 reg 2: point 1:1, u shifted -1/8
+LABEL 2 113 1 1 reg 2: point 1:1, u shifted +0/8
+LABEL 2 114 1 1 reg 2: point 1:1, u shifted +1/8
+LABEL 2 115 1 1 reg 2: point 1:1, u shifted +2/8
+LABEL 2 116 1 1 reg 2: point 1:1, u shifted +3/8
+LABEL 2 117 1 1 reg 2: point 1:1, u shifted +4/8
+LABEL 2 12 1 1 reg 2: gouraud 3
+LABEL 2 120 1 1 reg 2: quad at +0/8, +6/8
+LABEL 2 121 1 1 reg 2: quad at +1/8, +6/8
+LABEL 2 122 1 1 reg 2: quad at +2/8, +6/8
+LABEL 2 123 1 1 reg 2: quad at +3/8, +6/8
+LABEL 2 124 1 1 reg 2: quad at +4/8, +6/8
+LABEL 2 125 1 1 reg 2: quad at +5/8, +6/8
+LABEL 2 126 1 1 reg 2: quad at +6/8, +6/8
+LABEL 2 127 1 1 reg 2: quad at +7/8, +6/8
+LABEL 2 129 1 1 reg 2: bilinear step along u, start +0/128
+LABEL 2 13 1 1 reg 2: gouraud 4
+LABEL 2 130 1 1 reg 2: bilinear step along u, start +1/128
+LABEL 2 131 1 1 reg 2: bilinear step along u, start +2/128
+LABEL 2 132 1 1 reg 2: bilinear step along u, start +3/128
+LABEL 2 133 1 1 reg 2: bilinear step along v, start +0/128
+LABEL 2 134 1 1 reg 2: bilinear step along v, start +1/128
+LABEL 2 135 1 1 reg 2: bilinear step along v, start +2/128
+LABEL 2 136 1 1 reg 2: bilinear step along v, start +3/128
+LABEL 2 14 1 1 reg 2: gouraud 5
+LABEL 2 140 1 1 reg 2: quad at +0/8, +7/8
+LABEL 2 141 1 1 reg 2: quad at +1/8, +7/8
+LABEL 2 142 1 1 reg 2: quad at +2/8, +7/8
+LABEL 2 143 1 1 reg 2: quad at +3/8, +7/8
+LABEL 2 144 1 1 reg 2: quad at +4/8, +7/8
+LABEL 2 145 1 1 reg 2: quad at +5/8, +7/8
+LABEL 2 146 1 1 reg 2: quad at +6/8, +7/8
+LABEL 2 147 1 1 reg 2: quad at +7/8, +7/8
+LABEL 2 149 1 1 reg 2: perspective 0
+LABEL 2 150 1 1 reg 2: perspective 1
+LABEL 2 151 1 1 reg 2: perspective 2
+LABEL 2 152 1 1 reg 2: perspective 3
+LABEL 2 160 1 1 reg 2: depth slope x, k 2
+LABEL 2 161 1 1 reg 2: depth slope x, k 4
+LABEL 2 162 1 1 reg 2: depth slope x, k 6
+LABEL 2 163 1 1 reg 2: depth slope x, k 8
+LABEL 2 164 1 1 reg 2: depth slope y, k 2
+LABEL 2 165 1 1 reg 2: depth slope y, k 4
+LABEL 2 166 1 1 reg 2: depth slope y, k 6
+LABEL 2 167 1 1 reg 2: depth slope y, k 8
+LABEL 2 2 1 1 reg 2: quad at +2/8, +0/8
+LABEL 2 20 1 1 reg 2: quad at +0/8, +1/8
+LABEL 2 21 1 1 reg 2: quad at +1/8, +1/8
+LABEL 2 22 1 1 reg 2: quad at +2/8, +1/8
+LABEL 2 23 1 1 reg 2: quad at +3/8, +1/8
+LABEL 2 24 1 1 reg 2: quad at +4/8, +1/8
+LABEL 2 25 1 1 reg 2: quad at +5/8, +1/8
+LABEL 2 26 1 1 reg 2: quad at +6/8, +1/8
+LABEL 2 27 1 1 reg 2: quad at +7/8, +1/8
+LABEL 2 29 1 1 reg 2: point 4x, u shifted -4/8
+LABEL 2 3 1 1 reg 2: quad at +3/8, +0/8
+LABEL 2 30 1 1 reg 2: point 4x, u shifted -3/8
+LABEL 2 31 1 1 reg 2: point 4x, u shifted -2/8
+LABEL 2 32 1 1 reg 2: point 4x, u shifted -1/8
+LABEL 2 33 1 1 reg 2: point 4x, u shifted +0/8
+LABEL 2 34 1 1 reg 2: point 4x, u shifted +1/8
+LABEL 2 35 1 1 reg 2: point 4x, u shifted +2/8
+LABEL 2 36 1 1 reg 2: point 4x, u shifted +3/8
+LABEL 2 37 1 1 reg 2: point 4x, u shifted +4/8
+LABEL 2 4 1 1 reg 2: quad at +4/8, +0/8
+LABEL 2 40 1 1 reg 2: quad at +0/8, +2/8
+LABEL 2 41 1 1 reg 2: quad at +1/8, +2/8
+LABEL 2 42 1 1 reg 2: quad at +2/8, +2/8
+LABEL 2 43 1 1 reg 2: quad at +3/8, +2/8
+LABEL 2 44 1 1 reg 2: quad at +4/8, +2/8
+LABEL 2 45 1 1 reg 2: quad at +5/8, +2/8
+LABEL 2 46 1 1 reg 2: quad at +6/8, +2/8
+LABEL 2 47 1 1 reg 2: quad at +7/8, +2/8
+LABEL 2 49 1 1 reg 2: point 4x, v shifted -4/8
+LABEL 2 5 1 1 reg 2: quad at +5/8, +0/8
+LABEL 2 50 1 1 reg 2: point 4x, v shifted -3/8
+LABEL 2 51 1 1 reg 2: point 4x, v shifted -2/8
+LABEL 2 52 1 1 reg 2: point 4x, v shifted -1/8
+LABEL 2 53 1 1 reg 2: point 4x, v shifted +0/8
+LABEL 2 54 1 1 reg 2: point 4x, v shifted +1/8
+LABEL 2 55 1 1 reg 2: point 4x, v shifted +2/8
+LABEL 2 56 1 1 reg 2: point 4x, v shifted +3/8
+LABEL 2 57 1 1 reg 2: point 4x, v shifted +4/8
+LABEL 2 6 1 1 reg 2: quad at +6/8, +0/8
+LABEL 2 60 1 1 reg 2: quad at +0/8, +3/8
+LABEL 2 61 1 1 reg 2: quad at +1/8, +3/8
+LABEL 2 62 1 1 reg 2: quad at +2/8, +3/8
+LABEL 2 63 1 1 reg 2: quad at +3/8, +3/8
+LABEL 2 64 1 1 reg 2: quad at +4/8, +3/8
+LABEL 2 65 1 1 reg 2: quad at +5/8, +3/8
+LABEL 2 66 1 1 reg 2: quad at +6/8, +3/8
+LABEL 2 67 1 1 reg 2: quad at +7/8, +3/8
+LABEL 2 69 1 1 reg 2: bilinear 4x, u shifted -4/8
+LABEL 2 7 1 1 reg 2: quad at +7/8, +0/8
+LABEL 2 70 1 1 reg 2: bilinear 4x, u shifted -3/8
+LABEL 2 71 1 1 reg 2: bilinear 4x, u shifted -2/8
+LABEL 2 72 1 1 reg 2: bilinear 4x, u shifted -1/8
+LABEL 2 73 1 1 reg 2: bilinear 4x, u shifted +0/8
+LABEL 2 74 1 1 reg 2: bilinear 4x, u shifted +1/8
+LABEL 2 75 1 1 reg 2: bilinear 4x, u shifted +2/8
+LABEL 2 76 1 1 reg 2: bilinear 4x, u shifted +3/8
+LABEL 2 77 1 1 reg 2: bilinear 4x, u shifted +4/8
+LABEL 2 80 1 1 reg 2: quad at +0/8, +4/8
+LABEL 2 81 1 1 reg 2: quad at +1/8, +4/8
+LABEL 2 82 1 1 reg 2: quad at +2/8, +4/8
+LABEL 2 83 1 1 reg 2: quad at +3/8, +4/8
+LABEL 2 84 1 1 reg 2: quad at +4/8, +4/8
+LABEL 2 85 1 1 reg 2: quad at +5/8, +4/8
+LABEL 2 86 1 1 reg 2: quad at +6/8, +4/8
+LABEL 2 87 1 1 reg 2: quad at +7/8, +4/8
+LABEL 2 89 1 1 reg 2: bilinear 4x, v shifted -4/8
+LABEL 2 9 1 1 reg 2: gouraud 0
+LABEL 2 90 1 1 reg 2: bilinear 4x, v shifted -3/8
+LABEL 2 91 1 1 reg 2: bilinear 4x, v shifted -2/8
+LABEL 2 92 1 1 reg 2: bilinear 4x, v shifted -1/8
+LABEL 2 93 1 1 reg 2: bilinear 4x, v shifted +0/8
+LABEL 2 94 1 1 reg 2: bilinear 4x, v shifted +1/8
+LABEL 2 95 1 1 reg 2: bilinear 4x, v shifted +2/8
+LABEL 2 96 1 1 reg 2: bilinear 4x, v shifted +3/8
+LABEL 2 97 1 1 reg 2: bilinear 4x, v shifted +4/8
+LABEL 3 0 1 1 reg 3: quad at +0/8, +0/8
+LABEL 3 1 1 1 reg 3: quad at +1/8, +0/8
+LABEL 3 10 1 1 reg 3: gouraud 1
+LABEL 3 100 1 1 reg 3: quad at +0/8, +5/8
+LABEL 3 101 1 1 reg 3: quad at +1/8, +5/8
+LABEL 3 102 1 1 reg 3: quad at +2/8, +5/8
+LABEL 3 103 1 1 reg 3: quad at +3/8, +5/8
+LABEL 3 104 1 1 reg 3: quad at +4/8, +5/8
+LABEL 3 105 1 1 reg 3: quad at +5/8, +5/8
+LABEL 3 106 1 1 reg 3: quad at +6/8, +5/8
+LABEL 3 107 1 1 reg 3: quad at +7/8, +5/8
+LABEL 3 109 1 1 reg 3: point 1:1, u shifted -4/8
+LABEL 3 11 1 1 reg 3: gouraud 2
+LABEL 3 110 1 1 reg 3: point 1:1, u shifted -3/8
+LABEL 3 111 1 1 reg 3: point 1:1, u shifted -2/8
+LABEL 3 112 1 1 reg 3: point 1:1, u shifted -1/8
+LABEL 3 113 1 1 reg 3: point 1:1, u shifted +0/8
+LABEL 3 114 1 1 reg 3: point 1:1, u shifted +1/8
+LABEL 3 115 1 1 reg 3: point 1:1, u shifted +2/8
+LABEL 3 116 1 1 reg 3: point 1:1, u shifted +3/8
+LABEL 3 117 1 1 reg 3: point 1:1, u shifted +4/8
+LABEL 3 12 1 1 reg 3: gouraud 3
+LABEL 3 120 1 1 reg 3: quad at +0/8, +6/8
+LABEL 3 121 1 1 reg 3: quad at +1/8, +6/8
+LABEL 3 122 1 1 reg 3: quad at +2/8, +6/8
+LABEL 3 123 1 1 reg 3: quad at +3/8, +6/8
+LABEL 3 124 1 1 reg 3: quad at +4/8, +6/8
+LABEL 3 125 1 1 reg 3: quad at +5/8, +6/8
+LABEL 3 126 1 1 reg 3: quad at +6/8, +6/8
+LABEL 3 127 1 1 reg 3: quad at +7/8, +6/8
+LABEL 3 129 1 1 reg 3: bilinear step along u, start +0/128
+LABEL 3 13 1 1 reg 3: gouraud 4
+LABEL 3 130 1 1 reg 3: bilinear step along u, start +1/128
+LABEL 3 131 1 1 reg 3: bilinear step along u, start +2/128
+LABEL 3 132 1 1 reg 3: bilinear step along u, start +3/128
+LABEL 3 133 1 1 reg 3: bilinear step along v, start +0/128
+LABEL 3 134 1 1 reg 3: bilinear step along v, start +1/128
+LABEL 3 135 1 1 reg 3: bilinear step along v, start +2/128
+LABEL 3 136 1 1 reg 3: bilinear step along v, start +3/128
+LABEL 3 14 1 1 reg 3: gouraud 5
+LABEL 3 140 1 1 reg 3: quad at +0/8, +7/8
+LABEL 3 141 1 1 reg 3: quad at +1/8, +7/8
+LABEL 3 142 1 1 reg 3: quad at +2/8, +7/8
+LABEL 3 143 1 1 reg 3: quad at +3/8, +7/8
+LABEL 3 144 1 1 reg 3: quad at +4/8, +7/8
+LABEL 3 145 1 1 reg 3: quad at +5/8, +7/8
+LABEL 3 146 1 1 reg 3: quad at +6/8, +7/8
+LABEL 3 147 1 1 reg 3: quad at +7/8, +7/8
+LABEL 3 149 1 1 reg 3: perspective 0
+LABEL 3 150 1 1 reg 3: perspective 1
+LABEL 3 151 1 1 reg 3: perspective 2
+LABEL 3 152 1 1 reg 3: perspective 3
+LABEL 3 160 1 1 reg 3: depth slope x, k 2
+LABEL 3 161 1 1 reg 3: depth slope x, k 4
+LABEL 3 162 1 1 reg 3: depth slope x, k 6
+LABEL 3 163 1 1 reg 3: depth slope x, k 8
+LABEL 3 164 1 1 reg 3: depth slope y, k 2
+LABEL 3 165 1 1 reg 3: depth slope y, k 4
+LABEL 3 166 1 1 reg 3: depth slope y, k 6
+LABEL 3 167 1 1 reg 3: depth slope y, k 8
+LABEL 3 2 1 1 reg 3: quad at +2/8, +0/8
+LABEL 3 20 1 1 reg 3: quad at +0/8, +1/8
+LABEL 3 21 1 1 reg 3: quad at +1/8, +1/8
+LABEL 3 22 1 1 reg 3: quad at +2/8, +1/8
+LABEL 3 23 1 1 reg 3: quad at +3/8, +1/8
+LABEL 3 24 1 1 reg 3: quad at +4/8, +1/8
+LABEL 3 25 1 1 reg 3: quad at +5/8, +1/8
+LABEL 3 26 1 1 reg 3: quad at +6/8, +1/8
+LABEL 3 27 1 1 reg 3: quad at +7/8, +1/8
+LABEL 3 29 1 1 reg 3: point 4x, u shifted -4/8
+LABEL 3 3 1 1 reg 3: quad at +3/8, +0/8
+LABEL 3 30 1 1 reg 3: point 4x, u shifted -3/8
+LABEL 3 31 1 1 reg 3: point 4x, u shifted -2/8
+LABEL 3 32 1 1 reg 3: point 4x, u shifted -1/8
+LABEL 3 33 1 1 reg 3: point 4x, u shifted +0/8
+LABEL 3 34 1 1 reg 3: point 4x, u shifted +1/8
+LABEL 3 35 1 1 reg 3: point 4x, u shifted +2/8
+LABEL 3 36 1 1 reg 3: point 4x, u shifted +3/8
+LABEL 3 37 1 1 reg 3: point 4x, u shifted +4/8
+LABEL 3 4 1 1 reg 3: quad at +4/8, +0/8
+LABEL 3 40 1 1 reg 3: quad at +0/8, +2/8
+LABEL 3 41 1 1 reg 3: quad at +1/8, +2/8
+LABEL 3 42 1 1 reg 3: quad at +2/8, +2/8
+LABEL 3 43 1 1 reg 3: quad at +3/8, +2/8
+LABEL 3 44 1 1 reg 3: quad at +4/8, +2/8
+LABEL 3 45 1 1 reg 3: quad at +5/8, +2/8
+LABEL 3 46 1 1 reg 3: quad at +6/8, +2/8
+LABEL 3 47 1 1 reg 3: quad at +7/8, +2/8
+LABEL 3 49 1 1 reg 3: point 4x, v shifted -4/8
+LABEL 3 5 1 1 reg 3: quad at +5/8, +0/8
+LABEL 3 50 1 1 reg 3: point 4x, v shifted -3/8
+LABEL 3 51 1 1 reg 3: point 4x, v shifted -2/8
+LABEL 3 52 1 1 reg 3: point 4x, v shifted -1/8
+LABEL 3 53 1 1 reg 3: point 4x, v shifted +0/8
+LABEL 3 54 1 1 reg 3: point 4x, v shifted +1/8
+LABEL 3 55 1 1 reg 3: point 4x, v shifted +2/8
+LABEL 3 56 1 1 reg 3: point 4x, v shifted +3/8
+LABEL 3 57 1 1 reg 3: point 4x, v shifted +4/8
+LABEL 3 6 1 1 reg 3: quad at +6/8, +0/8
+LABEL 3 60 1 1 reg 3: quad at +0/8, +3/8
+LABEL 3 61 1 1 reg 3: quad at +1/8, +3/8
+LABEL 3 62 1 1 reg 3: quad at +2/8, +3/8
+LABEL 3 63 1 1 reg 3: quad at +3/8, +3/8
+LABEL 3 64 1 1 reg 3: quad at +4/8, +3/8
+LABEL 3 65 1 1 reg 3: quad at +5/8, +3/8
+LABEL 3 66 1 1 reg 3: quad at +6/8, +3/8
+LABEL 3 67 1 1 reg 3: quad at +7/8, +3/8
+LABEL 3 69 1 1 reg 3: bilinear 4x, u shifted -4/8
+LABEL 3 7 1 1 reg 3: quad at +7/8, +0/8
+LABEL 3 70 1 1 reg 3: bilinear 4x, u shifted -3/8
+LABEL 3 71 1 1 reg 3: bilinear 4x, u shifted -2/8
+LABEL 3 72 1 1 reg 3: bilinear 4x, u shifted -1/8
+LABEL 3 73 1 1 reg 3: bilinear 4x, u shifted +0/8
+LABEL 3 74 1 1 reg 3: bilinear 4x, u shifted +1/8
+LABEL 3 75 1 1 reg 3: bilinear 4x, u shifted +2/8
+LABEL 3 76 1 1 reg 3: bilinear 4x, u shifted +3/8
+LABEL 3 77 1 1 reg 3: bilinear 4x, u shifted +4/8
+LABEL 3 80 1 1 reg 3: quad at +0/8, +4/8
+LABEL 3 81 1 1 reg 3: quad at +1/8, +4/8
+LABEL 3 82 1 1 reg 3: quad at +2/8, +4/8
+LABEL 3 83 1 1 reg 3: quad at +3/8, +4/8
+LABEL 3 84 1 1 reg 3: quad at +4/8, +4/8
+LABEL 3 85 1 1 reg 3: quad at +5/8, +4/8
+LABEL 3 86 1 1 reg 3: quad at +6/8, +4/8
+LABEL 3 87 1 1 reg 3: quad at +7/8, +4/8
+LABEL 3 89 1 1 reg 3: bilinear 4x, v shifted -4/8
+LABEL 3 9 1 1 reg 3: gouraud 0
+LABEL 3 90 1 1 reg 3: bilinear 4x, v shifted -3/8
+LABEL 3 91 1 1 reg 3: bilinear 4x, v shifted -2/8
+LABEL 3 92 1 1 reg 3: bilinear 4x, v shifted -1/8
+LABEL 3 93 1 1 reg 3: bilinear 4x, v shifted +0/8
+LABEL 3 94 1 1 reg 3: bilinear 4x, v shifted +1/8
+LABEL 3 95 1 1 reg 3: bilinear 4x, v shifted +2/8
+LABEL 3 96 1 1 reg 3: bilinear 4x, v shifted +3/8
+LABEL 3 97 1 1 reg 3: bilinear 4x, v shifted +4/8
+LABEL 4 0 1 1 reg 4: quad at +0/8, +0/8
+LABEL 4 1 1 1 reg 4: quad at +1/8, +0/8
+LABEL 4 10 1 1 reg 4: gouraud 1
+LABEL 4 100 1 1 reg 4: quad at +0/8, +5/8
+LABEL 4 101 1 1 reg 4: quad at +1/8, +5/8
+LABEL 4 102 1 1 reg 4: quad at +2/8, +5/8
+LABEL 4 103 1 1 reg 4: quad at +3/8, +5/8
+LABEL 4 104 1 1 reg 4: quad at +4/8, +5/8
+LABEL 4 105 1 1 reg 4: quad at +5/8, +5/8
+LABEL 4 106 1 1 reg 4: quad at +6/8, +5/8
+LABEL 4 107 1 1 reg 4: quad at +7/8, +5/8
+LABEL 4 109 1 1 reg 4: point 1:1, u shifted -4/8
+LABEL 4 11 1 1 reg 4: gouraud 2
+LABEL 4 110 1 1 reg 4: point 1:1, u shifted -3/8
+LABEL 4 111 1 1 reg 4: point 1:1, u shifted -2/8
+LABEL 4 112 1 1 reg 4: point 1:1, u shifted -1/8
+LABEL 4 113 1 1 reg 4: point 1:1, u shifted +0/8
+LABEL 4 114 1 1 reg 4: point 1:1, u shifted +1/8
+LABEL 4 115 1 1 reg 4: point 1:1, u shifted +2/8
+LABEL 4 116 1 1 reg 4: point 1:1, u shifted +3/8
+LABEL 4 117 1 1 reg 4: point 1:1, u shifted +4/8
+LABEL 4 12 1 1 reg 4: gouraud 3
+LABEL 4 120 1 1 reg 4: quad at +0/8, +6/8
+LABEL 4 121 1 1 reg 4: quad at +1/8, +6/8
+LABEL 4 122 1 1 reg 4: quad at +2/8, +6/8
+LABEL 4 123 1 1 reg 4: quad at +3/8, +6/8
+LABEL 4 124 1 1 reg 4: quad at +4/8, +6/8
+LABEL 4 125 1 1 reg 4: quad at +5/8, +6/8
+LABEL 4 126 1 1 reg 4: quad at +6/8, +6/8
+LABEL 4 127 1 1 reg 4: quad at +7/8, +6/8
+LABEL 4 129 1 1 reg 4: bilinear step along u, start +0/128
+LABEL 4 13 1 1 reg 4: gouraud 4
+LABEL 4 130 1 1 reg 4: bilinear step along u, start +1/128
+LABEL 4 131 1 1 reg 4: bilinear step along u, start +2/128
+LABEL 4 132 1 1 reg 4: bilinear step along u, start +3/128
+LABEL 4 133 1 1 reg 4: bilinear step along v, start +0/128
+LABEL 4 134 1 1 reg 4: bilinear step along v, start +1/128
+LABEL 4 135 1 1 reg 4: bilinear step along v, start +2/128
+LABEL 4 136 1 1 reg 4: bilinear step along v, start +3/128
+LABEL 4 14 1 1 reg 4: gouraud 5
+LABEL 4 140 1 1 reg 4: quad at +0/8, +7/8
+LABEL 4 141 1 1 reg 4: quad at +1/8, +7/8
+LABEL 4 142 1 1 reg 4: quad at +2/8, +7/8
+LABEL 4 143 1 1 reg 4: quad at +3/8, +7/8
+LABEL 4 144 1 1 reg 4: quad at +4/8, +7/8
+LABEL 4 145 1 1 reg 4: quad at +5/8, +7/8
+LABEL 4 146 1 1 reg 4: quad at +6/8, +7/8
+LABEL 4 147 1 1 reg 4: quad at +7/8, +7/8
+LABEL 4 149 1 1 reg 4: perspective 0
+LABEL 4 150 1 1 reg 4: perspective 1
+LABEL 4 151 1 1 reg 4: perspective 2
+LABEL 4 152 1 1 reg 4: perspective 3
+LABEL 4 160 1 1 reg 4: depth slope x, k 2
+LABEL 4 161 1 1 reg 4: depth slope x, k 4
+LABEL 4 162 1 1 reg 4: depth slope x, k 6
+LABEL 4 163 1 1 reg 4: depth slope x, k 8
+LABEL 4 164 1 1 reg 4: depth slope y, k 2
+LABEL 4 165 1 1 reg 4: depth slope y, k 4
+LABEL 4 166 1 1 reg 4: depth slope y, k 6
+LABEL 4 167 1 1 reg 4: depth slope y, k 8
+LABEL 4 2 1 1 reg 4: quad at +2/8, +0/8
+LABEL 4 20 1 1 reg 4: quad at +0/8, +1/8
+LABEL 4 21 1 1 reg 4: quad at +1/8, +1/8
+LABEL 4 22 1 1 reg 4: quad at +2/8, +1/8
+LABEL 4 23 1 1 reg 4: quad at +3/8, +1/8
+LABEL 4 24 1 1 reg 4: quad at +4/8, +1/8
+LABEL 4 25 1 1 reg 4: quad at +5/8, +1/8
+LABEL 4 26 1 1 reg 4: quad at +6/8, +1/8
+LABEL 4 27 1 1 reg 4: quad at +7/8, +1/8
+LABEL 4 29 1 1 reg 4: point 4x, u shifted -4/8
+LABEL 4 3 1 1 reg 4: quad at +3/8, +0/8
+LABEL 4 30 1 1 reg 4: point 4x, u shifted -3/8
+LABEL 4 31 1 1 reg 4: point 4x, u shifted -2/8
+LABEL 4 32 1 1 reg 4: point 4x, u shifted -1/8
+LABEL 4 33 1 1 reg 4: point 4x, u shifted +0/8
+LABEL 4 34 1 1 reg 4: point 4x, u shifted +1/8
+LABEL 4 35 1 1 reg 4: point 4x, u shifted +2/8
+LABEL 4 36 1 1 reg 4: point 4x, u shifted +3/8
+LABEL 4 37 1 1 reg 4: point 4x, u shifted +4/8
+LABEL 4 4 1 1 reg 4: quad at +4/8, +0/8
+LABEL 4 40 1 1 reg 4: quad at +0/8, +2/8
+LABEL 4 41 1 1 reg 4: quad at +1/8, +2/8
+LABEL 4 42 1 1 reg 4: quad at +2/8, +2/8
+LABEL 4 43 1 1 reg 4: quad at +3/8, +2/8
+LABEL 4 44 1 1 reg 4: quad at +4/8, +2/8
+LABEL 4 45 1 1 reg 4: quad at +5/8, +2/8
+LABEL 4 46 1 1 reg 4: quad at +6/8, +2/8
+LABEL 4 47 1 1 reg 4: quad at +7/8, +2/8
+LABEL 4 49 1 1 reg 4: point 4x, v shifted -4/8
+LABEL 4 5 1 1 reg 4: quad at +5/8, +0/8
+LABEL 4 50 1 1 reg 4: point 4x, v shifted -3/8
+LABEL 4 51 1 1 reg 4: point 4x, v shifted -2/8
+LABEL 4 52 1 1 reg 4: point 4x, v shifted -1/8
+LABEL 4 53 1 1 reg 4: point 4x, v shifted +0/8
+LABEL 4 54 1 1 reg 4: point 4x, v shifted +1/8
+LABEL 4 55 1 1 reg 4: point 4x, v shifted +2/8
+LABEL 4 56 1 1 reg 4: point 4x, v shifted +3/8
+LABEL 4 57 1 1 reg 4: point 4x, v shifted +4/8
+LABEL 4 6 1 1 reg 4: quad at +6/8, +0/8
+LABEL 4 60 1 1 reg 4: quad at +0/8, +3/8
+LABEL 4 61 1 1 reg 4: quad at +1/8, +3/8
+LABEL 4 62 1 1 reg 4: quad at +2/8, +3/8
+LABEL 4 63 1 1 reg 4: quad at +3/8, +3/8
+LABEL 4 64 1 1 reg 4: quad at +4/8, +3/8
+LABEL 4 65 1 1 reg 4: quad at +5/8, +3/8
+LABEL 4 66 1 1 reg 4: quad at +6/8, +3/8
+LABEL 4 67 1 1 reg 4: quad at +7/8, +3/8
+LABEL 4 69 1 1 reg 4: bilinear 4x, u shifted -4/8
+LABEL 4 7 1 1 reg 4: quad at +7/8, +0/8
+LABEL 4 70 1 1 reg 4: bilinear 4x, u shifted -3/8
+LABEL 4 71 1 1 reg 4: bilinear 4x, u shifted -2/8
+LABEL 4 72 1 1 reg 4: bilinear 4x, u shifted -1/8
+LABEL 4 73 1 1 reg 4: bilinear 4x, u shifted +0/8
+LABEL 4 74 1 1 reg 4: bilinear 4x, u shifted +1/8
+LABEL 4 75 1 1 reg 4: bilinear 4x, u shifted +2/8
+LABEL 4 76 1 1 reg 4: bilinear 4x, u shifted +3/8
+LABEL 4 77 1 1 reg 4: bilinear 4x, u shifted +4/8
+LABEL 4 80 1 1 reg 4: quad at +0/8, +4/8
+LABEL 4 81 1 1 reg 4: quad at +1/8, +4/8
+LABEL 4 82 1 1 reg 4: quad at +2/8, +4/8
+LABEL 4 83 1 1 reg 4: quad at +3/8, +4/8
+LABEL 4 84 1 1 reg 4: quad at +4/8, +4/8
+LABEL 4 85 1 1 reg 4: quad at +5/8, +4/8
+LABEL 4 86 1 1 reg 4: quad at +6/8, +4/8
+LABEL 4 87 1 1 reg 4: quad at +7/8, +4/8
+LABEL 4 89 1 1 reg 4: bilinear 4x, v shifted -4/8
+LABEL 4 9 1 1 reg 4: gouraud 0
+LABEL 4 90 1 1 reg 4: bilinear 4x, v shifted -3/8
+LABEL 4 91 1 1 reg 4: bilinear 4x, v shifted -2/8
+LABEL 4 92 1 1 reg 4: bilinear 4x, v shifted -1/8
+LABEL 4 93 1 1 reg 4: bilinear 4x, v shifted +0/8
+LABEL 4 94 1 1 reg 4: bilinear 4x, v shifted +1/8
+LABEL 4 95 1 1 reg 4: bilinear 4x, v shifted +2/8
+LABEL 4 96 1 1 reg 4: bilinear 4x, v shifted +3/8
+LABEL 4 97 1 1 reg 4: bilinear 4x, v shifted +4/8
+LABEL 5 0 1 1 reg 5: quad at +0/8, +0/8
+LABEL 5 1 1 1 reg 5: quad at +1/8, +0/8
+LABEL 5 10 1 1 reg 5: gouraud 1
+LABEL 5 100 1 1 reg 5: quad at +0/8, +5/8
+LABEL 5 101 1 1 reg 5: quad at +1/8, +5/8
+LABEL 5 102 1 1 reg 5: quad at +2/8, +5/8
+LABEL 5 103 1 1 reg 5: quad at +3/8, +5/8
+LABEL 5 104 1 1 reg 5: quad at +4/8, +5/8
+LABEL 5 105 1 1 reg 5: quad at +5/8, +5/8
+LABEL 5 106 1 1 reg 5: quad at +6/8, +5/8
+LABEL 5 107 1 1 reg 5: quad at +7/8, +5/8
+LABEL 5 109 1 1 reg 5: point 1:1, u shifted -4/8
+LABEL 5 11 1 1 reg 5: gouraud 2
+LABEL 5 110 1 1 reg 5: point 1:1, u shifted -3/8
+LABEL 5 111 1 1 reg 5: point 1:1, u shifted -2/8
+LABEL 5 112 1 1 reg 5: point 1:1, u shifted -1/8
+LABEL 5 113 1 1 reg 5: point 1:1, u shifted +0/8
+LABEL 5 114 1 1 reg 5: point 1:1, u shifted +1/8
+LABEL 5 115 1 1 reg 5: point 1:1, u shifted +2/8
+LABEL 5 116 1 1 reg 5: point 1:1, u shifted +3/8
+LABEL 5 117 1 1 reg 5: point 1:1, u shifted +4/8
+LABEL 5 12 1 1 reg 5: gouraud 3
+LABEL 5 120 1 1 reg 5: quad at +0/8, +6/8
+LABEL 5 121 1 1 reg 5: quad at +1/8, +6/8
+LABEL 5 122 1 1 reg 5: quad at +2/8, +6/8
+LABEL 5 123 1 1 reg 5: quad at +3/8, +6/8
+LABEL 5 124 1 1 reg 5: quad at +4/8, +6/8
+LABEL 5 125 1 1 reg 5: quad at +5/8, +6/8
+LABEL 5 126 1 1 reg 5: quad at +6/8, +6/8
+LABEL 5 127 1 1 reg 5: quad at +7/8, +6/8
+LABEL 5 129 1 1 reg 5: bilinear step along u, start +0/128
+LABEL 5 13 1 1 reg 5: gouraud 4
+LABEL 5 130 1 1 reg 5: bilinear step along u, start +1/128
+LABEL 5 131 1 1 reg 5: bilinear step along u, start +2/128
+LABEL 5 132 1 1 reg 5: bilinear step along u, start +3/128
+LABEL 5 133 1 1 reg 5: bilinear step along v, start +0/128
+LABEL 5 134 1 1 reg 5: bilinear step along v, start +1/128
+LABEL 5 135 1 1 reg 5: bilinear step along v, start +2/128
+LABEL 5 136 1 1 reg 5: bilinear step along v, start +3/128
+LABEL 5 14 1 1 reg 5: gouraud 5
+LABEL 5 140 1 1 reg 5: quad at +0/8, +7/8
+LABEL 5 141 1 1 reg 5: quad at +1/8, +7/8
+LABEL 5 142 1 1 reg 5: quad at +2/8, +7/8
+LABEL 5 143 1 1 reg 5: quad at +3/8, +7/8
+LABEL 5 144 1 1 reg 5: quad at +4/8, +7/8
+LABEL 5 145 1 1 reg 5: quad at +5/8, +7/8
+LABEL 5 146 1 1 reg 5: quad at +6/8, +7/8
+LABEL 5 147 1 1 reg 5: quad at +7/8, +7/8
+LABEL 5 149 1 1 reg 5: perspective 0
+LABEL 5 150 1 1 reg 5: perspective 1
+LABEL 5 151 1 1 reg 5: perspective 2
+LABEL 5 152 1 1 reg 5: perspective 3
+LABEL 5 160 1 1 reg 5: depth slope x, k 2
+LABEL 5 161 1 1 reg 5: depth slope x, k 4
+LABEL 5 162 1 1 reg 5: depth slope x, k 6
+LABEL 5 163 1 1 reg 5: depth slope x, k 8
+LABEL 5 164 1 1 reg 5: depth slope y, k 2
+LABEL 5 165 1 1 reg 5: depth slope y, k 4
+LABEL 5 166 1 1 reg 5: depth slope y, k 6
+LABEL 5 167 1 1 reg 5: depth slope y, k 8
+LABEL 5 2 1 1 reg 5: quad at +2/8, +0/8
+LABEL 5 20 1 1 reg 5: quad at +0/8, +1/8
+LABEL 5 21 1 1 reg 5: quad at +1/8, +1/8
+LABEL 5 22 1 1 reg 5: quad at +2/8, +1/8
+LABEL 5 23 1 1 reg 5: quad at +3/8, +1/8
+LABEL 5 24 1 1 reg 5: quad at +4/8, +1/8
+LABEL 5 25 1 1 reg 5: quad at +5/8, +1/8
+LABEL 5 26 1 1 reg 5: quad at +6/8, +1/8
+LABEL 5 27 1 1 reg 5: quad at +7/8, +1/8
+LABEL 5 29 1 1 reg 5: point 4x, u shifted -4/8
+LABEL 5 3 1 1 reg 5: quad at +3/8, +0/8
+LABEL 5 30 1 1 reg 5: point 4x, u shifted -3/8
+LABEL 5 31 1 1 reg 5: point 4x, u shifted -2/8
+LABEL 5 32 1 1 reg 5: point 4x, u shifted -1/8
+LABEL 5 33 1 1 reg 5: point 4x, u shifted +0/8
+LABEL 5 34 1 1 reg 5: point 4x, u shifted +1/8
+LABEL 5 35 1 1 reg 5: point 4x, u shifted +2/8
+LABEL 5 36 1 1 reg 5: point 4x, u shifted +3/8
+LABEL 5 37 1 1 reg 5: point 4x, u shifted +4/8
+LABEL 5 4 1 1 reg 5: quad at +4/8, +0/8
+LABEL 5 40 1 1 reg 5: quad at +0/8, +2/8
+LABEL 5 41 1 1 reg 5: quad at +1/8, +2/8
+LABEL 5 42 1 1 reg 5: quad at +2/8, +2/8
+LABEL 5 43 1 1 reg 5: quad at +3/8, +2/8
+LABEL 5 44 1 1 reg 5: quad at +4/8, +2/8
+LABEL 5 45 1 1 reg 5: quad at +5/8, +2/8
+LABEL 5 46 1 1 reg 5: quad at +6/8, +2/8
+LABEL 5 47 1 1 reg 5: quad at +7/8, +2/8
+LABEL 5 49 1 1 reg 5: point 4x, v shifted -4/8
+LABEL 5 5 1 1 reg 5: quad at +5/8, +0/8
+LABEL 5 50 1 1 reg 5: point 4x, v shifted -3/8
+LABEL 5 51 1 1 reg 5: point 4x, v shifted -2/8
+LABEL 5 52 1 1 reg 5: point 4x, v shifted -1/8
+LABEL 5 53 1 1 reg 5: point 4x, v shifted +0/8
+LABEL 5 54 1 1 reg 5: point 4x, v shifted +1/8
+LABEL 5 55 1 1 reg 5: point 4x, v shifted +2/8
+LABEL 5 56 1 1 reg 5: point 4x, v shifted +3/8
+LABEL 5 57 1 1 reg 5: point 4x, v shifted +4/8
+LABEL 5 6 1 1 reg 5: quad at +6/8, +0/8
+LABEL 5 60 1 1 reg 5: quad at +0/8, +3/8
+LABEL 5 61 1 1 reg 5: quad at +1/8, +3/8
+LABEL 5 62 1 1 reg 5: quad at +2/8, +3/8
+LABEL 5 63 1 1 reg 5: quad at +3/8, +3/8
+LABEL 5 64 1 1 reg 5: quad at +4/8, +3/8
+LABEL 5 65 1 1 reg 5: quad at +5/8, +3/8
+LABEL 5 66 1 1 reg 5: quad at +6/8, +3/8
+LABEL 5 67 1 1 reg 5: quad at +7/8, +3/8
+LABEL 5 69 1 1 reg 5: bilinear 4x, u shifted -4/8
+LABEL 5 7 1 1 reg 5: quad at +7/8, +0/8
+LABEL 5 70 1 1 reg 5: bilinear 4x, u shifted -3/8
+LABEL 5 71 1 1 reg 5: bilinear 4x, u shifted -2/8
+LABEL 5 72 1 1 reg 5: bilinear 4x, u shifted -1/8
+LABEL 5 73 1 1 reg 5: bilinear 4x, u shifted +0/8
+LABEL 5 74 1 1 reg 5: bilinear 4x, u shifted +1/8
+LABEL 5 75 1 1 reg 5: bilinear 4x, u shifted +2/8
+LABEL 5 76 1 1 reg 5: bilinear 4x, u shifted +3/8
+LABEL 5 77 1 1 reg 5: bilinear 4x, u shifted +4/8
+LABEL 5 80 1 1 reg 5: quad at +0/8, +4/8
+LABEL 5 81 1 1 reg 5: quad at +1/8, +4/8
+LABEL 5 82 1 1 reg 5: quad at +2/8, +4/8
+LABEL 5 83 1 1 reg 5: quad at +3/8, +4/8
+LABEL 5 84 1 1 reg 5: quad at +4/8, +4/8
+LABEL 5 85 1 1 reg 5: quad at +5/8, +4/8
+LABEL 5 86 1 1 reg 5: quad at +6/8, +4/8
+LABEL 5 87 1 1 reg 5: quad at +7/8, +4/8
+LABEL 5 89 1 1 reg 5: bilinear 4x, v shifted -4/8
+LABEL 5 9 1 1 reg 5: gouraud 0
+LABEL 5 90 1 1 reg 5: bilinear 4x, v shifted -3/8
+LABEL 5 91 1 1 reg 5: bilinear 4x, v shifted -2/8
+LABEL 5 92 1 1 reg 5: bilinear 4x, v shifted -1/8
+LABEL 5 93 1 1 reg 5: bilinear 4x, v shifted +0/8
+LABEL 5 94 1 1 reg 5: bilinear 4x, v shifted +1/8
+LABEL 5 95 1 1 reg 5: bilinear 4x, v shifted +2/8
+LABEL 5 96 1 1 reg 5: bilinear 4x, v shifted +3/8
+LABEL 5 97 1 1 reg 5: bilinear 4x, v shifted +4/8
+LABEL 6 0 1 1 reg 6: quad at +0/8, +0/8
+LABEL 6 1 1 1 reg 6: quad at +1/8, +0/8
+LABEL 6 10 1 1 reg 6: gouraud 1
+LABEL 6 100 1 1 reg 6: quad at +0/8, +5/8
+LABEL 6 101 1 1 reg 6: quad at +1/8, +5/8
+LABEL 6 102 1 1 reg 6: quad at +2/8, +5/8
+LABEL 6 103 1 1 reg 6: quad at +3/8, +5/8
+LABEL 6 104 1 1 reg 6: quad at +4/8, +5/8
+LABEL 6 105 1 1 reg 6: quad at +5/8, +5/8
+LABEL 6 106 1 1 reg 6: quad at +6/8, +5/8
+LABEL 6 107 1 1 reg 6: quad at +7/8, +5/8
+LABEL 6 109 1 1 reg 6: point 1:1, u shifted -4/8
+LABEL 6 11 1 1 reg 6: gouraud 2
+LABEL 6 110 1 1 reg 6: point 1:1, u shifted -3/8
+LABEL 6 111 1 1 reg 6: point 1:1, u shifted -2/8
+LABEL 6 112 1 1 reg 6: point 1:1, u shifted -1/8
+LABEL 6 113 1 1 reg 6: point 1:1, u shifted +0/8
+LABEL 6 114 1 1 reg 6: point 1:1, u shifted +1/8
+LABEL 6 115 1 1 reg 6: point 1:1, u shifted +2/8
+LABEL 6 116 1 1 reg 6: point 1:1, u shifted +3/8
+LABEL 6 117 1 1 reg 6: point 1:1, u shifted +4/8
+LABEL 6 12 1 1 reg 6: gouraud 3
+LABEL 6 120 1 1 reg 6: quad at +0/8, +6/8
+LABEL 6 121 1 1 reg 6: quad at +1/8, +6/8
+LABEL 6 122 1 1 reg 6: quad at +2/8, +6/8
+LABEL 6 123 1 1 reg 6: quad at +3/8, +6/8
+LABEL 6 124 1 1 reg 6: quad at +4/8, +6/8
+LABEL 6 125 1 1 reg 6: quad at +5/8, +6/8
+LABEL 6 126 1 1 reg 6: quad at +6/8, +6/8
+LABEL 6 127 1 1 reg 6: quad at +7/8, +6/8
+LABEL 6 129 1 1 reg 6: bilinear step along u, start +0/128
+LABEL 6 13 1 1 reg 6: gouraud 4
+LABEL 6 130 1 1 reg 6: bilinear step along u, start +1/128
+LABEL 6 131 1 1 reg 6: bilinear step along u, start +2/128
+LABEL 6 132 1 1 reg 6: bilinear step along u, start +3/128
+LABEL 6 133 1 1 reg 6: bilinear step along v, start +0/128
+LABEL 6 134 1 1 reg 6: bilinear step along v, start +1/128
+LABEL 6 135 1 1 reg 6: bilinear step along v, start +2/128
+LABEL 6 136 1 1 reg 6: bilinear step along v, start +3/128
+LABEL 6 14 1 1 reg 6: gouraud 5
+LABEL 6 140 1 1 reg 6: quad at +0/8, +7/8
+LABEL 6 141 1 1 reg 6: quad at +1/8, +7/8
+LABEL 6 142 1 1 reg 6: quad at +2/8, +7/8
+LABEL 6 143 1 1 reg 6: quad at +3/8, +7/8
+LABEL 6 144 1 1 reg 6: quad at +4/8, +7/8
+LABEL 6 145 1 1 reg 6: quad at +5/8, +7/8
+LABEL 6 146 1 1 reg 6: quad at +6/8, +7/8
+LABEL 6 147 1 1 reg 6: quad at +7/8, +7/8
+LABEL 6 149 1 1 reg 6: perspective 0
+LABEL 6 150 1 1 reg 6: perspective 1
+LABEL 6 151 1 1 reg 6: perspective 2
+LABEL 6 152 1 1 reg 6: perspective 3
+LABEL 6 160 1 1 reg 6: depth slope x, k 2
+LABEL 6 161 1 1 reg 6: depth slope x, k 4
+LABEL 6 162 1 1 reg 6: depth slope x, k 6
+LABEL 6 163 1 1 reg 6: depth slope x, k 8
+LABEL 6 164 1 1 reg 6: depth slope y, k 2
+LABEL 6 165 1 1 reg 6: depth slope y, k 4
+LABEL 6 166 1 1 reg 6: depth slope y, k 6
+LABEL 6 167 1 1 reg 6: depth slope y, k 8
+LABEL 6 2 1 1 reg 6: quad at +2/8, +0/8
+LABEL 6 20 1 1 reg 6: quad at +0/8, +1/8
+LABEL 6 21 1 1 reg 6: quad at +1/8, +1/8
+LABEL 6 22 1 1 reg 6: quad at +2/8, +1/8
+LABEL 6 23 1 1 reg 6: quad at +3/8, +1/8
+LABEL 6 24 1 1 reg 6: quad at +4/8, +1/8
+LABEL 6 25 1 1 reg 6: quad at +5/8, +1/8
+LABEL 6 26 1 1 reg 6: quad at +6/8, +1/8
+LABEL 6 27 1 1 reg 6: quad at +7/8, +1/8
+LABEL 6 29 1 1 reg 6: point 4x, u shifted -4/8
+LABEL 6 3 1 1 reg 6: quad at +3/8, +0/8
+LABEL 6 30 1 1 reg 6: point 4x, u shifted -3/8
+LABEL 6 31 1 1 reg 6: point 4x, u shifted -2/8
+LABEL 6 32 1 1 reg 6: point 4x, u shifted -1/8
+LABEL 6 33 1 1 reg 6: point 4x, u shifted +0/8
+LABEL 6 34 1 1 reg 6: point 4x, u shifted +1/8
+LABEL 6 35 1 1 reg 6: point 4x, u shifted +2/8
+LABEL 6 36 1 1 reg 6: point 4x, u shifted +3/8
+LABEL 6 37 1 1 reg 6: point 4x, u shifted +4/8
+LABEL 6 4 1 1 reg 6: quad at +4/8, +0/8
+LABEL 6 40 1 1 reg 6: quad at +0/8, +2/8
+LABEL 6 41 1 1 reg 6: quad at +1/8, +2/8
+LABEL 6 42 1 1 reg 6: quad at +2/8, +2/8
+LABEL 6 43 1 1 reg 6: quad at +3/8, +2/8
+LABEL 6 44 1 1 reg 6: quad at +4/8, +2/8
+LABEL 6 45 1 1 reg 6: quad at +5/8, +2/8
+LABEL 6 46 1 1 reg 6: quad at +6/8, +2/8
+LABEL 6 47 1 1 reg 6: quad at +7/8, +2/8
+LABEL 6 49 1 1 reg 6: point 4x, v shifted -4/8
+LABEL 6 5 1 1 reg 6: quad at +5/8, +0/8
+LABEL 6 50 1 1 reg 6: point 4x, v shifted -3/8
+LABEL 6 51 1 1 reg 6: point 4x, v shifted -2/8
+LABEL 6 52 1 1 reg 6: point 4x, v shifted -1/8
+LABEL 6 53 1 1 reg 6: point 4x, v shifted +0/8
+LABEL 6 54 1 1 reg 6: point 4x, v shifted +1/8
+LABEL 6 55 1 1 reg 6: point 4x, v shifted +2/8
+LABEL 6 56 1 1 reg 6: point 4x, v shifted +3/8
+LABEL 6 57 1 1 reg 6: point 4x, v shifted +4/8
+LABEL 6 6 1 1 reg 6: quad at +6/8, +0/8
+LABEL 6 60 1 1 reg 6: quad at +0/8, +3/8
+LABEL 6 61 1 1 reg 6: quad at +1/8, +3/8
+LABEL 6 62 1 1 reg 6: quad at +2/8, +3/8
+LABEL 6 63 1 1 reg 6: quad at +3/8, +3/8
+LABEL 6 64 1 1 reg 6: quad at +4/8, +3/8
+LABEL 6 65 1 1 reg 6: quad at +5/8, +3/8
+LABEL 6 66 1 1 reg 6: quad at +6/8, +3/8
+LABEL 6 67 1 1 reg 6: quad at +7/8, +3/8
+LABEL 6 69 1 1 reg 6: bilinear 4x, u shifted -4/8
+LABEL 6 7 1 1 reg 6: quad at +7/8, +0/8
+LABEL 6 70 1 1 reg 6: bilinear 4x, u shifted -3/8
+LABEL 6 71 1 1 reg 6: bilinear 4x, u shifted -2/8
+LABEL 6 72 1 1 reg 6: bilinear 4x, u shifted -1/8
+LABEL 6 73 1 1 reg 6: bilinear 4x, u shifted +0/8
+LABEL 6 74 1 1 reg 6: bilinear 4x, u shifted +1/8
+LABEL 6 75 1 1 reg 6: bilinear 4x, u shifted +2/8
+LABEL 6 76 1 1 reg 6: bilinear 4x, u shifted +3/8
+LABEL 6 77 1 1 reg 6: bilinear 4x, u shifted +4/8
+LABEL 6 80 1 1 reg 6: quad at +0/8, +4/8
+LABEL 6 81 1 1 reg 6: quad at +1/8, +4/8
+LABEL 6 82 1 1 reg 6: quad at +2/8, +4/8
+LABEL 6 83 1 1 reg 6: quad at +3/8, +4/8
+LABEL 6 84 1 1 reg 6: quad at +4/8, +4/8
+LABEL 6 85 1 1 reg 6: quad at +5/8, +4/8
+LABEL 6 86 1 1 reg 6: quad at +6/8, +4/8
+LABEL 6 87 1 1 reg 6: quad at +7/8, +4/8
+LABEL 6 89 1 1 reg 6: bilinear 4x, v shifted -4/8
+LABEL 6 9 1 1 reg 6: gouraud 0
+LABEL 6 90 1 1 reg 6: bilinear 4x, v shifted -3/8
+LABEL 6 91 1 1 reg 6: bilinear 4x, v shifted -2/8
+LABEL 6 92 1 1 reg 6: bilinear 4x, v shifted -1/8
+LABEL 6 93 1 1 reg 6: bilinear 4x, v shifted +0/8
+LABEL 6 94 1 1 reg 6: bilinear 4x, v shifted +1/8
+LABEL 6 95 1 1 reg 6: bilinear 4x, v shifted +2/8
+LABEL 6 96 1 1 reg 6: bilinear 4x, v shifted +3/8
+LABEL 6 97 1 1 reg 6: bilinear 4x, v shifted +4/8
+LABEL 7 0 1 1 reg 7: quad at +0/8, +0/8
+LABEL 7 1 1 1 reg 7: quad at +1/8, +0/8
+LABEL 7 10 1 1 reg 7: gouraud 1
+LABEL 7 100 1 1 reg 7: quad at +0/8, +5/8
+LABEL 7 101 1 1 reg 7: quad at +1/8, +5/8
+LABEL 7 102 1 1 reg 7: quad at +2/8, +5/8
+LABEL 7 103 1 1 reg 7: quad at +3/8, +5/8
+LABEL 7 104 1 1 reg 7: quad at +4/8, +5/8
+LABEL 7 105 1 1 reg 7: quad at +5/8, +5/8
+LABEL 7 106 1 1 reg 7: quad at +6/8, +5/8
+LABEL 7 107 1 1 reg 7: quad at +7/8, +5/8
+LABEL 7 109 1 1 reg 7: point 1:1, u shifted -4/8
+LABEL 7 11 1 1 reg 7: gouraud 2
+LABEL 7 110 1 1 reg 7: point 1:1, u shifted -3/8
+LABEL 7 111 1 1 reg 7: point 1:1, u shifted -2/8
+LABEL 7 112 1 1 reg 7: point 1:1, u shifted -1/8
+LABEL 7 113 1 1 reg 7: point 1:1, u shifted +0/8
+LABEL 7 114 1 1 reg 7: point 1:1, u shifted +1/8
+LABEL 7 115 1 1 reg 7: point 1:1, u shifted +2/8
+LABEL 7 116 1 1 reg 7: point 1:1, u shifted +3/8
+LABEL 7 117 1 1 reg 7: point 1:1, u shifted +4/8
+LABEL 7 12 1 1 reg 7: gouraud 3
+LABEL 7 120 1 1 reg 7: quad at +0/8, +6/8
+LABEL 7 121 1 1 reg 7: quad at +1/8, +6/8
+LABEL 7 122 1 1 reg 7: quad at +2/8, +6/8
+LABEL 7 123 1 1 reg 7: quad at +3/8, +6/8
+LABEL 7 124 1 1 reg 7: quad at +4/8, +6/8
+LABEL 7 125 1 1 reg 7: quad at +5/8, +6/8
+LABEL 7 126 1 1 reg 7: quad at +6/8, +6/8
+LABEL 7 127 1 1 reg 7: quad at +7/8, +6/8
+LABEL 7 129 1 1 reg 7: bilinear step along u, start +0/128
+LABEL 7 13 1 1 reg 7: gouraud 4
+LABEL 7 130 1 1 reg 7: bilinear step along u, start +1/128
+LABEL 7 131 1 1 reg 7: bilinear step along u, start +2/128
+LABEL 7 132 1 1 reg 7: bilinear step along u, start +3/128
+LABEL 7 133 1 1 reg 7: bilinear step along v, start +0/128
+LABEL 7 134 1 1 reg 7: bilinear step along v, start +1/128
+LABEL 7 135 1 1 reg 7: bilinear step along v, start +2/128
+LABEL 7 136 1 1 reg 7: bilinear step along v, start +3/128
+LABEL 7 14 1 1 reg 7: gouraud 5
+LABEL 7 140 1 1 reg 7: quad at +0/8, +7/8
+LABEL 7 141 1 1 reg 7: quad at +1/8, +7/8
+LABEL 7 142 1 1 reg 7: quad at +2/8, +7/8
+LABEL 7 143 1 1 reg 7: quad at +3/8, +7/8
+LABEL 7 144 1 1 reg 7: quad at +4/8, +7/8
+LABEL 7 145 1 1 reg 7: quad at +5/8, +7/8
+LABEL 7 146 1 1 reg 7: quad at +6/8, +7/8
+LABEL 7 147 1 1 reg 7: quad at +7/8, +7/8
+LABEL 7 149 1 1 reg 7: perspective 0
+LABEL 7 150 1 1 reg 7: perspective 1
+LABEL 7 151 1 1 reg 7: perspective 2
+LABEL 7 152 1 1 reg 7: perspective 3
+LABEL 7 160 1 1 reg 7: depth slope x, k 2
+LABEL 7 161 1 1 reg 7: depth slope x, k 4
+LABEL 7 162 1 1 reg 7: depth slope x, k 6
+LABEL 7 163 1 1 reg 7: depth slope x, k 8
+LABEL 7 164 1 1 reg 7: depth slope y, k 2
+LABEL 7 165 1 1 reg 7: depth slope y, k 4
+LABEL 7 166 1 1 reg 7: depth slope y, k 6
+LABEL 7 167 1 1 reg 7: depth slope y, k 8
+LABEL 7 2 1 1 reg 7: quad at +2/8, +0/8
+LABEL 7 20 1 1 reg 7: quad at +0/8, +1/8
+LABEL 7 21 1 1 reg 7: quad at +1/8, +1/8
+LABEL 7 22 1 1 reg 7: quad at +2/8, +1/8
+LABEL 7 23 1 1 reg 7: quad at +3/8, +1/8
+LABEL 7 24 1 1 reg 7: quad at +4/8, +1/8
+LABEL 7 25 1 1 reg 7: quad at +5/8, +1/8
+LABEL 7 26 1 1 reg 7: quad at +6/8, +1/8
+LABEL 7 27 1 1 reg 7: quad at +7/8, +1/8
+LABEL 7 29 1 1 reg 7: point 4x, u shifted -4/8
+LABEL 7 3 1 1 reg 7: quad at +3/8, +0/8
+LABEL 7 30 1 1 reg 7: point 4x, u shifted -3/8
+LABEL 7 31 1 1 reg 7: point 4x, u shifted -2/8
+LABEL 7 32 1 1 reg 7: point 4x, u shifted -1/8
+LABEL 7 33 1 1 reg 7: point 4x, u shifted +0/8
+LABEL 7 34 1 1 reg 7: point 4x, u shifted +1/8
+LABEL 7 35 1 1 reg 7: point 4x, u shifted +2/8
+LABEL 7 36 1 1 reg 7: point 4x, u shifted +3/8
+LABEL 7 37 1 1 reg 7: point 4x, u shifted +4/8
+LABEL 7 4 1 1 reg 7: quad at +4/8, +0/8
+LABEL 7 40 1 1 reg 7: quad at +0/8, +2/8
+LABEL 7 41 1 1 reg 7: quad at +1/8, +2/8
+LABEL 7 42 1 1 reg 7: quad at +2/8, +2/8
+LABEL 7 43 1 1 reg 7: quad at +3/8, +2/8
+LABEL 7 44 1 1 reg 7: quad at +4/8, +2/8
+LABEL 7 45 1 1 reg 7: quad at +5/8, +2/8
+LABEL 7 46 1 1 reg 7: quad at +6/8, +2/8
+LABEL 7 47 1 1 reg 7: quad at +7/8, +2/8
+LABEL 7 49 1 1 reg 7: point 4x, v shifted -4/8
+LABEL 7 5 1 1 reg 7: quad at +5/8, +0/8
+LABEL 7 50 1 1 reg 7: point 4x, v shifted -3/8
+LABEL 7 51 1 1 reg 7: point 4x, v shifted -2/8
+LABEL 7 52 1 1 reg 7: point 4x, v shifted -1/8
+LABEL 7 53 1 1 reg 7: point 4x, v shifted +0/8
+LABEL 7 54 1 1 reg 7: point 4x, v shifted +1/8
+LABEL 7 55 1 1 reg 7: point 4x, v shifted +2/8
+LABEL 7 56 1 1 reg 7: point 4x, v shifted +3/8
+LABEL 7 57 1 1 reg 7: point 4x, v shifted +4/8
+LABEL 7 6 1 1 reg 7: quad at +6/8, +0/8
+LABEL 7 60 1 1 reg 7: quad at +0/8, +3/8
+LABEL 7 61 1 1 reg 7: quad at +1/8, +3/8
+LABEL 7 62 1 1 reg 7: quad at +2/8, +3/8
+LABEL 7 63 1 1 reg 7: quad at +3/8, +3/8
+LABEL 7 64 1 1 reg 7: quad at +4/8, +3/8
+LABEL 7 65 1 1 reg 7: quad at +5/8, +3/8
+LABEL 7 66 1 1 reg 7: quad at +6/8, +3/8
+LABEL 7 67 1 1 reg 7: quad at +7/8, +3/8
+LABEL 7 69 1 1 reg 7: bilinear 4x, u shifted -4/8
+LABEL 7 7 1 1 reg 7: quad at +7/8, +0/8
+LABEL 7 70 1 1 reg 7: bilinear 4x, u shifted -3/8
+LABEL 7 71 1 1 reg 7: bilinear 4x, u shifted -2/8
+LABEL 7 72 1 1 reg 7: bilinear 4x, u shifted -1/8
+LABEL 7 73 1 1 reg 7: bilinear 4x, u shifted +0/8
+LABEL 7 74 1 1 reg 7: bilinear 4x, u shifted +1/8
+LABEL 7 75 1 1 reg 7: bilinear 4x, u shifted +2/8
+LABEL 7 76 1 1 reg 7: bilinear 4x, u shifted +3/8
+LABEL 7 77 1 1 reg 7: bilinear 4x, u shifted +4/8
+LABEL 7 80 1 1 reg 7: quad at +0/8, +4/8
+LABEL 7 81 1 1 reg 7: quad at +1/8, +4/8
+LABEL 7 82 1 1 reg 7: quad at +2/8, +4/8
+LABEL 7 83 1 1 reg 7: quad at +3/8, +4/8
+LABEL 7 84 1 1 reg 7: quad at +4/8, +4/8
+LABEL 7 85 1 1 reg 7: quad at +5/8, +4/8
+LABEL 7 86 1 1 reg 7: quad at +6/8, +4/8
+LABEL 7 87 1 1 reg 7: quad at +7/8, +4/8
+LABEL 7 89 1 1 reg 7: bilinear 4x, v shifted -4/8
+LABEL 7 9 1 1 reg 7: gouraud 0
+LABEL 7 90 1 1 reg 7: bilinear 4x, v shifted -3/8
+LABEL 7 91 1 1 reg 7: bilinear 4x, v shifted -2/8
+LABEL 7 92 1 1 reg 7: bilinear 4x, v shifted -1/8
+LABEL 7 93 1 1 reg 7: bilinear 4x, v shifted +0/8
+LABEL 7 94 1 1 reg 7: bilinear 4x, v shifted +1/8
+LABEL 7 95 1 1 reg 7: bilinear 4x, v shifted +2/8
+LABEL 7 96 1 1 reg 7: bilinear 4x, v shifted +3/8
+LABEL 7 97 1 1 reg 7: bilinear 4x, v shifted +4/8
