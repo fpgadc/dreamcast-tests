@@ -13,6 +13,7 @@
 #
 # Results in /tmp/pvr_tests/<test>[@<set>]. A run also leaves the checksums of what it sent to the PVR
 # (off.crc, hw.crc): the same lines mean that the console and the offline renderer got the same input.
+# TEST_DEFS="-DX=1 ...": extra defines for the PC and the console build alike.
 HERE=$(cd "$(dirname "$0")" && pwd)
 NULLDC3=${NULLDC3:-$HERE/../nulldc3}
 OFFLINE=${OFFLINE:-/tmp/refsw2-offline}
@@ -25,7 +26,7 @@ if [ "$1" = --worker ]; then
   SRC=$HERE/$T/main.c
   PAGES=$(grep -m 1 '^#define NUM_PAGES' $SRC | awk '{print $3}')
   W=/tmp/pvr_tests/$RUN; mkdir -p $W/build
-  DEF=()
+  DEF=($TEST_DEFS)                  # e.g. TEST_DEFS="-DTA_LONG=2000": extra defines for both builds
   if [ -n "$SET" ]; then
     python3 $HERE/regen.py $T $SET $W > $W/build/regen.log 2>&1 || { echo "$RUN: cannot make the tables of set $SET"; tail -n 2 $W/build/regen.log; exit 1; }
     DEF=("-DCASES_H=\"$W/cases.h\"")
