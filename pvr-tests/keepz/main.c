@@ -239,8 +239,11 @@ static void page_autosort(void) {
     T(AUTO | NOWRITE, "autosort, not written out: only a white stripe 0.7 at x 8..15 (over the background); keep Z: twice?");
     zadd(ListType_Translucent, 8, 0, 8, 32, Z7, 0x80ffffff);
     T(KEEPZ | SAME, "");
-    /* layers that do not write depth: refsw2 keeps the depth from before them (stripe twice); polly2-rtl keeps the
-       nearest layer drawn whatever it writes (once) */
+    T(NOWRITE, "pre-sort, not written out: grey 0.3, a white stripe 0.7 at x 8..15, depth write off; keep Z: twice?");
+    zadd(ListType_Opaque, 0, 0, 32, 32, Z3, 0xff808080); zadd_nw(ListType_Translucent, 8, 0, 8, 32, Z7, 0x80ffffff);
+    T(KEEPZ | SAME, "");
+    /* sorted layers that do not write depth: the console keeps the nearest layer drawn whatever it writes (once),
+       as polly2-rtl does */
     T(AUTO | NOWRITE, "autosort, not written out: grey 0.3, a white stripe 0.7 at x 8..15, depth write off; keep Z: twice?");
     zadd(ListType_Opaque, 0, 0, 32, 32, Z3, 0xff808080); zadd_nw(ListType_Translucent, 8, 0, 8, 32, Z7, 0x80ffffff);
     T(KEEPZ | SAME, "");

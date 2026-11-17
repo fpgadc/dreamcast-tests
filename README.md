@@ -2055,7 +2055,8 @@ greater); the keep Z entry is pre-sort, and its stripes fail where a stripe left
 console, also with depth write off on either stripe or both. What the sort's passes leave in the depth buffer
 (refsw2 before: the far sentinel where the last pass drew nothing) broke polly2-data thps2_ingame*; the depth from
 before the sort alone (refsw2 after thps2) blends twice here, and so does keeping only the layers that write
-depth (refsw2 for a moment). refsw2 keeps the ISP's depth of each layer it draws: 56 of 56 regions, thps2 unchanged.
+depth (refsw2 for a moment). refsw2 keeps the ISP's depth of each layer it draws: thps2 unchanged. Pre-sorted, a
+stripe with depth write off leaves no depth: blended twice (57 of 57 regions).
 
 **Races.** Some of what a console does depends on when its units run against each other: different from one
 console run to the next, or the same every run but out of reach of refsw2, which has no clock. Those cases are
@@ -2411,7 +2412,13 @@ list order); the first pass's reference, the opaque depth, is below every fragme
 polygons at exactly the opaque depth are drawn (page 1 cells 4-6). The punch-through passes take the largest key
 below the last key that failed the alpha test, at or in front of the opaque depth (in one plane: the last in the
 list first; at exactly the opaque depth: drawn, page 0 cells 86-87). This replaced refsw2's tag rules for ties,
-one per scene, with the same results (regress.sh and all dumps unchanged); 95 of 95 regions.
+one per scene, with the same results (regress.sh and all dumps unchanged).
+
+Depth write off (ZWriteDis, page 8: a stripe at 0.7 over grey at 0.3, then green translucent at 0.5, compare
+greater, over it only where the stripe left no depth): honoured by pre-sorted translucent and by opaque polygons,
+ignored by punch-through ones, which always leave their depth (polly2-rtl's comment that it does not apply to
+opaque polygons is wrong there); and the sort leaves its nearest layer's depth whatever the bit (keepz page 3).
+refsw2 already did all this: 101 of 101 regions.
 
 The background rule replaced a wrong guess. In xtreme_intro two translucent triangles at about 1e-8, behind the
 background's 1e-8, are drawn; refsw2 had taken the background out of the translucent sort's depth. On the console

@@ -45,13 +45,14 @@
                   depth being below every fragment at its depth. 4 at 0.5, 5 sloped 0.3 .. 0.7, 6 green then red
      cells 20-21  the modifier volume tie with two-volume polygons (0x4080c0, 0xc04020 inside), sheets of their own
                   corners: 20 at 0.5, outside; 21 sloped 0.3 .. 0.7, and a sheet at 0.75 over the left 24: inside there
+   page 8  (pre-sort) depth write off (ZWriteDis) on translucent, opaque and punch through polygons: page_zwrite
    pages 2, 3  (pre-sort, autosort) ISP_BACKGND_D 0.5, in front of what is drawn at 0.3. In autosort, the
            translucent polygons are not hidden by the background's depth (xtreme_intro); opaque ones are.
      cells 0-6    0 opaque 0.3   1 opaque 0.7   2 translucent 0.3   3 translucent 0.7   4 translucent 0.3 compare
                   always   5 punch through 0.3   6 punch through 0.7
      cells 7-10   (both pages) 7 opaque 0.7 over the left 16 pixels, translucent 0.3 over the cell
                   8 translucent R 0.3, G 0.35   9 translucent R 0.6, G 0.3   10 opaque 0.2, translucent 0.3 */
-#define NUM_PAGES 8
+#define NUM_PAGES 9
 #define TEST_MODIFIERS
 #include "pvrtest2.h"
 #include "texgen.h"
@@ -441,6 +442,34 @@ static void page_edge(void) {
     ta_list_end();
 }
 
+/* page 8 (pre-sort): depth write off. Grey opaque at 0.3, a stripe at 0.7 over x 8..15 (depth write off in
+   the even cells, on in the odd ones), then green translucent at 0.5 over the cell, compare greater: green over
+   the stripe only where the stripe left no depth. Cells 0-1 the stripe translucent, 2-3 opaque, 4-5 punch through. */
+static void page_zwrite(void) {
+    static const int lists[3] = { TR, OP, PT };
+    const uint32_t green = 0x8000ff00;
+    poly_t p;
+    int c, l;
+    for(l = 0; l < 3; l++) {
+        ta_list_begin(lists[l]);
+        for(c = 0; c < 6; c++) {
+            if(lists[l] == OP) {
+                p = P(OP, DepthMode_GreaterEqual, 0);
+                flat(&p, cell_px(c), cell_py(c), 32, 32, Z(0.3f), 0xff808080);
+            }
+            if(lists[l] == lists[c / 2]) {
+                p = P(lists[l], DepthMode_Greater, (c & 1) ? 0 : ZWD);
+                flat(&p, cell_px(c) + 8, cell_py(c), 8, 32, Z(0.7f), lists[l] == TR ? 0x80ffffff : 0xffffffff);
+            }
+            if(lists[l] == TR) {
+                p = P(TR, DepthMode_Greater, 0);
+                flat(&p, cell_px(c), cell_py(c), 32, 32, F32B_HALF, green);
+            }
+        }
+        ta_list_end();
+    }
+}
+
 /* ---- pages 2 and 3 ---- */
 static void page_bg(void) {
     const f32b Z3 = Z(0.3f), Z7 = Z(0.7f);
@@ -517,6 +546,9 @@ static void test_describe(void) {
     for(p = 2; p < 4; p++)
         for(c = 0; c < 11; c++)
             label(p, c, "%s, background depth 0.5: %s", p == 2 ? "pre-sort" : "autosort", bg[c]);
+    for(c = 0; c < 6; c++)
+        label(8, c, "pre-sort: grey 0.3, %s stripe 0.7 depth write %s, green translucent 0.5 (greater): green over the stripe%s?",
+              c < 2 ? "translucent" : c < 4 ? "opaque" : "punch through", (c & 1) ? "on" : "off", (c & 1) ? " not" : "");
     for(p = 6; p < 8; p++)
         for(c = 0; c < 6; c++)
             label(p, c, "pre-sort, background depth %s: %s", p == 6 ? "0x1.fffffep-21" : "2^-20", edge[c]);
@@ -555,6 +587,9 @@ static void test_page(int page) {
     case 4:
     case 5:
         page_small();
+        break;
+    case 8:
+        page_zwrite();
         break;
     default:
         page_edge();

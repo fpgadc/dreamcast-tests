@@ -143,7 +143,8 @@ largest of its ISP, TSP and write-out times [M timemeas].
 - **ISP_BACKGND_D below 2^-20 is zero** (exponent field under 107): nothing is behind the background, in any list,
   sort mode or compare, a polygon at depth 0 included; from 2^-20 up it hides as any depth does, while polygon
   depths far below 2^-20 still order among themselves [M dumprules pages 4-7, polly2-data xtreme_intro].
-- **A punch-through polygon leaves the ISP's depth** (its depth plane), not the TSP's 1/w [M zsource].
+- **A punch-through polygon leaves the ISP's depth** (its depth plane), not the TSP's 1/w [M zsource], whatever
+  its ZWriteDis; opaque and pre-sorted translucent polygons with ZWriteDis leave none [M dumprules page 8].
 - **A modifier volume triangle at exactly a pixel's depth is not in front of it** (strictly greater) [M dumprules,
   polly2-data jgr_tree_shadows].
 - Depth processing is invisible in the timing: failing, passing or writing all cost 16 a triangle [M timemeas].
