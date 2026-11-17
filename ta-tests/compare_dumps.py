@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Compare two runs of ta-tests case by case, and decode what differs.
 
-    python3 ta-tests/compare_dumps.py [A] [B] [-q] [-v] [--case N]     A: hw (default), ref or off; B: off (default) or hw
+    python3 ta-tests/compare_dumps.py [A] [B] [-q] [-v] [--case N] [--test ta-probe]
+        A: hw (default), ref or off; B: off (default) or hw; --test: another test on this harness (ta-probe)
 
 hw: the last console run (/tmp/pvr_tests/ta-tests), ref: the archived console run (fit/hw/ta-tests), off:
 refsw2-offline's (nulldc3's tacore.cpp). Per case the TA state (TA_ISP_CURRENT, TA_NEXT_OPB, list-done and error
@@ -16,14 +17,15 @@ from pathlib import Path
 import numpy as np
 
 HERE = Path(__file__).parent
-RUN = Path("/tmp/pvr_tests/ta-tests")
+TEST = sys.argv[sys.argv.index("--test") + 1] if "--test" in sys.argv else "ta-tests"
+RUN = Path("/tmp/pvr_tests") / TEST
 AREA, AREA_WORDS = 0x100000, 8192
 OPB_WORDS = [0, 8, 16, 32]
 LISTS = ["opaque", "opaque mod", "translucent", "translucent mod", "punch through"]
 EVENTS = {7: "OP done", 8: "OM done", 9: "TR done", 10: "TM done", 21: "PT done"}
 ERRORS = {0: "ISP cache", 1: "strip halt", 2: "parameters full", 3: "object lists full", 4: "illegal parameter", 5: "FIFO overflow"}
 
-args = [a for a in sys.argv[1:] if not a.startswith("-")]
+args = [a for i, a in enumerate(sys.argv[1:]) if not a.startswith("-") and sys.argv[i] != "--test"]
 quiet, verbose = "-q" in sys.argv, "-v" in sys.argv
 only = int(sys.argv[sys.argv.index("--case") + 1]) if "--case" in sys.argv else None
 if only is not None:
@@ -34,7 +36,7 @@ B = args[1] if len(args) > 1 else "off"
 
 def load(kind, name):
     if kind == "ref":
-        f = HERE.parent / "fit/hw/ta-tests" / f"{name}.hw.raw.gz"
+        f = HERE.parent / "fit/hw" / TEST / f"{name}.hw.raw.gz"
         return np.frombuffer(gzip.open(f).read(), dtype="<u4") if f.exists() else None
     f = RUN / f"{name}.{kind}.raw"
     return np.fromfile(f, dtype="<u4") if f.exists() else None
@@ -143,7 +145,7 @@ fuzz_rows = []                                  # (case, same, features)
 def hashes(kind):
     """{case: crc} of the long fuzz"""
     if kind == "ref":
-        f = HERE.parent / "fit/hw/ta-tests/hashes.txt.gz"
+        f = HERE.parent / "fit/hw" / TEST / "hashes.txt.gz"
         text = gzip.open(f, "rt").read() if f.exists() else ""
     else:
         f = RUN / ("build/hw.log" if kind == "hw" else "off.log")
@@ -156,6 +158,35 @@ def hashes(kind):
     return out
 
 
+def scans(kind):
+    """{case: [(address, word), ...] or [("count", n)]}: writes outside the area (ta-probe SCAN cases)"""
+    f = RUN / ("build/hw.log" if kind in ("hw", "ref") else "off.log")
+    if kind == "ref":
+        f = HERE.parent / "fit/hw" / TEST / "scans.txt.gz"
+        text = gzip.open(f, "rt").read() if f.exists() else ""
+    else:
+        text = f.read_text(errors="replace") if f.exists() else ""
+    out = {}
+    for l in text.splitlines():
+        m = re.fullmatch(r"PVRIO scan c(\d+) (\S+) (\S+)", l.strip())
+        if m:
+            out.setdefault(int(m.group(1)), []).append((m.group(2), m.group(3)))
+    return out
+
+
+def extras(kind, n):
+    """the other dumps of a case: c<n>r (TA_OL_POINTERS), c<n>m<k>, c<n>m<k>s, c<n>m<k>r (in the middle of it)"""
+    names = []
+    if kind == "ref":
+        found = (HERE.parent / "fit/hw" / TEST).glob(f"c{n:03d}[mr]*.hw.raw.gz")
+        names = [f.name[:-len(".hw.raw.gz")] for f in found]
+    else:
+        found = RUN.glob(f"c{n:03d}[mr]*.{kind}.raw")
+        names = [f.name[:-len(f".{kind}.raw")] for f in found]
+    return sorted(names)
+
+
+scan_a, scan_b = scans(A), scans(B)
 cases = sorted(labels)
 ran = same = 0
 groups = {}                                     # name without its number: [cases, same]
@@ -176,9 +207,15 @@ for n in cases:
         ma, mb = ma[:k], mb[:k]
     st_same = sa is not None and sb is not None and np.array_equal(sa, sb)
     diff = np.nonzero(ma != mb)[0]
+    extra_diff = []                             # (name, words that differ)
+    for x in extras(A, n):
+        xa, xb = load(A, x), load(B, x)
+        if xb is None or len(xa) != len(xb) or not np.array_equal(xa, xb):
+            extra_diff.append((x, xa, xb))
+    scan_diff = scan_a.get(n, []) != scan_b.get(n, [])
     in_prm = [i for i in diff if c and c["isp_base"] <= AREA + 4 * i < c["isp_limit"]]
     in_ol = [i for i in diff if i not in set(in_prm)]
-    ok = st_same and not len(diff) and sized
+    ok = st_same and not len(diff) and sized and not extra_diff and not scan_diff
     same += ok
     gname = re.sub(r"_\d+$", "", name) if re.search(r"_\d{3}$", name) else "fixed"
     groups.setdefault(gname, [0, 0])
@@ -197,6 +234,16 @@ for n in cases:
     print(f"c{n:03d} {name:22s} {'same' if ok else 'DIFFERENT'}" + ("" if sized else " (dumps of different sizes)"))
     if not st_same or only is not None:
         print(f"      {A:3s}: {state(sa)}\n      {B:3s}: {state(sb)}")
+    for x, xa, xb in extra_diff:
+        if xb is None:
+            print(f"      {x}: only {A} has it")
+            continue
+        d = np.nonzero(xa[:len(xb)] != xb[:len(xa)])[0]
+        what = "TA state" if x.endswith("s") else "TA_OL_POINTERS" if x.endswith("r") else "area"
+        print(f"      {x} ({what}): {len(d)} words differ: " +
+              " ".join(f"[{i}] {int(xa[i]):08x}/{int(xb[i]):08x}" for i in d[:8]))
+    if scan_diff or (only is not None and (scan_a.get(n) or scan_b.get(n))):
+        print(f"      writes outside the area, {A}: {scan_a.get(n, [])[:10]}\n      {B}: {scan_b.get(n, [])[:10]}")
     if in_prm:
         print(f"      parameters: {len(in_prm)} words differ")
         for i in in_prm[:12]:
@@ -247,5 +294,5 @@ if fuzz_rows and not quiet:
     print(f"    different with none of the known differences' features: {len(unexplained)}: {unexplained[:40]}")
 if not quiet:
     print("by group: " + ", ".join(f"{g} {v[1]} of {v[0]}" for g, v in groups.items()))
-print(f"ta-tests: {A} = {B} in {same} of {ran} cases (state {tally['state']}, parameters {tally['params']}, object lists {tally['lists']})"
+print(f"{TEST}: {A} = {B} in {same} of {ran} cases (state {tally['state']}, parameters {tally['params']}, object lists {tally['lists']})"
       + (f"; long fuzz {long_same} of {long_both}" if long_both else ""))

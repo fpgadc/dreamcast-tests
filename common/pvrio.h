@@ -41,6 +41,12 @@ static void pvrio_dump_ta_state(const char *name, const char *suffix);
 static uint32_t pvrio_ta_events(void);                      /* list-done bits seen so far (on a PC: all of them) */
 /* instead of the two dumps: one line "PVRIO hash <name> <crc>", CRC-32 of the area and then of the four state words */
 static void pvrio_ta_hash(uint32_t addr, int words, const char *name);
+/* registers (offsets from 0x005f8000) to a file, as words: <name>.hw<suffix> / <name>.off<suffix> (ta-probe:
+   TA_OL_POINTERS, the palette) */
+static void pvrio_dump_regs(uint32_t addr, int words, const char *name, const char *suffix);
+/* every word of the 32 bit area in addr .. addr + 4 words that is not value: lines "PVRIO scan <name> <address>
+   <word>" (at most 64), then "PVRIO scan <name> count <n>" (ta-probe: writes outside the area dumped) */
+static void pvrio_scan32(uint32_t addr, int words, uint32_t value, const char *name);
 static void pvrio_close(void);
 #define PVRIO_TA_EVENTS         ((0xfu << 7) | (1u << 21))
 
@@ -77,6 +83,8 @@ static void pvrio_hw_wait(uint32_t events);
 static void pvrio_hw_dump32(uint32_t addr, int words, const char *name, const char *suffix);
 static void pvrio_hw_dump_ta_state(const char *name, const char *suffix);
 static void pvrio_hw_ta_hash(uint32_t addr, int words, const char *name);
+static void pvrio_hw_dump_regs(uint32_t addr, int words, const char *name, const char *suffix);
+static void pvrio_hw_scan32(uint32_t addr, int words, uint32_t value, const char *name);
 static void pvrio_hw_say(const char *text);
 
 static void pvrio_reg(uint32_t addr, uint32_t value) {
@@ -112,6 +120,12 @@ static void pvrio_dump32(uint32_t addr, int words, const char *name, const char 
 }
 static void pvrio_ta_hash(uint32_t addr, int words, const char *name) {
     pvrio_hw_ta_hash(addr, words, name);
+}
+static void pvrio_dump_regs(uint32_t addr, int words, const char *name, const char *suffix) {
+    pvrio_hw_dump_regs(addr, words, name, suffix);
+}
+static void pvrio_scan32(uint32_t addr, int words, uint32_t value, const char *name) {
+    pvrio_hw_scan32(addr, words, value, name);
 }
 static uint32_t pvrio_crc32_words(uint32_t crc, const uint32_t *w, int n) {     /* CRC-32 steps, crc starts at ~0 */
     static uint32_t table[256];
@@ -212,6 +226,14 @@ static uint32_t pvrio_ta_events(void) {
 
 static void pvrio_hw_ta_hash(uint32_t addr, int words, const char *name) {
     printf("tahash %06x %x %s\n", (unsigned)addr, (unsigned)words, name);
+}
+
+static void pvrio_hw_dump_regs(uint32_t addr, int words, const char *name, const char *suffix) {
+    printf("regdump %x %x %s/%s.off%s\n", (unsigned)addr, (unsigned)words, pvrio_folder, name, suffix);
+}
+
+static void pvrio_hw_scan32(uint32_t addr, int words, uint32_t value, const char *name) {
+    printf("scan32 %06x %x %08x %s\n", (unsigned)addr, (unsigned)words, (unsigned)value, name);
 }
 
 static void pvrio_hw_say(const char *text) {
@@ -407,6 +429,34 @@ static void pvrio_hw_ta_hash(uint32_t addr, int words, const char *name) {
     irq_restore(old);
     crc = pvrio_crc32_words(crc, w, 4);
     printf("PVRIO hash %s %08lx\n", name, (unsigned long)~crc);
+}
+
+static void pvrio_hw_dump_regs(uint32_t addr, int words, const char *name, const char *suffix) {
+    static uint32_t copy[1024];
+    char path[200];
+    FILE *f;
+    int i;
+    if(words > 1024)
+        words = 1024;
+    for(i = 0; i < words; i++)
+        copy[i] = *(volatile uint32_t *)(0xa05f8000 + addr + 4u * (uint32_t)i);
+    snprintf(path, sizeof(path), DUMP_DIR "/%s.hw%s", name, suffix);
+    f = fopen(path, "wb");
+    if(!f)
+        return;
+    fwrite(copy, 4, words, f);
+    fclose(f);
+}
+
+static void pvrio_hw_scan32(uint32_t addr, int words, uint32_t value, const char *name) {
+    const volatile uint32_t *src = (const volatile uint32_t *)(0xa5000000 + addr);
+    int i, n = 0;
+    for(i = 0; i < words; i++) {
+        uint32_t w = src[i];
+        if(w != value && n++ < 64)
+            printf("PVRIO scan %s %06lx %08lx\n", name, (unsigned long)(addr + 4u * (uint32_t)i), (unsigned long)w);
+    }
+    printf("PVRIO scan %s count %d\n", name, n);
 }
 
 static void pvrio_hw_say(const char *text) {

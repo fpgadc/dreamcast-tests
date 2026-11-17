@@ -18,7 +18,9 @@
 #ifndef TA_ERRORS
 #define TA_ERRORS 0                 /* 1: the cases of bad input, and only those */
 #endif
+#ifndef NUM_PAGES
 #define NUM_PAGES 590               /* for run2.sh: dump files of a run without TA_ERRORS (two per case) */
+#endif
 #ifndef TA_LONG
 #define TA_LONG 10000               /* fuzz cases after the dumped ones, hashed: one "PVRIO hash" line each */
 #endif
@@ -58,8 +60,18 @@ static int case_no, cur_list = -1;
 static uint32_t case_want;
 static int dump_words = AREA_WORDS;     /* from AREA: as far as the case's lists and parameters may reach */
 static int hash_mode;                   /* the long fuzz: a hash of the case's area and TA state instead of dumps */
+static int scan_vram;                   /* ta-probe: all of video memory filled, and searched for writes outside the area */
+static int mid_k;                       /* ta-probe: dumps in the middle of the case so far */
 
-static void begin(const tacfg_t *c) {
+#define VRAM_BYTES 0x800000u
+#define TA_OL_POINTERS_addr 0x600u           /* 600 words, 0x005f8600 .. 0x005f8f5c */
+/* begin_ex flags (ta-probe): what begin() does not do */
+#define NO_RESET 1                      /* no SOFTRESET */
+#define NO_INIT  2                      /* no TA_LIST_INIT */
+#define NO_FILL  4                      /* video memory as it is */
+#define SCAN     8                      /* fill all of video memory, and finish() looks for words outside the area */
+
+static void begin_ex(const tacfg_t *c, int flags) {
     TA_GLOB_TILE_CLIP_type clip = { .full = 0 };
     TA_ALLOC_CTRL_type alloc = { .full = 0 };
     uint32_t end = AREA + AREA_WORDS * 4u;
@@ -67,9 +79,15 @@ static void begin(const tacfg_t *c) {
     if(c->isp_limit > end) end = c->isp_limit;
     if(end > AREA + 0x80000u) end = AREA + 0x80000u;
     dump_words = (int)((end - AREA) / 4);
-    pvrio_fill32(AREA, dump_words, FILL);
-    pvrio_reg(SOFTRESET_addr, 1);           /* the TA alone */
-    pvrio_reg(SOFTRESET_addr, 0);
+    if(flags & SCAN)
+        pvrio_fill32(0, (int)(VRAM_BYTES / 4), FILL);
+    else if(!(flags & NO_FILL))
+        pvrio_fill32(AREA, dump_words, FILL);
+    scan_vram = (flags & SCAN) != 0 || (scan_vram && (flags & NO_FILL));
+    if(!(flags & NO_RESET)) {
+        pvrio_reg(SOFTRESET_addr, 1);       /* the TA alone */
+        pvrio_reg(SOFTRESET_addr, 0);
+    }
     clip.tile_x_num = (uint32_t)(c->tx - 1);
     clip.tile_y_num = (uint32_t)(c->ty - 1);
     alloc.O_OPB = (uint32_t)c->opb[0]; alloc.OM_OPB = (uint32_t)c->opb[1]; alloc.T_OPB = (uint32_t)c->opb[2];
@@ -81,7 +99,8 @@ static void begin(const tacfg_t *c) {
     pvrio_reg(TA_GLOB_TILE_CLIP_addr, clip.full);
     pvrio_reg(TA_ALLOC_CTRL_addr, alloc.full);
     pvrio_reg(TA_NEXT_OPB_INIT_addr, c->opb_init);
-    pvrio_reg(TA_LIST_INIT_addr, 0x80000000u);
+    if(!(flags & NO_INIT))
+        pvrio_reg(TA_LIST_INIT_addr, 0x80000000u);
 #ifdef _arch_dreamcast
     if(!hash_mode)                              /* (the offline run says it for hashed cases: less to print here) */
 #endif
@@ -95,10 +114,29 @@ static void begin(const tacfg_t *c) {
     cur_list = -1;
     case_want = 0;
 }
+static void begin(const tacfg_t *c) { begin_ex(c, 0); }
 
 static void begin_default(void) {
     tacfg_t c = cfg();
     begin(&c);
+}
+
+/* ta-probe: the area, the TA state and TA_OL_POINTERS now, in the middle of a case: c<n>m<k>, c<n>m<k>s, c<n>m<k>r.
+   The state's interrupts are those since the last dump of a state. */
+static void mid(void) {
+    char name[24];
+#ifdef _arch_dreamcast
+    uint64_t t0 = timer_ms_gettime64();
+    while(timer_ms_gettime64() - t0 < 2)
+        ;
+#endif
+    snprintf(name, sizeof(name), "c%03dm%d", case_no, mid_k);
+    pvrio_dump32(AREA, dump_words, name, ".raw");
+    snprintf(name, sizeof(name), "c%03dm%ds", case_no, mid_k);
+    pvrio_dump_ta_state(name, ".raw");
+    snprintf(name, sizeof(name), "c%03dm%dr", case_no, mid_k);
+    pvrio_dump_regs(TA_OL_POINTERS_addr, 600, name, ".raw");
+    mid_k++;
 }
 
 /* the interrupts the case expects (or 100 ms), a moment for the last writes, and the dumps */
@@ -121,6 +159,17 @@ static void finish(void) {
     pvrio_dump32(AREA, dump_words, name, ".raw");
     snprintf(name, sizeof(name), "c%03ds", case_no);
     pvrio_dump_ta_state(name, ".raw");
+#ifdef TA_PROBES
+    snprintf(name, sizeof(name), "c%03dr", case_no);
+    pvrio_dump_regs(TA_OL_POINTERS_addr, 600, name, ".raw");
+    if(scan_vram) {                         /* writes outside the area: lines "PVRIO scan c<n> <address> <word>" */
+        snprintf(name, sizeof(name), "c%03d", case_no);
+        pvrio_scan32(0, (int)(AREA / 4), FILL, name);
+        pvrio_scan32(AREA + (uint32_t)dump_words * 4u, (int)((VRAM_BYTES - AREA) / 4) - dump_words, FILL, name);
+    }
+#endif
+    scan_vram = 0;
+    mid_k = 0;
 }
 
 /* ---- parameter words ---- */
@@ -1281,6 +1330,10 @@ static void c_err_para_types(void) {            /* parameter types 2 (object lis
 /* ======== the cases, in the order run ======== */
 
 typedef struct { const char *name; void (*fn)(void); int error; } tcase_t;
+typedef struct { const char *name; void (*fn)(int); int count; } tgroup_t;
+#ifdef TA_PROBES
+#include TA_PROBES                          /* ta-probe: its cases (and no groups) instead of these */
+#else
 static const tcase_t cases[] = {
     { "empty_op", c_empty_op, 0 }, { "all_lists", c_all_lists, 0 }, { "lists_reverse", c_lists_reverse, 0 },
     { "list_twice", c_list_twice, 0 }, { "opb_8", c_opb_8, 0 }, { "opb_16", c_opb_16, 0 }, { "opb_32", c_opb_32, 0 },
@@ -1314,12 +1367,12 @@ static const tcase_t cases[] = {
     { "err_list_types", c_err_list_types, 1 },
 };
 /* the generated cases, numbered on after the ones above: name_<k>, k = 0 .. count - 1 */
-typedef struct { const char *name; void (*fn)(int); int count; } tgroup_t;
 static const tgroup_t groups[] = {
     { "combo", c_combo, 16 }, { "reserved_bits", c_reserved_bits, 1 }, { "float_bounds", c_float_bounds, 2 },
     { "int_table", c_int_table, 8 }, { "bin_bounds", c_bin_bounds, 2 }, { "bin_exponents", c_bin_exponents, 2 },
     { "fuzz", c_fuzz, 200 },
 };
+#endif
 #define NGROUPS ((int)(sizeof(groups) / sizeof(groups[0])))
 #define NCASES ((int)(sizeof(cases) / sizeof(cases[0])))
 

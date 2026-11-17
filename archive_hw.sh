@@ -11,5 +11,7 @@ for t in "$@"; do
   cp $W/hw.crc fit/hw/$t/hw.crc
   grep -a '^PVRIO hash' $W/build/hw.log 2>/dev/null | tr -d '\r' | gzip > fit/hw/$t/hashes.txt.gz      # hashed cases (ta-tests)
   [ -n "$(zcat fit/hw/$t/hashes.txt.gz | head -1)" ] || rm -f fit/hw/$t/hashes.txt.gz
+  grep -a "^PVRIO scan" $W/build/hw.log 2>/dev/null | tr -d '\r' | gzip > fit/hw/$t/scans.txt.gz      # writes outside the area (ta-probe)
+  [ -n "$(zcat fit/hw/$t/scans.txt.gz | head -1)" ] || rm -f fit/hw/$t/scans.txt.gz
   echo "$t: $(ls fit/hw/$t/*.gz | wc -l) pages archived"
 done
