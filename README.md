@@ -1442,6 +1442,26 @@ What this explains:
 - With perspective the level follows w^2 per pixel and jumps between the two triangles of a quad whose
   texture mapping is not one plane.
 
+**Is the level worked out in a log domain?** (2026-11-17; nulldc3 `MipSelect` has a switch for it, the
+environment variable `MIP_ARITH`, and `MIP_ARITH=n bash archive_check.sh mipmeas` scores a way against the
+8 archived console sets, 4,147,200 colour values each, 30 s):
+
+| MIP_ARITH | the arithmetic from the 8 bit K and w | sets the console's | colour values different, by set |
+|---|---|---|---|
+| 0 | w * w cut to 8 bits, times K cut to 8 bits (the rule above) | 8 of 8 | none |
+| 1 | exponents only: L = e_K + 2 e_w, no fraction | 0 | 386,637 .. 2,286,280 |
+| 2 | log with the mantissa taken as linear (log2 m ~ m - 1), added, back the same way | 2 | 168,768 .. 1,879,637 |
+| 3 | exact log and antilog of the 8 bit numbers (a log domain with perfect tables) | 2 | 108,864 .. 668,908 |
+| 4 | K * w^2 at full precision, no cuts | 0 | 25,116 .. 1,912,620 |
+| 5 | the rule without its cut of w * w | 2 | 108,864 .. 664,420 |
+| 6 | the rule with K * w^2 rounded instead of cut | 0 | 10,212 .. 1,227,074 |
+
+The two sets that 2, 3 and 5 get right, det3 and det4, do not tell these ways apart. The exponents are added
+(the texture's size even goes into K's exponent field without a look at what the field means, above), but
+the mantissas are multiplied: two 8 x 8 products, each cut to 8 bits. The cut of w * w is what tells: a log
+domain squares by a shift and has nothing to cut there, and the rule without that one cut (5) is as wrong
+as perfect log tables (3).
+
 `mip` (the old test) is 1083 of 1083 regions now, was 1019. Its faulty uploads were found in the port (see
 above); the level table it printed for point sampling is the same rule.
 
