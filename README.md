@@ -2379,7 +2379,7 @@ All of them (2026-11-17; one process per core since 2026-11-18, about 6 seconds)
 console's, the others 96.7 to 99.99 % of the framebuffer (jgr, shenmue, thps2_ingame, sc_ingame and xtreme_intro
 the furthest off). With the rules in dumprules and keepz page 3, and a punch through pixel that failed the alpha
 test shaded again only when a later pass draws there (jgr_tree_shadows2), 44 of the 62; the rest differ in 1 to 122
-words, nearly all by one step of one channel (daytona_sanic, sa2_ingame2, gundam_ingame, daytona_intro the most). menu's register file is 4 KB, without the palette, and is not replayed. logo, mem, menu2,
+words, nearly all by one step of one channel (daytona_sanic, sa2_ingame2, gundam_ingame, daytona_intro the most). menu's register file was 4 KB, without the palette (padded to 8 KB with zeros in polly2-data since: all of video memory the console's). logo, mem, menu2,
 menu3 and thps2_menu were 3 to 16 % exact until refsw2 wrote out an empty keep-Z tile after a tile that is
 not written out (pvr-tests/PIPELINE_SHAPE.md, [6]).
 
