@@ -281,6 +281,13 @@ largest of its ISP, TSP and write-out times [M timemeas].
   - Colours are fractions in the planes (8-bit value x 2^-8); the result is floor(v + 0.5) [M cmeas].
   - **[I]** Per pixel: one reciprocal table and one 16x16 multiplier for each perspective attribute: U, V, four
     colour channels, and four offset channels when offset is on.
+- **Texel position in a mip level [M polly2-data dumps sa_slow1-3].** The coordinate is made at the full size
+  with 8 fraction bits, the bilinear half texel is taken off there, and only then is it shifted right by the
+  level. So at level L the footprint sits 1/2 - 1/2^(L+1) texel further on than a half texel of the level's own
+  size would put it. Three Sonic Adventure frames replayed on a console: refsw2 with this rule = the console in all
+  of video memory; with the half texel at the level's size, 74,673 of 921,600 pixels were wrong, every one a
+  bilinear sample below the full size. No test of this folder tells the two apart (regress.sh is the same
+  either way); non-square mipmapped textures below the full size are inferred, not seen.
 - **Texture fetch [M timemeas align2, yuvbil].**
   - Four 16-bit words come in per clock, and words that came in for the pixel before don't count again.
   - A palette with ARGB8888 entries pays exactly one more clock a pixel, point or bilinear.
