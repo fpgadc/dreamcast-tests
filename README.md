@@ -1542,7 +1542,8 @@ This replaces the section "The TSP at very small 1/w: there is no zero" (2026-11
 rules wrong. Five sets of texture coordinates (3,900,000 readings) and one of colours (2,340,000 values) at
 depths of 2^-149 to 2^127, below zero, zero, infinite and NaN are reproduced reading for reading by the model
 (`pvr_tsp_plane.h`) and by refsw2-offline, together with every earlier set: uvmeas 29 sets, 22,080,053
-readings; cmeas 2 sets; and covmeas, whose 8 open sets are right now (98 of 98).
+readings; cmeas 2 sets; and covmeas, whose 8 open sets are right now (98 of 98). The same limits in the ISP's
+depth setup make `huge` the console's in all 250 regions.
 
 **The numbers of the setup** have a sign, an exponent field of 8 bits and a mantissa, and two of the 256
 exponents are not numbers:
@@ -1590,6 +1591,14 @@ makes the quotient of two equal planes white. cwext1: 2,333,331 of 2,340,000 wit
 are untextured and white, the colour's quotient has the sign of colour / w, which is negative, and the
 result is black. refsw2 no longer skips such pixels, which is what the 8 open covmeas sets needed.
 
+**The ISP's depth setup has the same limits** (`pvr_isp_depth.h`, `DepthConfig::range`): field 0 zero, field
+255 infinity, the same sums and products, and an infinite depth at a tile's first pixel is stored as an
+infinity. This was not measured number by number. It was tried because the 22 regions of `huge` that were
+left were depth comparisons with 2^127, the largest number, infinities and NaNs, in which a console often
+draws one triangle of a quad and not the other; with these rules the two triangles' sums come to infinities
+of opposite sign, and `huge` matches in 250 of 250 regions. An infinite determinant (corners at 2^64 and
+beyond) is taken to give a depth of 0: a guess, which one pixel of `modvol` needs and nothing contradicts.
+
 How it was found, in case it has to be done again: wexp1 has the exponent tied to the place on the screen,
 which hides what depends on what; the new mixes draw exponent, size of U, winding and place independently.
 On the winding where the planes fall with x + y, a denominator below zero makes the reading depend strongly
@@ -1597,9 +1606,10 @@ on both planes (quotient -v / (3 * 2^p - v)), and fitting the six coefficients t
 gives them to a fraction of 2^-127. That is how 2^-128 for an infinity and the sign rules were read off.
 
 What changed in refsw2 (uncommitted): `pvr_tsp_plane.h` (the range in `Plane::Setup`, `Plane::Value`,
-`DenominatorSeen`, `Divide`), `refsw_tile.h` (colours times 2^-8, no special case for a 1/w that is not
-positive, a tiny negative quotient kept negative), `refsw_tile.cpp` (pixels with a negative depth are
-drawn). `PlaneConfig::range = 0` gives the arithmetic as it was.
+`DenominatorSeen`, `Divide`), `pvr_isp_depth.h` (the range in `DepthTile::Setup`), `refsw_tile.h` (colours
+times 2^-8, no special case for a 1/w that is not positive, a tiny negative quotient kept negative),
+`refsw_tile.cpp` (pixels with a negative depth are drawn). `PlaneConfig::range = 0` and
+`DepthConfig::range = 0` give the arithmetic as it was.
 
 | | before | now |
 |---|---|---|
@@ -1607,12 +1617,16 @@ drawn). `PlaneConfig::range = 0` gives the arithmetic as it was.
 | uvmeas whuge1, wtiny1, wneg1, wspec1 | 323,400 / 481,958 / 95,721 / 296,023 | 780,000 each |
 | cmeas cwext1 | 1,468,125 of 2,340,000 | 2,340,000 |
 | covmeas | 90 of 98 sets | 98 |
-| huge | 195 of 250 regions | 228 |
+| huge | 195 of 250 regions | 250 (228 with the TSP's rules alone) |
 
-Not measured: a first term or a first sum of zero in a three term sum next to a term of 2^-126 (the vertex
-orders of these sets do not make one); an infinite coordinate or determinant; the mipmap level at such
-depths; and the ISP: the 22 regions of `huge` that are left are depth comparisons with 2^127, the largest
-number, infinities and NaNs, where the console often draws one triangle of a quad and not the other.
+Not measured: a first term of zero in a three term sum next to a term of 2^-126 (the vertex orders of these
+sets do not make one); an infinite coordinate or determinant, in either unit; the mipmap level at such
+depths; the ISP's stored depth as a number at these depths (zmeas has no such set: what is known is which
+pixels pass, from `huge`).
+
+What refsw2-offline does not reproduce after this: `accbuf` (the two tile buffers are not modelled),
+`blendpos` (69 regions that differ from run to run on the console), `hugepos` (7 of 16 pages: edges with
+corners beyond 2^112), `modvol` (5 regions of two-volume polygons) and one depth bracket of zmeas `zero6`.
 
 ## The generators are C++ programs on the refsw2 headers (2026-11-16)
 
