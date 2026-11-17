@@ -775,6 +775,22 @@ unit used twice, ⌊C⌋ + ⌊B y⌋ for a line and then + ⌊A x⌋ for a run, 
 bits below the grid; a fused multiply-add does not. A datapath on the tile's own coordinates that keeps
 every bit of A Xt + A x until the one cut would give the same numbers and is not ruled out.
 
+**The value is normalized before it is cut, and so before the reciprocal's table** (2026-11-17,
+`model/tspprobe wfixed=n` for the 1/w plane alone, `valueFixed=n` for both; pvr_tsp_plane.h keeps it as an
+experiment, default 0; the 31 uvmeas sets, 23,640,053 readings). The plane's value is an integer on the tile's
+grid, 22 bits under its exponent; the model makes a float of it with 16 bits from its leading one. A fixed
+field of 16 bits, which drops at least n of the integer's low bits wherever its leading one is, is wrong:
+
+| low bits always dropped (1/w only) | 0 (16 from the leading one) | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|---|---|---|---|---|---|---|---|---|---|
+| readings wrong | 0 | 30,852 | 64,622 | 98,039 | 136,692 | 216,012 | 1,208,927 | 8,290,226 | 13,321,784 |
+
+(4 for both planes: 1,550,842.) Even a value more than 6 binades under the grid's top keeps 16 bits. So each
+value goes through a leading-one count and a shift over the whole integer before it is cut to 16 bits, and
+the reciprocal's table is indexed by the 9 bits under that leading one (D >> 6) and stepped by the 6 under
+them: the lookup cannot start before the shift. What can be alongside: the count beside the stepping adder,
+the exponent beside the table, the table's two numbers (t and n) side by side.
+
 **A run is not cut anywhere else** (2026-11-17): it goes on to the last pixel of the stretch, up to the
 tile's width. `model/tspprobe split=N` starts a new run also at every N-th column of the tile; on the uvmeas
 sets uv1, ugen5, usteep3, uflat2 and uwflat4 (3,360,053 readings, all right without it) that costs 63,619

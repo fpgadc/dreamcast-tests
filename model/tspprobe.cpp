@@ -74,11 +74,13 @@ static const Fields fields[] = {
     { "valueBits", &pvrtsp::PlaneConfig::valueBits },
     { "range", &pvrtsp::PlaneConfig::range }, { "expLow", &pvrtsp::PlaneConfig::expLow }, { "expHigh", &pvrtsp::PlaneConfig::expHigh },
     { "zeroReach", &pvrtsp::PlaneConfig::zeroReach }, { "tileLocal", &pvrtsp::PlaneConfig::tileLocal }, { "macOrder", &pvrtsp::PlaneConfig::macOrder },
+    { "valueFixed", &pvrtsp::PlaneConfig::valueFixed },
 #ifdef PVRTSP_RANGE_FIELDS
     PVRTSP_RANGE_FIELDS
 #endif
 };
 
+static int wFixed = -1;            // wfixed=n: valueFixed for the 1/w plane only
 static bool set_field(pvrtsp::PlaneConfig& cfg, const std::string& name, int value)
 {
     for (auto& f : fields)
@@ -103,7 +105,9 @@ static long score(const Set& s, const pvrtsp::PlaneConfig& cfg, int misses, bool
         int t = s.ti[r];
         const Tri& tr = s.tris[t];
         pvrtsp::Plane w, u;
-        w.Setup(tr.x, tr.y, tr.z, nullptr, cfg);
+        pvrtsp::PlaneConfig wc = cfg;
+        if (wFixed >= 0) wc.valueFixed = wFixed;
+        w.Setup(tr.x, tr.y, tr.z, nullptr, wc);
         u.Setup(tr.x, tr.y, tr.z, tr.u, cfg);
         Fp fx[3], fy[3];
         for (int k = 0; k < 3; k++) { fx[k] = Fp::FromFloat(tr.x[k]); fy[k] = Fp::FromFloat(tr.y[k]); }
@@ -204,6 +208,8 @@ int main(int argc, char** argv)
                 breakCols.push_back(atoi(arg.substr(at, c - at).c_str()));
                 at = c + 1;
             }
+        } else if (arg.rfind("wfixed=", 0) == 0) {
+            wFixed = atoi(arg.c_str() + 7);
         } else if (arg.rfind("split=", 0) == 0) {
             splitRuns = atoi(arg.c_str() + 6);
         } else if (arg == "--summary") {
