@@ -1,0 +1,152 @@
+Console enabled
+Upload </tmp/pvr_tests/timemeas/build/hw.elf>
+File format is ELF, start address is 0x8c010000
+Section .text, lma 0x8c010000, size 276100
+dcload-ip 2.0.3 using Broadband Adapter (HIT-0400)
+Section .init, lma 0x8c053684, size 54
+Section .fini, lma 0x8c0536bc, size 42
+Section .rodata, lma 0x8c0536e8, size 49860
+Section .eh_frame, lma 0x8c05f9ac, size 452
+Section .ctors, lma 0x8c05fbf0, size 8
+Section .dtors, lma 0x8c05fbf8, size 8
+Section .data, lma 0x8c05fc00, size 11884
+Section .got, lma 0x8c062a6c, size 12
+Transferred 338420 bytes at 13151697.054333 bytes / sec
+Executing at <0xac010000>
+Sending execute command (0xac010000, console=1, cdfsredir=0)...executing
+
+--
+KallistiOS v2.1.0
+  Git revision: a02b86e8
+  Tue Mar  3 18:50:08 EET 2026
+  skmp@flora.localdomain:/opt/toolchains/dc/kos
+  sh-elf-gcc (GCC) 13.2.0
+thd: pre-emption enabled, HZ=100
+maple: active drivers:
+    Dreameye (Camera): Camera
+    Sound Input Peripheral: Microphone
+    PuruPuru (Vibration) Pack: JumpPack
+    VMU Driver: Clock, LCD, MemoryCard
+    Mouse Driver: Mouse
+    Keyboard Driver: Keyboard
+    Controller Driver: Controller
+    Lightgun: LightGun
+  DMA Buffer at ac2e59a0
+vid_set_mode: 640x480 VGA with 1 framebuffers.
+dc-load console support enabled
+maple: attached devices:
+  A0: Dreamcast Controller           (01000000: Controller)
+
+vid_set_mode: 640x480 VGA with 1 framebuffers.
+T display 80000d off
+F 0 untextured flat
+F 1 untextured gouraud
+F 2 565 flat
+F 3 565 gouraud
+F 4 565 flat offset
+F 5 565 gouraud offset
+F 6 565 gouraud bilinear
+F 7 565 gouraud mipmapped point
+F 8 565 gouraud mipmapped bilinear
+F 9 565 gouraud trilinear A
+F 10 565 gouraud trilinear B
+F 11 1555 gouraud
+F 12 4444 gouraud
+F 13 YUV422 gouraud
+F 14 bump gouraud offset
+F 15 palette 4 bpp gouraud
+F 16 palette 8 bpp gouraud
+F 17 565 VQ gouraud
+F 18 565 VQ mipmapped gouraud
+F 19 565 not twiddled gouraud
+F 20 YUV422 gouraud bilinear
+F 21 palette 8 bpp gouraud bilinear
+F 22 565 VQ gouraud bilinear
+F 23 565 gouraud, 8 texels a pixel
+F 24 565 gouraud mipmapped, 8 texels a pixel
+F 25 565 gouraud trilinear A, 6 texels a pixel
+F 26 565 gouraud, fog table
+F 27 565 gouraud, punch through list
+F 28 565 gouraud, translucent list
+F 29 untextured gouraud, translucent list
+F 30 YUV422 not twiddled gouraud
+F 31 YUV422 not twiddled gouraud bilinear
+F 32 565 not twiddled gouraud bilinear
+F 33 1555 gouraud bilinear
+F 34 4444 gouraud bilinear
+F 35 YUV422 gouraud mipmapped bilinear
+F 36 YUV422 gouraud, 8 texels a pixel
+F 37 YUV422 gouraud bilinear, 8 texels a pixel
+F 38 565 gouraud bilinear, 8 texels a pixel
+F 39 YUV422 VQ gouraud
+F 40 YUV422 VQ gouraud bilinear
+F 41 palette 4 bpp VQ gouraud
+F 42 palette 8 bpp VQ gouraud
+F 43 palette 8 bpp VQ gouraud bilinear
+F 44 palette 4 bpp gouraud bilinear
+F 45 565 VQ gouraud, 8 texels a pixel
+F 46 palette 8 bpp gouraud, 8 texels a pixel
+F 47 565 gouraud offset, 8 texels a pixel
+F 48 565 gouraud offset mipmapped point
+L 0 nothing (the background)
+L 1 1 sprite 32x32
+L 2 1 quad 32x32
+L 3 32 quads 32x1
+L 4 32 quads 1x32
+L 5 1024 quads 1x1
+L 6 32 sprites 32x1
+L 7 32 sprites 1x32
+L 8 1024 sprites 1x1
+L 9 16 quads 8x8
+L 10 64 quads 4x4
+L 11 256 quads 2x2
+L 12 4 quads 8x32
+L 13 4 quads 32x8
+L 14 1 quad 32x16
+L 15 1 quad 16x32
+L 16 256 sprites 2x2
+T rows 0 32 0 0 W 92531 92785 98323 98549 5736 5764 P ffffff ffffff
+T rows 0 64 0 0 W 203723 204075 209459 209839 5736 5764 P ffffff ffffff
+T rows 0 32 16 0 W 109073 109277 114797 115041 5708 5764 P ffffff ffffff
+T rows 0 64 16 0 W 236331 236521 242083 242285 5708 5752 P ffffff ffffff
+T rows 0 32 32 0 W 124211 124483 129947 130247 5724 5764 P ffffff ffffff
+T rows 0 64 32 0 W 267937 268327 273717 274053 5708 5764 P ffffff ffffff
+T rows 0 32 64 0 W 164067 164633 169831 170397 5736 5764 P ffffff ffffff
+T rows 0 64 64 0 W 349895 350309 355631 356045 5736 5764 P ffffff ffffff
+T rows 1 32 0 0 W 92417 92959 128467 128705 34444 35592 P 008128 e627e6
+T rows 1 64 0 0 W 210397 210917 253297 253785 39524 42896 P 008128 e627e6
+T rows 2 32 0 0 W 88995 89433 136303 136321 46476 46884 P 20a148 ff47ff
+T rows 2 64 0 0 W 212453 212971 267325 267393 54340 54368 P 20a148 ff47ff
+T rows 3 32 0 0 W 89997 90261 96013 96277 5988 6016 P ffffff ffffff
+T rows 3 64 0 0 W 198713 199135 204729 205179 5988 6016 P ffffff ffffff
+T rows 4 32 0 0 W 130413 130441 165641 165669 35200 35228 P 4040ff ffffff
+T rows 4 64 0 0 W 290159 290189 325373 325413 35200 35228 P 4040ff ffffff
+T rows 5 32 0 0 W 52481 52497 92229 92245 39748 39760 P ffffff ffffff
+T rows 5 64 0 0 W 139889 139929 179649 179705 39748 39760 P ffffff ffffff
+T rows 5 32 32 0 W 52583 52629 92331 92389 39748 39760 P ffffff ffffff
+T rows 5 64 32 0 W 139969 140059 179729 179841 39748 39760 P ffffff ffffff
+T rows 5 32 64 0 W 89725 89885 95489 95649 5736 5764 P ffffff ffffff
+T rows 5 64 64 0 W 182667 182885 188403 188621 5724 5764 P ffffff ffffff
+T end
+PVRIO crc 248f9d80 before page0
+PVRIO crc 212857f7 before page1
+PVRIO crc d2ec74f5 before page2
+PVRIO crc b28ac2e8 before page3
+PVRIO crc 3d94218e before page4
+PVRIO crc 759d9102 before page5
+PVRIO crc 13d8d12a before page6
+PVRIO crc 9fe2c93b before page7
+PVRIO crc 8eff4539 before page8
+PVRIO crc e6fe72f2 before page9
+PVRIO crc bc0ab048 before page10
+PVRIO crc d5183bd3 before page11
+PVRIO crc 224d428a before page12
+PVRIO crc 34f94b00 before page13
+PVRIO crc 5294d836 before page14
+PVRIO crc 3f0e5eec before page15
+PVRIO crc f6c42c51 before page16
+
+arch: exit return code 0
+arch: shutting down kernel
+maple: final stats -- device count = 23, vbl_cntr = 353, dma_cntr = 353
+vid_set_mode: 640x480 VGA with 1 framebuffers.

@@ -360,9 +360,12 @@ largest of its ISP, TSP and write-out times [M timemeas].
 
 1. **ISP to TSP run queue:** what an entry holds, and whether a run cut in two by a nearer polygon counts twice.
    Also why 32 sprites of 32x1 a tile cost 1736 a tile in a render of many tiles: more than either unit's own
-   cost (timemeas ispq). **[G]** 1736 / 32 = 54 = the TSP's 39 + the ISP's ~15 per primitive, as if the ISP and the
-   TSP set up primitives in one engine (they use the same 24-bit setup arithmetic); a format sweep would tell
-   (39 / 48 / 64 + ~15) from a span sorter's cost per primitive change (the same for every format).
+   cost (timemeas ispq). Measured (timemeas rows): not a stage counting runs (primitives that never pass add
+   their ISP cost, ~16 each), and not a setup unit shared by ISP and TSP (DCalcCtrl's +5 of TSP setup adds
+   nothing; offset rows cost 64, not 64 + 15). Both units wait on a per-primitive resource whose cost grows
+   with the parameters' size (565 +7, offset +10 a row; the ISP slows in textured rows too). **[G]** One
+   parameter fetch (VRAM port) for the ISP and the TSP. A probe varying parameter size alone, or VRAM traffic
+   (framebuffer depth, no write-out), would test it.
 2. **Two depth pixels one step high** (zmeas zero6, reach1r cell 227): both a negative start with the plane
    crossing zero in the tile, the exact sum just under a stored boundary.
 3. **Crowded lines:** why runs cost up to twice as much with more than ~12 different triangles on a line, opaque

@@ -24,6 +24,7 @@
    polygons of that format in different ways, so that the numbers of pixels, of runs (pixels of one triangle
    next to each other on one line) and of triangles change independently. The pages of this test are the
    layouts drawn once each with every triangle in its own colour. */
+/* #define TM_ROWS */                  /* only the rows scenes (shared setup engine or span stage?): a few seconds */
 /* #define TM_ISPQ */                  /* only the ispq scenes (how far the ISP runs ahead): a few seconds */
 /* #define TM_QUICK */                 /* only the scenes before the TM_QUICK line in run_all: a few seconds */
 /* #define TM_DCALC */                 /* only the dcalc scenes: a few seconds */
@@ -684,6 +685,50 @@ static void run_all(void) {
     printf("T display %lx off\n", (unsigned long)fb_r);
     for(f = 0; f < NUM_FORMATS; f++) printf("F %d %s\n", f, formats[f].name);
     for(L = 0; L < NUM_LAYOUTS; L++) printf("L %d %s\n", L, layout_names[L]);
+
+    /* ---- rows k n E: what makes 32 sprites of 32x1 a tile cost 1736 a tile in a render of many tiles (ispq)
+       (2026-11-17)? 1736 / 32 = 54 a primitive = the TSP's setup (39) + the ISP's (~15), as if one setup engine
+       served both; or a span stage that pays per change of primitive. E primitives that never pass the depth test
+       (1x1 sprites, compare NEVER) are ISP work only, no runs and no TSP setup: with one shared engine each adds
+       its ISP setup to the tile's time, with a span stage they add nothing (the ISP stays below the TSP's pace).
+       n tiles (32, 64: the pace is the difference). k 0 32 rows of 32x1, untextured, E 0 16 32 64; 1 the same 565;
+       2 565 with offset; 3 untextured with DCalcCtrl 1 (+5 of TSP setup); 4 the rows as quads (strips of two
+       triangles); 5 control: 4 rows of 32x8 (write-out bound), E 0 32 64. */
+    {
+        static const int rn[2] = { 32, 64 }, rE[4] = { 0, 16, 32, 64 };
+        static const int rf[5] = { 0, 2, 4, 0, 0 };
+        int rk, ri, re, t, j;
+        for(rk = 0; rk < 6; rk++)
+            for(re = 0; re < 4; re++) {
+                if((rk >= 1 && rk <= 4 && re > 0) || (rk == 5 && re == 1))
+                    continue;
+                for(ri = 0; ri < 2; ri++) {
+                    dcalc_ctrl = rk == 3;
+                    tiles_region(rn[ri]);
+                    region_addr = MANY_TILES;
+                    ta_list_begin(ListType_Opaque);
+                    for(t = 0; t < rn[ri]; t++) {
+                        const int x = (t / SETUP_TILES_Y) * 32, y = (t % SETUP_TILES_Y) * 32;
+                        for(j = 0; j < rE[re]; j++)
+                            rect(&formats[0], 1, DepthMode_Never, x + (j & 31), y + (j >> 5) * 2, 1, 1, front, j, 0);
+                        if(rk == 5)
+                            for(j = 0; j < 4; j++)
+                                rect(&formats[0], 1, DepthMode_Always, x, y + 8 * j, 32, 8, front, j, 0);
+                        else
+                            for(j = 0; j < 32; j++)
+                                rect(&formats[rk < 5 ? rf[rk < 4 ? rk : 0] : 0], rk != 4, DepthMode_Always, x, y + j, 32, 1, front, j, 0);
+                    }
+                    measure("rows", rk, rn[ri], rE[re], 0);
+                }
+            }
+        dcalc_ctrl = 0;
+        region_addr = ONE_TILE;
+    }
+#ifdef TM_ROWS
+    *fb_r_ctrl = fb_r;
+    printf("T end\n");
+    return;
+#endif
 
     /* ---- ispq k n: how far the ISP runs ahead of the TSP, and in what unit (2026-11-17). The first n tiles
        (KallistiOS's order), each with: k 0 nothing but the background (0888 framebuffer); 1 the same with a 565

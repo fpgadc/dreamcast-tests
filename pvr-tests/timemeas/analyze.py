@@ -444,5 +444,23 @@ def main():
                   f" at {pace:5.0f} a tile; runs left {left * runs[k]:4.0f}")
 
 
+    if "rows" in D:
+        print()
+        print("28. What limits 32 sprites of 32x1 a tile (rows): the pace a tile (n 32 -> 64), the TSP's bit and the ISP's,")
+        print("    a row, and against plain untextured rows. E: primitives that never pass (ISP work only) added to each tile.")
+        names = ["rows untextured", "rows 565", "rows 565 offset", "rows untextured, DCalcCtrl 1", "rows as quads",
+                 "control: 4 rows of 32x8"]
+        base = None
+        for k, name in enumerate(names):
+            for E in (0, 16, 32, 64):
+                if (k, 64, E, 0) not in D["rows"]:
+                    continue
+                pace = (T("rows", k, 64, E) - T("rows", k, 32, E)) / 32 / 2
+                isp = (I("rows", k, 64, E) - I("rows", k, 32, E)) / 32 / 2
+                if base is None:
+                    base = pace
+                print(f"    {name:30s} E {E:2d}: {pace:7.1f} a tile ({pace / 32:5.1f} a row), ISP's bit {isp:7.1f}; {pace - base:+7.1f}")
+
+
 if __name__ == "__main__":
     main()

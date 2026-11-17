@@ -532,6 +532,32 @@ ISP ends (the lead less the last tile's write-out, times the runs of a tile):
 - Not known: whether a run that a nearer polygon cuts in two counts twice (here every run is a whole primitive's
   line), and what an entry holds.
 
+## What limits 32 rows of 32x1 a tile (2026-11-17)
+
+The `rows` scenes (run 36; `#define TM_ROWS`, about 10 s). 32 sprites of 32x1 a tile take 1736 a tile (54 a row)
+in a render of many tiles, more than the ISP (~19 a sprite) or the TSP (40.7 a sprite in one tile) needs.
+Primitives that never pass the depth test (1x1 sprites, compare NEVER) are ISP work only: they make no runs
+and get no TSP setup. Pace a tile from 32 to 64 tiles:
+
+| a tile | pace | a row | against plain rows |
+|---|---|---|---|
+| 32 rows untextured | 1736 | 54.3 | |
+| the same + 16 / 32 / 64 primitives that never pass | 1989 / 2246 / 2903 | | +15.8 / +15.9 / +18.2 each |
+| 32 rows 565 | 1951 | 61.0 | +6.7 a row (TSP setup +9) |
+| 32 rows 565 with offset | 2047 | 64.0 | +9.7 a row (TSP setup +25) |
+| 32 rows untextured, DCalcCtrl 1 | 1699 | 53.1 | -1.2 a row (TSP setup +5) |
+| 32 rows as quads (two triangles) | 2496 | 78.0 | = 2 x 39 |
+| control: 4 rows of 32x8 + 0 / 32 / 64 that never pass | 1366 / 1366 / 1452 | | the ISP alone is the limit at +64 |
+
+- **Not a stage after the ISP that counts runs**: primitives with no runs add their ISP cost (~16) to every
+  tile, while the ISP's own work stays far below the pace (32 x 19 + 32 x 19 + ~160 = ~1376 with 32 added).
+- **Not one setup unit shared by ISP and TSP**: DCalcCtrl's 5 clocks of TSP setup add nothing, and offset rows
+  take the TSP's offset setup (64) alone, not 64 + 15.
+- **A per-primitive resource both use, whose cost grows with the parameters' size** fits: untextured rows ~16
+  (the ISP's part) + ~38, 565 +7, offset +10, and in textured rows the ISP's own bit slows too (1843 and 1929 a
+  tile against 1737), although the ISP does not look at textures. **[G]** One parameter fetch (VRAM reads of each
+  primitive's parameters) for the ISP and the TSP. Quads are bound by the TSP's setup of two triangles (2 x 39).
+
 ## What changed against my earlier numbers
 
 - "The TSP cannot start before 13.5 µs": that was the background of KallistiOS's first region array entry.
@@ -811,7 +837,8 @@ ends where the volume state changes: README, uvrun). 16 bit framebuffer; a tile 
 ## Not known
 
 - What makes runs cost more when more than about 12 different triangles are on a line.
-- What makes 32 sprites of 32x1 a tile cost 1736 a tile in a render of many tiles (ispq).
+- What the per-primitive resource is that the ISP and the TSP share when 32 rows of 32x1 make a tile cost 1736
+  (rows: not a run stage, not a shared setup unit; a parameter fetch is the guess).
 - How the 335 clocks of a tile with nothing to do divide between the start, the ISP, the TSP and the
   hand-overs, and what the 55 to 90 are that a tile with seen polygons costs once.
 - How texels are kept: the first tile's cost is small and paid once per render, yet texels 8 apart cost
