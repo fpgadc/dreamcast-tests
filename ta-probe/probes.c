@@ -465,6 +465,15 @@ static void after_error(void) {
     begin_ex(&c, NO_FILL | NO_RESET);
     tri_xy(OP, 0, 3, 1, 0xe2); eol(); finish();
 }
+/* The same with SOFTRESET before TA_LIST_INIT. After err_sprite_in_strip, TA_LIST_INIT alone left a console unable
+   to send more: the store queue write to the TA stalled the CPU (first error run, 2026-11-17). The cases after it
+   recover this way. */
+static void after_error_reset(void) {
+    tacfg_t c = cfg();
+    tri_xy(OP, 0, 3, 2, 0xe1); eol(); mid();
+    begin_ex(&c, NO_FILL);
+    tri_xy(OP, 0, 3, 1, 0xe2); eol(); finish();
+}
 static void e_vertex_first(void) {              /* vertices before any header */
     begin_default();
     v0(40, 40, 1, 1, 0); v0(48, 40, 1, 2, 0); v0(40, 48, 1, 3, 1);
@@ -485,35 +494,35 @@ static void e_sprite_in_strip(void) {           /* a sprite header after two ver
     begin_default();
     hdr(OP, GROUP(0), ISPW, TSPW, 0); v0(40, 40, 1, 1, 0); v0(48, 40, 1, 2, 0);
     sprite_xy(OP, 2, 1);
-    after_error();
+    after_error_reset();
 }
 static void e_clip_in_strip(void) {             /* a user clip after two vertices, then the third */
     begin_default();
     hdr(OP, GROUP(0) | UCLIP(2), ISPW, TSPW, 0); v0(8, 8, 1, 1, 0); v0(120, 8, 1, 2, 0);
     uclip(1, 1, 1, 1);
     v0(8, 88, 1, 3, 1);
-    after_error();
+    after_error_reset();
 }
 static void e_short_strip(void) {               /* end of strip after two vertices */
     begin_default();
     hdr(OP, GROUP(0), ISPW, TSPW, 0); v0(40, 40, 1, 1, 0); v0(48, 40, 1, 2, 1);
-    after_error();
+    after_error_reset();
 }
 static void e_vertex_after_eol(void) {          /* vertices after the end of the list */
     begin_default();
     tri_xy(OP, 0, 1, 1, 1); eol();
     v0(72, 40, 1, 2, 0); v0(88, 40, 1, 3, 0); v0(72, 56, 1, 4, 1);
-    after_error();
+    after_error_reset();
 }
 static void e_eol_only(void) {                  /* an end of list with no list open */
     begin_default();
     w8(0, 0, 0, 0, 0, 0, 0, 0);
-    after_error();
+    after_error_reset();
 }
 static void e_list_switch(void) {               /* a header of the translucent list while the opaque list is open */
     begin_default();
     tri_xy(OP, 0, 1, 1, 1); tri_xy(TR, 0, 2, 1, 2); eol();
-    after_error();
+    after_error_reset();
 }
 static void e_list_types(void) {                /* headers of list types 5, 6 and 7, each with a triangle and an end */
     int t;
@@ -523,7 +532,7 @@ static void e_list_types(void) {                /* headers of list types 5, 6 an
         v0(36.0f + (float)t, 36, 1, (uint32_t)t, 0); v0(44, 36, 1, (uint32_t)t, 0); v0(36, 44, 1, (uint32_t)t, 1);
         w8(0, 0, 0, 0, 0, 0, 0, 0);
     }
-    after_error();
+    after_error_reset();
 }
 static void e_para_types(void) {                /* parameter types 2 (object list set), 3 and 6 between triangles */
     begin_default();
@@ -532,41 +541,125 @@ static void e_para_types(void) {                /* parameter types 2 (object lis
     w8(PCW_(3, OP, 0), 0, 0, 0, 0, 0, 0, 0);
     w8(PCW_(6, OP, 0), 0, 0, 0, 0, 0, 0, 0);
     tri_xy(OP, 0, 2, 1, 2);
-    after_error();
+    after_error_reset();
 }
 static void e_vtx_half(void) {                  /* the first half of a 64 byte vertex (textured, float colour), then a header */
     begin_default();
     hdr(OP, GROUP(0) | COL(1) | TEX, ISPW, TSPW, TCWW);
     w8(VP(0), fl(40), fl(40), F1, 0, 0, 0, 0);
     tri_xy(OP, 0, 2, 1, 2);
-    after_error();
+    after_error_reset();
 }
 static void e_hdr_half(void) {                  /* the first half of a 64 byte header (intensity, textured, offset), then a vertex */
     begin_default();
     list_of(OP);
     w8(PCW_(P_POLY, OP, GROUP(0) | COL(2) | TEX | OFFS), ISPW, TSPW, TCWW, 0, 0, 0, 0);
     v7(40, 40, 1, 0, 0, F1, F1, 0); v7(48, 40, 1, 0, 0, F1, F1, 0); v7(40, 48, 1, 0, 0, F1, F1, 1);
-    after_error();
+    after_error_reset();
 }
 static void e_sprite_in_mv(void) {              /* a sprite header in a modifier volume list */
     begin_default();
     mv_xy(OM, 1, 0, 0);
     sprite_xy(OM, 2, 1);
     eol();
-    after_error();
+    after_error_reset();
 }
 static void e_init_in_strip(void) {             /* TA_LIST_INIT after two vertices of a strip */
     tacfg_t c = cfg();
     begin(&c);
     hdr(OP, GROUP(0), ISPW, TSPW, 0); v0(40, 40, 1, 1, 0); v0(48, 40, 1, 2, 0);
     begin_ex(&c, NO_FILL | NO_RESET);
-    after_error();
+    after_error_reset();
 }
 static void e_cont_in_strip(void) {             /* TA_LIST_CONT after two vertices of a strip */
     begin_default();
     hdr(OP, GROUP(0), ISPW, TSPW, 0); v0(40, 40, 1, 1, 0); v0(48, 40, 1, 2, 0);
     pvrio_reg(TA_LIST_CONT_addr, 0x80000000u);
-    after_error();
+    after_error_reset();
+}
+
+/* ======== second round (after the first console run of ta-probe) ======== */
+
+static void p_mvleak_volumes(void) {            /* two closed volumes: does the second start the bounds afresh? */
+    begin_default();
+    mv_xy(OM, 1, 0, 0); mv_xy(OM, 1, 1, 0); eol();  /* volume A (0, 0), volume B (1, 0) */
+    tri_xy(TR, 0, 2, 0, 1);                         /* (1..2, 0) if B started afresh, (0..2, 0) if not */
+    eol(); finish();
+}
+static void p_mvleak_open2(void) {              /* two triangles of one volume never closed, both mode 0 */
+    begin_default();
+    mv_xy(OM, 0, 0, 0); mv_xy(OM, 0, 1, 0); eol();
+    tri_xy(TR, 0, 2, 0, 1);
+    eol(); finish();
+}
+static void p_mvleak_second_list(void) {        /* a modifier list after the polygon that took the bounds */
+    begin_default();
+    mv_xy(OM, 1, 0, 0); eol();
+    tri_xy(TR, 0, 3, 0, 1); eol();                  /* takes (0, 0)..(3, 0) */
+    mv_xy(TM, 1, 0, 2); eol();
+    tri_xy(PT, 0, 1, 2, 2);                         /* (0..1, 2) if the first bounds were used up */
+    eol(); finish();
+}
+static void grid_regs(int tx, int ty) {         /* grid_probe, and 640 registers from 0x600 (40 past TA_OL_POINTERS) */
+    char name[24];
+    grid_probe(tx, ty);
+    snprintf(name, sizeof(name), "c%03dx", case_no);
+    pvrio_dump_regs(TA_OL_POINTERS_addr, 640, name, ".raw");
+}
+static void p_grid_61x10(void) { grid_regs(61, 10); }   /* 610 tiles: tiles 608, 609 */
+static void p_grid_46x14(void) { grid_regs(46, 14); }   /* 644 tiles */
+static void p_grid_41x15b(void) { grid_regs(41, 15); }  /* ta-probe grid_41x15 again, with the 640 registers */
+static void p_grid_max_y_stack(void) {          /* 4 x 16 (the last row there is: no end words): what of each tile is written */
+    tacfg_t c = cfg();
+    int i;
+    c.ty = 16;
+    c.opb[1] = c.opb[2] = c.opb[3] = c.opb[4] = 0;
+    c.opb_init = c.ol_base + matrix_bytes(&c);
+    begin_ex(&c, SCAN);
+    for(i = 0; i < 3; i++)
+        tri_xy(OP, 0, 0, 0, (uint32_t)i);           /* tile 0: a triangle array of three */
+    tri_xy(OP, 0, 1, 0, 3); quad(OP, 0, 40, 4, 16, 16, 4);     /* tile 1: a triangle, then a strip */
+    quads_xy(OP, 2, 0, 9);                          /* tile 2: into a block */
+    quads_xy(OP, 3, 0, 1); tri_xy(OP, 0, 3, 0, 5); /* tile 3: a strip, then a triangle */
+    eol(); finish();
+}
+static void p_alloc_change_op(void) {           /* the opaque blocks 8 -> 32 words between the opaque and translucent lists */
+    TA_ALLOC_CTRL_type a = { .full = 0 };
+    begin_default();
+    tri_xy(OP, 0, 1, 1, 1); eol(); wait_done(OP);
+    a.O_OPB = 3; a.OM_OPB = 1; a.T_OPB = 1; a.TM_OPB = 1; a.PT_OPB = 1;
+    pvrio_reg(TA_ALLOC_CTRL_addr, a.full);
+    tri_xy(TR, 0, 2, 1, 2); eol(); finish();
+}
+static void p_mode_change(void) {               /* OPB_Mode up -> down between the opaque and translucent lists */
+    TA_ALLOC_CTRL_type a = { .full = 0 };
+    begin_default();
+    quads_xy(OP, 1, 1, 9); eol(); wait_done(OP);
+    a.O_OPB = 1; a.OM_OPB = 1; a.T_OPB = 1; a.TM_OPB = 1; a.PT_OPB = 1; a.OPB_Mode = 1;
+    pvrio_reg(TA_ALLOC_CTRL_addr, a.full);
+    quads_xy(TR, 2, 1, 9); eol(); finish();
+}
+static void p_two_vol_skip(void) {              /* two volumes, textured, offset: the entry and register skip of 4 words */
+    static const uint32_t f0[4] = { F1, F1, F1, F1 }, f1[4] = { F1, 0x3f000000, 0x3f000000, 0x3f000000 };
+    (void)f0; (void)f1;
+    begin_default();
+    hdr_vol(OP, GROUP(0) | SHADOW | VOLUME | TEX | OFFS, ISPW, TSPW, TCWW, TSP1, TCW1);
+    v11(40, 40, 1, F1, 0, 0xff000001, 0x11, 0, F1, 0xff000002, 0x12, 0);
+    v11(48, 40, 1, 0, 0, 0xff000003, 0x13, F1, F1, 0xff000004, 0x14, 0);
+    v11(40, 48, 1, F1, F1, 0xff000005, 0x15, 0, 0, 0xff000006, 0x16, 1);
+    mid(); eol(); finish();
+}
+static void p_isp_limit_exact(void) {           /* a triangle that ends exactly at TA_ISP_LIMIT, then two more */
+    tacfg_t c = cfg();
+    c.isp_limit = c.isp_base + 2 * 15 * 4;
+    begin(&c); tri_xy(OP, 0, 0, 0, 1); tri_xy(OP, 0, 1, 0, 2); tri_xy(OP, 0, 2, 0, 3); tri_xy(OP, 0, 3, 0, 4);
+    eol(); finish();
+}
+static void p_list_cont_same(void) {            /* TA_LIST_CONT, then the opaque list again: appended to, or begun anew? */
+    begin_default();
+    quads_xy(OP, 1, 1, 3); eol(); wait_done(OP);
+    pvrio_reg(TA_LIST_CONT_addr, 0x80000000u);
+    quads_xy(OP, 1, 1, 2); eol(); finish();
 }
 
 /* ======== the order run ======== */
@@ -612,5 +705,10 @@ static const tcase_t cases[] = {
     { "err_para_types", e_para_types, 1 }, { "err_vtx_half", e_vtx_half, 1 }, { "err_hdr_half", e_hdr_half, 1 },
     { "err_sprite_in_mv", e_sprite_in_mv, 1 }, { "err_init_in_strip", e_init_in_strip, 1 },
     { "err_cont_in_strip", e_cont_in_strip, 1 },
+    { "mvleak_volumes", p_mvleak_volumes, 0 }, { "mvleak_open2", p_mvleak_open2, 0 },
+    { "mvleak_second_list", p_mvleak_second_list, 0 }, { "grid_61x10", p_grid_61x10, 0 },
+    { "grid_46x14", p_grid_46x14, 0 }, { "grid_41x15b", p_grid_41x15b, 0 }, { "grid_max_y_stack", p_grid_max_y_stack, 0 },
+    { "alloc_change_op", p_alloc_change_op, 0 }, { "mode_change", p_mode_change, 0 }, { "two_vol_skip", p_two_vol_skip, 0 },
+    { "isp_limit_exact", p_isp_limit_exact, 0 }, { "list_cont_same", p_list_cont_same, 0 },
 };
 static const tgroup_t groups[] = { { "none", 0, 0 } };
