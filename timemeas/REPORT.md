@@ -719,6 +719,35 @@ ends where the volume state changes: README, uvrun). 16 bit framebuffer; a tile 
   saves, and what a run costs, depend on how many runs the line has. A stage that takes a line's runs
   together (sorting or grouping them over a window of a few runs) would fit better; my reading, not shown.
   The rounding of the values (README, uvspan: each product cut by itself, screen coordinates) allows either.
+- **The queue is after the texturing** (scenes `spantex` and `spantex2`, `#define TM_SPANTEX`, logs run31
+  and run32, tables from `python3 spantex.py <log>`; the two runs agree within 2 clocks a tile, the passes
+  within 1 to 6). 64 tiles, each a 565 triangle T, a sprite U over lines 0 .. 19 (or 0 .. K - 1), and a
+  burst of 30 L runs of one pixel (15 sheets) on lines 20 .. 20 + L - 1. Clocks the burst adds to a tile:
+
+| lines before the burst | L 2 | 4 | 6 | 8 | 10 | 12 |
+|---|---|---|---|---|---|---|
+| 0 .. 19 565, 1.01 a pixel | 129 | 275 | 433 | 814 | 1050 | 1141 |
+| 0 .. 19 YUV422 bilinear | 470 | 603 | 962 | 1170 | 1455 | 1600 |
+| 0 .. 19 565 with 8 texels a pixel, 3.27 a pixel | 290 | 640 | 757 | 1021 | 1241 | 1849 |
+
+| 8 texels a pixel over lines 0 .. K - 1, 565 on K .. 19 | L 4 | 8 | 12 |
+|---|---|---|---|
+| K 0 | 287 | 796 | 1140 |
+| K 4 (16 fast lines, 512 pixels, before the burst) | 554 | 1090 | 1439 |
+| K 10 | 652 | 1222 | 1865 |
+| K 16 | 819 | 1163 | 1992 |
+| K 20 | 635 | 1023 | 1848 |
+
+  Were the queue of about 150 to 200 pixels between the run starts and the texturing, slow pixels in it
+  would hide more of a burst, and 512 fast pixels would fill it again. Neither: after slow lines a burst
+  costs more at every L, and 4 slow lines at the top of the tile take about 270 to 300 clocks of hiding away
+  (about the whole that is hidden after 565 lines) that 16 fast lines do not give back. My reading: the run
+  starts, the stepping, the division and the texturing (fetch, YUV conversion, filter) are one front end
+  that stalls as a whole, and the queue lies after it, before the stage that finishes the pixels in the
+  tile. It is filled where that stage waits (at the change of tile: the front end goes on into the next
+  tile, the "run starts made ahead across the tile boundary" above) and only there; where both go at a
+  pixel a clock it stays as it is, and slow texturing drains it. The steps from one L or K to the next are
+  uneven in every row (as at L = 6 above), well beyond the passes' agreement; not understood.
 - **Do setup and run starts share the arithmetic?** (scenes `share`, `#define TM_SHARE`, logs run29 and run30,
   tables from `python3 share.py <log>`). 64 tiles, a triangle T over each, lines 0 .. L - 1 of it cut into 31
   one-pixel runs by 15 cheap-shadow sheets (paced by run starts); at column 31 of those lines a 16th sheet (32

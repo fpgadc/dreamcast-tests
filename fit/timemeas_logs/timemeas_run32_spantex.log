@@ -1,0 +1,212 @@
+Console enabled
+Upload </tmp/pvr_tests/timemeas/build/hw.elf>
+File format is ELF, start address is 0x8c010000
+Section .text, lma 0x8c010000, size 277924
+dcload-ip 2.0.3 using Broadband Adapter (HIT-0400)
+Section .init, lma 0x8c053da4, size 54
+Section .fini, lma 0x8c053ddc, size 42
+Section .rodata, lma 0x8c053e08, size 49844
+Section .eh_frame, lma 0x8c0600bc, size 452
+Section .ctors, lma 0x8c060280, size 8
+Section .dtors, lma 0x8c060288, size 8
+Section .data, lma 0x8c0602a0, size 11884
+Section .got, lma 0x8c06310c, size 12
+Transferred 340228 bytes at 13422309.332581 bytes / sec
+Executing at <0xac010000>
+Sending execute command (0xac010000, console=1, cdfsredir=0)...executing
+
+--
+KallistiOS v2.1.0
+  Git revision: a02b86e8
+  Tue Mar  3 18:50:08 EET 2026
+  skmp@flora.localdomain:/opt/toolchains/dc/kos
+  sh-elf-gcc (GCC) 13.2.0
+thd: pre-emption enabled, HZ=100
+maple: active drivers:
+    Dreameye (Camera): Camera
+    Sound Input Peripheral: Microphone
+    PuruPuru (Vibration) Pack: JumpPack
+    VMU Driver: Clock, LCD, MemoryCard
+    Mouse Driver: Mouse
+    Keyboard Driver: Keyboard
+    Controller Driver: Controller
+    Lightgun: LightGun
+  DMA Buffer at ac2e6020
+vid_set_mode: 640x480 VGA with 1 framebuffers.
+dc-load console support enabled
+maple: attached devices:
+  A0: Dreamcast Controller           (01000000: Controller)
+
+vid_set_mode: 640x480 VGA with 1 framebuffers.
+T display 80000d off
+F 0 untextured flat
+F 1 untextured gouraud
+F 2 565 flat
+F 3 565 gouraud
+F 4 565 flat offset
+F 5 565 gouraud offset
+F 6 565 gouraud bilinear
+F 7 565 gouraud mipmapped point
+F 8 565 gouraud mipmapped bilinear
+F 9 565 gouraud trilinear A
+F 10 565 gouraud trilinear B
+F 11 1555 gouraud
+F 12 4444 gouraud
+F 13 YUV422 gouraud
+F 14 bump gouraud offset
+F 15 palette 4 bpp gouraud
+F 16 palette 8 bpp gouraud
+F 17 565 VQ gouraud
+F 18 565 VQ mipmapped gouraud
+F 19 565 not twiddled gouraud
+F 20 YUV422 gouraud bilinear
+F 21 palette 8 bpp gouraud bilinear
+F 22 565 VQ gouraud bilinear
+F 23 565 gouraud, 8 texels a pixel
+F 24 565 gouraud mipmapped, 8 texels a pixel
+F 25 565 gouraud trilinear A, 6 texels a pixel
+F 26 565 gouraud, fog table
+F 27 565 gouraud, punch through list
+F 28 565 gouraud, translucent list
+F 29 untextured gouraud, translucent list
+F 30 YUV422 not twiddled gouraud
+F 31 YUV422 not twiddled gouraud bilinear
+F 32 565 not twiddled gouraud bilinear
+F 33 1555 gouraud bilinear
+F 34 4444 gouraud bilinear
+F 35 YUV422 gouraud mipmapped bilinear
+F 36 YUV422 gouraud, 8 texels a pixel
+F 37 YUV422 gouraud bilinear, 8 texels a pixel
+F 38 565 gouraud bilinear, 8 texels a pixel
+F 39 YUV422 VQ gouraud
+F 40 YUV422 VQ gouraud bilinear
+F 41 palette 4 bpp VQ gouraud
+F 42 palette 8 bpp VQ gouraud
+F 43 palette 8 bpp VQ gouraud bilinear
+F 44 palette 4 bpp gouraud bilinear
+F 45 565 VQ gouraud, 8 texels a pixel
+F 46 palette 8 bpp gouraud, 8 texels a pixel
+F 47 565 gouraud offset, 8 texels a pixel
+F 48 565 gouraud offset mipmapped point
+L 0 nothing (the background)
+L 1 1 sprite 32x32
+L 2 1 quad 32x32
+L 3 32 quads 32x1
+L 4 32 quads 1x32
+L 5 1024 quads 1x1
+L 6 32 sprites 32x1
+L 7 32 sprites 1x32
+L 8 1024 sprites 1x1
+L 9 16 quads 8x8
+L 10 64 quads 4x4
+L 11 256 quads 2x2
+L 12 4 quads 8x32
+L 13 4 quads 32x8
+L 14 1 quad 32x16
+L 15 1 quad 16x32
+L 16 256 sprites 2x2
+T spantex 3 0 0 0 W 147418 147622 188812 189062 41356 41440 P e80405 d7a2ab
+T spantex 3 2 0 0 W 189576 189846 205288 205556 15600 15684 P e80405 6ba2ab
+T spantex 3 4 0 0 W 212766 213266 223790 224316 11024 11052 P e80405 6ba2ab
+T spantex 3 6 0 0 W 234587 234854 244143 244438 9528 9556 P e80405 6ba2ab
+T spantex 3 8 0 0 W 284592 284816 292860 293084 8240 8268 P e80405 6ba2ab
+T spantex 3 10 0 0 W 315146 315430 323190 323434 8004 8044 P e80405 6ba2ab
+T spantex 3 12 0 0 W 327068 327094 334834 334874 7752 7780 P e80405 6ba2ab
+T spantex 20 0 0 0 W 175050 175198 222242 222402 47192 47204 P 208820 d7a2ab
+T spantex 20 2 0 0 W 263468 263656 282394 282572 18888 18916 P 208820 6ba2ab
+T spantex 20 4 0 0 W 285182 285768 299480 299910 13712 14256 P 208820 6ba2ab
+T spantex 20 6 0 0 W 333334 333850 345338 345826 11976 12004 P 208820 6ba2ab
+T spantex 20 8 0 0 W 362624 362782 372096 372278 9444 9500 P 208820 6ba2ab
+T spantex 20 10 0 0 W 399222 399566 408442 408768 9192 9220 P 208820 6ba2ab
+T spantex 20 12 0 0 W 418062 418469 427058 427446 8968 8996 P 208820 6ba2ab
+T spantex 23 0 0 0 W 299090 299480 376794 377170 77480 77676 P 6d012f d7a2ab
+T spantex 23 2 0 0 W 386468 386918 414030 414672 27380 27828 P 6d012f 6ba2ab
+T spantex 23 4 0 0 W 438726 438978 458746 459138 20020 20244 P 6d012f 6ba2ab
+T spantex 23 6 0 0 W 457502 457728 473768 474000 16244 16272 P 6d012f 6ba2ab
+T spantex 23 8 0 0 W 495490 496594 507158 508260 11640 11668 P 6d012f 6ba2ab
+T spantex 23 10 0 0 W 524494 524618 535770 536046 11264 11404 P 6d012f 6ba2ab
+T spantex 23 12 0 0 W 602278 602392 613488 613592 11164 11192 P 6d012f 6ba2ab
+T spantex 3 0 1 0 W 147262 147680 188702 189092 41356 41412 P e80405 d7a2ab
+T spantex 3 2 1 0 W 189376 189818 205128 205536 15584 15668 P e80405 6ba2ab
+T spantex 3 4 1 0 W 212986 213070 224010 224122 10996 11024 P e80405 6ba2ab
+T spantex 3 6 1 0 W 234566 234798 244122 244354 9540 9556 P e80405 6ba2ab
+T spantex 3 8 1 0 W 284688 284818 292946 293074 8240 8256 P e80405 6ba2ab
+T spantex 3 10 1 0 W 315092 315596 323136 323612 8004 8032 P e80405 6ba2ab
+T spantex 3 12 1 0 W 326985 327122 334749 334886 7752 7764 P e80405 6ba2ab
+T spantex 20 0 1 0 W 175100 175202 222294 222406 47164 47204 P 208820 d7a2ab
+T spantex 20 2 1 0 W 263506 263618 282394 282534 18888 18916 P 208820 6ba2ab
+T spantex 20 4 1 0 W 284986 285656 299298 299882 13696 14256 P 208820 6ba2ab
+T spantex 20 6 1 0 W 333542 333750 345546 345754 11976 12004 P 208820 6ba2ab
+T spantex 20 8 1 0 W 362574 362742 372074 372214 9444 9472 P 208820 6ba2ab
+T spantex 20 10 1 0 W 399262 399492 408494 408684 9192 9220 P 208820 6ba2ab
+T spantex 20 12 1 0 W 418174 418508 427156 427504 8968 8996 P 208820 6ba2ab
+T spantex 23 0 1 0 W 299136 299590 376924 377324 77508 77732 P 6d012f d7a2ab
+T spantex 23 2 1 0 W 386206 386892 413978 414636 27660 27772 P 6d012f 6ba2ab
+T spantex 23 4 1 0 W 438638 439006 458704 459306 20020 20216 P 6d012f 6ba2ab
+T spantex 23 6 1 0 W 457545 457820 473801 474178 16228 16368 P 6d012f 6ba2ab
+T spantex 23 8 1 0 W 496186 496610 507882 508252 11500 11696 P 6d012f 6ba2ab
+T spantex 23 10 1 0 W 524250 524526 535598 535942 11276 11416 P 6d012f 6ba2ab
+T spantex 23 12 1 0 W 602300 602460 613520 613652 11124 11192 P 6d012f 6ba2ab
+T spantex2 0 0 0 0 W 147062 147398 188530 188950 41440 41552 P a60303 d7a2ab
+T spantex2 0 4 0 0 W 214278 214518 225358 225570 11012 11052 P a60303 6ba2ab
+T spantex2 0 8 0 0 W 282084 282314 290352 290582 8240 8268 P a60303 6ba2ab
+T spantex2 0 12 0 0 W 326646 326758 334438 334538 7764 7792 P a60303 6ba2ab
+T spantex2 4 0 0 0 W 160566 160836 204734 204957 44072 44168 P 6d012f d7a2ab
+T spantex2 4 4 0 0 W 263086 263674 275594 276188 12480 12536 P 6d012f 6ba2ab
+T spantex2 4 8 0 0 W 335294 335550 344290 344602 8968 9024 P 6d012f 6ba2ab
+T spantex2 4 12 0 0 W 380426 380637 388990 389213 8548 8576 P 6d012f 6ba2ab
+T spantex2 10 0 0 0 W 209768 210318 265312 265698 55292 55472 P 6d012f d7a2ab
+T spantex2 10 4 0 0 W 333442 333825 348762 348972 15068 15236 P 6d012f 6ba2ab
+T spantex2 10 8 0 0 W 411416 411850 421656 422090 10144 10240 P 6d012f 6ba2ab
+T spantex2 10 12 0 0 W 493964 494550 503744 504332 9696 9780 P 6d012f 6ba2ab
+T spantex2 16 0 0 0 W 263590 264160 333110 333530 69324 69520 P 6d012f d7a2ab
+T spantex2 16 4 0 0 W 419106 419754 437854 438650 18732 18916 P 6d012f 6ba2ab
+T spantex2 16 8 0 0 W 470445 471236 481749 482530 11164 11276 P 6d012f 6ba2ab
+T spantex2 16 12 0 0 W 577156 577732 587956 588510 10688 10800 P 6d012f 6ba2ab
+T spantex2 20 0 0 0 W 299070 299464 376672 377182 77396 77648 P 6d012f d7a2ab
+T spantex2 20 4 0 0 W 438018 438226 458026 458274 19992 20132 P 6d012f 6ba2ab
+T spantex2 20 8 0 0 W 496364 496546 507996 508254 11556 11668 P 6d012f 6ba2ab
+T spantex2 20 12 0 0 W 602092 602412 613284 613564 11080 11180 P 6d012f 6ba2ab
+T spantex2 0 0 1 0 W 147066 147374 188618 188898 41440 41524 P a60303 d7a2ab
+T spantex2 0 4 1 0 W 214190 214476 225214 225572 11012 11040 P a60303 6ba2ab
+T spantex2 0 8 1 0 W 282158 282284 290438 290552 8240 8268 P a60303 6ba2ab
+T spantex2 0 12 1 0 W 326618 326910 334410 334702 7752 7792 P a60303 6ba2ab
+T spantex2 4 0 1 0 W 160562 160818 204678 204914 43860 44156 P 6d012f d7a2ab
+T spantex2 4 4 1 0 W 262944 263690 275548 276226 12508 12536 P 6d012f 6ba2ab
+T spantex2 4 8 1 0 W 335234 335680 344218 344732 8984 9052 P 6d012f 6ba2ab
+T spantex2 4 12 1 0 W 380154 380536 388746 389114 8536 8564 P 6d012f 6ba2ab
+T spantex2 10 0 1 0 W 209820 210301 265000 265608 55096 55264 P 6d012f d7a2ab
+T spantex2 10 4 1 0 W 333278 333836 348346 349074 15068 15236 P 6d012f 6ba2ab
+T spantex2 10 8 1 0 W 411418 412022 421534 422262 10116 10240 P 6d012f 6ba2ab
+T spantex2 10 12 1 0 W 494248 494822 504028 504630 9764 9780 P 6d012f 6ba2ab
+T spantex2 16 0 1 0 W 263706 264126 332984 333702 69268 69532 P 6d012f d7a2ab
+T spantex2 16 4 1 0 W 419098 419672 437986 438542 18748 18872 P 6d012f 6ba2ab
+T spantex2 16 8 1 0 W 470770 471170 481992 482462 11152 11276 P 6d012f 6ba2ab
+T spantex2 16 12 1 0 W 577172 577832 587972 588648 10772 10816 P 6d012f 6ba2ab
+T spantex2 20 0 1 0 W 299300 299466 376852 377190 77424 77636 P 6d012f d7a2ab
+T spantex2 20 4 1 0 W 437942 438322 458090 458425 19980 20120 P 6d012f 6ba2ab
+T spantex2 20 8 1 0 W 495712 496520 507380 508188 11528 11668 P 6d012f 6ba2ab
+T spantex2 20 12 1 0 W 602308 602364 613404 613548 11096 11192 P 6d012f 6ba2ab
+T end
+PVRIO crc 6de8bee3 before page0
+PVRIO crc 9e2c7f89 before page1
+PVRIO crc b0760902 before page2
+PVRIO crc bb4f4152 before page3
+PVRIO crc 4eb2656e before page4
+PVRIO crc 322199dd before page5
+PVRIO crc 924b4b4c before page6
+PVRIO crc f5b58019 before page7
+PVRIO crc c9741dbf before page8
+PVRIO crc 39a4485a before page9
+PVRIO crc fde28267 before page10
+PVRIO crc 992cf00c before page11
+PVRIO crc 7f34a525 before page12
+PVRIO crc 0a71e9b7 before page13
+PVRIO crc 87716d64 before page14
+PVRIO crc 27eed0ae before page15
+PVRIO crc 77b390b6 before page16
+
+arch: exit return code 0
+arch: shutting down kernel
+maple: final stats -- device count = 23, vbl_cntr = 519, dma_cntr = 519
+vid_set_mode: 640x480 VGA with 1 framebuffers.

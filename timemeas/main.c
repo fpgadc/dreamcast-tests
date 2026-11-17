@@ -33,6 +33,7 @@
 /* #define TM_VOL2 */                  /* only the vol2off and vol2pitch scenes: a few seconds */
 /* #define TM_OFFS */                  /* only the offs2 and offs3 scenes: a few seconds */
 /* #define TM_SHARE */                 /* only the share scenes: a few seconds */
+/* #define TM_SPANTEX */               /* only the spantex scenes: a few seconds */
 #define NUM_LAYOUTS 17
 #define NUM_PAGES NUM_LAYOUTS
 #define TEST_MODIFIERS              /* the two modifier volume lists exist */
@@ -646,6 +647,101 @@ static void run_all(void) {
     for(f = 0; f < NUM_FORMATS; f++) printf("F %d %s\n", f, formats[f].name);
     for(L = 0; L < NUM_LAYOUTS; L++) printf("L %d %s\n", L, layout_names[L]);
 
+    /* ---- spantex f L pass: is texturing after the queue of runs started ahead (about 150 to 200 pixels)? 64 tiles,
+       each: a 565 triangle T over the tile (shadow bit, cheap shadow), a sprite U of 32x20 over lines 0 .. 19 in
+       format f (3: 565, 1.01 a pixel; 20: YUV422 bilinear, 2.00, a clock more once the texels are in; 23: 565 with
+       8 texels a pixel, 3.27, texture memory), and 15 sheets of 1 x L at columns 1, 3, .. 29 over lines 20 .. 20 + L
+       - 1: a burst of 30 L more runs of T right after U's lines. If the texturing is after the queue, U's pixels in
+       it take longer to drain and more of the burst is hidden; if it is before, the same or less. */
+    {
+        volatile uint32_t *fb_w_ctrl = (volatile uint32_t *)(0xa05f8000 + FB_W_CTRL_addr);
+        const uint32_t fbw = *fb_w_ctrl;
+        static const int tf[3] = { 3, 20, 23 }, tL[7] = { 0, 2, 4, 6, 8, 10, 12 };
+        int ps, fi, li, t;
+        *fb_w_ctrl = (fbw & ~15u) | 1u;
+        shadow_bit = 1; shad_scale = 0x180;
+        for(ps = 0; ps < 2; ps++)
+            for(fi = 0; fi < 3; fi++)
+                for(li = 0; li < 7; li++) {
+                    const format_t *fm = &formats[3];
+                    tiles_region(64);
+                    region_addr = MANY_TILES;
+                    ta_list_begin(ListType_Opaque);
+                    for(t = 0; t < 64; t++) {
+                        const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                        static const int cx[3] = { 0, 64, 0 }, cy[3] = { 0, 0, 64 };
+                        PCW pcw; ISP_TSP isp; TSP tsp; TCW tcw;
+                        header(fm, DepthMode_Always, &pcw, &isp, &tsp, &tcw);
+                        pcw.ParaType = ParamType_Polygon_or_Modifier_Volume;
+                        pcw.Group_En = 1;
+                        pcw.Strip_Len = 1;
+                        ta_polygon(pcw, isp, tsp, tcw);
+                        for(n = 0; n < 3; n++) {
+                            const int vx = x0 + cx[n], vy = y0 + cy[n];
+                            ta_vertex3(f32b_int(vx), f32b_int(vy), front, f32b_scaled(vx, -8), f32b_scaled(vy, -8),
+                                       0xffc0c0c0u, 0x00202020u, n == 2);
+                        }
+                        rect(&formats[tf[fi]], 1, DepthMode_Always, x0, y0, 32, 20, front, 0, 0);     /* U */
+                    }
+                    ta_list_begin(ListType_Opaque_Modifier_Volume);
+                    for(t = 0; t < 64; t++) {
+                        const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                        if(tL[li])
+                            for(n = 0; n < 15; n++)
+                                sheet(VolumeMode_Inside_Last, x0 + 2 * n + 1, y0 + 20, 1, tL[li]);
+                    }
+                    measure("spantex", tf[fi], tL[li], ps, 0);
+                }
+        /* spantex2 K L pass: the same with U (8 texels a pixel) over lines 0 .. K - 1 only, so that lines K .. 19 are
+           T's, fast (565), right before the burst. If the queue is before the texturing, those lines fill it again
+           and the burst is hidden as after 565 lines (K 0); if it is after, the fast lines cannot fill it (both ends
+           go at a pixel a clock) and nothing is hidden, whatever K. */
+        {
+            static const int tK[5] = { 0, 4, 10, 16, 20 }, tL2[4] = { 0, 4, 8, 12 };
+            int ki;
+            for(ps = 0; ps < 2; ps++)
+                for(ki = 0; ki < 5; ki++)
+                    for(li = 0; li < 4; li++) {
+                        const format_t *fm = &formats[3];
+                        tiles_region(64);
+                        region_addr = MANY_TILES;
+                        ta_list_begin(ListType_Opaque);
+                        for(t = 0; t < 64; t++) {
+                            const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                            static const int cx[3] = { 0, 64, 0 }, cy[3] = { 0, 0, 64 };
+                            PCW pcw; ISP_TSP isp; TSP tsp; TCW tcw;
+                            header(fm, DepthMode_Always, &pcw, &isp, &tsp, &tcw);
+                            pcw.ParaType = ParamType_Polygon_or_Modifier_Volume;
+                            pcw.Group_En = 1;
+                            pcw.Strip_Len = 1;
+                            ta_polygon(pcw, isp, tsp, tcw);
+                            for(n = 0; n < 3; n++) {
+                                const int vx = x0 + cx[n], vy = y0 + cy[n];
+                                ta_vertex3(f32b_int(vx), f32b_int(vy), front, f32b_scaled(vx, -8), f32b_scaled(vy, -8),
+                                           0xffc0c0c0u, 0x00202020u, n == 2);
+                            }
+                            if(tK[ki])
+                                rect(&formats[23], 1, DepthMode_Always, x0, y0, 32, tK[ki], front, 0, 0);     /* U */
+                        }
+                        ta_list_begin(ListType_Opaque_Modifier_Volume);
+                        for(t = 0; t < 64; t++) {
+                            const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                            if(tL2[li])
+                                for(n = 0; n < 15; n++)
+                                    sheet(VolumeMode_Inside_Last, x0 + 2 * n + 1, y0 + 20, 1, tL2[li]);
+                        }
+                        measure("spantex2", tK[ki], tL2[li], ps, 0);
+                    }
+        }
+        shadow_bit = 0; shad_scale = 1;
+        *fb_w_ctrl = fbw;
+        region_addr = ONE_TILE;
+    }
+#ifdef TM_SPANTEX
+    *fb_r_ctrl = fb_r;
+    printf("T end\n");
+    return;
+#endif
     /* ---- share f v L pass: do triangle setup and run starts share the TSP's arithmetic? 64 tiles, f 2 (565) or 4
        (565 with offset colour), over each tile a triangle T as in spanshad (shadow bit, cheap shadow). On lines
        0 .. L - 1:
