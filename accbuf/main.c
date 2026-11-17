@@ -483,8 +483,11 @@ static void test_describe(void) {
 
 static void test_page(int page) {
 #ifdef _arch_dreamcast
-    if(page == 0)
+    if(page == 0) {                     /* the timing part is the console's own: leave it out of the input's checksum, */
+        const uint32_t crc = pvrio_crc; /* so that the pages' checksums are those of the offline run (regress.sh) */
         timing();
+        pvrio_crc = crc;
+    }
 #endif
     build(page);
     emit_all();

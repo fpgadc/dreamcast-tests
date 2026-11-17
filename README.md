@@ -1817,7 +1817,8 @@ an infinite determinant (see `detinf`); the edge unit when a coordinate differen
 `hugepos` a at 2^125); the ISP's stored depth as a number at these depths (what is known is which pixels
 pass, from `huge` and `detinf`).
 
-What refsw2-offline does not reproduce after this: `accbuf` (the two tile buffers are not modelled),
+What refsw2-offline does not reproduce after this: `accbuf` (76 cells that depend on the write-out's timing,
+70 of them different from console run to console run; see accbuf),
 `blendpos` (69 regions that differ from run to run on the console), `modvol` (5 regions of two-volume
 polygons), `detinf` (2 probes, above) and one depth bracket of zmeas `zero6`.
 
@@ -1969,8 +1970,25 @@ the secondary buffer's pixels come to the tile). Two console runs; logs in `fit/
 
   The first threshold is one write-out's time, the others about two, and all of them are lower with the
   shorter write-out. Held back long enough, empty keep Z tiles do no harm (and are still not written).
-- refsw2 agrees in 199 of 375 cells: it copies the finished tile to a second buffer at the write-out instead
-  of having two buffers that change places, and it shades kept tags again in a keep Z tile.
+- **An empty keep Z tile still takes its turn** (2026-11-17, runs 4 to 6): the tiles after it alternate between
+  the buffers as if it had been written out (page 3: every stripe is in the buffer that rule gives), but it is
+  not written to the framebuffer, so its cell shows what the page before left there.
+- **refsw2 (2026-11-17): two buffers that change places.** A tile is shaded into one; the other is the secondary
+  buffer of the select bits; they change places after every tile that is written out (not after one that is
+  not), and a keep Z tile that shades nothing changes them but is not written out. (Before, refsw2 copied the
+  finished tile into a second buffer: 199 of 375 cells.) Now **299 of 375**, and every other test as before.
+  Three console runs (logs accbuf_run4 to 6) sort the other 76:
+
+| cells | what | |
+|---|---|---|
+| 70 | different from one console run to the next | page 7 (58: SEC COPY while the bands are written out, also at n = 96), pages 0 and 1 A-D (4 each: SEC COPY right after A), page 5 cells 11-13 and 15 |
+| 6 | the same in every run, not modelled | the tile two before an empty keep Z tile comes out with the picture of the tile after it (pages 0 and 1 H; page 3 cells 3, 6, 12); page 4 cell 6 shows page 3's cell 6 |
+
+  Both kinds depend on when the write-out runs against the TSP, which refsw2 does not model (it has no clock).
+  On page 3 the picture that cell 3 gets is that of the next tile as it was shaded; cells 6 and 12 get it after
+  the tile beyond the empty one has drawn into the same buffer.
+- The console's timing part runs before page 0; its input is now left out of the "PVRIO crc" checksum, so that
+  regress.sh sees that the console and refsw2-offline got the same pages.
 
 ## yuvbil: YUV422 texels and bilinear filtering (2026-11-16)
 
