@@ -637,3 +637,13 @@
       30   2077.3   2171.0   18.74  11.26
       31   2117.5   2219.2   20.34  10.66
       32   2147.2   2255.2   21.60  10.40
+
+24. Run starts ahead of the shading: a 565 triangle over each of 64 tiles, 15 one-pixel volume columns over
+    L lines (30 runs a line). Extra clocks a tile over no cut, both passes averaged; c = clocks a run from
+    L 4 .. 8; hidden = 30 L - extra / c.
+    cut from line  1: 4.12 a run; L1 +25 (24) L2 +102 (35) L3 +131 (58) L4 +318 (43) L6 +563 (43) L8 +813 (43)
+    cut from line  8: 4.24 a run; L1 +40 (21) L2 +49 (48) L3 +139 (57) L4 +303 (49) L6 +543 (52) L8 +812 (49)
+    cut from line 20: 4.18 a run; L1 +44 (20) L2 +104 (35) L3 +211 (40) L4 +293 (50) L6 +419 (80) L8 +795 (50)
+    lines 0-19 in runs of 32, cut from line 20: 4.24 a run; L4 +287 (52) L6 +419 (81) L8 +795 (52)
+    lines 0-19 in runs of 16, cut from line 20: 4.18 a run; L4 +218 (68) L6 +387 (87) L8 +719 (68)
+    lines 0-19 in runs of  8, cut from line 20: 3.89 a run; L4 +209 (66) L6 +507 (50) L8 +676 (66)

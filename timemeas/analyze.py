@@ -49,6 +49,8 @@ def main():
     D, F, L = load(folder)
     if not D:
         sys.exit(f"no timemeas_run*.log in {folder}")
+    # formats that the full runs measured (a log of a few scenes may list formats added later)
+    F = {f: n for f, n in F.items() if (f, 2, 0, 0) in D.get("bgonly", {})}
     T = lambda what, *k: D[what][tuple(k) + (0,) * (4 - len(k))][2]          # the TSP's bit
     I = lambda what, *k: D[what][tuple(k) + (0,) * (4 - len(k))][0]          # the ISP's bit
     extra = lambda what, *k: T(what, *k) - T(what + "H", *k)
@@ -382,6 +384,23 @@ def main():
                 v = [T("ahead2", a, n, d) / 2 / 64 for d in (0, 1)]
                 pay = (v[1] - v[0]) / 5
                 print(f"    {n:4d} {v[0]:8.1f} {v[1]:8.1f} {pay:7.2f} {n - pay:6.2f}")
+
+
+    if "spanpos" in D and "spanq" in D:
+        print()
+        print("24. Run starts ahead of the shading: a 565 triangle over each of 64 tiles, 15 one-pixel volume columns over")
+        print("    L lines (30 runs a line). Extra clocks a tile over no cut, both passes averaged; c = clocks a run from")
+        print("    L 4 .. 8; hidden = 30 L - extra / c.")
+        def hidden(what, a, Ls):
+            ex = {L: sum(T(what, a, L, ps) - T(what, a, 0, ps) for ps in (0, 1)) / 4 / 64 for L in Ls}      # clocks a tile
+            c = (ex[8] - ex[4]) / 120
+            return ex, c
+        for B in (1, 8, 20):
+            ex, c = hidden("spanpos", B, (1, 2, 3, 4, 6, 8))
+            print(f"    cut from line {B:2d}: {c:.2f} a run; " + " ".join(f"L{L} +{ex[L]:.0f} ({30 * L - ex[L] / c:.0f})" for L in (1, 2, 3, 4, 6, 8)))
+        for P in (1, 2, 4):
+            ex, c = hidden("spanq", P, (4, 6, 8))
+            print(f"    lines 0-19 in runs of {32 // P:2d}, cut from line 20: {c:.2f} a run; " + " ".join(f"L{L} +{ex[L]:.0f} ({30 * L - ex[L] / c:.0f})" for L in (4, 6, 8)))
 
 
 if __name__ == "__main__":

@@ -27,6 +27,7 @@
 /* #define TM_QUICK */                 /* only the scenes before the TM_QUICK line in run_all: a few seconds */
 /* #define TM_DCALC */                 /* only the dcalc scenes: a few seconds */
 /* #define TM_AHEAD */                 /* only the ahead scenes: a few seconds */
+/* #define TM_SPAN */                  /* only the spanahead scenes: a few seconds */
 #define NUM_LAYOUTS 17
 #define NUM_PAGES NUM_LAYOUTS
 #define TEST_MODIFIERS              /* the two modifier volume lists exist */
@@ -100,6 +101,7 @@ static const format_t formats[] = {
     { "palette 4 bpp gouraud bilinear",           OP, 1, 1, 0, PixelFmt_Pal4,    0, 0, 0, BI, 1, 0 },
     { "565 VQ gouraud, 8 texels a pixel",         OP, 1, 1, 0, PixelFmt_565,     0, 1, 0, P0, 8, 0 },
     { "palette 8 bpp gouraud, 8 texels a pixel",  OP, 1, 1, 0, PixelFmt_Pal8,    0, 0, 0, P0, 8, 0 },
+    { "565 gouraud offset, 8 texels a pixel",     OP, 1, 1, 1, PixelFmt_565,     0, 0, 0, P0, 8, 0 },
 };
 #define NUM_FORMATS ((int)(sizeof(formats) / sizeof(formats[0])))
 
@@ -620,6 +622,182 @@ static void run_all(void) {
     printf("T display %lx off\n", (unsigned long)fb_r);
     for(f = 0; f < NUM_FORMATS; f++) printf("F %d %s\n", f, formats[f].name);
     for(L = 0; L < NUM_LAYOUTS; L++) printf("L %d %s\n", L, layout_names[L]);
+
+    /* ---- spanahead v k f: how many runs ahead can the TSP start? In each of the first 64 tiles one triangle covers the
+       whole tile (corners at the tile's origin, 64 to the right and 64 down), with the shadow bit, cheap shadow on.
+       Every line of it is one run of 32 pixels, except line B, which k opaque modifier volumes of one pixel each
+       (at columns 1, 3, .. 2k - 1) cut into 2k runs of one pixel (runs end where the volume state changes) and a
+       last one. No other triangle: the runs need no setups. v 0: 565 with texels 8 apart (about 3.3 clocks a
+       pixel), B 24; v 1: 565, B 24; v 2: 565, B 1. f: the triangle without offset colour, and with it (format
+       47 / 5): a run costs at least about 6 without and 8 with, the pixels the same, so the offset colour adds 2
+       for every run whose start the pixels wait for. 16 bit framebuffer: the TSP sets the pace.
+       v 3: 565, the k volumes are columns of one pixel over all 32 lines: every line is cut into 2k + 1 runs
+       (sustained: nothing to hide in). */
+    {
+        volatile uint32_t *fb_w_ctrl = (volatile uint32_t *)(0xa05f8000 + FB_W_CTRL_addr);
+        const uint32_t fbw = *fb_w_ctrl;
+        static const int sfm[4][2] = { { 23, 47 }, { 3, 5 }, { 3, 5 }, { 3, 5 } };
+        static const int sB[4] = { 24, 24, 1, 0 };
+        int t, q;
+        *fb_w_ctrl = (fbw & ~15u) | 1u;
+        shadow_bit = 1; shad_scale = 0x180;
+        for(v = 0; v < 4; v++)
+            for(k = 0; k <= 15; k++)
+                for(q = 0; q < 2; q++) {
+                    const format_t *fm = &formats[sfm[v][q]];
+                    tiles_region(64);
+                    region_addr = MANY_TILES;
+                    ta_list_begin(ListType_Opaque);
+                    for(t = 0; t < 64; t++) {
+                        const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                        static const int cx[3] = { 0, 64, 0 }, cy[3] = { 0, 0, 64 };
+                        PCW pcw; ISP_TSP isp; TSP tsp; TCW tcw;
+                        header(fm, DepthMode_Always, &pcw, &isp, &tsp, &tcw);
+                        pcw.ParaType = ParamType_Polygon_or_Modifier_Volume;
+                        pcw.Group_En = 1;
+                        pcw.Strip_Len = 1;
+                        ta_polygon(pcw, isp, tsp, tcw);
+                        for(n = 0; n < 3; n++) {
+                            const int vx = x0 + cx[n], vy = y0 + cy[n];
+                            ta_vertex3(f32b_int(vx), f32b_int(vy), front, f32b_scaled(vx * fm->scale, -8), f32b_scaled(vy * fm->scale, -8),
+                                       0xffc0c0c0u, 0x00202020u, n == 2);
+                        }
+                    }
+                    ta_list_begin(ListType_Opaque_Modifier_Volume);
+                    for(t = 0; t < 64; t++) {
+                        const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                        for(n = 0; n < k; n++)       /* v 3: columns of one pixel over all 32 lines: every line cut */
+                            sheet(VolumeMode_Inside_Last, x0 + 2 * n + 1, y0 + sB[v], 1, v == 3 ? 32 : 1);
+                    }
+                    measure("spanahead", v, k, sfm[v][q], 0);
+                }
+        /* spanburst L f: the same triangle (565, f as above), 15 columns of one pixel over lines 8 .. 8 + L - 1: L
+           lines of 30 one-pixel runs and a last one; how many of the 30 L runs does the shading wait for? */
+        {
+            static const int Ls[12] = { 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24 };
+            int li;
+            for(li = 0; li < 12; li++)
+                for(q = 0; q < 2; q++) {
+                    const format_t *fm = &formats[q ? 5 : 3];
+                    tiles_region(64);
+                    region_addr = MANY_TILES;
+                    ta_list_begin(ListType_Opaque);
+                    for(t = 0; t < 64; t++) {
+                        const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                        static const int cx[3] = { 0, 64, 0 }, cy[3] = { 0, 0, 64 };
+                        PCW pcw; ISP_TSP isp; TSP tsp; TCW tcw;
+                        header(fm, DepthMode_Always, &pcw, &isp, &tsp, &tcw);
+                        pcw.ParaType = ParamType_Polygon_or_Modifier_Volume;
+                        pcw.Group_En = 1;
+                        pcw.Strip_Len = 1;
+                        ta_polygon(pcw, isp, tsp, tcw);
+                        for(n = 0; n < 3; n++) {
+                            const int vx = x0 + cx[n], vy = y0 + cy[n];
+                            ta_vertex3(f32b_int(vx), f32b_int(vy), front, f32b_scaled(vx * fm->scale, -8), f32b_scaled(vy * fm->scale, -8),
+                                       0xffc0c0c0u, 0x00202020u, n == 2);
+                        }
+                    }
+                    ta_list_begin(ListType_Opaque_Modifier_Volume);
+                    for(t = 0; t < 64; t++) {
+                        const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                        for(n = 0; n < 15; n++)
+                            sheet(VolumeMode_Inside_Last, x0 + 2 * n + 1, y0 + 8, 1, Ls[li]);
+                    }
+                    measure("spanburst", Ls[li], q ? 5 : 3, 0, 0);
+                }
+        }
+        /* spanpos B L pass: the same, plain 565, the 15 columns over lines B .. B + L - 1 (L 0: no cut). Does what is
+           hidden depend on how many lines come before the cut lines? */
+        {
+            static const int Bs[3] = { 1, 8, 20 };
+            static const int Ls[7] = { 0, 1, 2, 3, 4, 6, 8 };
+            int bi, li, ps;
+            for(ps = 0; ps < 2; ps++)
+                for(bi = 0; bi < 3; bi++)
+                    for(li = 0; li < 7; li++) {
+                        const format_t *fm = &formats[3];
+                        tiles_region(64);
+                        region_addr = MANY_TILES;
+                        ta_list_begin(ListType_Opaque);
+                        for(t = 0; t < 64; t++) {
+                            const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                            static const int cx[3] = { 0, 64, 0 }, cy[3] = { 0, 0, 64 };
+                            PCW pcw; ISP_TSP isp; TSP tsp; TCW tcw;
+                            header(fm, DepthMode_Always, &pcw, &isp, &tsp, &tcw);
+                            pcw.ParaType = ParamType_Polygon_or_Modifier_Volume;
+                            pcw.Group_En = 1;
+                            pcw.Strip_Len = 1;
+                            ta_polygon(pcw, isp, tsp, tcw);
+                            for(n = 0; n < 3; n++) {
+                                const int vx = x0 + cx[n], vy = y0 + cy[n];
+                                ta_vertex3(f32b_int(vx), f32b_int(vy), front, f32b_scaled(vx * fm->scale, -8), f32b_scaled(vy * fm->scale, -8),
+                                           0xffc0c0c0u, 0x00202020u, n == 2);
+                            }
+                        }
+                        ta_list_begin(ListType_Opaque_Modifier_Volume);
+                        for(t = 0; t < 64; t++) {
+                            const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                            if(Ls[li])
+                                for(n = 0; n < 15; n++)
+                                    sheet(VolumeMode_Inside_Last, x0 + 2 * n + 1, y0 + Bs[bi], 1, Ls[li]);
+                        }
+                        measure("spanpos", Bs[bi], Ls[li], ps, 0);
+                    }
+        }
+        /* spanq P L pass: the cut lines at 20 .. 20 + L - 1 as in spanpos, and lines 0-19 cut into P runs of 32 / P
+           pixels (P 1, 2, 4; volumes over columns 16-31, or 8-15 and 24-31). Does the hidden part depend on how long
+           the runs queued before the cut lines are (a queue of runs) or not (a queue of pixels)? */
+        {
+            static const int Ps[3] = { 1, 2, 4 };
+            static const int Ls[4] = { 0, 4, 6, 8 };
+            int pi, li, ps;
+            for(ps = 0; ps < 2; ps++)
+                for(pi = 0; pi < 3; pi++)
+                    for(li = 0; li < 4; li++) {
+                        const format_t *fm = &formats[3];
+                        tiles_region(64);
+                        region_addr = MANY_TILES;
+                        ta_list_begin(ListType_Opaque);
+                        for(t = 0; t < 64; t++) {
+                            const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                            static const int cx[3] = { 0, 64, 0 }, cy[3] = { 0, 0, 64 };
+                            PCW pcw; ISP_TSP isp; TSP tsp; TCW tcw;
+                            header(fm, DepthMode_Always, &pcw, &isp, &tsp, &tcw);
+                            pcw.ParaType = ParamType_Polygon_or_Modifier_Volume;
+                            pcw.Group_En = 1;
+                            pcw.Strip_Len = 1;
+                            ta_polygon(pcw, isp, tsp, tcw);
+                            for(n = 0; n < 3; n++) {
+                                const int vx = x0 + cx[n], vy = y0 + cy[n];
+                                ta_vertex3(f32b_int(vx), f32b_int(vy), front, f32b_scaled(vx * fm->scale, -8), f32b_scaled(vy * fm->scale, -8),
+                                           0xffc0c0c0u, 0x00202020u, n == 2);
+                            }
+                        }
+                        ta_list_begin(ListType_Opaque_Modifier_Volume);
+                        for(t = 0; t < 64; t++) {
+                            const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                            if(Ps[pi] == 2)
+                                sheet(VolumeMode_Inside_Last, x0 + 16, y0, 16, 20);
+                            if(Ps[pi] == 4) {
+                                sheet(VolumeMode_Inside_Last, x0 + 8, y0, 8, 20);
+                                sheet(VolumeMode_Inside_Last, x0 + 24, y0, 8, 20);
+                            }
+                            if(Ls[li])
+                                for(n = 0; n < 15; n++)
+                                    sheet(VolumeMode_Inside_Last, x0 + 2 * n + 1, y0 + 20, 1, Ls[li]);
+                        }
+                        measure("spanq", Ps[pi], Ls[li], ps, 0);
+                    }
+        }
+        shadow_bit = 0; shad_scale = 1;
+        *fb_w_ctrl = fbw;
+        region_addr = ONE_TILE;
+    }
+#ifdef TM_SPAN
+    *fb_r_ctrl = fb_r;
+    printf("T end\n");
+    return;
+#endif
 
     /* ---- ahead a N d: how many primitives can the TSP set up ahead of its pixels? First a block keeps the pixels
        busy: a 0: an untextured sprite over lines 0-23 (about 780 clocks of pixels); 1: the same in 565 with

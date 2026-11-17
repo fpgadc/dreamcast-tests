@@ -581,6 +581,43 @@ That fits the level's model: per pixel the level is a polygon's constant times w
 in the setup. With DCalcCtrl 1 the setup also evaluates the planes at the first vertex (a x1 + b y1 + c);
 5 clocks for that is what a pass of the 1/w, U and V planes through a shared multiplier would take (a guess).
 
+## Run starts are made ahead of the shading too (2026-11-17)
+
+Scenes `spanahead`, `spanburst`, `spanpos`, `spanq` (run with `#define TM_SPAN`; logs timemeas_run15..19).
+In each of 64 tiles one 565 triangle covers the tile (one primitive: no setups), with the shadow bit and
+cheap shadow; opaque modifier volumes of one pixel's width cut chosen lines into runs of one pixel (a run
+ends where the volume state changes: README, uvrun). 16 bit framebuffer; a tile takes about 1473 clocks
+(1.44 a pixel), which the TSP sets.
+
+- **A run start has a cost of its own, also within one triangle.** With every line of the tile cut into 31
+  runs, each run of one pixel costs **4.1 to 4.2 clocks**, and offset colour adds about 2 more to each (the
+  6 and 8 of "Per run" above): it is the work of starting a run, not of changing triangles.
+- **A burst of them is hidden.** One line of 30 runs costs 15 to 47 clocks a tile; from about four such
+  lines on every further line costs its full 30 x 4.2. What is hidden is about **45 to 70 runs, 180 to 290
+  clocks** a tile:
+
+| cut lines start at | line 1 | line 8 | line 20 |
+|---|---|---|---|
+| runs hidden (L = 4 .. 8 lines cut) | 43 | 49 to 52 | 50 to 52 |
+
+| runs on the lines before the cut ones | 32 pixels | 16 pixels | 8 pixels |
+|---|---|---|---|
+| runs hidden | 52 | 68 | 66 |
+
+  (two passes of every scene agree within 2 clocks a tile.)
+- It does not depend on where in the tile the cut lines are, so the run starts are made ahead across the
+  tile boundary, during the tile before. And it does not shrink when the runs queued before the cut lines
+  are 4 times shorter, so what is queued is not a number of runs but an amount of shading: about 150 to 200
+  pixels (at 1.4 clocks) of runs started ahead of the pixels being shaded. My reading: a queue of pixels (or
+  of their run's values) between the stage that starts runs and the stage that shades, about 5 or 6 lines
+  of a tile deep.
+- So the TSP has two stages that run ahead of its shading: the setup of primitives (about 11 primitives
+  ahead, table 23) and the start of runs (about 150 to 200 pixels ahead). In the 4.7 / 6 / 8 a run of the
+  table "Per run" the queue was always empty: every line had the same short runs.
+- Not understood: the cut lines 20 to 25 (L = 6) give 80 to 87 hidden in two series and 50 in the third,
+  where L = 4 and 8 agree. The texels-8-apart triangle (spanahead v 0) gives erratic times, as the block of
+  the "ahead" scenes did.
+
 ## Not known
 
 - What makes runs cost more when more than about 12 different triangles are on a line.
