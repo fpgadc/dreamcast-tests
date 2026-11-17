@@ -34,7 +34,12 @@ static void pvrio_vblank(void);                             /* until the next ve
 /* 32 bit area to a file: <folder>/<name>.off<suffix> on a PC, DUMP_DIR/<name>.hw<suffix> on a console (there
    with .rle added and as pairs of (count, word) when that is shorter) */
 static void pvrio_dump32(uint32_t addr, int words, const char *name, const char *suffix);
+/* the tile accelerator's state to a file, four words (ta-tests): TA_ISP_CURRENT, TA_NEXT_OPB, the list-done
+   interrupts (SB_ISTNRM bits 7-10 and 21) and the error interrupts (SB_ISTERR bits) seen since the last call */
+static void pvrio_dump_ta_state(const char *name, const char *suffix);
+static uint32_t pvrio_ta_events(void);                      /* list-done bits seen so far (on a PC: all of them) */
 static void pvrio_close(void);
+#define PVRIO_TA_EVENTS         ((0xfu << 7) | (1u << 21))
 
 /* ---- the checksum ---- */
 static uint32_t pvrio_crc = 0;
@@ -66,6 +71,7 @@ static void pvrio_hw_mem(int area64, uint32_t addr, const uint32_t *words, int c
 static void pvrio_hw_ta(const uint32_t *words, int count);
 static void pvrio_hw_wait(uint32_t events);
 static void pvrio_hw_dump32(uint32_t addr, int words, const char *name, const char *suffix);
+static void pvrio_hw_dump_ta_state(const char *name, const char *suffix);
 static void pvrio_hw_say(const char *text);
 
 static void pvrio_reg(uint32_t addr, uint32_t value) {
@@ -93,6 +99,12 @@ static void pvrio_dump32(uint32_t addr, int words, const char *name, const char 
     snprintf(line, sizeof(line), "PVRIO crc %08x before %s", (unsigned)pvrio_crc, name);
     pvrio_hw_say(line);
     pvrio_hw_dump32(addr, words, name, suffix);
+}
+static void pvrio_dump_ta_state(const char *name, const char *suffix) {
+    char line[160];
+    snprintf(line, sizeof(line), "PVRIO crc %08x before %s", (unsigned)pvrio_crc, name);
+    pvrio_hw_say(line);
+    pvrio_hw_dump_ta_state(name, suffix);
 }
 
 #ifndef _arch_dreamcast
@@ -158,6 +170,14 @@ static void pvrio_hw_dump32(uint32_t addr, int words, const char *name, const ch
     printf("dump32 %x %x %s/%s.off%s\n", (unsigned)addr, (unsigned)words, pvrio_folder, name, suffix);
 }
 
+static void pvrio_hw_dump_ta_state(const char *name, const char *suffix) {
+    printf("tastate %s/%s.off%s\n", pvrio_folder, name, suffix);
+}
+
+static uint32_t pvrio_ta_events(void) {
+    return PVRIO_TA_EVENTS;
+}
+
 static void pvrio_hw_say(const char *text) {
     printf("echo %s\n", text);
 }
@@ -185,15 +205,19 @@ static void pvrio_close(void) {
 #endif
 
 static volatile uint32_t pvrio_events, pvrio_errors;
+static volatile uint32_t pvrio_seen_events, pvrio_seen_errors;     /* not cleared by pvrio_wait (ta-tests) */
 
 /* called by KallistiOS's interrupt handler, which acknowledges every pending event itself: so the events
    have to be collected here and cannot be polled from the status register */
 static void pvrio_event(uint32_t code, void *data) {
     (void)data;
-    if((code >> 8) == 2)
+    if((code >> 8) == 2) {
         pvrio_errors |= 1u << (code & 31);
-    else
+        pvrio_seen_errors |= 1u << (code & 31);
+    } else {
         pvrio_events |= 1u << (code & 31);
+        pvrio_seen_events |= 1u << (code & 31);
+    }
 }
 
 static void pvrio_open(void) {
@@ -294,6 +318,31 @@ static void pvrio_hw_dump32(uint32_t addr, int words, const char *name, const ch
         fwrite(pairs, 4, n, f);
     }
     fclose(f);
+}
+
+static void pvrio_hw_dump_ta_state(const char *name, const char *suffix) {
+    uint32_t w[4];
+    char path[200];
+    FILE *f;
+    int old;
+
+    w[0] = *(volatile uint32_t *)(0xa05f8000 + TA_ISP_CURRENT_addr);
+    w[1] = *(volatile uint32_t *)(0xa05f8000 + TA_NEXT_OPB_addr);
+    old = irq_disable();
+    w[2] = pvrio_seen_events & PVRIO_TA_EVENTS;
+    w[3] = pvrio_seen_errors;
+    pvrio_seen_events = pvrio_seen_errors = 0;
+    irq_restore(old);
+    snprintf(path, sizeof(path), DUMP_DIR "/%s.hw%s", name, suffix);
+    f = fopen(path, "wb");
+    if(!f)
+        return;
+    fwrite(w, 4, 4, f);
+    fclose(f);
+}
+
+static uint32_t pvrio_ta_events(void) {
+    return pvrio_seen_events & PVRIO_TA_EVENTS;
 }
 
 static void pvrio_hw_say(const char *text) {

@@ -83,7 +83,7 @@ while [ $# -gt 0 ]; do
   off|hw=*|emu|emu=*) KINDS+=("$1") ;;
   *) T=${1%%@*}
      [ -f "$HERE/$T/main.c" ] || { echo "no such test: $T"; exit 1; }
-     grep -q 'pvrtest2.h' $HERE/$T/main.c || { echo "$T is not on pvrtest2.h: use run.sh"; exit 1; }
+     grep -q 'pvrtest2.h\|pvrio.h' $HERE/$T/main.c || { echo "$T is not on pvrtest2.h or pvrio.h: use run.sh"; exit 1; }
      RUNS+=("$1") ;;
   esac
   shift

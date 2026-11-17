@@ -1989,6 +1989,53 @@ the secondary buffer's pixels come to the tile). Two console runs; logs in `fit/
 - The console's timing part runs before page 0; its input is now left out of the "PVRIO crc" checksum, so that
   regress.sh sees that the console and refsw2-offline got the same pages.
 
+## ta-tests: the tile accelerator against nulldc3's tacore.cpp (2026-11-17)
+
+    bash run2.sh ta-tests off hw=<ip>        # 63 cases, 5 s on a console
+    python3 ta-tests/compare.py [hw|ref] off [-v] [--case N]    # per case: same, or what differs, decoded
+    bash regress.sh ta-tests                 # the archived console run (fit/hw/ta-tests) against refsw2-offline
+
+The TA on its own, no rendering. Every case resets the TA (SOFTRESET bit 0), fills 32 KB of video memory at
+0x100000 with a pattern, writes TA_OL_BASE, TA_ISP_BASE, TA_OL_LIMIT, TA_ISP_LIMIT, TA_GLOB_TILE_CLIP,
+TA_ALLOC_CTRL, TA_NEXT_OPB_INIT and TA_LIST_INIT (refsw2's register names), sends its parameters, waits for the
+list-done interrupts it expects, and dumps the area (object lists in the first 16 KB, parameters in the next by
+default) and the TA's state: TA_ISP_CURRENT, TA_NEXT_OPB, and the list-done and error interrupts seen. The
+offline side is nulldc3's lxdream-derived TA (libswirl/gpl/lxdream/tacore.cpp) in refsw2-offline, which got a
+`tastate` command for the state; common/pvrio.h got pvrio_dump_ta_state() and pvrio_ta_events(). Cases of bad
+input (TA_ERRORS 1 in main.c) run on their own, and have not run on a console yet.
+
+The cases: lists (all five, either order, a list twice, TA_LIST_CONT), the object pointer blocks (8, 16, 32
+words, none, mixed; grids 1x1 to 64x16; growing down; a gap; TA_OL_LIMIT reached, at and below the base;
+TA_ISP_LIMIT reached; TA_ISP_BASE off a 1 MB boundary), headers (every object control bit pair with ISP words
+of all zeros, all ones, one bit; TSP and TCW; shadow; two volumes; the single tile bit; colour types; the clip
+field; Group_En), vertices (packed; float colours over 32 values in every channel; intensity against four face
+colours; intensity 2; offset intensities; textured, 16 bit UV, float; all two-volume types), strips (Strip_Len
+0..3, 3 to 12 vertices, split parity, triangle arrays, strips across tiles), tiles (corners at tile edges,
+negative, outside, infinite and NaN, huge), the user clip (inside, outside, mode 1, rectangles beyond the grid
+or reversed, which rectangle a polygon gets), sprites, modifier volumes.
+
+**First console run (log ta-tests_run1): 46 of 63 cases as tacore.cpp has them.** Every float colour
+conversion, intensity (but NaN), packed and textured vertex layout, strip split, triangle array, tile edge,
+infinite and NaN corner, user clip inside and outside and clip order is the model's. What differs:
+
+| case | the console | tacore.cpp |
+|---|---|---|
+| all_lists, opb_mixed | the first polygon after a modifier volume list goes to the tiles of its own bounds and of the volume's (and so has no single tile bit) | its own tiles |
+| two_volume_hdrs | Volume without Shadow is a two-volume polygon already (five word header, two colours a vertex) | needs both bits |
+| uclip_field_only | with no clip parameter since the reset, "inside" drops a polygon in tile (1, 1) and "outside" keeps it: the rectangle is not the whole grid | the whole grid |
+| uclip_reserved | clip mode 1 acts as outside | as inside |
+| int1_sweep_a/b, int_offset | an intensity of NaN is 1.0 | 0 |
+| sprites | other parameter layout and skip for textured sprites with offset or 16 bit UV; the shadow bit kept in the entry | |
+| modvol_volume_bit | the header's Volume bit does not merge a volume's bounds; a modifier volume triangle in one tile gets the single tile bit | merges, no bit |
+| opb_none | a list with no blocks (size 0) still gets an object list: 8 word blocks from TA_OL_BASE | nothing |
+| grid_64x16 | a 64 x 16 grid gets its entries but no end words | end words |
+| grow_down | TA_NEXT_OPB one block lower at the end | |
+| ol_limit_down | other entries kept when the blocks run out growing down | |
+| ol_limit_at_base, ol_limit_below | the "object lists full" error, an end word at TA_OL_LIMIT, no matrix | no error |
+| isp_limit | one parameter word more: TA_ISP_LIMIT is the last address written | stops before it |
+
+TA_NEXT_OPB reads in words (0x401e0 for 0x100780), as tacore.cpp has it.
+
 ## faredge: edges whose far corner is past 2^127 (2026-11-17)
 
     bash run2.sh faredge off hw=<ip>         # 36 pages; console log in fit/faredge_logs (lines "FE")
