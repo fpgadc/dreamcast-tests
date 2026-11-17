@@ -618,6 +618,39 @@ refsw2 (`DepthPlane::Setup`) follows the model; on the zero set it gives the con
 measured pixels. The older comparison tests are unchanged by it (precision 6179 of 6180, zblock 1344 of
 1440, ztile 780 of 960, huge 195 of 250): their remaining differences are not depth.
 
+### Mix reach: how far the fixed-point stepping reaches (2026-11-17)
+
+    pvr-tests/zmeas/gen --mix reach [--seed N]                            # cases.h, cases.json; then run2.sh zmeas off / hw=<ip>, read
+    pvr-tests/zmeas/gen --from <set>.cases.json --refine <set>.meas.json  # refined ladders for an archived set
+
+Within a tile the depth is stepped in fixed point from the start, on a grid 26 bits under the start's exponent, so
+a plane that is almost zero at the tile's first pixel and large across the tile needs the most bits. The mix puts
+triangles in the lower right of cells with their depth plane rising from near zero at the cell's first pixel
+center, and groups them by the model's excess (the measured pixel's exponent less the start's). Its ladder is
+wide (a quarter below to 16 times above the model's depth), so an overflow would show. The start cannot cancel
+to less than about 2^-24 of the plane's terms, which grow with the tile's place on the screen: 24 and more comes
+only from the cells next to the top left (5 cases: 26, 26, 27, 27, 29). Sets reach1 (first pass) and reach1r
+(refined), 225 cells each:
+
+| group | cases | console = model |
+|---|---|---|
+| excess 0-3, 4-7, 8-11, 12-15, 16-19, 20-23 | 30 each | all but one (excess 13, below) |
+| excess 24-29 | 5 | 5 |
+| start exactly zero | 30 | 30 with the rule below (22 before) |
+
+- **No overflow, no saturation**: the stepping holds at least 29 powers of two above the start, so at least
+  26 + 29 + 1 bits and a sign.
+- **A start of exactly zero** is stepped from zero in fixed point like any other start, on the slopes' own grid
+  (21 bits under the larger slope's exponent). refsw2 evaluated the plane in floating point at every pixel there
+  (a guess, not measured before), which was one stored step low on 8 of 30. pvr_isp_depth.h changed
+  (uncommitted).
+- **One pixel** (reach1r cell 227, excess 13) is one stored step above the model. It is like zero6's: a negative
+  start, the plane crossing zero in the tile, and the exact sum just under a stored boundary (0.0015 of a step
+  there, 0.031 = one quantum of the start's cut in zero6). Not resolved.
+- Every older set is unchanged (`archive_check.sh zmeas`). Over all 13 sets the model is inside the console's
+  bracket on 89,762 of 89,765 pixels (`model/depthprobe`), and a one-bit change of any width breaks 50 to 1,800
+  more.
+
 ## wmeas: the 1/w of the TSP at every pixel (2026-11-15)
 
     python pvr-tests/wmeas/gen.py [--seed N] [--mix general|flatedge|flatscan|slopes]

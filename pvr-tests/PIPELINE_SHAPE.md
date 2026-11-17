@@ -129,6 +129,9 @@ largest of its ISP, TSP and write-out times [M timemeas].
     under the start's exponent.
   - The depth is stepped in fixed point, then normalised to a 19-bit mantissa on its own exponent to be compared
     and stored.
+- **Reach [M zmeas reach].** The stepping is fixed point at least 29 powers of two above the start's exponent,
+  with no overflow or saturation: at least 26 + 29 + 1 bits plus sign. A start of exactly zero is stepped from
+  zero the same way, on the slopes' own grid (21 bits under the larger slope's exponent).
 - The depth buffer stores and compares exactly what setup computed. An equal depth compares as less [M
   precision, depth].
 - **[I]** A stored depth is about 28 bits: an 8-bit exponent and a 19-bit mantissa (plus a sign?). ISP_BACKGND_D
@@ -357,19 +360,23 @@ largest of its ISP, TSP and write-out times [M timemeas].
 
 1. **ISP to TSP run queue:** what an entry holds, and whether a run cut in two by a nearer polygon counts twice.
    Also why 32 sprites of 32x1 a tile cost 1736 a tile in a render of many tiles: more than either unit's own
-   cost (timemeas ispq).
-2. **Crowded lines:** why runs cost up to twice as much with more than ~12 different triangles on a line, opaque
+   cost (timemeas ispq). **[G]** 1736 / 32 = 54 = the TSP's 39 + the ISP's ~15 per primitive, as if the ISP and the
+   TSP set up primitives in one engine (they use the same 24-bit setup arithmetic); a format sweep would tell
+   (39 / 48 / 64 + ~15) from a span sorter's cost per primitive change (the same for every format).
+2. **Two depth pixels one step high** (zmeas zero6, reach1r cell 227): both a negative start with the plane
+   crossing zero in the tile, the exact sum just under a stored boundary.
+3. **Crowded lines:** why runs cost up to twice as much with more than ~12 different triangles on a line, opaque
    pass only.
-3. **Texture caching:** its organisation. The first tile pays +55..+455 once per render; texels far apart pay
+4. **Texture caching:** its organisation. The first tile pays +35..+455 once per render; texels far apart pay
    2.25 every time.
-4. **The fixed 335 clocks** of an empty tile, and the 55-90 a tile with seen polygons costs once: how they
+5. **The fixed 335 clocks** of an empty tile, and the 55-90 a tile with seen polygons costs once: how they
    divide between start, ISP, TSP and hand-overs.
-5. **Multiplier count** in the TSP's shared setup / run-start unit. Timing gives ~4 products a clock but cannot
+6. **Multiplier count** in the TSP's shared setup / run-start unit. Timing gives ~4 products a clock but cannot
    tell the multipliers apart.
-6. **Sliver depth:** slivers with a nonzero determinant and different corner depths get garbage depth and colour
+7. **Sliver depth:** slivers with a nonzero determinant and different corner depths get garbage depth and colour
    (zmeas zs25: 619 of 7795 pixels outside the brackets).
-7. **Far edges:** the ~2^132 edge constant when a far y reaches 2^127 [faredge].
-8. **The pre-sorted translucent-modifier glitch:** a pre-sorted tile with an empty opaque list and a translucent
+8. **Far edges:** the ~2^132 edge constant when a far y reaches 2^127 [faredge].
+9. **The pre-sorted translucent-modifier glitch:** a pre-sorted tile with an empty opaque list and a translucent
    modifier volume skipped its background. It is history-dependent [timemeas].
-9. **Untimed:** the scaler and strip buffer in the write-out, translucent sorting with many layers per pixel, and
+10. **Untimed:** the scaler and strip buffer in the write-out, translucent sorting with many layers per pixel, and
    the TA writing VRAM during a render.

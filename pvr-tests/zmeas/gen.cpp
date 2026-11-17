@@ -1,6 +1,7 @@
 /* Cases for zmeas: measure the depth the ISP stores for a triangle, as a number.
 
-       gen [--mix first|general|zero|scene] [--seed N] [--refine meas.json]    ->  cases.h, cases.json (here)
+       gen [--mix first|general|zero|scene|reach] [--seed N] [--refine meas.json]  ->  cases.h, cases.json (here)
+       gen --from <set>.cases.json --refine meas.json                           ->  refined ladders for an archived set
        gen --regen <set>.cases.json <folder>                                    ->  the tables of an archived set
        gen --check <set>.cases.json                                             ->  does the model still give the set's numbers?
 
@@ -23,6 +24,15 @@
                 depth changes exponent, and often sign, between the first pixel of the tile and the triangle
        scene    triangles of any size (corners up to 1500 pixels off the screen) drawn over each other, largest
                 first; a cell measures the triangle that is on top there
+       reach    how far a depth may reach above the tile's start: the start is kept 26 bits under its own exponent
+                and the pixels are stepped from it in fixed point, so a plane that is almost zero at the tile's
+                first pixel and large across the tile needs the most bits. Triangles in the lower right of a
+                cell, their depth plane rising from near zero at the cell's first pixel center; grouped by the
+                model's excess (the measured pixel's exponent less the start's: 0-3, 4-7, ... 20-23) and by a
+                start of exactly zero (the model's float form, a guess). The start cannot cancel to less than
+                about 2^-24 of the plane's terms, which grow with the tile's place on the screen: 24 and more
+                only in the cells next to the top left, which are kept for it (the largest excess found in each). A wide ladder (from a quarter
+                below to 16 times above the model's depth) so that an overflow shows too.
 
    (An earlier version used a huge flat triangle confined to the tile by the user tile clip as an exact probe.
    On a console the clip is applied late - a polygon is clipped by the clip command that follows it - and with
@@ -32,6 +42,7 @@
    are in fit/zmeas_data and run as before (--regen); a seed gives other cases here than it gave there. */
 #include "gen_common.h"
 #include "zmeas.h"
+#include <algorithm>
 
 using namespace gen;
 
@@ -71,6 +82,8 @@ static const std::vector<Group> groupsZero = {
 
 static std::vector<int> Ladder(const std::string& mix)
 {
+    if (mix == "reach")
+        return { -131072, -32768, -8192, -1024, -128, -16, -1, 0, 1, 16, 128, 1024, 8192, 65536, 524288, 4194304 };
     if (mix == "first") return { -64, -32, -16, -8, -4, -2, -1, 0, 1, 2, 3, 5, 9, 17, 33, 65 };
     if (mix == "general") return { -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8 };
     return { -64, -16, -6, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 7, 17, 65 };       // scene, zero
@@ -230,6 +243,129 @@ static Json MakeCases(Rng& rng, const std::string& mix)
                 if (p != pix) rest.push_back(p);
             cases.push(CaseJson(g.name, coords == "cal", cell, t).set("pixels", Points(pix, Thin(rest))));
         }
+    return cases;
+}
+
+// reach: calibration cells, then triangles grouped by how far the measured pixel's depth is above the tile's
+// start (in powers of two, by the model), PER of each group where the search finds them.
+static Json MakeReach(Rng& rng)
+{
+    static const int BINS = 8, PER = 30;           // excess 0-3 .. 20-23, 24 and up (kept cells), a start of zero
+    static const char* names[BINS] = { "reach: excess 0-3", "reach: excess 4-7", "reach: excess 8-11",
+                                       "reach: excess 12-15", "reach: excess 16-19", "reach: excess 20-23",
+                                       "reach: excess 24 and up", "reach: start zero (float form)" };
+    static const int kept[8] = { 0, 1, 20, 21, 2, 40, 22, 41 };   // nearest the top left
+    std::vector<int> cells;
+    for (int c : rng.permutation(300))
+        if (std::find(kept, kept + 8, c) == kept + 8) cells.push_back(c);
+    cells.insert(cells.begin() + 10, kept, kept + 8);              // after the 10 calibration cells
+    size_t next = 0;
+    Json cases = Json::Array();
+    for (int c = 0; c < 10; c++) {                  // calibration, as in the other mixes
+        const int cell = cells[next++];
+        const double cx = CellX(cell), cy = CellY(cell);
+        Tri t = { { cx, cx + 32, cx }, { cy, cy, cy + 32 }, {} };
+        int e;
+        const double m = frexp(rng.logUniform(1e-3, 1e3), &e);
+        t.z[0] = t.z[1] = t.z[2] = F32(ldexp(floor(m * 32768) / 32768, e));
+        std::vector<Pt> rest;
+        const Pt pix = { cx + 8.5, cy + 9.5 };
+        for (int i = 2; i < 30; i += 5)
+            for (int j = 2; j < 30; j += 5)
+                if (i + j + 1 != 32 && Pt(cx + i + 0.5, cy + j + 0.5) != pix)
+                    rest.push_back({ cx + i + 0.5, cy + j + 0.5 });
+        cases.push(CaseJson("calibration: full-cell quad, 15 bit depth", true, cell, t).set("pixels", Points(pix, Thin(rest))));
+    }
+    int filled[BINS] = {};
+    struct Cand { Tri t; Pt pix; std::vector<Pt> full; int excess; bool block; };
+    Cand bestHigh;
+    long tries = 0, cellTries = 0;
+    bestHigh.excess = -1;
+    for (; tries < 6000000 && next < cells.size(); tries++) {
+        const int cell = cells[next];
+        const bool high = next < 18;                // a kept cell: the largest excess of 24 or more it gives
+        if (high && ++cellTries > 400000) {
+            if (bestHigh.excess >= 24) {
+                std::vector<Pt> rest;
+                for (auto& q : bestHigh.full)
+                    if (q != bestHigh.pix) rest.push_back(q);
+                cases.push(CaseJson(names[6], false, cell, bestHigh.t).set("excess", bestHigh.excess).set("block", true)
+                               .set("pixels", Points(bestHigh.pix, Thin(rest))));
+                filled[6]++;
+            } else
+                cells.push_back(cell);              // nothing high enough: use it for the other groups later
+            next++;
+            cellTries = 0;
+            bestHigh.excess = -1;
+            continue;
+        }
+        const double cx = CellX(cell), cy = CellY(cell), x0 = cx + 0.5, y0 = cy + 0.5;
+        Tri t;
+        for (int k = 0; k < 3; k++) {
+            double px = rng.uniform(8.0, 31.5), py = rng.uniform(8.0, 31.5);
+            if (rng.chance(0.3)) { px = nearbyint(px); py = nearbyint(py); }
+            t.x[k] = F32(cx + px); t.y[k] = F32(cy + py);
+        }
+        const double area = fabs((t.x[1] - t.x[0]) * (t.y[2] - t.y[0]) - (t.x[2] - t.x[0]) * (t.y[1] - t.y[0]));
+        if (area <= 150)
+            continue;
+        // the plane: G times the distance along (co, si) from the first pixel center, plus off; off near zero
+        // puts the zero line through or next to that pixel
+        const double th = rng.uniform(0.05, M_PI / 2 - 0.05), co = cos(th), si = sin(th);
+        const double G = rng.logUniform(1e-3, 1e3) / 30;
+        const double off = rng.chance(0.1) ? 0.0 : (rng.chance(0.8) ? 1 : -1) * ldexp(rng.uniform(1, 2), -(int)rng.integers(0, 40));
+        for (int k = 0; k < 3; k++)
+            t.z[k] = F32(G * ((t.x[k] - x0) * co + (t.y[k] - y0) * si + off));
+        std::vector<Pt> full;
+        for (auto& q : Interior(t))
+            if ((q.first - cx) + (q.second - cy) != 32.0)      // not on the diagonal of the probe quad
+                full.push_back(q);
+        if (full.size() < 12)
+            continue;
+        auto along = [&](const Pt& q) { return (q.first - x0) * co + (q.second - y0) * si; };
+        size_t best = 0;
+        for (size_t k = 1; k < full.size(); k++)
+            if (along(full[k]) > along(full[best])) best = k;
+        const Pt pix = full[best];
+        // the model: the tile's start, and the measured pixel's depth
+        const Pixel p(pix.first, pix.second);
+        const float fx[3] = { (float)t.x[0], (float)t.x[1], (float)t.x[2] }, fy[3] = { (float)t.y[0], (float)t.y[1], (float)t.y[2] };
+        const float fz[3] = { (float)t.z[0], (float)t.z[1], (float)t.z[2] };
+        pvrisp::DepthTile d;
+        d.Setup(fx, fy, fz, p.tx, p.ty, model.depth);
+        if (!d.valid)
+            continue;
+        const double v = d.At(p.i, p.j, true);
+        if (!(v > 0) || !std::isfinite(v))
+            continue;                               // a probe measures positive depths
+        int bin, excess = 0;
+        if (!d.block)
+            bin = BINS - 1;
+        else {
+            int ev;
+            frexp(v, &ev);
+            excess = (ev - 1) - (d.unit + 26);      // top exponents: the pixel's less the start's
+            if (excess < 0)
+                continue;
+            bin = std::min(excess / 4, 6);
+        }
+        if (high) {
+            if (bin == 6 && excess > bestHigh.excess)
+                bestHigh = { t, pix, full, excess, true };
+            continue;
+        }
+        if (bin == 6 || filled[bin] >= PER)
+            continue;
+        filled[bin]++;
+        next++;
+        std::vector<Pt> rest;
+        for (auto& q : full)
+            if (q != pix) rest.push_back(q);
+        cases.push(CaseJson(names[bin], false, cell, t).set("excess", excess).set("block", d.block)
+                       .set("pixels", Points(pix, Thin(rest))));
+    }
+    for (int b = 0; b < BINS; b++)
+        printf("  %-34s %d\n", names[b], filled[b]);
     return cases;
 }
 
@@ -436,7 +572,7 @@ static int Check(const Json& data)
 
 int main(int argc, char** argv)
 {
-    std::string mix = "first", refinePath;
+    std::string mix = "first", refinePath, fromPath;
     long long seed = 1234567;
     for (int a = 1; a < argc; a++) {
         const std::string arg = argv[a];
@@ -449,12 +585,22 @@ int main(int argc, char** argv)
         if (arg == "--mix" && a + 1 < argc) mix = argv[++a];
         else if (arg == "--seed" && a + 1 < argc) seed = atoll(argv[++a]);
         else if (arg == "--refine" && a + 1 < argc) refinePath = argv[++a];
-        else Fail("gen [--mix first|general|zero|scene] [--seed N] [--refine meas.json]  |  gen --regen <set>.cases.json <folder>");
+        else if (arg == "--from" && a + 1 < argc) fromPath = argv[++a];      // the cases of an archived set, not new ones
+        else Fail("gen [--mix first|general|zero|scene|reach] [--seed N] [--refine meas.json]  |  gen --regen <set>.cases.json <folder>");
     }
-    if (mix != "first" && mix != "general" && mix != "zero" && mix != "scene")
+    if (mix != "first" && mix != "general" && mix != "zero" && mix != "scene" && mix != "reach")
         Fail("no mix " + mix);
     Rng rng((uint64_t)seed);
-    Json tris, cases = mix == "scene" ? MakeScene(rng, tris) : MakeCases(rng, mix);
+    Json tris, cases;
+    if (!fromPath.empty()) {
+        Json set = Json::Parse(ReadFile(fromPath));
+        mix = set.at("mix").str();
+        seed = (long long)set.at("seed").integer();
+        cases = set.at("cases");
+        if (set.has("tris"))
+            tris = set.at("tris");
+    } else
+        cases = mix == "scene" ? MakeScene(rng, tris) : mix == "reach" ? MakeReach(rng) : MakeCases(rng, mix);
     Json refine;
     if (!refinePath.empty())
         refine = Json::Parse(ReadFile(refinePath));
