@@ -52,7 +52,7 @@ static void pvrio_close(void);
 
 /* ---- the checksum ---- */
 static uint32_t pvrio_crc = 0;
-static char pvrio_tag[24];                  /* the test's name for what it is doing (ta-tests: c<case>), for "PVRIO stall" */
+static char pvrio_tag[24] __attribute__((unused));                /* the test's name for what it is doing (ta-tests: c<case>), for "PVRIO stall" */
 
 static void pvrio_hash(uint32_t kind, uint32_t addr, const uint32_t *words, int count) {
     static uint32_t table[256];

@@ -22,7 +22,7 @@
 #define NUM_PAGES 590               /* for run2.sh: dump files of a run without TA_ERRORS (two per case) */
 #endif
 #ifndef TA_LONG
-#define TA_LONG 10000               /* fuzz cases after the dumped ones, hashed: one "PVRIO hash" line each */
+#define TA_LONG 2000                /* fuzz cases after the dumped ones, hashed: one "PVRIO hash" line each (archived: 2,000) */
 #endif
 
 #define FILL        0xa5a5a5a5u
