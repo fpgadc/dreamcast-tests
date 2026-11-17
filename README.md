@@ -1819,8 +1819,7 @@ pass, from `huge` and `detinf`).
 
 What refsw2-offline does not reproduce after this: `accbuf` (76 cells that depend on the write-out's timing,
 70 of them different from console run to console run; see accbuf),
-`blendpos` (69 regions that differ from run to run on the console), `modvol` (5 regions of two-volume polygons in intensity mode: an edge with a corner past 2^127, see faredge; was 
-polygons), `detinf` (2 probes, above) and one depth bracket of zmeas `zero6`.
+`blendpos` (69 regions that differ from run to run on the console), `modvol` (5 regions of two-volume polygons in intensity mode: an edge with a corner past 2^127, see faredge), `detinf` (2 probes, above) and one depth bracket of zmeas `zero6`.
 
 ## The generators are C++ programs on the refsw2 headers (2026-11-16)
 
