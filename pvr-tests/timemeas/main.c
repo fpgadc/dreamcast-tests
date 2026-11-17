@@ -24,6 +24,7 @@
    polygons of that format in different ways, so that the numbers of pixels, of runs (pixels of one triangle
    next to each other on one line) and of triangles change independently. The pages of this test are the
    layouts drawn once each with every triangle in its own colour. */
+/* #define TM_ISPQ */                  /* only the ispq scenes (how far the ISP runs ahead): a few seconds */
 /* #define TM_QUICK */                 /* only the scenes before the TM_QUICK line in run_all: a few seconds */
 /* #define TM_DCALC */                 /* only the dcalc scenes: a few seconds */
 /* #define TM_AHEAD */                 /* only the ahead scenes: a few seconds */
@@ -683,6 +684,56 @@ static void run_all(void) {
     printf("T display %lx off\n", (unsigned long)fb_r);
     for(f = 0; f < NUM_FORMATS; f++) printf("F %d %s\n", f, formats[f].name);
     for(L = 0; L < NUM_LAYOUTS; L++) printf("L %d %s\n", L, layout_names[L]);
+
+    /* ---- ispq k n: how far the ISP runs ahead of the TSP, and in what unit (2026-11-17). The first n tiles
+       (KallistiOS's order), each with: k 0 nothing but the background (0888 framebuffer); 1 the same with a 565
+       framebuffer (the TSP's tile then takes ~1040, not ~1360); 2 one sprite over the tile (1 primitive, 32
+       runs); 3 32 sprites of 32x1 (32 primitives, 32 runs); 4 4 sprites of 8x32 (4 primitives, 128 runs); 5 32
+       sprites of 1x32 (32 primitives, 1024 runs); 6 4 sprites of 32x8 (4 primitives, 32 runs); 7 2 sprites of
+       32x16 (2 primitives, 32 runs); 8 2 sprites of 16x32 (2 primitives, 64 runs). The ISP's bit against the TSP's: the ISP's lead in time, and
+       in tiles of the TSP's pace. A queue of tiles leads by the same number of tiles in every k; a queue of runs
+       by fewer tiles the more runs a tile has; a queue of primitives tells 2 from 3. */
+    {
+        volatile uint32_t *fb_w_ctrl = (volatile uint32_t *)(0xa05f8000 + FB_W_CTRL_addr);
+        const uint32_t fbw = *fb_w_ctrl;
+        static const int qn[4] = { 8, 16, 32, 64 };
+        int qk, qi, t, j;
+        for(qk = 0; qk < 9; qk++)
+            for(qi = 0; qi < 4; qi++) {
+                *fb_w_ctrl = qk == 1 ? ((fbw & ~15u) | 1u) : fbw;
+                tiles_region(qn[qi]);
+                region_addr = MANY_TILES;
+                ta_list_begin(ListType_Opaque);
+                for(t = 0; t < qn[qi]; t++) {
+                    const int x = (t / SETUP_TILES_Y) * 32, y = (t % SETUP_TILES_Y) * 32;
+                    if(qk == 2)
+                        rect(&formats[0], 1, DepthMode_Always, x, y, 32, 32, front, t, 0);
+                    else if(qk == 3)
+                        for(j = 0; j < 32; j++)
+                            rect(&formats[0], 1, DepthMode_Always, x, y + j, 32, 1, front, j, 0);
+                    else if(qk == 4)
+                        for(j = 0; j < 4; j++)
+                            rect(&formats[0], 1, DepthMode_Always, x + 8 * j, y, 8, 32, front, j, 0);
+                    else if(qk == 5)
+                        for(j = 0; j < 32; j++)
+                            rect(&formats[0], 1, DepthMode_Always, x + j, y, 1, 32, front, j, 0);
+                    else if(qk == 6 || qk == 7)
+                        for(j = 0; j < (qk == 6 ? 4 : 2); j++)
+                            rect(&formats[0], 1, DepthMode_Always, x, y + j * (qk == 6 ? 8 : 16), 32, qk == 6 ? 8 : 16, front, j, 0);
+                    else if(qk == 8)
+                        for(j = 0; j < 2; j++)
+                            rect(&formats[0], 1, DepthMode_Always, x + 16 * j, y, 16, 32, front, j, 0);
+                }
+                measure("ispq", qk, qn[qi], 0, 0);
+            }
+        *fb_w_ctrl = fbw;
+        region_addr = ONE_TILE;
+    }
+#ifdef TM_ISPQ
+    *fb_r_ctrl = fb_r;
+    printf("T end\n");
+    return;
+#endif
 
     /* ---- spantex3 (100 w + r) L pass K: is the write-out behind spantex's uneven steps and the cost of slow lines?
        w 0: 16 bit framebuffer, written out (as spantex); 1: 16 bit, not written out (no-write-out bit in every

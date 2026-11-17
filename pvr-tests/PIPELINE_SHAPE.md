@@ -30,7 +30,7 @@ Times are in core clocks (100 MHz, 10 ns). The tile is 32 x 32 pixels.
  [2] ISP: object list walker -> parameter fetch -> ISP setup (edges, depth plane; 24-bit truncating softfp)
    |    -> rasterizer, ONE TILE LINE (32 px) A CLOCK -> depth buffer (19-bit mantissa) + tag buffer
    |    + modifier volume bits; passes: opaque, punch-through, translucent (pre-sorted or sorted per pixel)
-   v    tile results queue: the ISP runs up to ~15 background tiles ahead of the TSP
+   v    run queue, ~512 runs: the ISP runs up to ~15 background tiles (32 runs each) ahead of the TSP
  [3] TSP setup: per primitive seen, planes 1/w, ARGB, U/w, V/w, offset ARGB (16-bit floats); mip K;
    |    runs ahead ~11-12 primitives, across tiles
    v
@@ -149,10 +149,16 @@ largest of its ISP, TSP and write-out times [M timemeas].
 - **Translucent list.** A pre-sorted tile (region entry bit) is shaded in list order. A tile sorted per pixel is
   shaded in layers, back to front. A translucent modifier volume works only in a tile sorted per pixel [M
   timemeas tr_modvol, uvrun].
-- **ISP ahead of the TSP [M timemeas].** The ISP's end-of-render bit is not the end of the ISP's work. In a render
-  of 16 or more background tiles it comes 19980 clocks (14.7 tiles) before the TSP's bit.
-  - **[I]** Between ISP and TSP there is a queue of tile results, deep enough for ~15 background tiles. What it
-    holds per tile (tags, runs) is not known.
+- **ISP ahead of the TSP: a queue of runs [M timemeas ispq].** The ISP's end-of-render bit is not the end of the
+  ISP's work. In a render of 16 or more background tiles it comes 19980 clocks (14.6 tiles) before the TSP's bit.
+  - When the ISP ends, about 430-480 runs are still to be shaded, whatever the tiles hold. A background tile is
+    32 runs, hence ~15 tiles.
+  - Not time: the 565 framebuffer gives the same 14.6 tiles. Not tiles: 4 columns of 8x32 a tile lead by 4.6.
+    Not primitives: 4 rows of 32x8 lead by 14.5, where 4 columns of 8x32 (same primitives, 4x the runs) lead by
+    4.6.
+  - **[I]** A queue of about 512 runs between ISP and TSP. Each entry is probably a parameter address, a line and
+    an x range, about 40 bits, so about 2.5 KB. Not known: whether a run cut in two by a nearer polygon counts
+    twice.
   - With one dummy entry in front, the first ~1000 clocks of the tile's ISP work are free.
 
 
@@ -313,7 +319,7 @@ largest of its ISP, TSP and write-out times [M timemeas].
 | pixel: 8888 palette, YUV bilinear, non-twiddled bilinear | 2.0 |
 | pixel: texels far apart | +2.25 (memory bound 2.14 at 4 apart) |
 | write-out: 16 / 24 / 32 bpp | 1045 / 1105 / 1357 |
-| look-ahead: setup / run start / ISP | ~12 primitives / ~150-200 pixels / ~15 background tiles |
+| look-ahead: setup / run start / ISP | ~12 primitives / ~150-200 pixels / ~512 runs (~15 background tiles) |
 
 
 ## Storage, roughly
@@ -322,7 +328,7 @@ largest of its ISP, TSP and write-out times [M timemeas].
 |---|---|
 | ISP depth buffer, 32 x 32 | 1024 x ~28 bits (8-bit exponent, 19-bit mantissa) |
 | ISP tag buffer + stencil / modifier bits | 1024 x (parameter address + a few bits) |
-| ISP to TSP tile queue | enough for ~15 background tiles; contents unknown |
+| ISP to TSP run queue | ~512 runs x ~40 bits (parameter address, line, x range) = ~2.5 KB [I] |
 | TSP primitive store | ~12 x (11 planes x 3 x 16-bit floats + mip K + texture/blend words) [G] |
 | run queue | ~150-200 pixels |
 | TSP reciprocal table | 512 entries (t[i], n[i], c[i]) |
@@ -349,8 +355,9 @@ largest of its ISP, TSP and write-out times [M timemeas].
 
 ## Open questions
 
-1. **ISP to TSP queue:** what it holds (tags, runs or a pixel mask per tile), and its real depth for tiles with
-   content, not background only.
+1. **ISP to TSP run queue:** what an entry holds, and whether a run cut in two by a nearer polygon counts twice.
+   Also why 32 sprites of 32x1 a tile cost 1736 a tile in a render of many tiles: more than either unit's own
+   cost (timemeas ispq).
 2. **Crowded lines:** why runs cost up to twice as much with more than ~12 different triangles on a line, opaque
    pass only.
 3. **Texture caching:** its organisation. The first tile pays +55..+455 once per render; texels far apart pay

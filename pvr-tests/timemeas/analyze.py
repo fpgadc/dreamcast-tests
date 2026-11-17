@@ -423,5 +423,26 @@ def main():
             print(f"    {name:22s} {(v[32] - v[24]) / 240:5.2f}")
 
 
+    if "ispq" in D:
+        print()
+        print("27. How far the ISP runs ahead of the TSP (ispq): n tiles, the TSP's bit minus the ISP's at n 64, the TSP's pace")
+        print("    (n 32 -> 64), the lead in tiles of that pace, and the runs still to shade when the ISP ends (the lead less")
+        print("    the last tile's write-out: 1357 at 0888, 1045 at 565).")
+        names = ["background, 0888", "background, 565", "one sprite over the tile", "32 sprites 32x1 (rows)",
+                 "4 sprites 8x32 (columns)", "32 sprites 1x32 (columns)", "4 sprites 32x8 (rows)",
+                 "2 sprites 32x16 (rows)", "2 sprites 16x32 (columns)"]
+        prims = [0, 0, 1, 32, 4, 32, 4, 2, 2]
+        runs = [32, 32, 32, 32, 128, 1024, 32, 32, 64]
+        wo = [1357, 1045] + [1357] * 7
+        for k, name in enumerate(names):
+            if (k, 64, 0, 0) not in D["ispq"]:
+                continue
+            gap = (T("ispq", k, 64) - I("ispq", k, 64)) / 2
+            pace = (T("ispq", k, 64) - T("ispq", k, 32)) / 32 / 2
+            left = (gap - wo[k]) / pace
+            print(f"    {name:28s} {prims[k]:2d} primitives {runs[k]:4d} runs a tile: lead {gap:6.0f} clocks = {gap / pace:4.1f} tiles"
+                  f" at {pace:5.0f} a tile; runs left {left * runs[k]:4.0f}")
+
+
 if __name__ == "__main__":
     main()

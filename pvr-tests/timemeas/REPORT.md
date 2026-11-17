@@ -500,6 +500,38 @@ tile it does move with the ISP's work (and with a modifier volume over 1024 spri
 later inside than outside, while the TSP's bit does not move), which is why the ISP figures I gave before stand; the TSP figures I
 gave before were "TSP's bit minus ISP's bit" and did not.
 
+## How far the ISP runs ahead of the TSP (2026-11-17)
+
+Why the ISP can finish 14.7 background tiles before the TSP: the scenes `ispq` (run 35; `#define TM_ISPQ` runs
+only them, about 10 s). The first n tiles of the screen (8, 16, 32, 64), each with the content below; the ISP's
+bit against the TSP's at 64 tiles, the TSP's pace from 32 to 64 tiles, and the runs still to be shaded when the
+ISP ends (the lead less the last tile's write-out, times the runs of a tile):
+
+| a tile | primitives | runs | lead, clocks | lead, tiles | TSP's pace a tile | runs left |
+|---|---|---|---|---|---|---|
+| background, 0888 framebuffer | 0 | 32 | 19986 | 14.6 | 1366 | 436 |
+| background, 565 framebuffer | 0 | 32 | 15250 | 14.6 | 1041 | 437 |
+| one sprite over the tile | 1 | 32 | 19916 | 14.6 | 1366 | 435 |
+| 2 sprites of 32x16 (rows) | 2 | 32 | 19894 | 14.6 | 1366 | 434 |
+| 4 sprites of 32x8 (rows) | 4 | 32 | 19874 | 14.5 | 1366 | 434 |
+| 2 sprites of 16x32 (columns) | 2 | 64 | 10800 | 7.9 | 1365 | 443 |
+| 4 sprites of 8x32 (columns) | 4 | 128 | 6288 | 4.6 | 1366 | 462 |
+| 32 sprites of 1x32 (columns) | 32 | 1024 | 4707 | 0.7 | 7205 | 476 |
+| 32 sprites of 32x1 (rows) | 32 | 32 | 2882 | 1.7 | 1736 | (28) |
+
+- **What is queued between ISP and TSP is runs**: about 430 to 480 of them are still to be shaded when the ISP
+  ends, whatever the tile holds, which fits a queue of about 512 runs. A background tile is 32 runs (one a line),
+  hence the 14.6 tiles.
+- Not time: with a 565 framebuffer the TSP takes 1041 a tile instead of 1366, and the lead is the same 14.6 tiles.
+- Not tiles: four columns of 8x32 lead by 4.6 tiles.
+- Not primitives: four rows of 32x8 lead by 14.5 tiles where four columns of 8x32 (same primitives, four times
+  the runs) lead by 4.6.
+- 32 rows of 32x1 a tile are something else: in many tiles they take 1736 a tile, more than the ISP (32 sprites,
+  about 19 each) or the TSP (40.7 a sprite in one tile) should; the ISP does not get ahead there, and the 28 runs
+  left say nothing about the queue. Not explained.
+- Not known: whether a run that a nearer polygon cuts in two counts twice (here every run is a whole primitive's
+  line), and what an entry holds.
+
 ## What changed against my earlier numbers
 
 - "The TSP cannot start before 13.5 µs": that was the background of KallistiOS's first region array entry.
@@ -779,6 +811,7 @@ ends where the volume state changes: README, uvrun). 16 bit framebuffer; a tile 
 ## Not known
 
 - What makes runs cost more when more than about 12 different triangles are on a line.
+- What makes 32 sprites of 32x1 a tile cost 1736 a tile in a render of many tiles (ispq).
 - How the 335 clocks of a tile with nothing to do divide between the start, the ISP, the TSP and the
   hand-overs, and what the 55 to 90 are that a tile with seen polygons costs once.
 - How texels are kept: the first tile's cost is small and paid once per render, yet texels 8 apart cost
