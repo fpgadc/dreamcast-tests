@@ -165,8 +165,13 @@ largest of its ISP, TSP and write-out times [M timemeas].
 - **Translucent list.** A pre-sorted tile (region entry bit) is shaded in list order. A tile sorted per pixel is
   shaded in layers, back to front. A translucent modifier volume works only in a tile sorted per pixel [M
   timemeas tr_modvol, uvrun]. Sorted per pixel, polygons in one plane are all drawn, also after one behind them
-  later in the list [M dumprules, polly2-data shenmue_menu]; a keep-Z entry after it gets the depth from before the
-  translucent polygons with the depth of the layers that write depth [M keepz page 3, polly2-data thps2_ingame*].
+  later in the list [M dumprules, polly2-data shenmue_menu]; a keep-Z entry after it gets the depth of the nearest
+  layer drawn, whether it writes depth or not, else the depth from before the sort [M keepz page 3, polly2-data
+  thps2_ingame*].
+- **Order of the sorted and punch-through passes [M dumprules, sort].** One key, depth then the tag's sort bits
+  (list order), unique per fragment (polly2-rtl isp_depth_cmp_lp): sorted translucency takes the smallest key above
+  the layer drawn last (the opaque depth first, below every fragment at its depth); punch-through the largest key
+  below the one that last failed the alpha test, at or in front of the opaque depth.
 - **Shading rules from game frames [M dumprules]:** intensity shadow scales each vertex colour ((c * scale) >> 8,
   not alpha) before interpolation [sc_ingame2]; vertex fog is (c * (256 - a) + f * a) >> 8 with a the offset
   alpha, and an offset colour comes only with a texture [sc_ingame, refta]; trilinear filtering of a texture

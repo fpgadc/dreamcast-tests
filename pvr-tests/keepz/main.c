@@ -52,7 +52,7 @@ static const int races = 0;
 #define AUTO     32                 /* translucent autosort (pre_sort 0) */
 #define MAX_CMDS 2000
 
-typedef struct { int16_t x, y, w, h; uint32_t colour; uint8_t list, depth; f32b z; } cmd_t;
+typedef struct { int16_t x, y, w, h; uint32_t colour; uint8_t list, depth, zwd; f32b z; } cmd_t;
 
 static cmd_t cmds[MAX_CMDS];
 static int n_cmds;
@@ -104,6 +104,7 @@ static void add(int list, int x, int y, int w, int h, uint32_t colour) {
     c->colour = colour;
     c->list = (uint8_t)list;
     c->depth = DepthMode_Always;
+    c->zwd = 0;
     c->z = F32B_ONE;
     n_cmds++;
 }
@@ -115,6 +116,14 @@ static void zadd(int list, int x, int y, int w, int h, f32b z, uint32_t colour) 
     add(list, x, y, w, h, colour);
     cmds[n_cmds - 1].depth = DepthMode_Greater;
     cmds[n_cmds - 1].z = z;
+}
+
+/* the same, depth write off */
+static void zadd_nw(int list, int x, int y, int w, int h, f32b z, uint32_t colour) {
+    if(describing || n_cmds >= MAX_CMDS)
+        return;
+    zadd(list, x, y, w, h, z, colour);
+    cmds[n_cmds - 1].zwd = 1;
 }
 
 static void fill(uint32_t c)                               { add(ListType_Opaque, 0, 0, 32, 32, 0xff000000u | c); }
@@ -211,7 +220,7 @@ static void page_drawing(void) {
 /* After an autosort entry, the depth a keep Z entry gets is the one from before the translucent polygons, not
    the depth the sort left (polly2-data thps2_ingame*: three entries a tile, the second and third keep Z). Both
    entries of a cell draw the cell's lists: grey (opaque) at 0.3, white translucent stripes (alpha 0x80) at 0.6 and
-   0.7, compare greater, depth written. The keep Z entry is pre-sort: where it gets the depth 0.3 its stripes pass
+   0.7, compare greater, depth written (and, in the last three cells, some not). The keep Z entry is pre-sort: where it gets the depth 0.3 its stripes pass
    again and are blended twice; where it got a stripe's depth they fail and are blended once. The first entry is
    not written out, as in the games: after one that is, the keep Z entry draws in the other tile buffer (accbuf). */
 static void page_autosort(void) {
@@ -229,6 +238,19 @@ static void page_autosort(void) {
     T(KEEPZ | SAME, "");
     T(AUTO | NOWRITE, "autosort, not written out: only a white stripe 0.7 at x 8..15 (over the background); keep Z: twice?");
     zadd(ListType_Translucent, 8, 0, 8, 32, Z7, 0x80ffffff);
+    T(KEEPZ | SAME, "");
+    /* layers that do not write depth: refsw2 keeps the depth from before them (stripe twice); polly2-rtl keeps the
+       nearest layer drawn whatever it writes (once) */
+    T(AUTO | NOWRITE, "autosort, not written out: grey 0.3, a white stripe 0.7 at x 8..15, depth write off; keep Z: twice?");
+    zadd(ListType_Opaque, 0, 0, 32, 32, Z3, 0xff808080); zadd_nw(ListType_Translucent, 8, 0, 8, 32, Z7, 0x80ffffff);
+    T(KEEPZ | SAME, "");
+    T(AUTO | NOWRITE, "autosort, not written out: grey 0.3, stripes 0.6 at x 4..19 (writes depth) and 0.7 at x 12..27 (does not); keep Z?");
+    zadd(ListType_Opaque, 0, 0, 32, 32, Z3, 0xff808080);
+    zadd(ListType_Translucent, 4, 0, 16, 32, Z6, 0x80ffffff); zadd_nw(ListType_Translucent, 12, 0, 16, 32, Z7, 0x80ffffff);
+    T(KEEPZ | SAME, "");
+    T(AUTO | NOWRITE, "autosort, not written out: grey 0.3, stripes 0.6 at x 4..19 (does not write depth) and 0.7 at x 12..27 (does); keep Z?");
+    zadd(ListType_Opaque, 0, 0, 32, 32, Z3, 0xff808080);
+    zadd_nw(ListType_Translucent, 4, 0, 16, 32, Z6, 0x80ffffff); zadd(ListType_Translucent, 12, 0, 16, 32, Z7, 0x80ffffff);
     T(KEEPZ | SAME, "");
 }
 
@@ -249,6 +271,7 @@ static void emit_list(int list) {
         pcw.Group_En = 1;
         pcw.Strip_Len = 1;
         isp.DepthMode = c->depth;
+        isp.ZWriteDis = c->zwd;
         isp.CullMode = CullMode_None;
         tsp.SrcInstr = list == ListType_Translucent ? BlendInstr_SrcAlpha : BlendInstr_One;
         tsp.DstInstr = list == ListType_Translucent ? BlendInstr_InvSrcAlpha : BlendInstr_Zero;

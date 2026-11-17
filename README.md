@@ -2048,13 +2048,14 @@ draw, in chains). Page 2 puts the empty keep Z entry after a not written out ent
 gets its picture and the keep Z entry's own cell nothing. refsw2 does this now; keepz is 49 of 49 regions and
 the five frames are the console's in all of video memory.
 
-Page 3: a keep Z entry after an autosort entry gets the depth from before the translucent polygons, plus the
-depth of the sorted layers that write depth (ZWriteDis 0), the nearest where several do. Both entries draw grey
-at 0.3 and white stripes at 0.6 and 0.7 (compare greater, depth written); the keep Z entry is pre-sort, and its
-stripes fail where they left their depth: blended once on the console. The depth the sort's passes leave behind
-(refsw2 before) is not it (polly2-data thps2_ingame*, whose translucent polygons do not write depth, broke on that),
-and neither is the depth from before the sort alone (refsw2 after thps2, blended twice here). refsw2 keeps the
-ISP's depth of each layer it draws now: 53 of 53 regions, thps2 unchanged.
+Page 3: a keep Z entry after an autosort entry gets the depth of the nearest translucent layer drawn, whether that
+layer writes depth or not, and the depth from before the translucent polygons where none was drawn (as
+polly2-rtl restores it for z_keep). Both entries draw grey at 0.3 and white stripes at 0.6 and 0.7 (compare
+greater); the keep Z entry is pre-sort, and its stripes fail where a stripe left its depth: blended once on the
+console, also with depth write off on either stripe or both. What the sort's passes leave in the depth buffer
+(refsw2 before: the far sentinel where the last pass drew nothing) broke polly2-data thps2_ingame*; the depth from
+before the sort alone (refsw2 after thps2) blends twice here, and so does keeping only the layers that write
+depth (refsw2 for a moment). refsw2 keeps the ISP's depth of each layer it draws: 56 of 56 regions, thps2 unchanged.
 
 **Races.** Some of what a console does depends on when its units run against each other: different from one
 console run to the next, or the same every run but out of reach of refsw2, which has no clock. Those cases are
@@ -2403,7 +2404,16 @@ scene each came from):
 | Autosort: translucent polygons in one plane after one behind them later in the list are all drawn | shenmue_menu | page 1 cells 0-3 |
 | ISP_BACKGND_D below 2^-20 (exponent field under 107) is zero: nothing is behind the background | xtreme_intro | pages 2-7 |
 
-The last one replaced a wrong guess. In xtreme_intro two translucent triangles at about 1e-8, behind the
+The translucent sort and the punch-through passes order fragments by one key, the depth and then the tag's
+sort bits (where the parameters are, growing with the list order), as polly2-rtl's isp_depth_cmp_lp does: no two
+fragments are ever coplanar. The sort takes the smallest key above the layer drawn last, far to near (in one plane:
+list order); the first pass's reference, the opaque depth, is below every fragment at its depth, so translucent
+polygons at exactly the opaque depth are drawn (page 1 cells 4-6). The punch-through passes take the largest key
+below the last key that failed the alpha test, at or in front of the opaque depth (in one plane: the last in the
+list first; at exactly the opaque depth: drawn, page 0 cells 86-87). This replaced refsw2's tag rules for ties,
+one per scene, with the same results (regress.sh and all dumps unchanged); 95 of 95 regions.
+
+The background rule replaced a wrong guess. In xtreme_intro two translucent triangles at about 1e-8, behind the
 background's 1e-8, are drawn; refsw2 had taken the background out of the translucent sort's depth. On the console
 that frame's tiles draw them for every ISP_BACKGND_D up to 0x1.f8p-21 (13 settings, all 593 pixels at once) and
 none from 2^-20, and dumprules shows it is the background's depth alone: with it at 2^-26, opaque, translucent and

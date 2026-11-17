@@ -34,11 +34,15 @@
                   80 at 0.5: red full, green left, blue top     81 red full, blue top, green left
                   82 red full, green left                       83 green left, red full
                   84 the order of 80 at 0.5, 0.6, 0.7 (reference) 85 green left, blue top (nothing full)
+                  86, 87 red (alpha 0xff) at exactly the depth of grey opaque polygons (their corners; 0.5, sloped
+                  0.3 .. 0.7): drawn (compare greater or equal with the opaque depth)
    page 1  (autosort; FPU_SHAD_SCALE 1) translucent polygons in one plane after one behind them later in the list (shenmue_menu):
            all are drawn. Alpha 0x80, red over the left 24 pixels, green over the right 24, blue over the middle 16
            rows, sent in the order given.
      cells 0-3    0 R 0.25, G 0.25, B 0.2    1 B 0.2, R 0.25, G 0.25    2 R 0.25, G 0.25, B 0.3
                   3 R 0.25, B 0.2, G 0.25
+     cells 4-6    translucent polygons at exactly the depth of grey opaque ones (their corners): drawn, the opaque
+                  depth being below every fragment at its depth. 4 at 0.5, 5 sloped 0.3 .. 0.7, 6 green then red
      cells 20-21  the modifier volume tie with two-volume polygons (0x4080c0, 0xc04020 inside), sheets of their own
                   corners: 20 at 0.5, outside; 21 sloped 0.3 .. 0.7, and a sheet at 0.75 over the left 24: inside there
    pages 2, 3  (pre-sort, autosort) ISP_BACKGND_D 0.5, in front of what is drawn at 0.3. In autosort, the
@@ -280,10 +284,15 @@ static void page0_opaque(void) {
         quad(&p, cell_px(60 + c), cell_py(60 + c), 32, 32, F32B_HALF, F32B_HALF, white, NULL, 0);
     }
 
-    /* cells 80-85: grey behind the punch through polygons */
+    /* cells 80-85: grey behind the punch through polygons; 86-87 grey at their depth */
     p = P(OP, DepthMode_GreaterEqual, 0);
     for(c = 80; c < 86; c++)
         flat(&p, cell_px(c), cell_py(c), 32, 32, Z(0.25f), 0xff202020);
+    {
+        const uint32_t grey[4] = { 0xff202020, 0xff202020, 0xff202020, 0xff202020 };
+        flat(&p, cell_px(86), cell_py(86), 32, 32, F32B_HALF, 0xff202020);
+        quad(&p, cell_px(87), cell_py(87), 32, 32, Z(0.3f), Z(0.7f), grey, NULL, 0);
+    }
 }
 
 static void page0_volumes(void) {
@@ -330,6 +339,12 @@ static void page0_punch(void) {
     pt_tex(83, 1, F32B_HALF, GREEN); pt_tex(83, 0, F32B_HALF, RED);
     pt_tex(84, 0, F32B_HALF, RED);  pt_tex(84, 1, Z(0.6f), GREEN);   pt_tex(84, 2, Z(0.7f), BLUE);
     pt_tex(85, 1, F32B_HALF, GREEN); pt_tex(85, 2, F32B_HALF, BLUE);
+    {
+        const uint32_t red[4] = { RED, RED, RED, RED };
+        poly_t q = P(PT, DepthMode_GreaterEqual, 0);
+        quad(&q, cell_px(86), cell_py(86), 32, 32, F32B_HALF, F32B_HALF, red, NULL, 0);
+        quad(&q, cell_px(87), cell_py(87), 32, 32, Z(0.3f), Z(0.7f), red, NULL, 0);
+    }
 }
 
 /* ---- page 1 ---- */
@@ -350,6 +365,13 @@ static void page1(void) {
     ta_list_begin(OP);
     quad(&p, cell_px(20), cell_py(20), 32, 32, F32B_HALF, F32B_HALF, o, NULL, 0xffc04020);
     quad(&p, cell_px(21), cell_py(21), 32, 32, Z(0.3f), Z(0.7f), o, NULL, 0xffc04020);
+    {
+        const uint32_t grey[4] = { 0xff808080, 0xff808080, 0xff808080, 0xff808080 };
+        p = P(OP, DepthMode_GreaterEqual, 0);
+        quad(&p, cell_px(4), cell_py(4), 32, 32, F32B_HALF, F32B_HALF, grey, NULL, 0);
+        quad(&p, cell_px(5), cell_py(5), 32, 32, Z(0.3f), Z(0.7f), grey, NULL, 0);
+        quad(&p, cell_px(6), cell_py(6), 32, 32, F32B_HALF, F32B_HALF, grey, NULL, 0);
+    }
     ta_list_end();
     ta_list_begin(OPMOD);
     sheet(VolumeMode_Inside_Last, cell_px(20), cell_py(20), 32, 32, F32B_HALF, F32B_HALF);
@@ -361,6 +383,14 @@ static void page1(void) {
     rgb(1, 'B', Z20); rgb(1, 'R', Z25); rgb(1, 'G', Z25);
     rgb(2, 'R', Z25); rgb(2, 'G', Z25); rgb(2, 'B', Z30);
     rgb(3, 'R', Z25); rgb(3, 'B', Z20); rgb(3, 'G', Z25);
+    {
+        const uint32_t g4[4] = { 0x8000ff00, 0x8000ff00, 0x8000ff00, 0x8000ff00 }, r4[4] = { 0x80ff0000, 0x80ff0000, 0x80ff0000, 0x80ff0000 };
+        poly_t q = P(TR, DepthMode_GreaterEqual, 0);
+        quad(&q, cell_px(4), cell_py(4), 32, 32, F32B_HALF, F32B_HALF, g4, NULL, 0);
+        quad(&q, cell_px(5), cell_py(5), 32, 32, Z(0.3f), Z(0.7f), g4, NULL, 0);
+        quad(&q, cell_px(6), cell_py(6), 32, 32, F32B_HALF, F32B_HALF, g4, NULL, 0);
+        quad(&q, cell_px(6), cell_py(6), 32, 32, F32B_HALF, F32B_HALF, r4, NULL, 0);
+    }
     ta_list_end();
 }
 
@@ -450,9 +480,11 @@ static void test_describe(void) {
     static const char *fog[4] = { "white texture, 204080, a 0..ff across", "white texture, Gouraud colours, a 10..f0 down",
                                   "a texture, white, a 0..ff along the diagonal", "white texture, 204080, a 7e..82 across" };
     static const char *flt[4] = { "point", "bilinear", "trilinear A", "trilinear B" };
-    static const char *pt[6] = { "red full, green left, blue top, all at 0.5", "red full, blue top, green left, at 0.5",
+    static const char *pt[8] = { "red full, green left, blue top, all at 0.5", "red full, blue top, green left, at 0.5",
                                  "red full, green left, at 0.5", "green left, red full, at 0.5",
-                                 "red full 0.5, green left 0.6, blue top 0.7 (reference)", "green left, blue top, at 0.5" };
+                                 "red full 0.5, green left 0.6, blue top 0.7 (reference)", "green left, blue top, at 0.5",
+                                 "red at exactly the depth of grey opaque 0.5 (its corners): drawn?",
+                                 "red at exactly the depth of grey opaque sloped 0.3..0.7: drawn?" };
     static const char *as[4] = { "R 0.25, G 0.25, B 0.2", "B 0.2, R 0.25, G 0.25", "R 0.25, G 0.25, B 0.3", "R 0.25, B 0.2, G 0.25" };
     static const char *bg[11] = { "opaque 0.3", "opaque 0.7", "translucent 0.3", "translucent 0.7", "translucent 0.3, compare always",
                                   "punch through 0.3", "punch through 0.7", "opaque 0.7 left 16, translucent 0.3",
@@ -473,10 +505,13 @@ static void test_describe(void) {
         label(0, 40 + c, "vertex fog e05010: %s", fog[c]);
     for(c = 0; c < 8; c++)
         label(0, 60 + c, "no mipmaps, %s, %s", c < 4 ? "8x8 magnified" : "64x64 minified", flt[c & 3]);
-    for(c = 0; c < 6; c++)
+    for(c = 0; c < 8; c++)
         label(0, 80 + c, "punch through: %s", pt[c]);
     for(c = 0; c < 4; c++)
         label(1, c, "autosort, coplanar: %s", as[c]);
+    label(1, 4, "autosort: green translucent at exactly the depth of grey opaque 0.5 (its corners): drawn?");
+    label(1, 5, "autosort: green translucent at exactly the depth of grey opaque sloped 0.3..0.7: drawn?");
+    label(1, 6, "autosort: green then red translucent at exactly the depth of grey opaque 0.5: both, red over green?");
     label(1, 20, "modifier volume tie: two-volume polygon (4080c0 / c04020 inside) at 0.5, a sheet of its corners: outside?");
     label(1, 21, "modifier volume tie: two-volume polygon sloped 0.3..0.7, a sheet of its corners and one at 0.75 (left 24): inside there?");
     for(p = 2; p < 4; p++)
