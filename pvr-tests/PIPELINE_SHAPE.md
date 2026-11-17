@@ -30,6 +30,7 @@ Times are in core clocks (100 MHz, 10 ns). The tile is 32 x 32 pixels.
  [2] ISP: object list walker -> parameter fetch -> ISP setup (edges, depth plane; 24-bit truncating softfp)
    |    -> rasterizer, ONE TILE LINE (32 px) A CLOCK -> depth buffer (19-bit mantissa) + tag buffer
    |    + modifier volume bits; passes: opaque, punch-through, translucent (pre-sorted or sorted per pixel)
+   |    -> cut into runs, ONE RUN A CLOCK whatever its length, in raster order
    v    run queue, ~512 runs: the ISP runs up to ~15 background tiles (32 runs each) ahead of the TSP
  [2b] span sorter: a window of 96 runs filled in raster order; the oldest run's primitive is drained (all its
    |    runs in the window, also those coming in meanwhile), one primitive at a time, per tile
@@ -180,7 +181,9 @@ largest of its ISP, TSP and write-out times [M timemeas].
   A drained primitive comes back behind every primitive whose runs came in before its next one.
   - Windows of 95 or 97 put 129 to 276 runs out of order; 96 puts none but glitch pixels and the early drains.
   - A run takes one place whatever its length (up to 24 pixels tested); no limit on different primitives below
-    96; each tile on its own; the background polygon is a primitive like the others.
+    96; the background polygon is a primitive like the others.
+  - Each tile on its own: the next tile's first pixel after this tile's last; a primitive over two tiles is not
+    drained across the boundary (a tile barrier, or a tile bit in the compare).
   - A place freed by a drained run is used again at once: not a circular FIFO with holes (485 or more runs out
     of order at 96 to 320 places).
   - So with many primitives on every line the tile is swept in diagonal batches (32 columns: each column's
@@ -190,12 +193,15 @@ largest of its ISP, TSP and write-out times [M timemeas].
 - **Early drains [M, not understood].** Some whole drains are shaded before the 2 to 9 drains in front of them,
   holding the runs the rule gives them: always the same drains (column 31 of 32 columns of 1x16, not of 1x32;
   the background and column 0 of 16 columns over the background).
-- **Cutting speed, a bound [I timemeas ispq].** Runs exist before the ISP-to-TSP queue (it counts runs), so the
-  tag buffer is cut on the ISP's side, and the cutting must keep up with the ISP's own pace: 8 background tiles
-  (32 runs of 32 pixels each) take the ISP 1502 clocks with its start, at most ~190 a tile including its Z clear and
-  the background (a sprite over each tile adds its full 34 a tile, so the ISP sets that pace). Cutting 4 pixels a
-  clock (256 a tile) would be slower; 8 a clock or a whole line a clock fits. Per run and per line costs of the
-  cutting are not measured.
+- **Cutting [M timemeas cut].** Runs exist before the ISP-to-TSP queue (it counts runs), so the tag buffer is
+  cut on the ISP's side: **one clock a run, whatever its length** (0.95-1.02 a run over 8 placements; runs spread
+  over 32 lines or packed into 4 cost the same; a line that is one run is one clock: 32 one-pixel runs cost 31
+  more than one 32-pixel run, where cutting 8 or 4 pixels a clock would give 28 or 24). **[I]** The line's
+  boundaries found at once (31 neighbour compares of tag and volume bits), runs leaving one a clock.
+  - The ISP's end-of-render bit waits for the last tile's cutting.
+  - Cutting overlaps the ISP's work on the next tiles: 32 never-passing sprites in the next tile (or 16 in each
+    of two) hide all of it; a background-only next tile hides 58 of 128 extra clocks of cutting and 11 of 256. Not a
+    free pair of tag buffers (that would hide the same amount in both); the overlap rule is not known.
 - **[I]** A store of 96 runs (parameter address, line, x, length: ~40 bits each, ~480 bytes) after the ISP's run
   queue. The head entry's primitive is compared against every entry; matching entries leave in age order, and the
   queue refills free entries at once.
@@ -427,3 +433,4 @@ largest of its ISP, TSP and write-out times [M timemeas].
    the TA writing VRAM during a render.
 11. **Early drains of the span sorter** ([2b]): why some whole drains are shaded before the ones in front of
    them.
+12. **Cutting and the next tile** ([2b]): how cutting a tile into runs overlaps the ISP's work on the next.

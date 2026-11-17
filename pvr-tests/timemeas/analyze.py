@@ -487,5 +487,37 @@ def main():
                   f" at 27 words")
 
 
+    if "cut" in D:
+        print()
+        print("30. How fast the ISP's side cuts the tag buffer into runs: twins with the same sprites passing (ALWAYS) and")
+        print("    never passing (NEVER); the ISP's work is the same, the runs are not. One tile; the ISP's bit (clocks).")
+        place = [(1, 32, 1), (2, 32, 1), (4, 32, 1), (6, 32, 1), (4, 16, 1), (8, 8, 1), (16, 4, 0), (16, 8, 0)]
+        def extra(K, h, x0):
+            line = [0] * 32
+            for j in range(K): line[x0 + 2 * j] = 1 + j
+            runs = 1 + sum(1 for x in range(1, 32) if line[x] != line[x - 1])
+            return (runs - 1) * h
+        for k, (K, h, x0) in enumerate(place):
+            if (k, 0, 0, 0) not in D["cut"]:
+                continue
+            a, b = I("cut", k, 0) / 2, I("cut", k, 1) / 2
+            e = extra(K, h, x0)
+            print(f"    {K:2d} sprites 1x{h:<2d}: {e:3d} more runs in {h:2d} lines: ISP {a:7.1f} against {b:7.1f}: {a - b:6.1f}"
+                  f" ({(a - b) / e:4.2f} a run)")
+    if "cutn" in D:
+        print()
+        print("    The first n tiles; one with the passing or never passing sprites (first or last), the others W sprites")
+        print("    1x1 that never pass (ISP work only). The ISP's bit, ALWAYS less NEVER (clocks):")
+        for k, e in ((1, 128), (2, 256)):
+            for last in (0, 1):
+                for n in (2, 3):
+                    cells = []
+                    for W in (0, 8, 16, 32):
+                        if (k, W, n, 2 * last) in D["cutn"]:
+                            cells.append(f"W {W:2d}: {(I('cutn', k, W, n, 2 * last) - I('cutn', k, W, n, 2 * last + 1)) / 2:6.1f}")
+                    if cells:
+                        print(f"    {e} more runs, {'last' if last else 'first'} of {n} tiles: " + "  ".join(cells))
+
+
 if __name__ == "__main__":
     main()

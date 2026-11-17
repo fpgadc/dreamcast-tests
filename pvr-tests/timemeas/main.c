@@ -24,6 +24,7 @@
    polygons of that format in different ways, so that the numbers of pixels, of runs (pixels of one triangle
    next to each other on one line) and of triangles change independently. The pages of this test are the
    layouts drawn once each with every triangle in its own colour. */
+/* #define TM_CUT */                   /* only the cut scenes (how fast the ISP's side makes runs): a few seconds */
 /* #define TM_ORDER */                 /* only the order scenes (the palette clock: when each pixel is shaded): a few seconds */
 /* #define TM_PFETCH */                /* only the pfetch scenes (a shared parameter fetch?): a few seconds */
 /* #define TM_ROWS */                  /* only the rows scenes (shared setup engine or span stage?): a few seconds */
@@ -745,7 +746,9 @@ static void run_all(void) {
        columns 1x16; 12 columns 1x2; 13 16 columns 1x32 and a sprite 16x32; 14 8 columns and a sprite 24x32;
        15 32 columns under rows 32x1 on the odd lines; 16 32 columns under sprites 1x1 on the odd lines; 17
        columns 1x4. 18 16 columns 1x32 at the even columns, the background between; 19 32 columns 1x32 in
-       each of two tiles; 20 = 11 again; 21 = 11 with lines 16-31 one sprite 32x16; 22 = 3 again. */
+       each of two tiles; 20 = 11 again; 21 = 11 with lines 16-31 one sprite 32x16; 22 = 3 again. Two tiles,
+       one above the other, with primitives in both: 23 32 columns 1x64; 24 T 32x64, columns 1x32 at x 8 and 16
+       in the first tile only. */
 #ifdef TM_ORDER
     {
         static const format_t pal_fmt = { "palette 8 bpp decal", OP, 1, 0, 0, PixelFmt_Pal8, 0, 0, 0, P0, 1, 0 };
@@ -760,7 +763,7 @@ static void run_all(void) {
         shad_decal = 1;
         bg_fmt = &pal_fmt;
         region_addr = ONE_TILE;
-        for(ok = 0; ok < 23; ok++) {
+        for(ok = 0; ok < 25; ok++) {
             ta_list_begin(ListType_Opaque);
             switch(ok) {
             case 0: break;
@@ -804,6 +807,12 @@ static void run_all(void) {
                 for(j = 0; j < q; j++) rect(&pal_fmt, 1, DepthMode_Always, j, 0, 1, 32, front, j, 0);
                 rect(&pal_fmt, 1, DepthMode_Always, q, 0, 32 - q, 32, front, q, 0);
                 break;
+            case 23: for(j = 0; j < 32; j++) rect(&pal_fmt, 1, DepthMode_Always, j, 0, 1, 64, front, j, 0); break;
+            case 24:
+                rect(&pal_fmt, 1, DepthMode_Always, 0, 0, 32, 64, front, 0, 0);
+                rect(&pal_fmt, 1, DepthMode_Always, 8, 0, 1, 32, front, 1, 0);
+                rect(&pal_fmt, 1, DepthMode_Always, 16, 0, 1, 32, front, 2, 0);
+                break;
             case 18: for(j = 0; j < 16; j++) rect(&pal_fmt, 1, DepthMode_Always, 2 * j, 0, 1, 32, front, j, 0); break;
             case 19: for(j = 0; j < 64; j++) rect(&pal_fmt, 1, DepthMode_Always, j & 31, (j >> 5) * 32, 1, 32, front, j, 0); break;
             case 21:
@@ -818,16 +827,70 @@ static void run_all(void) {
                 }
                 break;
             }
-            if(ok == 19) {
+            if(ok == 19 || ok >= 23) {
                 tiles_region(2);
                 region_addr = MANY_TILES;
             }
-            order_go("order", ok, ok == 19 ? 2 : 1);
+            order_go("order", ok, ok == 19 || ok >= 23 ? 2 : 1);
             region_addr = ONE_TILE;
         }
         shad_decal = 0;
         bg_fmt = NULL;
         tex = tex_keep;
+    }
+    *fb_r_ctrl = fb_r;
+    printf("T end\n");
+    return;
+#endif
+
+    /* ---- cut: how fast the ISP's side cuts the tag buffer into runs (2026-11-17). Twins: the same untextured
+       sprites with compare ALWAYS (seen, so the background between them is cut into runs) and NEVER (only the
+       background's 32 runs); the ISP's work is the same (section "ISP": failing or passing cost the same), so the
+       difference of the ISP's bits is what the extra runs cost on its side, if anything. Placement k: K sprites
+       1 x h at x = x0, x0 + 2, ... from line 0 (cut_place). Extra runs: 64, 128, 256, 384 (k 0-3, all 32 lines),
+       128 in 16, 8 lines and 124 in 4 lines (k 4-6), 248 in 8 lines (k 7).
+       cut k v 0 0: one tile; v 0 ALWAYS, 1 NEVER.
+       cutn k W n d: the first n tiles (one above the other); one tile has placement k, the others W sprites 1x1
+       that never pass (ISP work only, 19 each); d = v + 2 x (the placement's tile is the last, else the first). */
+#ifdef TM_CUT
+    {
+        static const int cut_place[8][3] = { { 1, 32, 1 }, { 2, 32, 1 }, { 4, 32, 1 }, { 6, 32, 1 },
+                                             { 4, 16, 1 }, { 8, 8, 1 }, { 16, 4, 0 }, { 16, 8, 0 } };     /* K, h, x0 */
+        static const int cw[4] = { 0, 8, 16, 32 };
+        int ck, cv, cn, wi, cl, t, j;
+        for(ck = 0; ck < 8; ck++)
+            for(cv = 0; cv < 2; cv++) {
+                ta_list_begin(ListType_Opaque);
+                for(j = 0; j < cut_place[ck][0]; j++)
+                    rect(&formats[0], 1, cv ? DepthMode_Never : DepthMode_Always, cut_place[ck][2] + 2 * j, 0, 1, cut_place[ck][1], front, j, 0);
+                measure("cut", ck, cv, 0, 0);
+            }
+        for(ck = 1; ck <= 2; ck++)
+            for(cl = 0; cl < 2; cl++)
+                for(cn = 2; cn <= 3; cn++) {
+                    if(cl && cn == 3)
+                        continue;
+                    for(wi = 0; wi < 4; wi++) {
+                        if(cl && (wi == 1 || wi == 2))
+                            continue;
+                        for(cv = 0; cv < 2; cv++) {
+                            tiles_region(cn);
+                            region_addr = MANY_TILES;
+                            ta_list_begin(ListType_Opaque);
+                            for(t = 0; t < cn; t++) {
+                                const int x = (t / SETUP_TILES_Y) * 32, y = (t % SETUP_TILES_Y) * 32;
+                                if(t == (cl ? cn - 1 : 0))
+                                    for(j = 0; j < cut_place[ck][0]; j++)
+                                        rect(&formats[0], 1, cv ? DepthMode_Never : DepthMode_Always, x + cut_place[ck][2] + 2 * j, y, 1, cut_place[ck][1], front, j, 0);
+                                else
+                                    for(j = 0; j < cw[wi]; j++)
+                                        rect(&formats[0], 1, DepthMode_Never, x + (j & 31), y + (j >> 5), 1, 1, front, j, 0);
+                            }
+                            measure("cutn", ck, cw[wi], cn, cv + 2 * cl);
+                        }
+                    }
+                }
+        region_addr = ONE_TILE;
     }
     *fb_r_ctrl = fb_r;
     printf("T end\n");

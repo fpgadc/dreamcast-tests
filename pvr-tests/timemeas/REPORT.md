@@ -911,7 +911,8 @@ At 96: 13 of the 26 are glitch pixels, the other 13 are the early drains below. 
 - **Freed places are used again at once:** a circular FIFO whose new runs must lie within so many places of the
   oldest run still waiting (holes left by drained runs wait for the oldest to pass) puts 485 to 631 runs out of
   order at 96 to 320 places (run 38).
-- **Each tile on its own:** two tiles of 32 columns are sorted alike, the second after the first's last pixel.
+- **Each tile on its own:** two tiles of 32 columns are sorted alike, the second after the first's last pixel;
+  also with primitives over both tiles (run 41, next section).
 - **The background polygon is a primitive like the others** (scene 18), apart from the early drains.
 
 **Not explained: early drains.** Some whole drains are shaded before the 2 to 9 drains in front of them,
@@ -928,9 +929,51 @@ a primitive is set up once per drain, so a tile with many primitives on a line s
 Whether that is the "more than about 12 different triangles on a line" cost (a sweep visiting more primitives
 than the TSP keeps set up) is not checked: 17 nested sprites with two runs each a line showed no such cost.
 
+## How fast the ISP's side cuts a tile into runs (2026-11-17)
+
+Scenes `cut` and `cutn` (run 40; `#define TM_CUT`, a few seconds; analyze.py section 30). Twins: the same
+untextured sprites 1 x h at every other column, passing (compare ALWAYS: they and the background between them
+are runs) or never passing (NEVER: only the background's 32 runs). The ISP's work is the same either way (section
+"ISP"), so the difference of the ISP's bits is what the extra runs cost on its side. The runs are made before the
+queue between ISP and TSP (it counts runs), so this is where they are cut.
+
+| one tile | more runs | lines they are in | ISP's bit, more (clocks) |
+|---|---|---|---|
+| 1 / 2 / 4 / 6 sprites 1x32 | 64 / 128 / 256 / 384 | 32 | 61 / 126 / 252 / 383 |
+| 4 sprites 1x16 | 128 | 16 | 127 |
+| 8 sprites 1x8 | 128 | 8 | 126 |
+| 16 sprites 1x4 (a line of 32 runs of 1 pixel) | 124 | 4 | 126 |
+| 16 sprites 1x8 | 248 | 8 | 252 |
+
+- **One clock a run, whatever its length.** 0.95 to 1.02 a run in every placement; the same runs spread over 32
+  lines or packed into 4 cost the same. A line of 32 one-pixel runs costs 31 more than a line of one 32-pixel run,
+  so a whole line is one clock when it is one run. Cutting 8 or 4 pixels a clock would give 112 or 96 instead of
+  126 for the 1x4 sprites. **[I]** The tag line's boundaries are found all at once (31 compares of neighbours) and
+  the runs leave one a clock, in raster order.
+- **The ISP's bit waits for the last tile's cutting**: with the sprites in the last of two tiles the bit moves by
+  130 and 254 for 128 and 256 more runs, whatever the other tile holds.
+- **The next tile's work hides part of it.** With the sprites in the first tile, the ISP's bit, ALWAYS less NEVER,
+  with W sprites 1x1 that never pass in each following tile (ISP work only, about 19 each):
+
+| following tiles | W 0 | W 8 | W 16 | W 32 |
+|---|---|---|---|---|
+| 128 more runs, one tile after | 70 | 19 | 35 | -2 |
+| 128 more runs, two tiles after | 70 | 1 | 0 | 6 |
+| 256 more runs, one tile after | 245 | 182 | 175 | 2 |
+| 256 more runs, two tiles after | 238 | 89 | -5 | 0 |
+
+  So the ISP does not stop while a tile is cut: enough work after it (32 sprites in the next tile, or 16 in
+  each of two) hides the whole cutting. It is not a pair of tag buffers that lets the next tile go on freely
+  either: then a tile with nothing but the background after it would hide the same amount behind 128 and 256
+  more runs, and it hides 58 and 11. How the work overlaps is not known.
+- Two tiles with primitives over both (`order` scenes 23 and 24, run 41): each tile is sorted on its own and
+  the second starts after the first's last pixel; a sprite over both tiles drained in the first does not take
+  its runs in the second.
+
 ## Not known
 
 - What makes runs cost more when more than about 12 different triangles are on a line.
+- How the cutting of a tile into runs overlaps the ISP's work on the next tile ("How fast the ISP's side cuts").
 - Why some drains of the span sorter are shaded before the drains in front of them ("In what order the
   TSP shades a tile").
 - What the per-primitive resource is that the ISP and the TSP share when 32 rows of 32x1 make a tile cost 1736
@@ -951,6 +994,7 @@ than the TSP keeps set up) is not checked: 17 nested sprites with two runs each 
     tr -cd '[:print:]\n' < /tmp/pvr_tests/timemeas/build/hw.log > fit/timemeas_logs/timemeas_run<n>.log
     python3 pvr-tests/timemeas/analyze.py > pvr-tests/timemeas/tables.txt
     TEST_DEFS="-DTM_ORDER" bash run2.sh timemeas hw=<ip>     # the palette clock scenes only, a few seconds
+    TEST_DEFS="-DTM_CUT" bash run2.sh timemeas hw=<ip>       # the cutting scenes only, a few seconds
     python3 pvr-tests/timemeas/order.py --fit fit/timemeas_logs/timemeas_run39_order.log
 
 Earlier logs are kept in `fit/timemeas_logs/before_flat_bg` (Gouraud background, twins by compare NEVER),

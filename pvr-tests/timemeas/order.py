@@ -32,9 +32,11 @@ def load(path):
     return S, P
 
 
-def tags(k):
-    """Which primitive each pixel of scene k shows (the identities only; see main.c TM_ORDER). None: unknown."""
+def tags(k, tile=0):
+    """Which primitive each pixel of scene k shows in its tile (the identities only; see main.c TM_ORDER)."""
     g = lambda f: [[f(x, y) for x in range(32)] for y in range(32)]
+    if k == 24:     # T over both tiles, columns at x 8 and 16 in the first
+        return g(lambda x, y: (1 if x == 8 else 2 if x == 16 else 0) if tile == 0 else 0)
     return {
         0: g(lambda x, y: 0), 1: g(lambda x, y: 0), 2: g(lambda x, y: y),
         3: g(lambda x, y: x), 4: g(lambda x, y: x), 5: g(lambda x, y: x // 8),
@@ -46,7 +48,7 @@ def tags(k):
         15: g(lambda x, y: 100 + y if y % 2 else x), 16: g(lambda x, y: 32 + 64 * y + x if y % 2 else x),
         17: g(lambda x, y: (y // 4) * 32 + x), 18: g(lambda x, y: x // 2 if x % 2 == 0 else 99),
         19: g(lambda x, y: x), 20: g(lambda x, y: (y // 16) * 32 + x), 21: g(lambda x, y: x if y < 16 else 32),
-        22: g(lambda x, y: x),
+        22: g(lambda x, y: x), 23: g(lambda x, y: x),
     }.get(k)
 
 
@@ -109,11 +111,10 @@ def main():
         print("scene tile runs   92   94   95   96   97   98  100 | glitch  rest")
         tot = [0] * 9
         for (what, k), sc in sorted(S.items()):
-            tm = tags(k)
-            if tm is None:
+            if tags(k) is None:
                 continue
             for t, grid in sorted(sc["tiles"].items()):
-                runs = runs_of(tm)
+                runs = runs_of(tags(k, t))
                 raw = [sum(violations(grid, sort_runs(runs, w)[0])) for w in (92, 94, 95, 96, 97, 98, 100)]
                 bad, glitch = violations(grid, sort_runs(runs, WINDOW)[0])
                 tot = [a + b for a, b in zip(tot, raw + [glitch, bad])]
