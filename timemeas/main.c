@@ -30,6 +30,7 @@
 /* #define TM_SPAN */                  /* only the spanahead scenes: a few seconds */
 /* #define TM_SPANFMT */               /* only the spanfmt scenes: a few seconds */
 /* #define TM_LINE */                  /* only the lineshare scenes: a few seconds */
+/* #define TM_VOL2 */                  /* only the vol2off and vol2pitch scenes: a few seconds */
 #define NUM_LAYOUTS 17
 #define NUM_PAGES NUM_LAYOUTS
 #define TEST_MODIFIERS              /* the two modifier volume lists exist */
@@ -216,6 +217,12 @@ static void header(const format_t *f, int DepthMode, PCW *pcw, ISP_TSP *isp, TSP
     }
 }
 
+/* the offset colour of vertex k: offs_mode -1 the scene's own (dflt), 0 zero, 1 0x202020, 2 0x101010 (k + 1) */
+static int offs_mode = -1;
+static uint32_t offs_col(int k, uint32_t dflt) {
+    return offs_mode < 0 ? dflt : offs_mode == 0 ? 0 : offs_mode == 1 ? 0x00202020u : 0x00101010u * (uint32_t)(k + 1);
+}
+
 /* own: every triangle (or sprite) in a colour of its own, flat; otherwise four different corner colours */
 static void rect(const format_t *f, int sprite, int DepthMode, int x, int y, int w, int h, f32b z, int n, int own) {
     static const uint32_t corner[4] = { 0xffff4040u, 0xff40ff40u, 0xff4040ffu, 0xffffffffu };
@@ -281,6 +288,7 @@ static void rect(const format_t *f, int sprite, int DepthMode, int x, int y, int
                 v.v0 = v.v1 = f32b_scaled(vy * f->scale, -8);
                 v.BaseCol0 = vol_flat ? vol_tint[vol_m] | vol_a : corner[k];
                 v.BaseCol1 = !vol_flat ? corner[k] & 0xff7f7f7fu : vol1_blend == 3 ? 0x80ffffffu : 0xff202020u;
+                v.OffsCol0 = v.OffsCol1 = offs_col(k, 0);
                 ta_send(&v, sizeof(v));
             } else {
                 TA_Vertex9 v;
@@ -299,7 +307,7 @@ static void rect(const format_t *f, int sprite, int DepthMode, int x, int y, int
         int vx = x + (k & 1) * w, vy = y + (k >> 1) * h;
         uint32_t c = vol_flat ? (vol_tint[vol_m] | vol_a) : own ? own_colour(2 * n + (k == 3)) : corner[k];
         if(f->textured)
-            ta_vertex3(f32b_int(vx), f32b_int(vy), z, f32b_scaled(vx * f->scale, -8), f32b_scaled(vy * f->scale, -8), c, 0x00101010u * (uint32_t)k, k == 3);
+            ta_vertex3(f32b_int(vx), f32b_int(vy), z, f32b_scaled(vx * f->scale, -8), f32b_scaled(vy * f->scale, -8), c, offs_col(k, 0x00101010u * (uint32_t)k), k == 3);
         else
             ta_vertex0(f32b_int(vx), f32b_int(vy), z, c, k == 3);
     }
@@ -625,6 +633,98 @@ static void run_all(void) {
     for(f = 0; f < NUM_FORMATS; f++) printf("F %d %s\n", f, formats[f].name);
     for(L = 0; L < NUM_LAYOUTS; L++) printf("L %d %s\n", L, layout_names[L]);
 
+    /* ---- vol2off k o f Lm: does a polygon with two volumes pay for its offset colour, and is the offset colour seen?
+       k 0: ordinary polygons (shadow bit off, FPU_SHAD_SCALE 1); 1: with two volumes (FPU_SHAD_SCALE 0x080: not
+       intensity mode). o: offset colour 0 zero, 1 0x202020, 2 0x101010 (k + 1) at vertex k (both sets alike). f 2 (565
+       flat) or 4 (565 flat with offset colour). Lm = 10 L + m: layout 2 (1 quad) or 5 (1024 quads 1x1, 2048
+       triangles); m 0 no volume, 1 inside a sheet over the tile (second set). One tile; the logged pixels show
+       what was drawn. */
+    {
+        static const int vf[2] = { 2, 4 }, vl[2] = { 2, 5 };
+        int kq, o, fi, li, m;
+        for(kq = 0; kq < 2; kq++)
+            for(o = 0; o < 3; o++)
+                for(fi = 0; fi < 2; fi++)
+                    for(li = 0; li < 2; li++)
+                        for(m = 0; m < 2; m++) {
+                            shad_scale = kq ? 0x080 : 1; shadow_bit = kq; bg_shadow = 0; two_volumes = kq;
+                            offs_mode = o;
+                            cur = &formats[vf[fi]]; cur_own = 0;
+                            ta_list_begin(ListType_Opaque);
+                            layout(vl[li]);
+                            if(m) {
+                                ta_list_begin(ListType_Opaque_Modifier_Volume);
+                                sheet(VolumeMode_Inside_Last, 0, 0, 32, 32);
+                            }
+                            measure("vol2off", kq, o, vf[fi], 10 * vl[li] + m);
+                        }
+        offs_mode = -1; shad_scale = 1; shadow_bit = 0; two_volumes = 0; cur = &formats[0];
+    }
+    /* ---- vol2pitch f o L pass: spanshad's two-volume scenes (m 5, 6) again, now with FPU_SHAD_SCALE 0x080 (spanshad
+       had 0x180, intensity mode, and drew them in the base colour only). 64 tiles, a 565 triangle with two volumes
+       over each, cut into 1-pixel runs by 15 sheets of 1 x L at odd columns; f 2 or 4 (offset colour), o offset
+       colour 0 or 0x202020 in both sets. 16 bit framebuffer as in spanshad. */
+    {
+        volatile uint32_t *fb_w_ctrl = (volatile uint32_t *)(0xa05f8000 + FB_W_CTRL_addr);
+        const uint32_t fbw = *fb_w_ctrl;
+        static const int sL[3] = { 16, 24, 32 };
+        int ps, fi, o, li, t;
+        *fb_w_ctrl = (fbw & ~15u) | 1u;
+        shadow_bit = 1; shad_scale = 0x080;
+        for(ps = 0; ps < 2; ps++)
+            for(fi = 0; fi < 2; fi++)
+                for(o = 0; o < 2; o++)
+                    for(li = 0; li < 3; li++) {
+                        const format_t *fm = &formats[fi ? 4 : 2];
+                        tiles_region(64);
+                        region_addr = MANY_TILES;
+                        ta_list_begin(ListType_Opaque);
+                        for(t = 0; t < 64; t++) {
+                            const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                            static const int cx[3] = { 0, 64, 0 }, cy[3] = { 0, 0, 64 };
+                            PCW pcw; ISP_TSP isp; TSP tsp; TCW tcw;
+                            TA_PolyParam3 pp;
+                            header(fm, DepthMode_Always, &pcw, &isp, &tsp, &tcw);
+                            pcw.ParaType = ParamType_Polygon_or_Modifier_Volume;
+                            pcw.Group_En = 1;
+                            pcw.Strip_Len = 1;
+                            pcw.Volume = 1;
+                            isp.Texture = 1;
+                            isp.Offset = fm->offset;
+                            memset(&pp, 0, sizeof(pp));
+                            pp.pcw = pcw; pp.isp = isp; pp.tsp = tsp; pp.tcw = tcw; pp.tsp1 = tsp; pp.tcw1 = tcw;
+                            ta_send(&pp, sizeof(pp));
+                            for(n = 0; n < 3; n++) {
+                                const int vx = x0 + cx[n], vy = y0 + cy[n];
+                                vertex11_t vv;
+                                memset(&vv, 0, sizeof(vv));
+                                vv.pcw = pcw_vertex(n == 2);
+                                vv.xyz[0] = f32b_int(vx); vv.xyz[1] = f32b_int(vy); vv.xyz[2] = front;
+                                vv.u0 = vv.u1 = f32b_scaled(vx, -8);
+                                vv.v0 = vv.v1 = f32b_scaled(vy, -8);
+                                vv.BaseCol0 = vv.BaseCol1 = 0xffc0c0c0u;
+                                vv.OffsCol0 = vv.OffsCol1 = o ? 0x00202020u : 0;
+                                ta_send(&vv, sizeof(vv));
+                            }
+                        }
+                        ta_list_begin(ListType_Opaque_Modifier_Volume);
+                        for(t = 0; t < 64; t++) {
+                            const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                            for(n = 0; n < 15; n++)
+                                sheet(VolumeMode_Inside_Last, x0 + 2 * n + 1, y0, 1, sL[li]);
+                        }
+                        measure("vol2pitch", fi ? 4 : 2, o, sL[li], ps);
+                    }
+        shadow_bit = 0; shad_scale = 1;
+        *fb_w_ctrl = fbw;
+        region_addr = ONE_TILE;
+    }
+#ifdef TM_VOL2
+    *fb_r_ctrl = fb_r;
+    printf("T end\n");
+    return;
+#endif
+
     /* ---- lineshare v o L pass: is part of a run start made once per line and triangle? Untextured sprites, each tile
        of the first 64 the same, nine runs of the first L lines at columns o .. o + 9 and one to the end of the line:
          v 0 (R): a sprite T over the whole tile, sprites S1..S4 of 1 x L in front at o + 1, 3, 5, 7: on a line T has
@@ -853,13 +953,15 @@ static void run_all(void) {
                 }
         /* spanshad m L pass: what the pitch of run starts depends on. 565 triangle, cut as above over lines 0 .. L - 1.
            m 0: modulate (format 2); 1: decal (the base colour not used); 2: modulate alpha; 3: offset, modulate
-           (format 4); 4: offset, decal; 5: two volumes (both sets 565 modulate); 6: two volumes with offset. */
+           (format 4); 4: offset, decal; 5: two volumes (both sets 565 modulate); 6: two volumes with offset. m 5 and 6
+           with FPU_SHAD_SCALE 0x080 (two-volume mode) since run27; run21 had 0x180 and drew them in the base colour. */
         {
             static const int sL[3] = { 16, 24, 32 };
             for(ps = 0; ps < 2; ps++)
                 for(fi = 0; fi < 7; fi++)
                     for(li = 0; li < 3; li++) {
                         const format_t *fm = &formats[fi == 3 || fi == 4 || fi == 6 ? 4 : 2];
+                        shad_scale = fi >= 5 ? 0x080 : 0x180;
                         tiles_region(64);
                         region_addr = MANY_TILES;
                         ta_list_begin(ListType_Opaque);

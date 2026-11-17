@@ -12,7 +12,7 @@ tiles each tile costs about the largest of its three.
 | stage | cost of a tile |
 |---|---|
 | ISP | fixed part, + 20 to 31 for each of the five lists that has a pointer, + **16 per triangle** (strip: 17 on average, sprite: 19), + 1 per line and triangle beyond 16 lines |
-| TSP | **1.01 per pixel** of the tile (the background polygon shades whatever nothing else covers: 1035 for an empty tile), but **per triangle seen at least 39** untextured, **48** textured, **64** textured with offset colour, and **per run of pixels at least about 4.7 / 6 / 8**; one clock more per pixel for a palette with ARGB8888 entries, for YUV422 bilinear and for bilinear without twiddling; more for texels far apart |
+| TSP | **1.01 per pixel** of the tile (the background polygon shades whatever nothing else covers: 1035 for an empty tile), but **per triangle seen at least 39** untextured, **48** textured, **64** textured with an offset colour that is not 0 (an offset colour of 0 costs nothing), and **per run of pixels at least about 4.7 / 6 / 8**; one clock more per pixel for a palette with ARGB8888 entries, for YUV422 bilinear and for bilinear without twiddling; more for texels far apart |
 | write-out | 1045 with a 16 bit framebuffer, 1105 with 888, 1357 with 0888 or 8888, also when the clip removes every pixel |
 
 One tile alone, nothing in it, pointers to all five lists: 2695 clocks (27.0 µs) from STARTRENDER to the
@@ -22,7 +22,7 @@ everything else. An entry with the keep Z bit has no Z clear and no background.
 
 So there is a cost per triangle in the TSP and a cost per span, and the per-triangle one is the large one:
 a triangle is free only if its own pixels take longer than its setup (about 39 pixels untextured, 48
-textured, 64 with offset colour).
+textured, 64 with an offset colour that is not 0).
 
 ## Method
 
@@ -348,8 +348,24 @@ for one quad (the twin method carries the 55 to 90 a tile with seen polygons cos
 a quad over the tile: bilinear 1316 against 1166, palette (ARGB8888 entries) 2148, 8 texels a pixel 3623
 (twin: 1376, 2207, 3669).
 
-- Polygons with two volumes and offset colour cost 48.1 per triangle, in this pass and in the opaque list
-  too, where an ordinary polygon with offset colour costs 64.
+- **An offset colour of 0 costs nothing** (scenes `vol2off` and `vol2pitch`, `#define TM_VOL2`, log run27;
+  tables from `python3 vol2.py <log>`). 565 flat; setup: one tile of 1024 quads of 1x1 against one quad, per
+  quad (one seen triangle); pitch: a triangle cut into 1-pixel runs by 15 sheets, as in `spanshad`:
+
+| | setup a quad, offset colour 0 | not 0 | run pitch, offset colour 0 | not 0 |
+|---|---|---|---|---|
+| no offset bit | 80.1 | 80.1 | 4.21 | 4.21 |
+| offset bit, one volume | 80.1 | 96.1 | | |
+| offset bit, two volumes (FPU_SHAD_SCALE 0x080) | 80.1 | 96.1 | 4.21 | 6.31 |
+
+  With the offset bit set and the offset colours 0, a polygon costs what it costs without the bit: the
+  offset colour's +16 a seen triangle and +2.1 a run are paid only when it is not 0 (0x202020 at every
+  vertex, or 0x101010 (k + 1) at vertex k). Two volumes cost the same as one, inside the volume as outside,
+  and the offset colour is added in both sets (pixel 0x002028 -> 0x204048 outside, 0x002014 -> 0x204034
+  inside). The earlier reading "polygons with two volumes and offset colour cost 48.1 per triangle, where an
+  ordinary polygon with offset colour costs 64" (scenes `mv2`) came from their offset colours, which were 0.
+  Not known: whether 0 is looked at for all vertices, for the vertex flat shading takes, or per channel, and
+  whether an offset alpha alone counts.
 - **The pass that finds nothing still costs.** Outside minus no volume at all: 370 to 460 for punch through
   polygons, where the sheet's two triangles cost the ISP 42 to 147 in the opaque list. About 300 is the
   second pass with no runs.
@@ -634,23 +650,26 @@ ends where the volume state changes: README, uvrun). 16 bit framebuffer; a tile 
   hides any latency shorter than that; none was seen.
 - **What the pitch depends on** (scenes `spanshad`, same cuts, 565 triangle; lines 24-31, two passes agree
   to the clock): modulate 4.21, decal 4.21, modulate alpha 4.21 (the planes a shading instruction does not
-  use are not skipped); offset colour with modulate 6.31, with decal 6.30; **a polygon with two volumes
-  3.26, with offset colour 3.26** (the offset colour of a two-volume polygon costs nothing, as in its setup:
-  48.1 a triangle either way).
+  use are not skipped); offset colour with modulate 6.31, with decal 6.30; a polygon with two volumes 4.21,
+  with offset colour 6.31 (`vol2pitch`, run27), as with one volume. (Run21's two-volume scenes, `spanshad` m
+  5 and 6, had FPU_SHAD_SCALE 0x180: in intensity mode such polygons were drawn in their base colour only,
+  no texture and no offset colour, at 3.26 a run. `spanshad` now sets 0x080 for them.)
 
 | run start | pitch, clocks |
 |---|---|
 | runs of different triangles (table "Per run" above): untextured / 565 / 565 offset | 4.7 / 6 / 8 |
 | one triangle cut by cheap-shadow volumes: untextured / 565 / 565 offset | 3.9 / 4.2 / 6.3 |
-| one two-volume triangle cut by volumes: 565, with or without offset | 3.3 |
+| one two-volume triangle cut by volumes: 565 / 565 offset | 4.21 / 6.31 |
+| 565 with the offset bit and an offset colour of 0, one or two volumes | 4.21 |
 
   So the pitch is not so many products over so many multipliers: flat and Gouraud, decal and modulate cost
   the same, the texture's two planes add 0.3 in one context and 1.3 in another. The one increment that looks
   like arithmetic is the offset colour's 4 planes: +2.1 (cheap shadow) and +2 (different triangles), about
   2 planes a clock; if a plane's run start is A x0 + B y + C, that is 4 products a clock (or 2, if B y + C
-  is kept for the line). The rest, 3.3 to 4.7 clocks a run, follows the context: whether the run is another
-  triangle's (its coefficients loaded again), the inside of a cheap-shadow volume, or the other set of a
-  two-volume polygon. My reading, not measured.
+  is kept for the line), and only for an offset colour that is not 0. The rest, 3.9 to 4.7 clocks a run,
+  follows the context: whether the run is another triangle's (its coefficients loaded again) or the same
+  triangle's after a volume boundary (cheap shadow, or the other set of a two-volume polygon: the same
+  4.21). My reading, not measured.
 
 - **Is part of a run start kept for the line?** (scenes `lineshare` to `lineshare5`, `#define TM_LINE`, logs run22
   to run26, tables from `python3 lineshare.py <log>`). Lines of one-pixel runs; the cost of such a line is the
