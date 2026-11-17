@@ -2308,6 +2308,30 @@ What is covered now:
 Not in them: textures larger than 64 texels a side with VQ or mipmaps; the palette entry formats other than
 ARGB8888 through a VQ texture.
 
+## mipbil: where a filtered sample falls in a smaller mip level (2026-11-17)
+
+    bash run2.sh mipbil off
+    bash run2.sh mipbil hw=<ip>             # 4 pages, a few seconds; archived in fit/hw/mipbil
+
+The console makes a texture coordinate at the full size (8 fraction bits), takes the bilinear half texel off
+there, and only then shifts it right by the mip level: at level L the footprint sits 1/2 - 1/2^(L+1) texel
+further on than a half texel of the level's own size. A mipmapped texture declared with another V size than
+its U size makes its V coordinate with the declared V size, half texel and all, scales it to the stored square,
+and shifts it the same way. refsw2 had the half texel at the level's size; no test saw it, because the levels
+below the full size in mip are flat colours.
+
+Seven mipmapped 565 textures (VQ too; 8x8 to 256x256; declared 64x16, 16x64 and 64x32 over square storage),
+every texel of every level unlike its neighbours; quads at 1.375 x 2^L texels a pixel for L = 0 .. 6 at four
+starting offsets, anisotropic ones, and perspective ones whose level changes down the cell; bilinear, both
+trilinear passes, and point sampling as a control. refsw2 = the console on 1120 of 1120 cells; with the half
+texel at the level's size 191, 191 and 177 of the 280 cells of the filtered pages differ, and 9 point-sampled
+cells of the 64x16 texture.
+
+Found on whole game frames: `python3 polly2dumps.py [scene ...]` renders dreamster's polly2 dumps (8 KB of
+registers and video memory) with refsw2-offline and compares video memory with the console's render of the
+same dump (pvr-renderer's vram_out_<scene>.bin). Sonic Adventure's sa_slow1-3 were 88 to 96 % exact before,
+every differing pixel a bilinear sample below the full size; now all of video memory is the console's.
+
 ## bumpfn, bumpbil, bumphang: bump maps (2026-11-17)
 
     bash run2.sh bumpfn bumpbil off hw=<ip>         # 7 + 7 pages; refsw2-offline = console in 952 and 1792 regions
