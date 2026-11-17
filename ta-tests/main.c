@@ -74,6 +74,7 @@ static int mid_k;                       /* ta-probe: dumps in the middle of the 
 static void begin_ex(const tacfg_t *c, int flags) {
     TA_GLOB_TILE_CLIP_type clip = { .full = 0 };
     TA_ALLOC_CTRL_type alloc = { .full = 0 };
+    snprintf(pvrio_tag, sizeof(pvrio_tag), "c%03d", case_no);
     uint32_t end = AREA + AREA_WORDS * 4u;
     if(c->ol_limit > end) end = c->ol_limit;
     if(c->isp_limit > end) end = c->isp_limit;

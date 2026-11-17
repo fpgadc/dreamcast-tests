@@ -52,6 +52,7 @@ static void pvrio_close(void);
 
 /* ---- the checksum ---- */
 static uint32_t pvrio_crc = 0;
+static char pvrio_tag[24];                  /* the test's name for what it is doing (ta-tests: c<case>), for "PVRIO stall" */
 
 static void pvrio_hash(uint32_t kind, uint32_t addr, const uint32_t *words, int count) {
     static uint32_t table[256];
@@ -264,6 +265,8 @@ static void pvrio_close(void) {
 
 static volatile uint32_t pvrio_events, pvrio_errors;
 static volatile uint32_t pvrio_seen_events, pvrio_seen_errors;     /* not cleared by pvrio_wait (ta-tests) */
+static int pvrio_ta_stalled;                /* the guard (below) reset a TA that took no more input */
+static void pvrio_guard_read(void);
 
 /* called by KallistiOS's interrupt handler, which acknowledges every pending event itself: so the events
    have to be collected here and cannot be polled from the status register */
@@ -298,6 +301,10 @@ static void pvrio_video(int fb_packmode, uint32_t fb) {
 
 static void pvrio_hw_reg(uint32_t addr, uint32_t value) {
     volatile uint32_t *reg = (volatile uint32_t *)(0xa05f8000 + addr);
+    if(addr == 0x008 && (value & 1))
+        pvrio_ta_stalled = 0;               /* the test resets the TA: its data goes again */
+    else if(addr == TA_LIST_INIT_addr || addr == TA_LIST_CONT_addr)
+        pvrio_guard_read();                 /* (these are read back, and take effect after what is queued) */
     *reg = value;
     if(addr == TA_LIST_INIT_addr)
         (void)*reg;                         /* as KallistiOS does: read it back before sending anything */
@@ -317,8 +324,47 @@ static void pvrio_hw_fill32(uint32_t addr, int count, uint32_t value) {
         dst[i] = value;
 }
 
+/* The guard on the TA's input FIFO (SB_TFREM: its free space in 32 byte units, 8 = empty; SB_FFST bit 5: the
+   SH4 interface FIFO is not empty). A TA that stops taking input stalls the CPU on the store queue write once its
+   FIFO is full, and on any later access that queues behind the data still in it: the console is then lost until
+   it is restarted (ta-probe, 2026-11-17). So data goes one 32 byte block at a time, only while the FIFO has room
+   for two, and nothing is read from the PVR before the FIFOs are empty. If that does not come within 20 ms the TA
+   is reset (SOFTRESET bit 0), "PVRIO stall <tag> ..." is printed, and TA data is dropped until the test resets
+   the TA itself. */
+#define PVRIO_SB_TFREM (*(volatile uint32_t *)0xa05f6880)
+#define PVRIO_SB_FFST  (*(volatile uint32_t *)0xa05f688c)
+static void pvrio_stall(const char *where) {
+    uint32_t tfrem = PVRIO_SB_TFREM & 15, ffst = PVRIO_SB_FFST & 63;
+    pvrio_ta_stalled = 1;
+    *(volatile uint32_t *)0xa05f8008 = 1;
+    *(volatile uint32_t *)0xa05f8008 = 0;
+    printf("PVRIO stall %s %s tfrem %lx ffst %lx, after the reset tfrem %lx\n", pvrio_tag, where, (unsigned long)tfrem,
+           (unsigned long)ffst, (unsigned long)(PVRIO_SB_TFREM & 15));
+}
+static int pvrio_guard(int blocks, int empty) {    /* room for blocks 32 byte blocks; empty: and both FIFOs empty */
+    uint64_t t0 = timer_us_gettime64();
+    for(;;) {
+        uint32_t room = PVRIO_SB_TFREM & 15;
+        if(room >= (uint32_t)blocks && (!empty || !(PVRIO_SB_FFST & 0x20)))
+            return 1;
+        if(timer_us_gettime64() - t0 > 20000)
+            return 0;
+    }
+}
+static void pvrio_guard_read(void) {        /* before reading from the PVR */
+    if(!pvrio_ta_stalled && !pvrio_guard(8, 1))
+        pvrio_stall("before a read");
+}
+
 static void pvrio_hw_ta(const uint32_t *words, int count) {
-    sq_cpy((void *)0x10000000, words, count * 4);
+    int i;
+    for(i = 0; i < count && !pvrio_ta_stalled; i += 8) {
+        if(!pvrio_guard(2, 0)) {
+            pvrio_stall("sending");
+            break;
+        }
+        sq_cpy((void *)0x10000000, words + i, 32);
+    }
 }
 
 static void pvrio_hw_wait(uint32_t events) {
@@ -355,6 +401,7 @@ static void pvrio_hw_dump32(uint32_t addr, int words, const char *name, const ch
 
     if(words > 640 * 480)
         words = 640 * 480;
+    pvrio_guard_read();
     for(i = 0; i < words; i++)
         copy[i] = src[i];
     for(i = 1; i < words; i++)
@@ -391,6 +438,7 @@ static void pvrio_hw_dump_ta_state(const char *name, const char *suffix) {
     FILE *f;
     int old;
 
+    pvrio_guard_read();
     w[0] = *(volatile uint32_t *)(0xa05f8000 + TA_ISP_CURRENT_addr);
     w[1] = *(volatile uint32_t *)(0xa05f8000 + TA_NEXT_OPB_addr);
     old = irq_disable();
@@ -415,6 +463,7 @@ static void pvrio_hw_ta_hash(uint32_t addr, int words, const char *name) {
     const volatile uint32_t *src = (const volatile uint32_t *)(0xa5000000 + addr);
     uint32_t crc = 0xffffffffu, w[4];
     int i, n, old;
+    pvrio_guard_read();
     for(i = 0; i < words; i += n) {
         n = words - i < 4096 ? words - i : 4096;
         { int k; for(k = 0; k < n; k++) copy[k] = src[i + k]; }
@@ -438,6 +487,7 @@ static void pvrio_hw_dump_regs(uint32_t addr, int words, const char *name, const
     int i;
     if(words > 1024)
         words = 1024;
+    pvrio_guard_read();
     for(i = 0; i < words; i++)
         copy[i] = *(volatile uint32_t *)(0xa05f8000 + addr + 4u * (uint32_t)i);
     snprintf(path, sizeof(path), DUMP_DIR "/%s.hw%s", name, suffix);
@@ -451,6 +501,7 @@ static void pvrio_hw_dump_regs(uint32_t addr, int words, const char *name, const
 static void pvrio_hw_scan32(uint32_t addr, int words, uint32_t value, const char *name) {
     const volatile uint32_t *src = (const volatile uint32_t *)(0xa5000000 + addr);
     int i, n = 0;
+    pvrio_guard_read();
     for(i = 0; i < words; i++) {
         uint32_t w = src[i];
         if(w != value && n++ < 64)
