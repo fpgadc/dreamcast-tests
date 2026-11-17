@@ -1535,9 +1535,10 @@ else might clear it within a tile, the automatic sort.
 
     python3 uvmeas/gen.py --mix whuge|wtiny|wneg|wspec|wzero|wzero2   # with wexp: 1/w at every size and of every kind
     python3 cmeas/gen.py --mix wext|wsum                   # colours at the same depths; the sums at the bottom of the range
-    python3 mipmeas/gen.py --mix wext                      # the mipmap level at such depths
+    python3 mipmeas/gen.py --mix wext|wextd                # the mipmap level at such depths (wextd: DCalcCtrl 1)
+    bash run2.sh detinf off hw=<ip>                        # the ISP's depth under an infinite determinant
     bash measure.sh uvmeas <name> --mix ...                # archived: uvmeas wexp1, whuge1, wtiny1, wneg1, wspec1, wzero1,
-                                                           # wzero2; cmeas cwext1, cwsum1; mipmeas mwext1
+                                                           # wzero2; cmeas cwext1, cwsum1; mipmeas mwext1, mwextd1
     model/tspprobe [--cells] [--summary] [--misses N] [--only a-b] [range=0] fit/uvmeas_data/<set>.uvm
 
 This replaces the section "The TSP at very small 1/w: there is no zero" (2026-11-16), which had one of its
@@ -1633,6 +1634,19 @@ z = 2^-60. Infinity minus infinity is zero; zero times infinity is zero. Then:
 - w * w (8 bits) does not leave the range: its exponent stops at 127 and the mantissa is kept.
 - The sign of 1/w does not matter: w is the divider's reciprocal of the denominator as it reads it
   (DenominatorSeen), and its sign is dropped.
+- With DCalcCtrl 1 the numerators are taken at the first vertex (u1 z1, v1 z1, z1), and for the limits the
+  undivided planes are evaluated there, a x1 + b y1 + c, in the setup's arithmetic: a flat 1/w overflows from
+  2^57 as with DCalcCtrl 0, an infinite or NaN z1 gives the levels it gives there, and a triangle whose 1/w
+  sums are all zero has a zero numerator whatever z1 is (mipmeas mwextd1: 4,147,200 of 4,147,200; with the
+  vertex's own z1 times the determinant instead, 4,146,600).
+
+**The ISP's depth under an infinite determinant** (`detinf`: triangle a of `hugepos` at 2^64 .. 2^100 with
+several depths, then probes of many depths with compare GREATER and LESS). refsw2's guess, a depth of 0, gives
+the console's picture for 478 of 480 probes: the stored depth is below 2^-125 (every probe from there up
+passes GREATER, none from 2^-100 down passes LESS). Probes of 2^-126 and below are white when drawn, like the
+triangle, so they cannot say more, except two: with corner depths 1, 0.5, 0.25 the probes of 2^-126 and one
+unit above it get through on the console, and with a flat 0.5 they do not. So what is stored below 2^-125
+depends on the depths; not known.
 
 How it was found, in case it has to be done again: wexp1 has the exponent tied to the place on the screen,
 which hides what depends on what; the new mixes draw exponent, size of U, winding and place independently.
@@ -1657,16 +1671,19 @@ times 2^-8, no special case for a 1/w that is not positive, a tiny negative quot
 | uvmeas wzero1, wzero2 | 779,996 / 757,439 of 780,000 | 780,000 each |
 | cmeas cwsum1 | 2,318,225 of 2,340,000 without the last-addition rule | 2,340,000 |
 | mipmeas mwext1 | 2,127,698 of 4,147,200 | 4,147,200 |
+| mipmeas mwextd1 (DCalcCtrl 1) | 4,016,968 of 4,147,200 | 4,147,200 |
+| detinf | | 478 of 480 probes |
 
-Still not measured: whether the limit of the last-addition rule is 2^-125 or 2^-124; an infinite
-coordinate, and an infinite determinant in the ISP (the depth of 0 above is a guess); the edge unit when a
-coordinate difference overflows (the 3 pixels of `hugepos` a at 2^125); the ISP's stored depth as a number
-at these depths (zmeas has no such set: what is known is which pixels pass, from `huge`); the mipmap level
-with DCalcCtrl 1 at such depths (an infinite or NaN first vertex gives level 0 in refsw2, a guess).
+Still not known: whether the limit of the last-addition rule is 2^-125 or 2^-124 (probably not observable:
+an operand of 2^-125 .. 2^-124 keeps its sign either way, and a coefficient made of it is below the range
+unless the triangle is smaller than two pixels); an infinite coordinate; what the ISP stores below 2^-125 for
+an infinite determinant (see `detinf`); the edge unit when a coordinate difference overflows (the 3 pixels of
+`hugepos` a at 2^125); the ISP's stored depth as a number at these depths (what is known is which pixels
+pass, from `huge` and `detinf`).
 
 What refsw2-offline does not reproduce after this: `accbuf` (the two tile buffers are not modelled),
 `blendpos` (69 regions that differ from run to run on the console), `modvol` (5 regions of two-volume
-polygons) and one depth bracket of zmeas `zero6`.
+polygons), `detinf` (2 probes, above) and one depth bracket of zmeas `zero6`.
 
 ## The generators are C++ programs on the refsw2 headers (2026-11-16)
 

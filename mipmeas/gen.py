@@ -42,6 +42,7 @@ page 2  ratio 1.5, z = 1.5 * 2^(c - 126)         page 3  ratio 6, z = 2^(c - 126
 page 4  ratio 3, z = -2^(c - 126)                page 5  ratio 3, bias 8/4, z = 2^(c - 126)
 page 6  ratio 1 .. 8, z of any exponent with a 16 bit mantissa
 page 7  ratio 3, z with 24 bit mantissas at 2^-70 .. 2^-58 (cells 0-149) and 2^58 .. 2^70
+--mix wextd: the same with DCalcCtrl 1 (the numerators taken at the first vertex).
 """
 import argparse
 import json
@@ -217,10 +218,11 @@ def pages_wext(rng):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=1)
-    ap.add_argument("--mix", default="first", choices=["first", "w", "det", "det2", "dcalc", "wext"])
+    ap.add_argument("--mix", default="first", choices=["first", "w", "det", "det2", "dcalc", "wext", "wextd"])
     args = ap.parse_args()
     rng = np.random.default_rng(args.seed)
-    pages = {"w": pages_w, "det": pages_det, "det2": pages_det2, "dcalc": pages_dcalc, "wext": pages_wext}.get(args.mix, pages_first)(rng)
+    pages = {"w": pages_w, "det": pages_det, "det2": pages_det2, "dcalc": pages_dcalc, "wext": pages_wext,
+             "wextd": lambda r: [[dict(q, dcalc=1) for q in pg] for pg in pages_wext(r)]}.get(args.mix, pages_first)(rng)
     write(HERE, {"seed": args.seed, "mix": args.mix, "pages": pages})
     print(f"seed {args.seed} mix {args.mix}: {PAGES} pages, {sum(len(p) for p in pages)} quads")
 
