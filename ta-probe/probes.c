@@ -872,6 +872,254 @@ static void k_tiles_steps(void) {               /* a quad in each of tiles 0..47
     eol(); finish();
 }
 
+/* ======== fourth round (TA_ERRORS 5): a sprite in a modifier list, TA_LIST_INIT in a strip, the list write queue ======== */
+
+/* sprites in a modifier volume list: corners A (40, 40, 0.5), B (56, 40, 0.25), C (56, 56, 0.125), D (100, 90), UVs
+   with marks; then the end of the list and a polygon of another list */
+static void sprite_mv(int list, uint32_t flags, float dx, float dy) {
+    hdr_sprite(list, GROUP(0) | flags, ISPW, TSPW, TCWW, 0xff112233, 0x00445566);
+    vsprite(40, 40, 0.5f, 56, 40, 0.25f, 56, 56, 0.125f, dx, dy, 0x11112222, 0x33334444, 0x55556666);
+}
+static void r_mv_untex(void) { begin_default(); sprite_mv(OM, 0, 100, 90); eol(); tri_xy(OP, 0, 3, 2, 0xe1); eol(); finish(); }
+static void r_mv_tex(void) { begin_default(); sprite_mv(OM, TEX, 100, 90); eol(); tri_xy(OP, 0, 3, 2, 0xe1); eol(); finish(); }
+static void r_mv_texoffs(void) { begin_default(); sprite_mv(OM, TEX | OFFS, 100, 90); eol(); tri_xy(OP, 0, 3, 2, 0xe1); eol(); finish(); }
+static void r_mv_dsmall(void) { begin_default(); sprite_mv(OM, 0, 8, 12); eol(); tri_xy(OP, 0, 3, 2, 0xe1); eol(); finish(); }
+static void r_mv_two(void) {                    /* two sprites */
+    begin_default(); sprite_mv(OM, 0, 100, 90);
+    vsprite(72, 40, 0.5f, 88, 40, 0.25f, 88, 56, 0.125f, 120, 80, 0x77778888, 0x9999aaaa, 0xbbbbcccc);
+    eol(); tri_xy(OP, 0, 3, 2, 0xe1); eol(); finish();
+}
+static void r_mv_then_mv(void) {                /* a sprite, then a modifier volume triangle in the same list */
+    begin_default(); sprite_mv(OM, 0, 100, 90); mv_xy(OM, 1, 3, 0); eol(); tri_xy(OP, 0, 3, 2, 0xe1); eol(); finish();
+}
+static void r_mv_then_tex(void) {               /* a sprite, then a textured triangle with offset in the opaque list */
+    begin_default(); sprite_mv(OM, 0, 100, 90); eol();
+    hdr(OP, GROUP(0) | TEX | OFFS, ISPW, TSPW, TCWW);
+    v3(104, 72, 1, F1, 0, 0xe1, 0x11, 0); v3(112, 72, 1, 0, F1, 0xe2, 0x12, 0); v3(104, 80, 1, F1, F1, 0xe3, 0x13, 1);
+    eol(); finish();
+}
+static void r_tm(void) { begin_default(); sprite_mv(TM, 0, 100, 90); eol(); tri_xy(TR, 0, 3, 2, 0xe1); eol(); finish(); }
+
+/* TA_LIST_INIT in the middle of a strip. Vertices with marks in every word: x, y, z, then A1/A2/A3/A4 << 24 | k */
+static void vmark(float x, float y, float z, uint32_t k, int eos) {
+    w8(VP(eos), fl(x), fl(y), fl(z), 0xa1000000u | k, 0xa2000000u | k, 0xa3000000u | k, 0xa4000000u | k);
+}
+static void init_now(void) { tacfg_t c = cfg(); begin_ex(&c, NO_FILL | NO_RESET); }
+static void r_init_one(void) {                  /* two vertices, TA_LIST_INIT, one, then three more and a triangle */
+    begin_default(); hdr(OP, GROUP(0), ISPW, TSPW, 0); vmark(40, 40, 1, 1, 0); vmark(48, 40, 1, 2, 0);
+    init_now(); vmark(40, 48, 1, 3, 1);
+    vmark(72, 40, 1, 4, 0); vmark(80, 40, 1, 5, 0); vmark(72, 48, 1, 6, 1);
+    tri_xy(OP, 0, 3, 2, 0xe1); eol(); eol(); finish();
+}
+static void r_init_two(void) {                  /* two vertices, TA_LIST_INIT, two */
+    begin_default(); hdr(OP, GROUP(0), ISPW, TSPW, 0); vmark(40, 40, 1, 1, 0); vmark(48, 40, 1, 2, 0);
+    init_now(); vmark(40, 48, 1, 3, 0); vmark(48, 48, 1, 4, 1);
+    tri_xy(OP, 0, 3, 2, 0xe1); eol(); eol(); finish();
+}
+static void r_init_hdr(void) {                  /* two vertices, TA_LIST_INIT, a header and three */
+    begin_default(); hdr(OP, GROUP(0), ISPW, TSPW, 0); vmark(40, 40, 1, 1, 0); vmark(48, 40, 1, 2, 0);
+    init_now(); hdr(OP, GROUP(0), 0x800bcdefu, TSPW, 0); vmark(72, 40, 1, 4, 0); vmark(80, 40, 1, 5, 0); vmark(72, 48, 1, 6, 1);
+    eol(); eol(); finish();
+}
+static void r_init_eol(void) {                  /* two vertices, TA_LIST_INIT, the end of the list */
+    begin_default(); hdr(OP, GROUP(0), ISPW, TSPW, 0); vmark(40, 40, 1, 1, 0); vmark(48, 40, 1, 2, 0);
+    init_now(); eol();
+    tri_xy(OP, 0, 3, 2, 0xe1); eol(); eol(); finish();
+}
+static void r_init_after1(void) {               /* one vertex, TA_LIST_INIT, two */
+    begin_default(); hdr(OP, GROUP(0), ISPW, TSPW, 0); vmark(40, 40, 1, 1, 0);
+    init_now(); vmark(48, 40, 1, 2, 0); vmark(40, 48, 1, 3, 1);
+    tri_xy(OP, 0, 3, 2, 0xe1); eol(); eol(); finish();
+}
+static void r_init_long(void) {                 /* Strip_Len 8: five vertices, TA_LIST_INIT, three */
+    int i;
+    begin_default(); hdr(OP, GROUP(3), ISPW, TSPW, 0);
+    for(i = 0; i < 5; i++)
+        vmark(36.0f + 4.0f * (float)(i / 2), 40.0f + 8.0f * (float)(i & 1), 1, (uint32_t)i + 1, 0);
+    init_now();
+    for(i = 5; i < 8; i++)
+        vmark(36.0f + 4.0f * (float)(i / 2), 40.0f + 8.0f * (float)(i & 1), 1, (uint32_t)i + 1, i == 7);
+    tri_xy(OP, 0, 3, 2, 0xe1); eol(); eol(); finish();
+}
+static void r_init_tex(void) {                  /* textured with offset (7 word vertices): two, TA_LIST_INIT, one */
+    begin_default(); hdr(OP, GROUP(0) | TEX | OFFS, ISPW, TSPW, TCWW); vmark(40, 40, 1, 1, 0); vmark(48, 40, 1, 2, 0);
+    init_now(); vmark(40, 48, 1, 3, 1);
+    tri_xy(OP, 0, 3, 2, 0xe1); eol(); eol(); finish();
+}
+static void r_init_noeos(void) {                /* two, TA_LIST_INIT, three (the end of the strip on the last) */
+    begin_default(); hdr(OP, GROUP(0), ISPW, TSPW, 0); vmark(40, 40, 1, 1, 0); vmark(48, 40, 1, 2, 0);
+    init_now(); vmark(40, 48, 1, 3, 0); vmark(48, 48, 1, 4, 0); vmark(40, 56, 1, 5, 1);
+    tri_xy(OP, 0, 3, 2, 0xe1); eol(); eol(); finish();
+}
+
+/* the list write queue with polygons over many tiles: 8 x 6 tiles, a dump after every polygon */
+static tacfg_t grid86(int down) {
+    tacfg_t c = cfg();
+    c.tx = 8; c.ty = 6;
+    c.opb[1] = c.opb[2] = c.opb[3] = c.opb[4] = 0;
+    if(down) {
+        c.down = 1; c.ol_base = AREA + 0x2000u; c.opb_init = AREA + 0x2000u; c.ol_limit = AREA;
+    } else
+        c.opb_init = c.ol_base + matrix_bytes(&c);
+    return c;
+}
+static void big_quads(int down, float w, float h, int n) {
+    tacfg_t c = grid86(down);
+    int i;
+    begin(&c);
+    for(i = 0; i < n; i++) {
+        quad(OP, 0, 1.0f + (float)i, 1.0f + (float)i, w, h, 0xff000000u | (uint32_t)i);
+        mid();
+    }
+    eol(); finish();
+}
+static void r_q48_up(void) { big_quads(0, 254, 190, 6); }      /* 48 tiles a quad */
+static void r_q16_up(void) { big_quads(0, 126, 126, 8); }      /* 16 tiles a quad */
+static void r_q48_down(void) { big_quads(1, 254, 190, 6); }
+static void r_q48_then_small(void) {            /* one quad over all 48 tiles, then quads in one tile each */
+    tacfg_t c = grid86(0);
+    int i;
+    begin(&c);
+    quad(OP, 0, 1, 1, 254, 190, 0xff000000); mid();
+    for(i = 0; i < 24; i++) {
+        quad(OP, 0, 32.0f * (float)(i % 8) + 4, 32.0f * (float)(i / 8) + 4, 16, 16, 0xff000100u | (uint32_t)i);
+        if(i % 4 == 3)
+            mid();
+    }
+    eol(); finish();
+}
+
+/* ======== fifth round (TA_ERRORS 6): what sets the size of the polygon after a sprite in a modifier list ======== */
+
+/* an untextured sprite in the opaque modifier list, one thing changed at a time; then a triangle in (tx, ty) of the
+   opaque list */
+static void spr6(float az, float bz, float cz, float dx, float dy, uint32_t uv, uint32_t offs, int tx, int ty) {
+    begin_default();
+    hdr_sprite(OM, GROUP(0), ISPW, TSPW, TCWW, 0xff112233, offs);
+    vsprite(40, 40, az, 56, 40, bz, 56, 56, cz, dx, dy, uv, uv ? uv + 0x22222222u : 0, uv ? uv + 0x44444444u : 0);
+    eol(); tri_xy(OP, 0, tx, ty, 0xe1); eol(); finish();
+}
+#define SPR6(n, az, bz, cz, dx, dy, uv, offs, tx, ty) static void n(void) { spr6(az, bz, cz, dx, dy, uv, offs, tx, ty); }
+SPR6(t_base, 0.5f, 0.25f, 0.125f, 100, 90, 0x11112222u, 0x00445566u, 3, 2)
+SPR6(t_dx8, 0.5f, 0.25f, 0.125f, 8, 90, 0x11112222u, 0x00445566u, 3, 2)
+SPR6(t_dx40, 0.5f, 0.25f, 0.125f, 40, 90, 0x11112222u, 0x00445566u, 3, 2)
+SPR6(t_dx72, 0.5f, 0.25f, 0.125f, 72, 90, 0x11112222u, 0x00445566u, 3, 2)
+SPR6(t_dx127, 0.5f, 0.25f, 0.125f, 127, 90, 0x11112222u, 0x00445566u, 3, 2)
+SPR6(t_dy12, 0.5f, 0.25f, 0.125f, 100, 12, 0x11112222u, 0x00445566u, 3, 2)
+SPR6(t_dy40, 0.5f, 0.25f, 0.125f, 100, 40, 0x11112222u, 0x00445566u, 3, 2)
+SPR6(t_dy56, 0.5f, 0.25f, 0.125f, 100, 56, 0x11112222u, 0x00445566u, 3, 2)
+SPR6(t_d8_12, 0.5f, 0.25f, 0.125f, 8, 12, 0x11112222u, 0x00445566u, 3, 2)
+SPR6(t_d40_56, 0.5f, 0.25f, 0.125f, 40, 56, 0x11112222u, 0x00445566u, 3, 2)
+SPR6(t_z1, 1, 1, 1, 100, 90, 0x11112222u, 0x00445566u, 3, 2)
+SPR6(t_uv0, 0.5f, 0.25f, 0.125f, 100, 90, 0, 0x00445566u, 3, 2)
+SPR6(t_offs0, 0.5f, 0.25f, 0.125f, 100, 90, 0x11112222u, 0, 3, 2)
+SPR6(t_next00, 0.5f, 0.25f, 0.125f, 100, 90, 0x11112222u, 0x00445566u, 0, 0)
+SPR6(t_next10, 0.5f, 0.25f, 0.125f, 100, 90, 0x11112222u, 0x00445566u, 1, 0)
+SPR6(t_c112, 1, 1, 1, 40, 56, 0, 0, 3, 2)          /* as ta-probe sprite_in_mv sent it */
+
+/* ======== sixth round (TA_ERRORS 7): the two parameter counters after a sprite in a modifier list ======== */
+
+/* an untextured sprite in the opaque modifier list with corner D at (dx, 90), then the end of the list */
+static void spr7(float dx) {
+    hdr_sprite(OM, GROUP(0), ISPW, TSPW, TCWW, 0xff112233, 0x00445566);
+    vsprite(40, 40, 0.5f, 56, 40, 0.25f, 56, 56, 0.125f, dx, 90, 0x11112222u, 0x33334444u, 0x55556666u);
+    eol();
+}
+static void u_isp_after(void) {                 /* TA_ISP_CURRENT right after the sprite */
+    begin_default(); spr7(100); mid(); tri_xy(OP, 0, 3, 2, 0xe1); eol(); finish();
+}
+static void u_reset_after(void) {               /* SOFTRESET and TA_LIST_INIT after it */
+    tacfg_t c = cfg();
+    begin_default(); spr7(100); begin_ex(&c, NO_FILL); tri_xy(OP, 0, 3, 2, 0xe1); eol(); finish();
+}
+static void u_cont_after(void) {                /* TA_LIST_CONT after it */
+    begin_default(); spr7(100); wait_done(OM);
+    pvrio_reg(TA_LIST_CONT_addr, 0x80000000u);
+    tri_xy(TR, 0, 3, 2, 0xe1); eol(); finish();
+}
+static void u_two_vol(void) {                   /* a polygon of two volumes after it */
+    begin_default(); spr7(100);
+    hdr_vol(OP, GROUP(0) | VOLUME, ISPW, TSPW, 0, 0x87654321u, 0);
+    v9(104, 72, 1, 0xe1, 0xd1, 0); v9(112, 72, 1, 0xe2, 0xd2, 0); v9(104, 80, 1, 0xe3, 0xd3, 1);
+    eol(); finish();
+}
+static void u_shadow(void) {                    /* a polygon with the Shadow bit after it */
+    begin_default(); spr7(100); tri_xy(OP, SHADOW, 3, 2, 0xe1); eol(); finish();
+}
+static void u_sprite(void) {                    /* a sprite of the opaque list after it */
+    begin_default(); spr7(40);
+    hdr_sprite(OP, GROUP(0), ISPW, TSPW, TCWW, 0xff445566, 0);
+    vsprite(104, 72, 1, 112, 72, 1, 112, 80, 1, 104, 80, 0, 0, 0);
+    eol(); finish();
+}
+static void u_strip4(void) {                    /* a strip of four after it */
+    begin_default(); spr7(72);
+    hdr(OP, GROUP(0), ISPW, TSPW, 0);
+    v0(104, 72, 1, 0xe1, 0); v0(112, 72, 1, 0xe2, 0); v0(104, 80, 1, 0xe3, 0); v0(112, 80, 1, 0xe4, 1);
+    eol(); finish();
+}
+static void u_dx160(void) { begin_default(); spr7(160); tri_xy(OP, 0, 3, 2, 0xe1); eol(); finish(); }
+static void u_dx200(void) { begin_default(); spr7(200); tri_xy(OP, 0, 3, 2, 0xe1); eol(); finish(); }
+static void u_dxneg(void) { begin_default(); spr7(-8); tri_xy(OP, 0, 3, 2, 0xe1); eol(); finish(); }
+static void u_two_tris(void) {                  /* two triangles after it */
+    begin_default(); spr7(100); tri_xy(OP, 0, 3, 2, 0xe1); tri_xy(OP, 0, 2, 2, 0xe2); eol(); finish();
+}
+static void u_tex_pad(void) {                   /* a textured triangle (16-bit UV) after it, padded */
+    begin_default(); spr7(160);
+    hdr(OP, GROUP(0) | TEX | UV16, ISPW, TSPW, TCWW);
+    v4(104, 72, 1, 0x11112222u, 0xe1, 0, 0); v4(112, 72, 1, 0x33334444u, 0xe2, 0, 0); v4(104, 80, 1, 0x55556666u, 0xe3, 0, 1);
+    eol(); finish();
+}
+
+/* ======== seventh round (TA_ERRORS 8): TA_LIST_INIT in a strip, a dump after every block ======== */
+
+/* a vertex whose spare words are coordinates of their own: 4, 36, 68, 100 (tiles 0, 1, 2, 3 across) + k / 8 */
+static void vk(float x, float y, uint32_t k, int eos) {
+    const float f = (float)k / 8.0f;
+    w8(VP(eos), fl(x), fl(y), fl(1), fl(4 + f), fl(36 + f), fl(68 + f), fl(100 + f));
+    mid();
+}
+static void w_hdr(void) { hdr(OP, GROUP(0), ISPW, TSPW, 0); }
+static void w_init(void) { init_now(); mid(); }
+static void w_one(void) {                       /* two, TA_LIST_INIT, one that ends the strip, three more */
+    begin_default(); w_hdr(); vk(40, 40, 1, 0); vk(48, 40, 2, 0); w_init();
+    vk(40, 48, 3, 1); vk(72, 40, 4, 0); vk(80, 40, 5, 0); vk(72, 48, 6, 1);
+    eol(); finish();
+}
+static void w_two(void) {                       /* two, TA_LIST_INIT, two, then a header and three */
+    begin_default(); w_hdr(); vk(40, 40, 1, 0); vk(48, 40, 2, 0); w_init();
+    vk(40, 48, 3, 0); vk(48, 48, 4, 1);
+    hdr(OP, GROUP(0), 0x800bcdefu, 0x22222222u, 0); mid();
+    vk(104, 72, 5, 0); vk(112, 72, 6, 0); vk(104, 80, 7, 1);
+    eol(); finish();
+}
+static void w_newhdr(void) {                    /* two, TA_LIST_INIT, a header, three */
+    begin_default(); w_hdr(); vk(40, 40, 1, 0); vk(48, 40, 2, 0); w_init();
+    hdr(OP, GROUP(0), 0x800bcdefu, 0x22222222u, 0); mid();
+    vk(72, 40, 4, 0); vk(80, 40, 5, 0); vk(72, 48, 6, 1);
+    eol(); finish();
+}
+static void w_after1(void) {                    /* one, TA_LIST_INIT, four */
+    begin_default(); w_hdr(); vk(40, 40, 1, 0); w_init();
+    vk(48, 40, 2, 0); vk(40, 48, 3, 1); vk(72, 40, 4, 0); vk(80, 40, 5, 1);
+    eol(); finish();
+}
+static void w_zero(void) {                      /* a header, TA_LIST_INIT, four */
+    begin_default(); w_hdr(); w_init();
+    vk(40, 40, 1, 0); vk(48, 40, 2, 0); vk(40, 48, 3, 1); vk(72, 40, 4, 1);
+    eol(); finish();
+}
+static void w_done(void) {                      /* a whole triangle, TA_LIST_INIT, four */
+    begin_default(); w_hdr(); vk(40, 40, 1, 0); vk(48, 40, 2, 0); vk(40, 48, 3, 1); w_init();
+    vk(72, 40, 4, 0); vk(80, 40, 5, 0); vk(72, 48, 6, 1); vk(104, 72, 7, 1);
+    eol(); finish();
+}
+static void w_tex(void) {                       /* textured with offset (7 word vertices): two, TA_LIST_INIT, four */
+    begin_default(); hdr(OP, GROUP(0) | TEX | OFFS, ISPW, TSPW, TCWW); vk(40, 40, 1, 0); vk(48, 40, 2, 0); w_init();
+    vk(40, 48, 3, 1); vk(72, 40, 4, 0); vk(80, 40, 5, 0); vk(72, 48, 6, 1);
+    eol(); finish();
+}
+
 static const tcase_t cases[] = {
     { "uclip_default", p_uclip_default, 0 },
     { "olp_reset", p_olp_reset, 0 }, { "olp_entries", p_olp_entries, 0 }, { "olp_sizes", p_olp_sizes, 0 },
@@ -930,5 +1178,23 @@ static const tcase_t cases[] = {
     { "cache_tiles_4", k_tiles_4, 0 }, { "cache_tiles_16", k_tiles_16, 0 }, { "cache_tiles_64", k_tiles_64, 0 },
     { "cache_tiles_128", k_tiles_128, 0 }, { "cache_chain", k_chain, 0 }, { "cache_far", k_far, 0 },
     { "cache_chain_steps", k_chain_steps, 4 }, { "cache_tiles_steps", k_tiles_steps, 4 },
+    { "spr_mv_untex", r_mv_untex, 5 }, { "spr_mv_tex", r_mv_tex, 5 }, { "spr_mv_texoffs", r_mv_texoffs, 5 },
+    { "spr_mv_dsmall", r_mv_dsmall, 5 }, { "spr_mv_two", r_mv_two, 5 }, { "spr_mv_then_mv", r_mv_then_mv, 5 },
+    { "spr_mv_then_tex", r_mv_then_tex, 5 }, { "spr_tm", r_tm, 5 },
+    { "init_one", r_init_one, 5 }, { "init_two", r_init_two, 5 }, { "init_hdr", r_init_hdr, 5 },
+    { "init_eol", r_init_eol, 5 }, { "init_after1", r_init_after1, 5 }, { "init_long", r_init_long, 5 },
+    { "init_tex", r_init_tex, 5 }, { "init_noeos", r_init_noeos, 5 },
+    { "q48_up", r_q48_up, 5 }, { "q16_up", r_q16_up, 5 }, { "q48_down", r_q48_down, 5 },
+    { "q48_then_small", r_q48_then_small, 5 },
+    { "s6_base", t_base, 6 }, { "s6_dx8", t_dx8, 6 }, { "s6_dx40", t_dx40, 6 }, { "s6_dx72", t_dx72, 6 },
+    { "s6_dx127", t_dx127, 6 }, { "s6_dy12", t_dy12, 6 }, { "s6_dy40", t_dy40, 6 }, { "s6_dy56", t_dy56, 6 },
+    { "s6_d8_12", t_d8_12, 6 }, { "s6_d40_56", t_d40_56, 6 }, { "s6_z1", t_z1, 6 }, { "s6_uv0", t_uv0, 6 },
+    { "s6_offs0", t_offs0, 6 }, { "s6_next00", t_next00, 6 }, { "s6_next10", t_next10, 6 }, { "s6_c112", t_c112, 6 },
+    { "s7_isp_after", u_isp_after, 7 }, { "s7_reset_after", u_reset_after, 7 }, { "s7_cont_after", u_cont_after, 7 },
+    { "s7_two_vol", u_two_vol, 7 }, { "s7_shadow", u_shadow, 7 }, { "s7_sprite", u_sprite, 7 }, { "s7_strip4", u_strip4, 7 },
+    { "s7_dx160", u_dx160, 7 }, { "s7_dx200", u_dx200, 7 }, { "s7_dxneg", u_dxneg, 7 }, { "s7_two_tris", u_two_tris, 7 },
+    { "s7_tex_pad", u_tex_pad, 7 },
+    { "i8_one", w_one, 8 }, { "i8_two", w_two, 8 }, { "i8_newhdr", w_newhdr, 8 }, { "i8_after1", w_after1, 8 },
+    { "i8_zero", w_zero, 8 }, { "i8_done", w_done, 8 }, { "i8_tex", w_tex, 8 },
 };
 static const tgroup_t groups[] = { { "none", 0, 0 } };
