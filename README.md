@@ -2120,7 +2120,11 @@ goes on with more polygons that repeat the nine words and the vertex data before
 triangles (i8_two, i8_after1, init_two, init_after1, init_long, init_noeos; init_eol, init_hdr, i8_newhdr and
 i8_zero-i8_tex differ only in TA_OL_POINTERS left by those); which queued object list words go first in q16_up (at
 its m2 the console writes those of tiles 12 and 16-19 where refta writes those of tiles 32-34); err_para_types,
-lock_type3 and lock_type6, where what is left after pvrio's reset of the stopped TA differs. A console that stopped
+lock_type3 and lock_type6, where what is left after pvrio's reset of the stopped TA differs. Where refta meets the
+first of these, or input no console run has shown (a sprite header in a strip after TA_LIST_INIT; a polygon sized from
+a word past its own parameters; TA_ISP_LIMIT met while the two parameter pointers differ), it prints a warning the way
+EMUWARN (libswirl/types.h, next to EMUERROR) does, with PC and PR; the cases that stop a console print an error. A
+console that stopped
 after TA_LIST_INIT alone following err_sprite_in_strip (first error run, before the guard) was not seen again.
 
 
