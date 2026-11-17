@@ -331,5 +331,18 @@ def main():
         print(f"    {name:40s} " + " ".join(f"{(T('align2', c, key, 4) - T('align2', c, key, 2)) / 4096:7.2f}" for key, nm in cols))
 
 
+    if "dcalc" in D:
+        print()
+        print("20. DCalcCtrl (where the mipmap level's numerators are taken: 0 the screen's origin, 1 the first vertex).")
+        print("    TSP work of the scene against its twin, clocks, the least of two passes; and the difference per seen")
+        print("    triangle (1x1 quads: one of each quad's two triangles holds the pixel's center).")
+        seen = {2: 2, 9: 32, 10: 128, 11: 512, 5: 1024}
+        print(f"    {'format':32s} {'layout':16s} {'DCalc 0':>8s} {'DCalc 1':>8s} {'1 - 0':>7s} {'per triangle':>13s}")
+        for f in (1, 3, 7, 8, 9):
+            for lay in (2, 9, 10, 11, 5):
+                w = [min(T("dcalc", f, lay, d, ps) - T("dcalcH", f, lay, d, ps) for ps in (0, 1)) / 2 for d in (0, 1)]
+                print(f"    {F[f]:32s} {L[lay]:16s} {w[0]:8.0f} {w[1]:8.0f} {w[1] - w[0]:+7.0f} {(w[1] - w[0]) / seen[lay]:+13.2f}")
+
+
 if __name__ == "__main__":
     main()

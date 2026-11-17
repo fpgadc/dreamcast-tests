@@ -454,3 +454,33 @@
     palette 8 bpp bilinear, 565 entries         1.05    1.26    1.55    1.30    1.61    2.14    2.14    2.14    2.14    1.21    1.43    1.37    1.85
     palette 8 bpp point, 8888 entries           2.00    2.00    2.00    2.00    2.00    2.14    2.13    2.13    2.14    2.00    2.00    2.01    2.00
     palette 8 bpp point, 565 entries            1.01    1.26    1.26    1.26    1.26    2.14    2.13    2.14    2.14    1.13    1.13    1.20    1.20
+
+20. DCalcCtrl (where the mipmap level's numerators are taken: 0 the screen's origin, 1 the first vertex).
+    TSP work of the scene against its twin, clocks, the least of two passes; and the difference per seen
+    triangle (1x1 quads: one of each quad's two triangles holds the pixel's center).
+    format                           layout            DCalc 0  DCalc 1   1 - 0  per triangle
+    untextured gouraud               1 quad 32x32           75       84      +9         +4.50
+    untextured gouraud               16 quads 8x8          294      448    +154         +4.81
+    untextured gouraud               64 quads 4x4         4002     4638    +636         +4.97
+    untextured gouraud               256 quads 2x2       18982    21534   +2552         +4.98
+    untextured gouraud               1024 quads 1x1      38930    44054   +5124         +5.00
+    565 gouraud                      1 quad 32x32          163      160      -3         -1.50
+    565 gouraud                      16 quads 8x8          651      801    +150         +4.69
+    565 gouraud                      64 quads 4x4         5222     5850    +628         +4.91
+    565 gouraud                      256 quads 2x2       23628    26189   +2561         +5.00
+    565 gouraud                      1024 quads 1x1      48180    53322   +5142         +5.02
+    565 gouraud mipmapped point      1 quad 32x32          213      230     +17         +8.50
+    565 gouraud mipmapped point      16 quads 8x8          650      804    +154         +4.81
+    565 gouraud mipmapped point      64 quads 4x4         5221     5858    +637         +4.98
+    565 gouraud mipmapped point      256 quads 2x2       23623    26175   +2552         +4.98
+    565 gouraud mipmapped point      1024 quads 1x1      48190    53318   +5128         +5.01
+    565 gouraud mipmapped bilinear   1 quad 32x32          569      558     -11         -5.50
+    565 gouraud mipmapped bilinear   16 quads 8x8         1138     1132      -6         -0.19
+    565 gouraud mipmapped bilinear   64 quads 4x4         5222     5848    +626         +4.89
+    565 gouraud mipmapped bilinear   256 quads 2x2       23642    26204   +2562         +5.00
+    565 gouraud mipmapped bilinear   1024 quads 1x1      48207    53316   +5109         +4.99
+    565 gouraud trilinear A          1 quad 32x32          564      553     -11         -5.50
+    565 gouraud trilinear A          16 quads 8x8         1152     1160      +8         +0.25
+    565 gouraud trilinear A          64 quads 4x4         5220     5858    +638         +4.98
+    565 gouraud trilinear A          256 quads 2x2       23638    26208   +2570         +5.02
+    565 gouraud trilinear A          1024 quads 1x1      48203    53329   +5126         +5.01

@@ -493,6 +493,28 @@ gave before were "TSP's bit minus ISP's bit" and did not.
 - "A translucent modifier volume does nothing" (third version): the tile was pre-sorted. Sorted per pixel
   it works.
 
+## DCalcCtrl (2026-11-17)
+
+The bit of the ISP/TSP instruction word that says where the mipmap level's numerators are taken: 0 at the
+screen's origin, 1 at the polygon's first vertex (what it does to the level: README, mipmeas `mpos1`). Scenes
+`dcalc` / `dcalcH` (run with `#define TM_DCALC`, a few seconds; log `fit/timemeas_logs/timemeas_run10_dcalc.log`,
+table 20): five formats in five layouts with the bit 0 and 1, each against its twin, two passes.
+
+- **DCalcCtrl 1 costs the TSP 5 clocks per seen triangle**: 5.00 +- 0.02 with 512 and 1024 triangles, in
+  every format, untextured and without mipmaps as well as mipmapped point, bilinear and trilinear. The bit is
+  not looked at in the light of the texture: the setup does the extra work for any polygon that has it.
+- **It is setup time.** A triangle that its pixels keep busy longer hides it (8x8 quads bilinear or trilinear:
+  0; untextured and point sampled 8x8 quads are still bound by their setup: 4.7 to 4.8), and nothing
+  is added per pixel (one 32x32 quad: within the noise of +-11 clocks, under 0.01 a pixel).
+- **The ISP does not see it**: the twins, the same triangles behind the background, take the same time with
+  either bit (within +-8 clocks, no trend).
+- In the terms of "Per triangle" above: the setup of a seen triangle goes from about 39 to 44 untextured and
+  from 48 to 53 textured with the bit set.
+
+That fits the level's model: per pixel the level is a polygon's constant times w^2, and the constant is made
+in the setup. With DCalcCtrl 1 the setup also evaluates the planes at the first vertex (a x1 + b y1 + c);
+5 clocks for that is what a pass of the 1/w, U and V planes through a shared multiplier would take (a guess).
+
 ## Not known
 
 - What makes runs cost more when more than about 12 different triangles are on a line.

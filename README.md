@@ -1771,6 +1771,9 @@ short, in clocks of the core (10 ns):
   palette with 16 bit entries costs nothing), but
   at least 39 per seen triangle untextured, 48 textured, 64 with offset colour, and at least about 4.7 / 6 /
   8 per run of pixels; runs cost up to twice that when more than about 12 different triangles are on a line.
+- **DCalcCtrl 1** (the mipmap level's numerators at the first vertex): 5 clocks of TSP setup per seen
+  triangle, in every format (untextured too), hidden when the triangle's pixels take longer; nothing per pixel,
+  nothing in the ISP.
 - **Write-out**: about 1045 with a 16 bit framebuffer, 1105 with 888, 1357 with 32 bits, also when the clip
   removes every pixel. A tile alone with nothing in it and pointers to five lists: 2695 (16 bit) or 3005
   (0888).

@@ -25,6 +25,7 @@
    next to each other on one line) and of triangles change independently. The pages of this test are the
    layouts drawn once each with every triangle in its own colour. */
 /* #define TM_QUICK */                 /* only the scenes before the TM_QUICK line in run_all: a few seconds */
+/* #define TM_DCALC */                 /* only the dcalc scenes: a few seconds */
 #define NUM_LAYOUTS 17
 #define NUM_PAGES NUM_LAYOUTS
 #define TEST_MODIFIERS              /* the two modifier volume lists exist */
@@ -155,6 +156,7 @@ static void test_describe(void) {
 static uint32_t own_colour(int n) { return 0xff000080u | (uint32_t)(n & 255) << 16 | (uint32_t)((n >> 8) & 255) << 8; }
 
 static int shadow_bit;              /* polygons are sent with the shadow bit: modifier volumes act on them */
+static int dcalc_ctrl;              /* the polygons' DCalcCtrl bit: where the mipmap level's numerators are taken */
 static int two_volumes;             /* strips are sent "with two volumes": a second TSP, TCW and colours for inside */
 static int vol1_blend;              /* the second volume blends 0: as the first; 1: ONE, ONE; 2: ZERO, ONE; 3: SRC_ALPHA, INV_SRC_ALPHA */
 static int vol_flat;                /* colours 0x404040 outside and 0x202020 (blend 3: white, alpha 0x80) inside, to read the result */
@@ -184,6 +186,7 @@ static void header(const format_t *f, int DepthMode, PCW *pcw, ISP_TSP *isp, TSP
     pcw->Gouraud = f->gouraud;
     isp->DepthMode = DepthMode;
     isp->CullMode = CullMode_None;
+    isp->DCalcCtrl = dcalc_ctrl;
     tsp->FogCtrl = f->fog ? FogCtrl_Table : FogCtrl_None;
     if(f->list == ListType_Translucent) {
         tsp->SrcInstr = BlendInstr_SrcAlpha;
@@ -616,6 +619,35 @@ static void run_all(void) {
     printf("T display %lx off\n", (unsigned long)fb_r);
     for(f = 0; f < NUM_FORMATS; f++) printf("F %d %s\n", f, formats[f].name);
     for(L = 0; L < NUM_LAYOUTS; L++) printf("L %d %s\n", L, layout_names[L]);
+
+    /* ---- dcalc f L d: DCalcCtrl d (0: the mipmap level's numerators are taken at the screen's origin, 1: at the
+       first vertex) for format f in layout L, seen (dcalc) and its twin behind the background (dcalcH). The
+       numerators are the polygon's: in theory the bit costs setup time only, if any. Formats: untextured and
+       565 without mipmaps (the bit means nothing), 565 mipmapped point, bilinear and trilinear A. Layouts from
+       one quad over the tile to 1024 quads of one pixel. Two passes, to see how well the times repeat. */
+    {
+        static const int df[5] = { 1, 3, 7, 8, 9 };
+        static const int dl[5] = { 2, 9, 10, 11, 5 };
+        int pass;
+        for(pass = 0; pass < 2; pass++)
+            for(i = 0; i < 5; i++)
+                for(k = 0; k < 5; k++)
+                    for(p = 0; p < 2; p++)
+                        for(c = 0; c < 2; c++) {
+                            dcalc_ctrl = p;
+                            vis = c ? DepthMode_Greater : DepthMode_Always; bg_depth = c ? f32b_int(2) : 0;
+                            cur = &formats[df[i]]; cur_own = 0;
+                            begin(formats[df[i]].list);
+                            layout(dl[k]);
+                            measure(c ? "dcalcH" : "dcalc", df[i], dl[k], p, pass);
+                        }
+        dcalc_ctrl = 0; vis = DepthMode_Always; bg_depth = 0;
+    }
+#ifdef TM_DCALC
+    *fb_r_ctrl = fb_r;
+    printf("T end\n");
+    return;
+#endif
 
     /* ---- align2 c (1000 su + 100 sv + 10 ou + ov) d: where the bilinear footprint starts, in x and in y. The
        background polygon's texture stepped su texels a pixel along x and sv along y, offset by ou and ov texels,
