@@ -2059,7 +2059,7 @@ looked at by running its seed with dumps. Offline, the 10,000 take about a secon
     TEST_DEFS=-DTA_ERRORS=<n> bash run2.sh ta-probe ...              # part n, below
     python3 ta-tests/compare_dumps.py --test ta-probe hw off [--case N]   # against the console's dumps of the last run
     python3 ta-tests/compare_dumps.py --test ta-probe ref off [--case N]  # against the archived ones (all parts)
-    REFSW2_TA=refta bash run2.sh ta-tests off                         # refsw2-offline with refta instead of tacore.cpp
+    REFSW2_TA=tacore bash run2.sh ta-tests off                        # refsw2-offline with lxdream's tacore.cpp, not refta
 
 Parts: 1 bad input (14 cases); 2 the three that stopped a console before the guard; 3 stopping input, object list
 set, listless vertices, sprite headers in a strip (19); 4 the write queue step by step (2); 5 a sprite in a modifier
@@ -2073,7 +2073,8 @@ face colours known values first, since a console keeps both from the programs be
 
 refta (nulldc3 libswirl/rend/refsw2/refta.cpp, refta_fp.h) is a new tile accelerator written from these results and
 those of ta-tests, every rule with the case that shows it. No float or double: the TA only takes floats apart
-(refta_fp.h, its own: the ISP and TSP setup units are not like it). With REFSW2_TA=refta, refsw2-offline uses it.
+(refta_fp.h, its own: the ISP and TSP setup units are not like it). refsw2-offline uses it (REFSW2_TA=tacore: lxdream's tacore.cpp), and so does
+the emulator's TA_LLE build (hw/pvr/ta_lle.h; the CMake option TA_LLE_LXDREAM: tacore.cpp).
 Against the console: ta-tests 295 of 295 dumped cases and 2,000 of 2,000 long fuzz hashes (tacore.cpp: 89 and 271);
 ta-probe, mid-list dumps included: parts 0, 2, 4, 6 and 7 whole, part 1 13 of 14, part 3 17 of 19, part 5 13 of 20,
 part 8 1 of 7 (165 of 181; what is left is listed at the end). The 39 render suites of regress.sh give the same
