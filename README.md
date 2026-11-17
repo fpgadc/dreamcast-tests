@@ -2053,6 +2053,39 @@ computed from the dump has to be its hash, on each side (a check of the two CRCs
 looked at by running its seed with dumps. Offline, the 10,000 take about a second.
 
 
+## ta-perf: how long the tile accelerator takes (2026-11-17)
+
+    bash run2.sh ta-perf off ; bash run2.sh ta-perf hw=<ip>     # 20 s on a console
+    python3 ta-perf/analyze.py [ta-perf/hw_results.txt]        # costs from the console's lines
+
+Valid input only: the offline run sends every stream through refta, which raises no error and no warning, and the
+console's hashes of the object lists, parameters and TA state after each of the 212 points are refta's, with the
+input sent by the store queues and by DMA alike. Method (ta-perf/main.c): interrupts and display off, a stream made
+in main memory first, the CPU's cycle counter (5 ns) read at the first block, after the last ("sent") and when
+SB_ISTNRM shows the end of list ("done"); 5 times each, the least kept; each case at three sizes and fitted as
+a + b items. hw_results.txt is the console's run.
+
+**Input.** By the store queues 267 ns a 32 byte block from main memory (164 ns when the stream is in the cache,
+under 16 KB), by DMA (channel 2) 54 ns. The TA keeps up with the store queues for everything but polygons over many
+tiles: with that input its time is the CPU's, and when the last block is in, only the end of the list is left. The
+costs below are from the DMA run (the same where the store queues are slower than the TA).
+
+| | |
+|---|---|
+| triangles in one tile | 69 ns + 10.5 ns a parameter word written (header and three vertices): packed, float colour or intensity 226 ns, textured 16 bit UV 258, textured 289, two volumes 279, textured with offset 321, two volumes textured 467; textured with float colours and offset 348 (27 ns over the line). The format of the input does not count, the words written do (one about every PVR clock) |
+| headers | not slower than DMA (54 ns); a header before each triangle adds 84 ns |
+| strips | a polygon writes its header and all its vertices: with Strip_Len 1 every vertex after the second is a whole triangle (226 ns); with Strip_Len 6, strips of 32: 81 ns a vertex |
+| dropped polygons | off the grid or outside a user clip: 220 ns a triangle, as one that is drawn |
+| arrays | joining or not (triangles in two tiles by turns): no difference |
+| tiles | per tile in a polygon's bounds: sprite 10.4 ns, strip (quad) 17.3, triangle and modifier volume triangle 20.6 (bounds of the whole 40 x 15). Smaller bounds cost more a tile (quad over 8 x 8: 21.1 ns, 15 x 15: 19.6) and up to 2 x 2 tiles are hidden behind the vertex work (quad over 1 or 4 tiles: 284 ns) |
+| block size | strip entries over the whole grid: 15.8 ns a tile with 8 word blocks, 17.3 with 16, 22.5 with 32 |
+| list, display | opaque, translucent and punch through the same; the display on changes nothing past jitter |
+| end of list | about 0.8 us + 15.5 ns a tile of the grid (40 x 15: 10 us) |
+
+Not measured: the TA against a render reading video memory at the same time; polygons of many tiles in more
+shapes (what the cost a tile follows: the bounds' width, the address pattern of the object list writes).
+
+
 ## ta-probe and refta: the tile accelerator as a console does it (2026-11-17)
 
     bash run2.sh ta-probe off ; bash run2.sh ta-probe hw=<ip>       # part 0: 88 cases, 30 s on a console
