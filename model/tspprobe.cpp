@@ -73,7 +73,7 @@ static const Fields fields[] = {
     { "coefBits", &pvrtsp::PlaneConfig::coefBits }, { "gridBits", &pvrtsp::PlaneConfig::gridBits },
     { "valueBits", &pvrtsp::PlaneConfig::valueBits },
     { "range", &pvrtsp::PlaneConfig::range }, { "expLow", &pvrtsp::PlaneConfig::expLow }, { "expHigh", &pvrtsp::PlaneConfig::expHigh },
-    { "zeroReach", &pvrtsp::PlaneConfig::zeroReach },
+    { "zeroReach", &pvrtsp::PlaneConfig::zeroReach }, { "tileLocal", &pvrtsp::PlaneConfig::tileLocal }, { "macOrder", &pvrtsp::PlaneConfig::macOrder },
 #ifdef PVRTSP_RANGE_FIELDS
     PVRTSP_RANGE_FIELDS
 #endif

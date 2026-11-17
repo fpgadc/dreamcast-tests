@@ -29,6 +29,7 @@
 /* #define TM_AHEAD */                 /* only the ahead scenes: a few seconds */
 /* #define TM_SPAN */                  /* only the spanahead scenes: a few seconds */
 /* #define TM_SPANFMT */               /* only the spanfmt scenes: a few seconds */
+/* #define TM_LINE */                  /* only the lineshare scenes: a few seconds */
 #define NUM_LAYOUTS 17
 #define NUM_PAGES NUM_LAYOUTS
 #define TEST_MODIFIERS              /* the two modifier volume lists exist */
@@ -623,6 +624,52 @@ static void run_all(void) {
     printf("T display %lx off\n", (unsigned long)fb_r);
     for(f = 0; f < NUM_FORMATS; f++) printf("F %d %s\n", f, formats[f].name);
     for(L = 0; L < NUM_LAYOUTS; L++) printf("L %d %s\n", L, layout_names[L]);
+
+    /* ---- lineshare v o L pass: is part of a run start made once per line and triangle? Untextured sprites, each tile
+       of the first 64 the same, nine runs of the first L lines at columns o .. o + 9 and one to the end of the line:
+         v 0 (R): a sprite T over the whole tile, sprites S1..S4 of 1 x L in front at o + 1, 3, 5, 7: on a line T has
+                  five runs (its first and four more) and S1..S4 one each;
+         v 1 (D): the same runs from nine sprites: U0 over columns 0 .. o, U1..U3 of 1 x L at o + 2, 4, 6, U4 from
+                  o + 8 to the end of the line, and S1..S4: every run is a sprite's only run on the line.
+       The lines from L on: T (R) or the background (D). o 0 or 16: the same runs further right. The slope over L
+       is the cost of a line of these runs; the setups (5 against 9 sprites a tile) drop out. 16 bit framebuffer. */
+    {
+        volatile uint32_t *fb_w_ctrl = (volatile uint32_t *)(0xa05f8000 + FB_W_CTRL_addr);
+        const uint32_t fbw = *fb_w_ctrl;
+        static const int lL[4] = { 8, 16, 24, 32 };
+        int vv, oi, li, ps, t;
+        *fb_w_ctrl = (fbw & ~15u) | 1u;
+        for(ps = 0; ps < 2; ps++)
+            for(vv = 0; vv < 2; vv++)
+                for(oi = 0; oi < 2; oi++)
+                    for(li = 0; li < 4; li++) {
+                        const int o = oi * 16, L = lL[li];
+                        tiles_region(64);
+                        region_addr = MANY_TILES;
+                        ta_list_begin(ListType_Opaque);
+                        for(t = 0; t < 64; t++) {
+                            const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                            if(vv == 0)
+                                rect(&formats[0], 1, DepthMode_Always, x0, y0, 32, 32, front, 0, 0);
+                            else {
+                                rect(&formats[0], 1, DepthMode_Always, x0, y0, o + 1, L, front, 1, 0);
+                                for(n = 1; n <= 3; n++)
+                                    rect(&formats[0], 1, DepthMode_Always, x0 + o + 2 * n, y0, 1, L, front, 1 + n, 0);
+                                rect(&formats[0], 1, DepthMode_Always, x0 + o + 8, y0, 24 - o, L, front, 5, 0);
+                            }
+                            for(n = 0; n < 4; n++)
+                                rect(&formats[0], 1, DepthMode_Always, x0 + o + 1 + 2 * n, y0, 1, L, front, 6 + n, 0);
+                        }
+                        measure("lineshare", vv, o, L, ps);
+                    }
+        *fb_w_ctrl = fbw;
+        region_addr = ONE_TILE;
+    }
+#ifdef TM_LINE
+    *fb_r_ctrl = fb_r;
+    printf("T end\n");
+    return;
+#endif
 
     /* ---- spanfmt f L pass: what a run start costs by format. In each of the first 64 tiles one triangle of format f
        covers the tile (shadow bit, cheap shadow), 15 opaque modifier volumes of one pixel's width (columns 1, 3, ..

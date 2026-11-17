@@ -756,6 +756,25 @@ whole; the band is drawn over it afterwards. refsw2 finds the runs in its tag bu
 and matches both lists reading for reading. (Modifier volumes, punch-through passes and the per-pixel sort:
 see uvrun below.)
 
+**How a run's first value is rounded** (2026-11-17, `model/tspprobe tileLocal= macOrder=`, scored on the 29
+uvmeas sets, 23,640,053 readings; pvr_tsp_plane.h keeps both as experiments, default 0):
+
+| the run's first value | readings wrong |
+|---|---|
+| ⌊C⌋ + ⌊A x⌋ + ⌊B y⌋, x and y the screen's (half pixels), each term cut to the tile's grid by itself | 0 |
+| ⌊C + B y⌋ + ⌊A x⌋: a fused multiply-add for the line, then one for the run | 3,445 |
+| ⌊C + A x⌋ + ⌊B y⌋ | 32,716 |
+| ⌊C + A x + B y⌋, rounded once | 512,221 |
+| tile's own coordinates: ⌊C + A Xt + B Yt⌋ for the tile, then ⌊A x⌋ + ⌊B y⌋ from its corner | 15,801 |
+| the same with every piece cut by itself: ⌊C⌋ + ⌊A Xt⌋ + ⌊B Yt⌋ + ⌊A x⌋ + ⌊B y⌋ | 111,580 |
+| tile's own coordinates and a grid chosen from them | 1,277,606 |
+
+So each product is formed with the screen's coordinates and cut to the grid on its own, before it is
+added: a multiplier whose output is truncated at the grid's last bit, then an integer adder. That fits one
+unit used twice, ⌊C⌋ + ⌊B y⌋ for a line and then + ⌊A x⌋ for a run, if it does not keep the product's
+bits below the grid; a fused multiply-add does not. A datapath on the tile's own coordinates that keeps
+every bit of A Xt + A x until the one cut would give the same numbers and is not ruled out.
+
 **A run is not cut anywhere else** (2026-11-17): it goes on to the last pixel of the stretch, up to the
 tile's width. `model/tspprobe split=N` starts a new run also at every N-th column of the tile; on the uvmeas
 sets uv1, ugen5, usteep3, uflat2 and uwflat4 (3,360,053 readings, all right without it) that costs 63,619

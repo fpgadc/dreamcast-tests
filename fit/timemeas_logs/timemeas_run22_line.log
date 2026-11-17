@@ -1,0 +1,161 @@
+Console enabled
+Upload </tmp/pvr_tests/timemeas/build/hw.elf>
+File format is ELF, start address is 0x8c010000
+Section .text, lma 0x8c010000, size 275620
+dcload-ip 2.0.3 using Broadband Adapter (HIT-0400)
+Section .init, lma 0x8c0534a4, size 54
+Section .fini, lma 0x8c0534dc, size 42
+Section .rodata, lma 0x8c053508, size 49668
+Section .eh_frame, lma 0x8c05f70c, size 452
+Section .ctors, lma 0x8c05f950, size 8
+Section .dtors, lma 0x8c05f958, size 8
+Section .data, lma 0x8c05f960, size 11884
+Section .got, lma 0x8c0627cc, size 12
+Transferred 337748 bytes at 13257011.991540 bytes / sec
+Executing at <0xac010000>
+Sending execute command (0xac010000, console=1, cdfsredir=0)...executing
+
+--
+KallistiOS v2.1.0
+  Git revision: a02b86e8
+  Tue Mar  3 18:50:08 EET 2026
+  skmp@flora.localdomain:/opt/toolchains/dc/kos
+  sh-elf-gcc (GCC) 13.2.0
+thd: pre-emption enabled, HZ=100
+maple: active drivers:
+    Dreameye (Camera): Camera
+    Sound Input Peripheral: Microphone
+    PuruPuru (Vibration) Pack: JumpPack
+    VMU Driver: Clock, LCD, MemoryCard
+    Mouse Driver: Mouse
+    Keyboard Driver: Keyboard
+    Controller Driver: Controller
+    Lightgun: LightGun
+  DMA Buffer at ac2e56c0
+vid_set_mode: 640x480 VGA with 1 framebuffers.
+dc-load console support enabled
+maple: attached devices:
+  A0: Dreamcast Controller           (01000000: Controller)
+
+vid_set_mode: 640x480 VGA with 1 framebuffers.
+T display 80000d off
+F 0 untextured flat
+F 1 untextured gouraud
+F 2 565 flat
+F 3 565 gouraud
+F 4 565 flat offset
+F 5 565 gouraud offset
+F 6 565 gouraud bilinear
+F 7 565 gouraud mipmapped point
+F 8 565 gouraud mipmapped bilinear
+F 9 565 gouraud trilinear A
+F 10 565 gouraud trilinear B
+F 11 1555 gouraud
+F 12 4444 gouraud
+F 13 YUV422 gouraud
+F 14 bump gouraud offset
+F 15 palette 4 bpp gouraud
+F 16 palette 8 bpp gouraud
+F 17 565 VQ gouraud
+F 18 565 VQ mipmapped gouraud
+F 19 565 not twiddled gouraud
+F 20 YUV422 gouraud bilinear
+F 21 palette 8 bpp gouraud bilinear
+F 22 565 VQ gouraud bilinear
+F 23 565 gouraud, 8 texels a pixel
+F 24 565 gouraud mipmapped, 8 texels a pixel
+F 25 565 gouraud trilinear A, 6 texels a pixel
+F 26 565 gouraud, fog table
+F 27 565 gouraud, punch through list
+F 28 565 gouraud, translucent list
+F 29 untextured gouraud, translucent list
+F 30 YUV422 not twiddled gouraud
+F 31 YUV422 not twiddled gouraud bilinear
+F 32 565 not twiddled gouraud bilinear
+F 33 1555 gouraud bilinear
+F 34 4444 gouraud bilinear
+F 35 YUV422 gouraud mipmapped bilinear
+F 36 YUV422 gouraud, 8 texels a pixel
+F 37 YUV422 gouraud bilinear, 8 texels a pixel
+F 38 565 gouraud bilinear, 8 texels a pixel
+F 39 YUV422 VQ gouraud
+F 40 YUV422 VQ gouraud bilinear
+F 41 palette 4 bpp VQ gouraud
+F 42 palette 8 bpp VQ gouraud
+F 43 palette 8 bpp VQ gouraud bilinear
+F 44 palette 4 bpp gouraud bilinear
+F 45 565 VQ gouraud, 8 texels a pixel
+F 46 palette 8 bpp gouraud, 8 texels a pixel
+F 47 565 gouraud offset, 8 texels a pixel
+L 0 nothing (the background)
+L 1 1 sprite 32x32
+L 2 1 quad 32x32
+L 3 32 quads 32x1
+L 4 32 quads 1x32
+L 5 1024 quads 1x1
+L 6 32 sprites 32x1
+L 7 32 sprites 1x32
+L 8 1024 sprites 1x1
+L 9 16 quads 8x8
+L 10 64 quads 4x4
+L 11 256 quads 2x2
+L 12 4 quads 8x32
+L 13 4 quads 32x8
+L 14 1 quad 32x16
+L 15 1 quad 16x32
+L 16 256 sprites 2x2
+T lineshare 0 0 8 0 W 149934 149940 163800 163818 13852 13864 P ffffff ffffff
+T lineshare 0 0 16 0 W 179108 179120 189276 189292 10145 10172 P ffffff ffffff
+T lineshare 0 0 24 0 W 204896 204916 213500 213520 8577 8604 P ffffff ffffff
+T lineshare 0 0 32 0 W 231084 231098 238456 238476 7333 7372 P ffffff ffffff
+T lineshare 0 16 8 0 W 146732 146736 160360 160372 13601 13628 P ffffff ffffff
+T lineshare 0 16 16 0 W 172876 172880 182768 182772 9865 9892 P ffffff ffffff
+T lineshare 0 16 24 0 W 195972 195980 204288 204304 8296 8324 P ffffff ffffff
+T lineshare 0 16 32 0 W 220918 220956 228064 228092 7108 7136 P ffffff ffffff
+T lineshare 1 0 8 0 W 153440 153452 167932 167936 14453 14480 P ffffff 18c618
+T lineshare 1 0 16 0 W 185130 185152 195804 195816 10660 10660 P ffffff 18c618
+T lineshare 1 0 24 0 W 211370 211388 220188 220192 8800 8800 P ffffff ffffff
+T lineshare 1 0 32 0 W 240984 241014 249476 249508 8453 8492 P ffffff ffffff
+T lineshare 1 16 8 0 W 148540 148552 162420 162444 13880 13892 P ffffff 18c618
+T lineshare 1 16 16 0 W 176220 176242 186192 186204 9948 9976 P ffffff 18c618
+T lineshare 1 16 24 0 W 198752 198792 207132 207172 8341 8380 P ffffff ffffff
+T lineshare 1 16 32 0 W 227910 227924 235674 235688 7752 7764 P ffffff ffffff
+T lineshare 0 0 8 1 W 149934 149936 163800 163816 13852 13880 P ffffff ffffff
+T lineshare 0 0 16 1 W 179108 179120 189278 189292 10156 10172 P ffffff ffffff
+T lineshare 0 0 24 1 W 204892 204918 213496 213524 8577 8604 P ffffff ffffff
+T lineshare 0 0 32 1 W 231096 231118 238460 238484 7333 7372 P ffffff ffffff
+T lineshare 0 16 8 1 W 146734 146754 160358 160374 13585 13628 P ffffff ffffff
+T lineshare 0 16 16 1 W 172862 172880 182758 182772 9864 9892 P ffffff ffffff
+T lineshare 0 16 24 1 W 195968 195986 204286 204304 8296 8324 P ffffff ffffff
+T lineshare 0 16 32 1 W 220932 220952 228060 228088 7108 7136 P ffffff ffffff
+T lineshare 1 0 8 1 W 153444 153448 167928 167940 14468 14480 P ffffff 18c618
+T lineshare 1 0 16 1 W 185126 185152 195812 195816 10649 10676 P ffffff 18c618
+T lineshare 1 0 24 1 W 211368 211384 220184 220196 8800 8801 P ffffff ffffff
+T lineshare 1 0 32 1 W 240968 240994 249460 249492 8492 8492 P ffffff ffffff
+T lineshare 1 16 8 1 W 148550 148552 162432 162444 13865 13892 P ffffff 18c618
+T lineshare 1 16 16 1 W 176224 176240 186184 186200 9948 9960 P ffffff 18c618
+T lineshare 1 16 24 1 W 198740 198788 207120 207168 8341 8380 P ffffff ffffff
+T lineshare 1 16 32 1 W 227908 227920 235656 235696 7736 7764 P ffffff ffffff
+T end
+PVRIO crc 4661d4aa before page0
+PVRIO crc 6a7c4e62 before page1
+PVRIO crc df27ad3e before page2
+PVRIO crc 4dd7ecec before page3
+PVRIO crc 48ed78f0 before page4
+PVRIO crc 90103d8d before page5
+PVRIO crc a48e67e6 before page6
+PVRIO crc b5db16e4 before page7
+PVRIO crc 57f5cde4 before page8
+PVRIO crc 97d58b63 before page9
+PVRIO crc ea0c7999 before page10
+PVRIO crc 7dc4aea4 before page11
+PVRIO crc 64fc0444 before page12
+PVRIO crc f5180909 before page13
+PVRIO crc 421e267d before page14
+PVRIO crc 48c3cd7b before page15
+PVRIO crc 0679db20 before page16
+
+arch: exit return code 0
+arch: shutting down kernel
+maple: final stats -- device count = 23, vbl_cntr = 299, dma_cntr = 299
+vid_set_mode: 640x480 VGA with 1 framebuffers.

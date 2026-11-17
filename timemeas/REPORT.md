@@ -652,6 +652,14 @@ ends where the volume state changes: README, uvrun). 16 bit framebuffer; a tile 
   triangle's (its coefficients loaded again), the inside of a cheap-shadow volume, or the other set of a
   two-volume polygon. My reading, not measured.
 
+- **Is part of a run start kept for the line?** (scenes `lineshare`, `#define TM_LINE`, log run22): nine runs
+  of one pixel a line, either a sprite behind four 1 x L sprites (its runs repeat on the line) or nine
+  sprites (only first runs), slope over the number of such lines: the repeating version costs 2.0 a line
+  less at column 0 and 1.6 at column 16, about 0.5 a repeated run. Moving the runs from column 0 to column
+  16 changes a line by -2.3 (repeating) and -2.8 (first runs): no sign of a run start that takes longer
+  further right. If ⌊C⌋ + ⌊B y⌋ is kept for a line and a triangle, it saves at most about half a clock
+  (these lines are only partly bound by run starts). The rounding of the values (README, uvspan) says each
+  product is cut by itself with the screen's coordinates, which allows either.
 - Not understood: the cut lines 20 to 25 (L = 6) give 80 to 87 hidden in two series and 50 in the third,
   where L = 4 and 8 agree. The texels-8-apart triangle (spanahead v 0) gives erratic times, as the block of
   the "ahead" scenes did.
