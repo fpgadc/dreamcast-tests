@@ -332,6 +332,10 @@ largest of its ISP, TSP and write-out times [M timemeas].
 - **Empty keep-Z tiles [M accbuf].** Two in a row (written out) hang the render until a core reset. One followed
   by other tiles costs ~2390 clocks and a neighbour gets the other buffer's picture. **[I]** An empty tile's end
   comes at once and doesn't wait for the previous write-out: a handshake collision.
+  - After an entry that is not written out there is no write-out to collide with: an empty keep-Z entry of the
+    same tile is written out like any other, with what the entry before drew [M polly2-data logo, mem, menu2,
+    menu3, thps2_menu: a no-write-out entry with the lists, then a keep-Z entry without, every tile; video
+    memory = the console's].
 
 
 ## [7] Write-out and scaler

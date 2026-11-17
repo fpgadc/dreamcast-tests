@@ -30,8 +30,9 @@ def framebuffer(v8, regs):
     sof, stride = R(0x60) & 0xffffff, (R(0x4c) & 0x1ff) * 8
     x0, x1 = R(0x68) & 0x7ff, (R(0x68) >> 16) & 0x7ff
     y0, y1 = R(0x6c) & 0x3ff, (R(0x6c) >> 16) & 0x3ff
-    w, h = x1 + 1, y1 + 1
-    if sof + stride * h > len(v8) or w * bpp > stride:
+    w, h = min(x1 + 1, stride // bpp), y1 + 1      # a clip past the line (sc_ingame: 640 wide, 641 clipped)
+    h = min(h, (len(v8) - sof) // stride)
+    if h <= y0 or w <= x0:
         return None
     rows = np.frombuffer(v8[sof:sof + stride * h], dtype=np.uint8).reshape(h, stride)[:, :w * bpp]
     return rows.reshape(h, w, bpp)[y0:, x0:]
@@ -50,6 +51,10 @@ def main():
     for s in scenes:
         w = os.path.join(WORK, s)
         os.makedirs(w, exist_ok=True)
+        size = os.path.getsize(f"{dumps}/pvr_regs_{s}.bin")
+        if size not in (8192, 32768):
+            print(f"{s}: not replayed: its register file is {size} bytes, not the 8 KB of 0x005F8000-0x005F9FFF")
+            continue
         cmd = f"regs {dumps}/pvr_regs_{s}.bin; vram {dumps}/vram_{s}.bin; render; save {w}"
         r = subprocess.run([os.path.join(OFFLINE, "refsw2-offline"), "--lax", "-c", cmd], capture_output=True, text=True)
         if r.returncode or not os.path.exists(os.path.join(w, "vram.bin")):

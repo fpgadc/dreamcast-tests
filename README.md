@@ -2332,6 +2332,12 @@ registers and video memory) with refsw2-offline and compares video memory with t
 same dump (pvr-renderer's vram_out_<scene>.bin). Sonic Adventure's sa_slow1-3 were 88 to 96 % exact before,
 every differing pixel a bilinear sample below the full size; now all of video memory is the console's.
 
+All of them (2026-11-17, about 12 minutes): 32 of the 62 that can be replayed have all of video memory the
+console's, the others 96.7 to 99.99 % of the framebuffer (jgr, shenmue, thps2_ingame, sc_ingame and xtreme_intro
+the furthest off). menu's register file is 4 KB, without the palette, and is not replayed. logo, mem, menu2,
+menu3 and thps2_menu were 3 to 16 % exact until refsw2 wrote out an empty keep-Z tile after a tile that is
+not written out (pvr-tests/PIPELINE_SHAPE.md, [6]).
+
 ## bumpfn, bumpbil, bumphang: bump maps (2026-11-17)
 
     bash run2.sh bumpfn bumpbil off hw=<ip>         # 7 + 7 pages; refsw2-offline = console in 952 and 1792 regions
