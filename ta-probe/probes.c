@@ -662,6 +662,30 @@ static void p_list_cont_same(void) {            /* TA_LIST_CONT, then the opaque
     quads_xy(OP, 1, 1, 2); eol(); finish();
 }
 
+/* ======== before the first case ======== */
+
+/* What a console keeps from the programs before: TA_OL_POINTERS (SOFTRESET keeps them) and the face colours (so
+   does every reset). A 41 x 15 grid with a quad over all of it gives every one of the 608 registers a known value,
+   and a two face colour header the face colours; nothing is dumped (case number -1: no TACFG for compare_dumps). */
+static void prelude(void) {
+    static const uint32_t fa[4] = { F1, 0x3f000000, 0x3e800000, 0x3f400000 }, fb[4] = { 0x3f400000, 0x3e800000, F1, 0x3f000000 };
+    tacfg_t c = cfg();
+    case_no = -1;
+    c.tx = 41; c.ty = 15;
+    c.opb[1] = c.opb[2] = c.opb[3] = c.opb[4] = 0;
+    c.isp_base = AREA + 0x8000u; c.isp_limit = AREA + 0xc000u;
+    c.opb_init = AREA + 0xc000u; c.ol_limit = AREA + 0x10000u;
+    begin(&c);
+    quad(OP, 0, 0, 0, 32.0f * 41, 32.0f * 15, 0xff000000);
+    hdr_face2(OP, GROUP(0) | COL(2) | TEX | OFFS, ISPW, TSPW, TCWW, TSP1, TCW1, fa, fb);
+    eol();
+#ifdef _arch_dreamcast
+    { uint64_t t0 = timer_ms_gettime64(); while(timer_ms_gettime64() - t0 < 20) ; }
+#endif
+    pvrio_reg(SOFTRESET_addr, 1);
+    pvrio_reg(SOFTRESET_addr, 0);
+}
+
 /* ======== the order run ======== */
 
 static const tcase_t cases[] = {

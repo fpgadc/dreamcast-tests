@@ -2023,10 +2023,10 @@ infinite and NaN corner, user clip inside and outside and clip order is the mode
 | all_lists, opb_mixed | the first polygon after a modifier volume list goes to the tiles of its own bounds and of the volume's (and so has no single tile bit) | its own tiles |
 | two_volume_hdrs | Volume without Shadow is a two-volume polygon already (five word header, two colours a vertex) | needs both bits |
 | uclip_field_only | with no clip parameter since the reset, "inside" drops a polygon in tile (1, 1) and "outside" keeps it: the rectangle is not the whole grid | the whole grid |
-| uclip_reserved | clip mode 1 acts as outside | as inside |
+| uclip_reserved | clip mode 1: parameters written, no tile entries (corrected by ta-probe uclip_mode1) | as inside |
 | int1_sweep_a/b, int_offset | an intensity of NaN is 1.0 | 0 |
 | sprites | other parameter layout and skip for textured sprites with offset or 16 bit UV; the shadow bit kept in the entry | |
-| modvol_volume_bit | the header's Volume bit does not merge a volume's bounds; a modifier volume triangle in one tile gets the single tile bit | merges, no bit |
+| modvol_volume_bit | a modifier volume triangle in one tile gets the single tile bit; the Volume bit merges bounds as tacore.cpp does, but tacore.cpp starts with the bounds of the case before (see ta-probe below) | merges, no bit |
 | opb_none | a list with no blocks (size 0) still gets an object list: 8 word blocks from TA_OL_BASE | nothing |
 | grid_64x16 | a 64 x 16 grid gets its entries but no end words | end words |
 | grow_down | TA_NEXT_OPB one block lower at the end | |
@@ -2051,6 +2051,57 @@ keeps those lines in fit/hw/ta-tests/hashes.txt.gz, and compare_dumps.py compare
 and sorts the different ones by what they used. The last case is the first long one again, dumped: its CRC
 computed from the dump has to be its hash, on each side (a check of the two CRCs). A different long case is
 looked at by running its seed with dumps. Offline, the 10,000 take about a second.
+
+
+## ta-probe and refta: the tile accelerator as a console does it (2026-11-17)
+
+    bash run2.sh ta-probe off ; bash run2.sh ta-probe hw=<ip>       # 82 cases, 30 s on a console
+    TEST_DEFS=-DTA_ERRORS=1 bash run2.sh ta-probe ...                # bad input: 14 cases
+    TEST_DEFS=-DTA_ERRORS=2 bash run2.sh ta-probe ...                # the three that stopped a console before the guard
+    python3 ta-tests/compare_dumps.py --test ta-probe hw off [--case N]
+    REFSW2_TA=refta bash run2.sh ta-tests off                         # refsw2-offline with refta instead of tacore.cpp
+
+ta-probe (ta-probe/probes.c, on the ta-tests harness) asks what ta-tests left open, one question a case; besides the
+dumps of ta-tests it dumps TA_OL_POINTERS after each case and in the middle of some, and its grid cases fill all of
+video memory and look for words written outside the area (`pvrio_scan32`). A prelude gives TA_OL_POINTERS and the
+face colours known values first, since a console keeps both from the programs before (SOFTRESET keeps them).
+
+refta (nulldc3 libswirl/rend/refsw2/refta.cpp, refta_fp.h) is a new tile accelerator written from these results and
+those of ta-tests, every rule with the case that shows it. No float or double: the TA only takes floats apart
+(refta_fp.h, its own: the ISP and TSP setup units are not like it). With REFSW2_TA=refta, refsw2-offline uses it.
+Against the console: ta-tests 295 of 295 dumped cases and 1,999 of 2,000 long fuzz hashes (tacore.cpp: 89 and 271);
+ta-probe 81 of 82 cases and the bad input cases but those listed below.
+
+**The pvrio guard.** A TA that stops taking input stalled the console twice (the store queue write waits for room
+in the TA's FIFO; any later PVR access waits behind it): pvrio now sends one 32 byte block at a time while SB_TFREM
+shows room for two, waits for SB_TFREM 8 and SB_FFST bit 5 clear before reading from the PVR, and after 20 ms resets
+the TA and prints "PVRIO stall". With it every case ran; it changes no dump.
+
+What the console does (case names are ta-probe's unless marked ta-tests):
+
+| | |
+|---|---|
+| TA_OL_POINTERS | 608 words, not 600 (0x005f8f60..f7c are tiles 600..607: grid_61x10). Per tile: bit 31 the tile has an entry in the open list (cleared at the end of the list), bit 30/29 its last entry is an open quad/triangle array, bits 28-25 that array's count - 1, bit 24 its shadow bit, bits 23-2 the array entry's address (after a strip entry: the next free word), bits 1-0 the skip's low bits (olp_*, stack_20*, sprite_bits_sh, two_vol_skip). SOFTRESET and TA_LIST_INIT keep them (olp_reset) |
+| tiles past 608 | no register: strip entries go to the slot start, each over the one before; arrays are lost; the end word covers them (grid_41x15, ta-tests grid_64x16) |
+| 64 wide or 16 high | with either count at its largest the end of the list writes nothing: no open arrays, no end words; strip entries and links are written (grid_*x16, grid_64x*, grid_max_y_stack). 41 x 15 = 615 tiles works |
+| order of writes | no object list word is in memory before the list ends in small cases (olp_entries m0); entries and links come before end words (ta-tests opb_none). Where lists lie on parameters, words of the same block land before and after the list's parameters (ta-tests lfuzz_01913), and growing down a slot was written in the middle of a list (olp_down m0): a small write-back cache, not modelled |
+| arrays | a triangle or sprite joins the tile's open array if the type, shadow bit and skip match, it has fewer than 16, its parameters come right after the array's last polygon's, and they are as many words (two volumes and Shadow alone share a shadow bit and skip and do not join: ta-tests lfuzz_00551); a polygon that wrote parameters elsewhere in between breaks it, a culled one does not (stack_*, uclip_mode1_stack, uclip_outside_stack) |
+| blocks | the last word of a block is found from the address: a block handed out off a multiple of its size is cut short (opb_unaligned_*); a full slot takes the end word in its last word (opb_exact_7); TA_OL_BASE and TA_NEXT_OPB_INIT ignore bits 4-0 (ol_base_odd) |
+| growing down | TA_NEXT_OPB reads TA_NEXT_OPB_INIT less the opaque list's block size after TA_LIST_INIT; a block of size S is handed out at NEXT + opaque size - S, and NEXT becomes block - opaque size (down_noalloc, down_sizes, down_mid; ta-tests fuzz_009, fuzz_011). Up and down have separate pointers (mode_change) |
+| TA_OL_LIMIT | an entry or link given an address at or past it (growing down: below it) raises "object lists full" at once; the word goes to TA_OL_LIMIT itself; end words sent there raise nothing (ol_limit_mid_matrix, ol_limit_base_mid, init_beyond_limit, down_limit_above). The block pointer stops on the last block that fits and hands it out again |
+| TA_ISP_LIMIT | the word at the limit is written, then nothing more of the polygon; a polygon that starts there is dropped with "parameters full"; the limit's low two bits do not count; below the base it is never met (isp_limit_*). SOFTRESET makes TA_ISP_CURRENT 0 |
+| registers read when | the five matrices from TA_OL_BASE, TA_ALLOC_CTRL and TA_GLOB_TILE_CLIP at TA_LIST_INIT and TA_LIST_CONT (clip_change, alloc_change_op, list_cont_base); a list's block size, direction and grid when it begins (alloc_change, mode_change, clip_change); TA_LIST_CONT keeps TA_ISP_CURRENT and the block pointers (list_cont_alloc); a list sent again begins anew (list_cont_same) |
+| user clip | SOFTRESET makes the rectangle tile (0, 0); TA_LIST_INIT and later lists keep it (uclip_*). Mode 1: parameters, no entries; off the grid nothing, in every mode (uclip_mode1; ta-tests lfuzz_00072). The single tile bit comes from the bounds before clipping (uclip_inside_single) |
+| modifier volumes | one box of bounds: each triangle adds its own; a triangle whose header has the Volume bit goes to the tiles of the box and the next starts a new box (ta-tests modvol_volume_bit; the ISP volume instruction does not count). The first other polygon after modifier volumes, of any list, takes an open box as its own bounds too, then closes it; TA_LIST_INIT keeps the box, SOFTRESET drops it (mvleak_*) |
+| sprites | ISP: bit 22 always, texture, offset, never Gouraud; vertex x, y, z, UV (textured), colour, offset colour (textured with offset); the colours on the third corner only, the fourth corner z 0 and no UV; skip 1, 2, 3; the shadow bit in the entry (sprite_bits*, all 256 combinations). A sprite's colours are the face colours that intensity mode 2 uses after it (ta-tests fuzz_002) |
+| floats | a coordinate with the sign bit set bins as tile -1, -0 too (ta-tests fuzz_110, fuzz_154) |
+| kept | Strip_Len: TA_LIST_INIT keeps it, SOFTRESET makes it 3; face colours: both keep them, and so does a new program (strip_len_*, int2_*) |
+| bad input | an end of list or a header in the middle of a strip is not looked at, a user clip there is (err_eol_in_strip, err_hdr_in_strip, err_clip_in_strip); end of strip after two vertices: "illegal parameter", the strip dropped (err_short_strip); a header of another list joins the open one (err_list_switch); a 64 byte header or vertex cut short: "illegal parameter" (err_*_half); parameter types 2, 3 and 6 stop the TA until SOFTRESET (err_para_types: the guard's one stall); TA_LIST_CONT in the middle of a strip changes nothing (err_cont_in_strip) |
+
+Not in refta yet: vertices with no list open are taken as modifier volume triangles with the last header's ISP word
+and give entries without ending a list (err_vertex_first, err_vertex_after_eol); list types 5-7 (err_list_types); a
+sprite in a modifier volume list (err_sprite_in_mv); a sprite header in the middle of a strip (err_sprite_in_strip);
+TA_LIST_INIT in the middle of a strip (err_init_in_strip); the write cache (above).
 
 
 ## faredge: edges whose far corner is past 2^127 (2026-11-17)

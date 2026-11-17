@@ -1377,9 +1377,40 @@ static const tgroup_t groups[] = {
 #define NGROUPS ((int)(sizeof(groups) / sizeof(groups[0])))
 #define NCASES ((int)(sizeof(cases) / sizeof(cases[0])))
 
+#ifdef TA_REPLAY
+/* TA_REPLAY=n,n,...: only these long fuzz cases (by case number), dumped instead of hashed, under the same numbers */
+static const int replay[] = { TA_REPLAY };
+#define NREPLAY ((int)(sizeof(replay) / sizeof(replay[0])))
+#endif
+
 int main(int argc, char **argv) {
     int i;
     (void)argc; (void)argv;
+#ifdef TA_REPLAY
+    {
+        int g, first_long = NCASES;
+        for(g = 0; g < NGROUPS; g++)
+            first_long += groups[g].count;
+#ifndef _arch_dreamcast
+        if(argc > 1 && !strcmp(argv[1], "--labels")) {
+            for(i = 0; i < NREPLAY; i++)
+                printf("CASE %d lfuzz_%05d 0\n", replay[i], replay[i] - first_long);
+            return 0;
+        }
+        if(argc > 1)
+            pvrio_folder = argv[1];
+#endif
+        pvrio_open();
+        for(i = 0; i < NREPLAY; i++) {
+            case_no = replay[i];
+            c_fuzz(200 + replay[i] - first_long);
+        }
+        pvrio_reg(SOFTRESET_addr, 1);
+        pvrio_reg(SOFTRESET_addr, 0);
+        pvrio_close();
+        return 0;
+    }
+#endif
 #ifndef _arch_dreamcast
     if(argc > 1 && !strcmp(argv[1], "--labels")) {
         int g, k, n = NCASES;
@@ -1398,6 +1429,9 @@ int main(int argc, char **argv) {
         pvrio_folder = argv[1];
 #endif
     pvrio_open();
+#ifdef TA_PROBES
+    prelude();                              /* ta-probe: TA_OL_POINTERS and the face colours to known values */
+#endif
     for(i = 0; i < NCASES; i++) {
         if(cases[i].error != TA_ERRORS)
             continue;
