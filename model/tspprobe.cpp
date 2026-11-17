@@ -88,7 +88,9 @@ static bool set_field(pvrtsp::PlaneConfig& cfg, const std::string& name, int val
 
 // the model's reading for every reading of the set; returns how many are the console's
 static bool summary = false;
-static int splitRuns = 0;      // split=N: runs also start at every N-th column of the tile (to test that they do not)
+static int splitRuns = 0;
+static std::vector<int> breakCols;     // breaks=a,b,..: runs also start at these columns of the tile
+static long skipped = 0;               // readings that are not a texel's colour (-1): not scored      // split=N: runs also start at every N-th column of the tile (to test that they do not)
 static long zeroDen = 0, zeroDenRight = 0, zeroNum = 0, zeroNumRight = 0;     // readings where the model's 1/w, U/w is exactly 0
 static int onlyFrom = 0, onlyTo = 1 << 30;      // --only a-b: score these triangles only
 static long score(const Set& s, const pvrtsp::PlaneConfig& cfg, int misses, bool cells)
@@ -114,6 +116,7 @@ static long score(const Set& s, const pvrtsp::PlaneConfig& cfg, int misses, bool
         std::vector<int> gots;
         for (; r < s.ti.size() && s.ti[r] == t; r++) {
             if (t < onlyFrom || t > onlyTo) { right++; continue; }
+            if (s.t[r] < 0) { skipped++; right++; continue; }
             int tx = s.px[r] / 32, ty = s.py[r] / 32, i = s.px[r] % 32, j = s.py[r] % 32;
             if (ty * 20 + tx != tile) {
                 tile = ty * 20 + tx;
@@ -132,6 +135,9 @@ static long score(const Set& s, const pvrtsp::PlaneConfig& cfg, int misses, bool
                 int s0 = start[j];
                 if (splitRuns > 0 && i - i % splitRuns > s0)
                     s0 = i - i % splitRuns;
+                for (int b : breakCols)
+                    if (b <= i && b > s0)
+                        s0 = b;
                 int64_t x0h = 2 * (int64_t)(tx * 32 + s0) + 1, yh = 2 * (int64_t)(ty * 32 + j) + 1;
                 Fp wv = w.Value(x0h, yh, i - s0, tx * 32, ty * 32), uv = u.Value(x0h, yh, i - s0, tx * 32, ty * 32);
                 dbgW = wv; dbgU = uv;
@@ -191,6 +197,13 @@ int main(int argc, char** argv)
             misses = atoi(argv[++a]);
         } else if (arg == "--cells") {
             cells = true;
+        } else if (arg.rfind("breaks=", 0) == 0) {
+            for (size_t at = 7; at < arg.size();) {
+                size_t c = arg.find(',', at);
+                if (c == std::string::npos) c = arg.size();
+                breakCols.push_back(atoi(arg.substr(at, c - at).c_str()));
+                at = c + 1;
+            }
         } else if (arg.rfind("split=", 0) == 0) {
             splitRuns = atoi(arg.c_str() + 6);
         } else if (arg == "--summary") {
@@ -215,6 +228,8 @@ int main(int argc, char** argv)
             if (scan_name.empty())
                 printf("%-12s model = console on %ld of %zu readings%s\n", s.name.c_str(), n, s.ti.size(), n == (long)s.ti.size() ? "" : "   <--");
         }
+        if (skipped)
+            printf("readings that are not a texel's colour (not scored): %ld\n", skipped);
         if (zeroDen || zeroNum)
             printf("readings with 1/w exactly 0: %ld (%ld right); with U/w exactly 0: %ld (%ld right)\n", zeroDen, zeroDenRight, zeroNum, zeroNumRight);
         if (!scan_name.empty())

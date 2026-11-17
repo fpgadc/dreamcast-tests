@@ -753,13 +753,52 @@ texels (about 75,000 per run).
 removed the hidden pixels before the TSP runs, and the triangle starts anew to the right of every band.
 In the translucent list (no autosort) every polygon is shaded in its own pass, in which the triangle is
 whole; the band is drawn over it afterwards. refsw2 finds the runs in its tag buffer (`RenderParamTags`)
-and matches both lists reading for reading. Not measured: whether a run also ends where the modifier volume
-state changes, and the punch-through passes; refsw2 ends it there.
+and matches both lists reading for reading. (Modifier volumes, punch-through passes and the per-pixel sort:
+see uvrun below.)
 
 **A run is not cut anywhere else** (2026-11-17): it goes on to the last pixel of the stretch, up to the
 tile's width. `model/tspprobe split=N` starts a new run also at every N-th column of the tile; on the uvmeas
 sets uv1, ugen5, usteep3, uflat2 and uwflat4 (3,360,053 readings, all right without it) that costs 63,619
 readings with N = 16, 140,159 with 8, 185,493 with 4 and 206,934 with 2.
+
+## uvrun: where runs end with modifier volumes, punch-through passes and the per-pixel sort (2026-11-17)
+
+    python3 uvrun/gen.py [--seed N]; bash run2.sh uvrun off hw=<ip>
+    cp uvrun/cases.json /tmp/pvr_tests/uvrun/; python3 uvmeas/read.py /tmp/pvr_tests/uvrun hw fit/uvrun_data/<name>.npz
+    python3 model/export_uv.py --test uvrun <name>
+    model/tspprobe --only <first>-<last triangle> [breaks=8,12,18,24] fit/uvrun_data/<name>.uvm
+
+uvmeas's readout (texel i holds the number i: a pixel shows the coordinate the TSP computed) on steep triangles
+with slopes along x of 24 significant bits, and bands over columns 8-11 and 18-23 of every cell. Six kinds of
+page, 195,000 readings each; tspprobe scores "runs go on through the bands" against "runs start anew at the
+band edges" (`breaks=`):
+
+| kind | wrong if runs go on | wrong if they start anew at the edges |
+|---|---|---|
+| reference: no bands | 0 | 46,337 |
+| opaque, cheap shadow (FPU_SHAD_SCALE 0x180), a modifier volume over each band | 46,337 | **0** |
+| opaque, two volumes with equal parameters, volumes over the bands | 46,337 | **0** |
+| the same two-volume polygons without volumes (control) | **0** | 46,337 |
+| punch-through, bands in front with alpha 0 (they fail the alpha test) | 46,337 | **0** |
+| translucent sorted per pixel, bands behind the triangle | 46,337 | **0** |
+
+Restarting at the band starts only leaves 11,547 wrong, at the band ends only 21,787: both edges count.
+
+**A run is a stretch of pixels of one triangle on a line of the tile with the same modifier volume state, in
+one pass.** It ends where the volume state changes, even when the two volumes' parameters are the same (and
+with cheap shadow, which has one set). In the punch-through list the triangle's pixels under a band that
+failed the alpha test are shaded in a later pass, as runs of their own that start at the band's first
+pixel, and the triangle's runs in the first pass end at the band. Sorted per pixel, the triangle is the
+pixel's second layer under a band and its first elsewhere, and it is shaded in the two passes as separate
+runs (the triangle, the front layer there, is what the band pixels show: the layers go back to front).
+
+Side results: cheap shadow leaves a decal texture's colour as it is (the readings inside the volumes are
+exact). Slopes of a few significant bits cannot show where a run starts: they are exact on the grid, so a
+run started anywhere gives the same numbers (uvmeas's steep pages 0-5 tell nothing here; page 6 does).
+
+refsw2 already ended runs at volume boundaries and per pass, untested until now: refsw2-offline gives the
+console's number for all 1,170,000 readings. Archived: fit/uvrun_data/run2 (readings) and fit/hw/uvrun (the
+pictures, for regress.sh).
 
 ## State of refsw2 after zmeas / wmeas / uvmeas / cmeas / uvspan (2026-11-16, uncommitted working tree)
 
