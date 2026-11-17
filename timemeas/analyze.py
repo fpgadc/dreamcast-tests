@@ -370,5 +370,19 @@ def main():
                       f"   per tile {per[0]:7.1f} / {per[1]:7.1f} ({per[1] - per[0]:+5.2f})")
 
 
+    if "ahead2" in D:
+        print()
+        print("23. How far ahead the TSP sets up: in each of 64 tiles a 565 block with texels 8 apart over lines a .. 23 keeps")
+        print("    the pixels busy, then N sprites of one pixel on line 24 need their setups at once. Per tile, clocks;")
+        print("    'paying' = what DCalcCtrl 1 on the N sprites adds / 5 = sprites whose setup was not done ahead.")
+        for a, name in ((0, "lines 0-23"), (1, "lines 16-23"), (2, "lines 20-23")):
+            print(f"    block {name}")
+            print(f"    {'N':>4s} {'DCalc 0':>8s} {'DCalc 1':>8s} {'paying':>7s} {'ahead':>6s}")
+            for n in range(33):
+                v = [T("ahead2", a, n, d) / 2 / 64 for d in (0, 1)]
+                pay = (v[1] - v[0]) / 5
+                print(f"    {n:4d} {v[0]:8.1f} {v[1]:8.1f} {pay:7.2f} {n - pay:6.2f}")
+
+
 if __name__ == "__main__":
     main()

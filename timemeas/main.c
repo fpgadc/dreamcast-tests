@@ -26,6 +26,7 @@
    layouts drawn once each with every triangle in its own colour. */
 /* #define TM_QUICK */                 /* only the scenes before the TM_QUICK line in run_all: a few seconds */
 /* #define TM_DCALC */                 /* only the dcalc scenes: a few seconds */
+/* #define TM_AHEAD */                 /* only the ahead scenes: a few seconds */
 #define NUM_LAYOUTS 17
 #define NUM_PAGES NUM_LAYOUTS
 #define TEST_MODIFIERS              /* the two modifier volume lists exist */
@@ -619,6 +620,68 @@ static void run_all(void) {
     printf("T display %lx off\n", (unsigned long)fb_r);
     for(f = 0; f < NUM_FORMATS; f++) printf("F %d %s\n", f, formats[f].name);
     for(L = 0; L < NUM_LAYOUTS; L++) printf("L %d %s\n", L, layout_names[L]);
+
+    /* ---- ahead a N d: how many primitives can the TSP set up ahead of its pixels? First a block keeps the pixels
+       busy: a 0: an untextured sprite over lines 0-23 (about 780 clocks of pixels); 1: the same in 565 with
+       texels 8 apart (about 2500); 2: an untextured sprite over lines 16-23 only (about 260). Then on line 24 N
+       untextured sprites of one pixel at x = 0 .. N - 1: N first runs at once, each needing its setup; the rest
+       of the tile is the background. Setups done during the block cost nothing there; each beyond what the
+       setup can do ahead costs a setup. d: DCalcCtrl of the N sprites (5 clocks more setup each): the time it
+       adds is 5 for every sprite whose setup was not done ahead. */
+    {
+        int pass, nn;
+        for(pass = 0; pass < 2; pass++)
+            for(i = 0; i < 3; i++)
+                for(nn = 0; nn <= 32; nn++)
+                    for(p = 0; p < 2; p++) {
+                        begin(ListType_Opaque);
+                        dcalc_ctrl = 0;
+                        if(i == 2)
+                            rect(&formats[0], 1, DepthMode_Always, 0, 16, 32, 8, front, 0, 0);
+                        else
+                            rect(&formats[i ? 23 : 0], 1, DepthMode_Always, 0, 0, 32, 24, front, 0, 0);
+                        dcalc_ctrl = p;
+                        for(k = 0; k < nn; k++)
+                            rect(&formats[0], 1, DepthMode_Always, k, 24, 1, 1, front, k + 1, 0);
+                        dcalc_ctrl = 0;
+                        measure("ahead", i, nn, p, pass);
+                    }
+    }
+    /* ---- ahead2 a N d: the same in each of the first 64 tiles, 16 bit framebuffer, so that a difference of 5
+       clocks a sprite becomes 320 for the render. The block is 565 with texels 8 apart (the TSP sets the pace):
+       a 0: lines 0-23 of the tile (about 2500 clocks of pixels); a 1: lines 16-23 (about 840, the background
+       above it); a 2: lines 20-23 (about 420). N sprites of one pixel on line 24, DCalcCtrl d. */
+    {
+        volatile uint32_t *fb_w_ctrl = (volatile uint32_t *)(0xa05f8000 + FB_W_CTRL_addr);
+        const uint32_t fbw = *fb_w_ctrl;
+        static const int top[3] = { 0, 16, 20 };
+        int nn, t;
+        *fb_w_ctrl = (fbw & ~15u) | 1u;
+        for(i = 0; i < 3; i++)
+            for(nn = 0; nn <= 32; nn++)
+                for(p = 0; p < 2; p++) {
+                    tiles_region(64);
+                    region_addr = MANY_TILES;
+                    ta_list_begin(ListType_Opaque);
+                    for(t = 0; t < 64; t++) {
+                        const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                        dcalc_ctrl = 0;
+                        rect(&formats[23], 1, DepthMode_Always, x0, y0 + top[i], 32, 24 - top[i], front, 0, 0);
+                        dcalc_ctrl = p;
+                        for(k = 0; k < nn; k++)
+                            rect(&formats[0], 1, DepthMode_Always, x0 + k, y0 + 24, 1, 1, front, k + 1, 0);
+                    }
+                    dcalc_ctrl = 0;
+                    measure("ahead2", i, nn, p, 0);
+                }
+        *fb_w_ctrl = fbw;
+        region_addr = ONE_TILE;
+    }
+#ifdef TM_AHEAD
+    *fb_r_ctrl = fb_r;
+    printf("T end\n");
+    return;
+#endif
 
     /* ---- dcalc f L d: DCalcCtrl d (0: the mipmap level's numerators are taken at the screen's origin, 1: at the
        first vertex) for format f in layout L, seen (dcalc) and its twin behind the background (dcalcH). The

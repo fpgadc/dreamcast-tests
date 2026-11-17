@@ -557,6 +557,26 @@ first runs on one line. Whether a primitive's pixels could start before its setu
 not be seen in the timing; what is seen is that the setup is the same sequence for every primitive (the 5
 clocks are paid by untextured ones, which have no level to compute).
 
+**How far ahead: about 11 primitives.** Scenes `ahead` (one tile) and `ahead2` (the same in 64 tiles, 16 bit
+framebuffer; table 23; run with `#define TM_AHEAD`): a block keeps the pixels busy, then N sprites of one
+pixel on the next line need their setups at once, with DCalcCtrl 1 on those sprites only. The time the bit
+adds, divided by 5, is the number of sprites whose setup was not done ahead; N minus that is how many were:
+
+| N | 16 | 18 | 20 | 22 | 24 | 26 | 28 | 30 | 32 | mean from 16 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| block 565, texels 8 apart, lines 16-23 (about 840 clocks) | 11.2 | 10.7 | 10.9 | 9.2 | 11.4 | 11.3 | 11.2 | 11.2 | 11.2 | 11.2 |
+| the same over lines 20-23 (about 420) | 9.6 | 10.0 | 11.1 | 9.5 | 11.7 | 11.8 | 11.5 | 11.3 | 10.4 | 11.1 |
+
+Below about 12 nothing is paid. The plain times say the same: the first 12 or 13 sprites of the burst cost a
+few clocks each, every one after that about 40 (a setup on the critical path). Twice the time to work
+ahead gives the same number, so it is a limit of storage, not of time: the TSP holds about 11 or 12 set-up
+primitives ahead of the one it shades (counting only new ones; whether the block and the background,
+which are still in use or about to be, take places of their own is not told). It is the same number as
+the "more than about 12 different triangles on a line" of the runs above, and the 1x8 sprites being set up
+about twice: one store of set-up primitives, about 12 deep, for both. One tile alone (`ahead`) gives 8 to 11
+with more noise. Not understood: with the block over lines 0-23 (2500 clocks) the plain times jump up
+and down by up to 200 a tile from one N to the next and the count wanders between 10 and 23.
+
 That fits the level's model: per pixel the level is a polygon's constant times w^2, and the constant is made
 in the setup. With DCalcCtrl 1 the setup also evaluates the planes at the first vertex (a x1 + b y1 + c);
 5 clocks for that is what a pass of the 1/w, U and V planes through a shared multiplier would take (a guess).
