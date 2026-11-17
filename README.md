@@ -3,6 +3,9 @@
 Tests that run the same KallistiOS program on a real Dreamcast (through dc-load) and in nulldc3's refsw2,
 and compare the framebuffers.
 
+What the results suggest about the hardware's structure: [pvr-tests/PIPELINE_SHAPE.md](pvr-tests/PIPELINE_SHAPE.md)
+(the core: ISP, TSP, write-out) and [ta-tests/PIPELINE_SHAPE.md](ta-tests/PIPELINE_SHAPE.md) (the tile accelerator).
+
 Each test draws flat, known inputs, then reads the displayed framebuffer back (640x480, 32 bits per pixel,
 read from video memory 32 bits at a time) and writes it to the host. The emulator runs the same program
 headless and saves a frame as PNG.
