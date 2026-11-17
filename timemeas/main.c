@@ -31,6 +31,7 @@
 /* #define TM_SPANFMT */               /* only the spanfmt scenes: a few seconds */
 /* #define TM_LINE */                  /* only the lineshare scenes: a few seconds */
 /* #define TM_VOL2 */                  /* only the vol2off and vol2pitch scenes: a few seconds */
+/* #define TM_OFFS */                  /* only the offs2 and offs3 scenes: a few seconds */
 #define NUM_LAYOUTS 17
 #define NUM_PAGES NUM_LAYOUTS
 #define TEST_MODIFIERS              /* the two modifier volume lists exist */
@@ -105,6 +106,7 @@ static const format_t formats[] = {
     { "565 VQ gouraud, 8 texels a pixel",         OP, 1, 1, 0, PixelFmt_565,     0, 1, 0, P0, 8, 0 },
     { "palette 8 bpp gouraud, 8 texels a pixel",  OP, 1, 1, 0, PixelFmt_Pal8,    0, 0, 0, P0, 8, 0 },
     { "565 gouraud offset, 8 texels a pixel",     OP, 1, 1, 1, PixelFmt_565,     0, 0, 0, P0, 8, 0 },
+    { "565 gouraud offset mipmapped point",       OP, 1, 1, 1, PixelFmt_565,     0, 0, 1, P0, 1, 0 },
 };
 #define NUM_FORMATS ((int)(sizeof(formats) / sizeof(formats[0])))
 
@@ -217,10 +219,20 @@ static void header(const format_t *f, int DepthMode, PCW *pcw, ISP_TSP *isp, TSP
     }
 }
 
-/* the offset colour of vertex k: offs_mode -1 the scene's own (dflt), 0 zero, 1 0x202020, 2 0x101010 (k + 1) */
+/* the offset colour of vertex k: offs_mode -1 the scene's own (dflt), 0 zero, 1 0x202020, 2 0x101010 (k + 1),
+   3 0xff000000, 4 0x000020, 5 0x202020 at vertex 0 only, 6 at vertex 3 only */
 static int offs_mode = -1;
 static uint32_t offs_col(int k, uint32_t dflt) {
-    return offs_mode < 0 ? dflt : offs_mode == 0 ? 0 : offs_mode == 1 ? 0x00202020u : 0x00101010u * (uint32_t)(k + 1);
+    switch(offs_mode) {
+    case 0: return 0;
+    case 1: return 0x00202020u;
+    case 2: return 0x00101010u * (uint32_t)(k + 1);
+    case 3: return 0xff000000u;                         /* alpha only */
+    case 4: return 0x00000020u;                         /* blue only */
+    case 5: return k == 0 ? 0x00202020u : 0;            /* the first vertex only */
+    case 6: return k == 3 ? 0x00202020u : 0;            /* the last vertex only */
+    default: return dflt;
+    }
 }
 
 /* own: every triangle (or sprite) in a colour of its own, flat; otherwise four different corner colours */
@@ -633,6 +645,85 @@ static void run_all(void) {
     for(f = 0; f < NUM_FORMATS; f++) printf("F %d %s\n", f, formats[f].name);
     for(L = 0; L < NUM_LAYOUTS; L++) printf("L %d %s\n", L, layout_names[L]);
 
+    /* ---- offs2 f q a b: does the offset colour share anything with mipmapping? 565 Gouraud f 3, offset 5,
+       mipmapped point 7, offset mipmapped point 48. q 0: setup, one tile, a = layout (2: 1 quad, 5: 1024 quads of
+       1x1), b 0; q 1: run pitch, 64 tiles, a triangle cut into 1-pixel runs by 15 cheap-shadow sheets over lines
+       0 .. a - 1 (a 24 or 32), pass b; offset colours 0x202020 (n + 1). */
+    {
+        volatile uint32_t *fb_w_ctrl = (volatile uint32_t *)(0xa05f8000 + FB_W_CTRL_addr);
+        const uint32_t fbw = *fb_w_ctrl;
+        static const int of[4] = { 3, 5, 7, 48 };
+        int fi, li, ps, t;
+        for(fi = 0; fi < 4; fi++)
+            for(li = 0; li < 2; li++) {
+                cur = &formats[of[fi]]; cur_own = 0;
+                ta_list_begin(ListType_Opaque);
+                layout(li ? 5 : 2);
+                measure("offs2", of[fi], 0, li ? 5 : 2, 0);
+            }
+        cur = &formats[0];
+        *fb_w_ctrl = (fbw & ~15u) | 1u;
+        shadow_bit = 1; shad_scale = 0x180;
+        for(ps = 0; ps < 2; ps++)
+            for(fi = 0; fi < 4; fi++)
+                for(li = 0; li < 2; li++) {
+                    const format_t *fm = &formats[of[fi]];
+                    const int L = li ? 32 : 24;
+                    tiles_region(64);
+                    region_addr = MANY_TILES;
+                    ta_list_begin(ListType_Opaque);
+                    for(t = 0; t < 64; t++) {
+                        const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                        static const int cx[3] = { 0, 64, 0 }, cy[3] = { 0, 0, 64 };
+                        PCW pcw; ISP_TSP isp; TSP tsp; TCW tcw;
+                        header(fm, DepthMode_Always, &pcw, &isp, &tsp, &tcw);
+                        pcw.ParaType = ParamType_Polygon_or_Modifier_Volume;
+                        pcw.Group_En = 1;
+                        pcw.Strip_Len = 1;
+                        ta_polygon(pcw, isp, tsp, tcw);
+                        for(n = 0; n < 3; n++) {
+                            const int vx = x0 + cx[n], vy = y0 + cy[n];
+                            ta_vertex3(f32b_int(vx), f32b_int(vy), front, f32b_scaled(vx, -8), f32b_scaled(vy, -8),
+                                       0xffc0c0c0u, 0x00202020u * (uint32_t)(n + 1), n == 2);
+                        }
+                    }
+                    ta_list_begin(ListType_Opaque_Modifier_Volume);
+                    for(t = 0; t < 64; t++) {
+                        const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                        for(n = 0; n < 15; n++)
+                            sheet(VolumeMode_Inside_Last, x0 + 2 * n + 1, y0, 1, L);
+                    }
+                    measure("offs2", of[fi], 1, L, ps);
+                }
+        shadow_bit = 0; shad_scale = 1;
+        *fb_w_ctrl = fbw;
+        region_addr = ONE_TILE;
+    }
+    /* ---- offs3 f o L: what makes an offset colour 0? One tile, 565 flat (f 2, 4 with offset) or Gouraud (3, 5 with
+       offset), layout L 2 (1 quad) or 11 (256 quads of 2x2: both triangles of a quad seen), offset colours offs_mode o
+       (0 zero, 1 0x202020, 3 alpha only, 4 blue only, 5 vertex 0 only, 6 vertex 3 only). A quad is a strip v0 (0,0),
+       v1 (w,0), v2 (0,h), v3 (w,h): triangles v0 v1 v2 (flat colour of v2) and v1 v2 v3 (of v3). */
+    {
+        static const int o3[6] = { 0, 1, 3, 4, 5, 6 }, f3[4] = { 2, 4, 3, 5 };
+        int fi, oi, li;
+        for(fi = 0; fi < 4; fi++)
+            for(oi = 0; oi < 6; oi++)
+                for(li = 0; li < 2; li++) {
+                    if((f3[fi] == 2 || f3[fi] == 3) && oi > 1)
+                        continue;
+                    offs_mode = o3[oi];
+                    cur = &formats[f3[fi]]; cur_own = 0;
+                    ta_list_begin(ListType_Opaque);
+                    layout(li ? 11 : 2);
+                    measure("offs3", f3[fi], o3[oi], li ? 11 : 2, 0);
+                }
+        offs_mode = -1; cur = &formats[0];
+    }
+#ifdef TM_OFFS
+    *fb_r_ctrl = fb_r;
+    printf("T end\n");
+    return;
+#endif
     /* ---- vol2off k o f Lm: does a polygon with two volumes pay for its offset colour, and is the offset colour seen?
        k 0: ordinary polygons (shadow bit off, FPU_SHAD_SCALE 1); 1: with two volumes (FPU_SHAD_SCALE 0x080: not
        intensity mode). o: offset colour 0 zero, 1 0x202020, 2 0x101010 (k + 1) at vertex k (both sets alike). f 2 (565

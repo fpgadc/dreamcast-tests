@@ -364,8 +364,16 @@ a quad over the tile: bilinear 1316 against 1166, palette (ARGB8888 entries) 214
   and the offset colour is added in both sets (pixel 0x002028 -> 0x204048 outside, 0x002014 -> 0x204034
   inside). The earlier reading "polygons with two volumes and offset colour cost 48.1 per triangle, where an
   ordinary polygon with offset colour costs 64" (scenes `mv2`) came from their offset colours, which were 0.
-  Not known: whether 0 is looked at for all vertices, for the vertex flat shading takes, or per channel, and
-  whether an offset alpha alone counts.
+  **What counts as 0** (scenes `offs3`, `#define TM_OFFS`, log run28, tables from `python3 offs.py <log>`;
+  one tile of 256 quads of 2x2, both triangles of a quad seen, per quad): the test is made per triangle, on
+  the offset colours its shading uses, all four bytes. Gouraud: a triangle with any vertex not 0 pays +16
+  (0x202020 at v0 only: the quad's first triangle pays, its second not; at v3 only: the second). Flat: only
+  the vertex flat shading takes counts (v0 only: nothing; v3 only: +16). Alpha alone (0xff000000, which
+  changes no pixel) and blue alone (0x000020) cost as much as all four: the offset colour's four planes are
+  taken or dropped together, triangle by triangle.
+  **Not shared with mipmapping** (scenes `offs2`, same log): per quad of 1x1 (one seen triangle) 565 Gouraud
+  80.10, mipmapped point 80.05, with offset colour 96.06 and 96.02; run pitch 4.21, 4.17, 6.31, 6.26. The
+  offset colour adds +16 and +2.1 with or without mipmaps, and mipmaps add nothing.
 - **The pass that finds nothing still costs.** Outside minus no volume at all: 370 to 460 for punch through
   polygons, where the sheet's two triangles cost the ISP 42 to 147 in the opaque list. About 300 is the
   second pass with no runs.
