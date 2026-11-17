@@ -800,6 +800,30 @@ refsw2 already ended runs at volume boundaries and per pass, untested until now:
 console's number for all 1,170,000 readings. Archived: fit/uvrun_data/run2 (readings) and fit/hw/uvrun (the
 pictures, for regress.sh).
 
+## planes: which values the TSP evaluates as planes divided by 1/w (2026-11-17)
+
+    bash run2.sh planes off hw=<ip>; python3 compare2.py planes hw off
+
+One triangle per cell with a different 1/w at each corner (0.25 .. 1.75), so that a plane divided by 1/w
+comes out curved and anything else straight; random values. refsw2 takes every one of these as a plane of
+value / w, evaluated per run and divided by the pixel's 1/w; refsw2-offline = console on 2,457,600 of
+2,457,600 pixels:
+
+| page | value | distinct colours on the console |
+|---|---|---|
+| 0, 1 | base colour, Gouraud / flat | 145,561 / 301 |
+| 2, 3 | offset colour (black texture, modulate), Gouraud / flat | 145,787 / 301 |
+| 4, 5 | base alpha (blend SRC_ALPHA, ZERO on white), Gouraud / flat | 253 / 183 |
+| 6, 7 | U, V (texel i holds the number i) | 1,024 / 1,024 |
+
+So the planes of a polygon are: **1/w; base colour A, R, G, B; U and V when textured; offset colour A, R, G,
+B when it has one** (offset alpha read only through the bump map), all perspective correct. A flat polygon
+has its colour as planes too (three equal corners): at ordinary depths that gives the colour exactly, at the
+limits of the setup's numbers it does not, and the console's grey levels for the black flat probes of
+`detinf` are reproduced only that way. With two volumes, the second set for the pixels inside a volume.
+Before this, V, the offset colour and the base alpha had never been read with perspective. (The harness's
+rng() has no top byte: an alpha from it is 0.)
+
 ## State of refsw2 after zmeas / wmeas / uvmeas / cmeas / uvspan (2026-11-16, uncommitted working tree)
 
 The older comparison tests, scored against the same console dumps as before
