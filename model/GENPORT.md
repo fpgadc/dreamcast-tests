@@ -1,12 +1,12 @@
 # Porting a test generator from Python to C++
 
 **Why.** The generators of covmeas, uvspan and ops place their cases by what the hardware will do, and took that
-from a Python copy of the hardware model (`ops/model.py`). The model exists once, in C++: the soft floating
+from a Python copy of the hardware model (`pvr-tests/ops/model.py`). The model exists once, in C++: the soft floating
 point headers of refsw2 (`~/projects/fpgadc/nulldc3/libswirl/rend/refsw2/pvr_softfp.h`, `pvr_isp_edge.h`,
 `pvr_isp_depth.h`, `pvr_tsp_plane.h`). The user decided: each generator becomes a C++ program that includes
 those headers directly. **No Python-to-C++ bridge of any kind** (no ctypes, no subprocess that answers queries).
 
-**Reference port, read it first:** `zmeas/gen.cpp`, `zmeas/zmeas.h`, `zmeas/read.cpp`, and `model/gen_common.h`
+**Reference port, read it first:** `pvr-tests/zmeas/gen.cpp`, `pvr-tests/zmeas/zmeas.h`, `pvr-tests/zmeas/read.cpp`, and `model/gen_common.h`
 (JSON, random numbers, bit patterns, and the model asked about one pixel). The Python originals are still in
 each test's folder (and in `fit/python_generators_before_cpp.tar.gz`).
 
@@ -20,7 +20,7 @@ each test's folder (and in `fit/python_generators_before_cpp.tar.gz`).
 3. **Hardware arithmetic only from the refsw2 headers**, through `gen_common.h` (`Model`, `Pixel`, `Coverage`,
    `Covered`, `IspDepth`, `SpanStart`, `TspPlane`, `TspDivide`, `TspAttr`, `TspColor`) or the classes themselves
    (`pvrisp::EdgeTile`, `pvrisp::DepthTile`, `pvrtsp::Plane`). Never write an operation of the model again.
-   From `ops/model.py`:
+   From `pvr-tests/ops/model.py`:
 
    | Python | C++ |
    |---|---|

@@ -16,7 +16,7 @@
    4 tall) or 4x4 texels of 4 bits. The texel at place o of the texture (its level's offset plus its twiddled
    index) is element o % n of the entry whose number is byte o / n behind the code book, n the texels in an
    entry. (For 16 bit texels that is the 2x2 blocks everyone knows; for palette textures it is what a console
-   reads, pvr_tests/mip page 17 and the palette VQ variants of sample.) */
+   reads, pvr-tests/mip page 17 and the palette VQ variants of sample.) */
 #ifndef TEXGEN_H
 #define TEXGEN_H
 

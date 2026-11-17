@@ -1,5 +1,5 @@
 /*
-    What the test generators (pvr_tests/<test>/gen.cpp) share.
+    What the test generators (pvr-tests/<test>/gen.cpp) share.
 
     A generator places its cases by what the hardware will do with them, and that knowledge exists once: in
     the soft floating point headers of refsw2 (nulldc3 libswirl/rend/refsw2: pvr_softfp.h, pvr_isp_edge.h,

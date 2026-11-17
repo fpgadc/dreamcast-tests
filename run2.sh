@@ -15,6 +15,8 @@
 # (off.crc, hw.crc): the same lines mean that the console and the offline renderer got the same input.
 # TEST_DEFS="-DX=1 ...": extra defines for the PC and the console build alike.
 HERE=$(cd "$(dirname "$0")" && pwd)
+# a test's folder: pvr-tests/<test> (the core's tests) or ta-tests/<test> (the tile accelerator's)
+testdir() { local g; for g in pvr-tests ta-tests; do [ -d "$HERE/$g/$1" ] && { echo "$HERE/$g/$1"; return 0; }; done; return 1; }
 NULLDC3=${NULLDC3:-$HERE/../nulldc3}
 OFFLINE=${OFFLINE:-/tmp/refsw2-offline}
 DCTOOL=${DCTOOL:-/home/skmp/projects/fpgadc/shrike4-rtl/build/tools/dcload-ip/host-src/tool/dc-tool-ip}
@@ -23,7 +25,7 @@ JOBS=${JOBS:-$(nproc)}
 # ---- one test, one kind of run (the script calls itself for this) ----
 if [ "$1" = --worker ]; then
   KIND=$2; RUN=$3; T=${RUN%%@*}; SET=""; [ "$RUN" != "$T" ] && SET=${RUN#*@}
-  SRC=$HERE/$T/main.c
+  SRC=$(testdir $T)/main.c
   PAGES=$(grep -m 1 '^#define NUM_PAGES' $SRC | awk '{print $3}')
   W=/tmp/pvr_tests/$RUN; mkdir -p $W/build
   DEF=($TEST_DEFS)                  # e.g. TEST_DEFS="-DTA_LONG=2000": extra defines for both builds
@@ -83,8 +85,8 @@ while [ $# -gt 0 ]; do
   -j) JOBS=$2; shift ;;
   off|hw=*|emu|emu=*) KINDS+=("$1") ;;
   *) T=${1%%@*}
-     [ -f "$HERE/$T/main.c" ] || { echo "no such test: $T"; exit 1; }
-     grep -q 'pvrtest2.h\|pvrio.h' $HERE/$T/main.c || { echo "$T is not on pvrtest2.h or pvrio.h: use run.sh"; exit 1; }
+     TD=$(testdir $T) && [ -f "$TD/main.c" ] || { echo "no such test: $T"; exit 1; }
+     grep -q 'pvrtest2.h\|pvrio.h' $TD/main.c || { echo "$T is not on pvrtest2.h or pvrio.h: use run.sh"; exit 1; }
      RUNS+=("$1") ;;
   esac
   shift

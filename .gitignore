@@ -3,11 +3,11 @@ __pycache__/
 *.pyc
 
 # compiled from the .cpp next to them (generators and probes on the refsw2 headers)
-/covmeas/gen
-/zmeas/gen
-/zmeas/read
-/uvspan/gen
-/ops/gen
+/pvr-tests/covmeas/gen
+/pvr-tests/zmeas/gen
+/pvr-tests/zmeas/read
+/pvr-tests/uvspan/gen
+/pvr-tests/ops/gen
 /model/covprobe
 /model/depthprobe
 /model/tspprobe

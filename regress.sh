@@ -6,13 +6,15 @@
 # A test whose input is no longer what the console was given (its source or the harness changed since) is
 # marked: its console dumps are stale until it runs on the console again (run2.sh <test> hw=<ip>, archive_hw.sh).
 cd "$(dirname "$0")"
+# a test's folder: pvr-tests/<test> (the core's tests) or ta-tests/<test> (the tile accelerator's)
+testdir() { local g; for g in pvr-tests ta-tests; do [ -d "$g/$1" ] && { echo "$g/$1"; return 0; }; done; return 1; }
 TESTS="$@"
 [ -z "$TESTS" ] && TESTS=$(ls fit/hw)
 bash run2.sh $TESTS off | grep -v 'offline: [0-9]* of [0-9]* pages$'
 for t in $TESTS; do
   W=/tmp/pvr_tests/$t
   note=""; cmp -s $W/off.crc fit/hw/$t/hw.crc || note="   <-- NOT the input the console was given: run it on the console again"
-  CMP="compare2.py $t"; [ -f $t/compare_dumps.py ] && CMP="$t/compare_dumps.py"      # a test with dumps of its own (ta-tests)
+  CMP="compare2.py $t"; [ -f "$(testdir $t)/compare_dumps.py" ] && CMP="$(testdir $t)/compare_dumps.py"      # a test with dumps of its own (ta-tests)
   echo "$(python3 $CMP ref off -q 2>&1 | tail -n 1)$note"
 done
 [ $# -eq 0 ] && bash archive_check.sh all

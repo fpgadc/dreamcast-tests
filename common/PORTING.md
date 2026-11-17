@@ -1,8 +1,8 @@
 # Porting a test from pvrtest.h (KallistiOS's PVR driver) to pvrtest2.h (the PVR driven directly)
 
 Read `pvr_params.h`, `pvrsetup.h`, `pvrtest2.h` and `softfp.h` first (pvrio.h only if you are curious), and
-one finished port next to its original: `texfmt/main.c` and `texfmt/main_kos.c` (textures, palette),
-`covmeas/main.c` (sprites, modifier volumes, generated tables), `fbpack/main.c` (written new).
+one finished port next to its original: `pvr-tests/texfmt/main.c` and `pvr-tests/texfmt/main_kos.c` (textures, palette),
+`pvr-tests/covmeas/main.c` (sprites, modifier volumes, generated tables), `pvr-tests/fbpack/main.c` (written new).
 
 ## Rules
 
@@ -18,7 +18,7 @@ one finished port next to its original: `texfmt/main.c` and `texfmt/main_kos.c` 
    Translate the original's float expressions operation by operation in the same order (`a + b * c` is
    `sf_add(a, sf_mul(b, c))`), so that the same bits come out as on the console before. Where the original
    used `double` constants or mixed double arithmetic, think about what was computed in which precision.
-   Tables from a generator (`gen.py`) carry floats as bit patterns: see `covmeas/gen.py` `write()`.
+   Tables from a generator (`gen.py`) carry floats as bit patterns: see `pvr-tests/covmeas/gen.py` `write()`.
 4. Do not change anything in `common/`, in `run2.sh` or in nulldc3. If something is missing, put it in your
    test's `main.c` and say so in your report.
 5. Do not run the emulator. Validation is the console and refsw2-offline.
@@ -74,7 +74,7 @@ A vertex is `e0000000` (`f0000000` at the end of a strip) followed by x y z ...;
 polygon parameter without vertices and eight zero words (the harness sends those).
 
 Sprites: `ParaType = ParamType_Sprite`, `UV_16bit = 1`; KallistiOS's sprite context blends with source alpha
-outside the opaque list (see `covmeas/main.c`).
+outside the opaque list (see `pvr-tests/covmeas/main.c`).
 
 ## Checking a port
 
@@ -97,4 +97,4 @@ outside the opaque list (see `covmeas/main.c`).
   `fit/kos_hw/<test>/labels.txt`.
 
 If the test has analysis scripts (`*.py`) that read the emulator's screenshots, make them read
-`page<n>.off.raw` (kind `off`) instead; see `covmeas/read.py` for the pattern.
+`page<n>.off.raw` (kind `off`) instead; see `pvr-tests/covmeas/read.py` for the pattern.

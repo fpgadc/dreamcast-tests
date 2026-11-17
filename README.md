@@ -1,4 +1,4 @@
-# pvr_tests
+# dreamcast-tests
 
 Tests that run the same KallistiOS program on a real Dreamcast (through dc-load) and in nulldc3's refsw2,
 and compare the framebuffers.
@@ -216,7 +216,7 @@ behind, two, three, front plus behind, two volumes, exclusion volume). Differenc
 on hardware, while refsw2 draws it. This may be how the test drives KOS rather than the hardware, so the
 default build leaves that list out and translucent modifier volumes are untested.
 
-(2026-11-16: tested in timemeas with the framebuffer read back, see timemeas/REPORT.md. They work in a tile
+(2026-11-16: tested in timemeas with the framebuffer read back, see pvr-tests/timemeas/REPORT.md. They work in a tile
 sorted per pixel and are ignored in a pre-sorted one; this test renders pre-sorted.)
 
 ### sort
@@ -252,13 +252,13 @@ stalls the core on a console, and drew about 21,000 quads a page, more than the 
 
 ### blend, alpha channel
 
-`python blend/alpha.py /tmp/pvr_tests/blend`: the alpha that the blend unit writes follows the same
+`python pvr-tests/blend/alpha.py /tmp/pvr_tests/blend`: the alpha that the blend unit writes follows the same
 arithmetic as the color channels, for the framebuffer and for buffer 2: 3072 of 3072 squares each.
 
 ## precision: depth buffer and triangle setup (2026-11-15)
 
     bash run.sh precision 192.168.178.107
-    python precision/precision.py /tmp/pvr_tests/precision
+    python pvr-tests/precision/precision.py /tmp/pvr_tests/precision
 
 Depths are given as float bit patterns; "unit" below is one unit in the last place of a 32 bit float.
 refsw2 behaves as exact single precision in every part of this test (every 1 unit step resolved, equality
@@ -302,7 +302,7 @@ that reproduces every cell.
 ## huge: very large, very small and special values (2026-11-15)
 
     bash run.sh huge 192.168.178.107
-    python huge/huge.py /tmp/pvr_tests/huge
+    python pvr-tests/huge/huge.py /tmp/pvr_tests/huge
 
 **Vertex positions.** One triangle with corners (-4M, -3M), (4M, 3M), (-3M, 4M), which should cover exactly
 the 153600 pixels below the screen diagonal:
@@ -389,7 +389,7 @@ by `zblock`.
 
 ### zblock
 
-`bash run.sh zblock <ip>`, then `python zblock/zblock.py`. A quad whose depth falls from 32 to 0.52 (or rises
+`bash run.sh zblock <ip>`, then `python pvr-tests/zblock/zblock.py`. A quad whose depth falls from 32 to 0.52 (or rises
 from 1 to 32.77) across one tile, probed in its last pixel columns by a flat quad in fine depth steps.
 
 - Falling: near depth 1 the console still tells steps of 2^-18 apart (B passes GREATER from j = 5, EQUAL at
@@ -501,11 +501,11 @@ a flat color the ratio is always close to 1 and every variant scores the same.
 
 ### ops: one operation at a time
 
-    python ops/gen.py                  # makes ops/cases.h and ops/cases.json
+    python pvr-tests/ops/gen.py                  # makes pvr-tests/ops/cases.h and pvr-tests/ops/cases.json
     bash run.sh ops <ip>
-    python ops/analyze.py /tmp/pvr_tests/ops
+    python pvr-tests/ops/analyze.py /tmp/pvr_tests/ops
 
-`ops/model.py` is the fitted arithmetic with every multiply, add, subtract, reciprocal, truncation and grid
+`pvr-tests/ops/model.py` is the fitted arithmetic with every multiply, add, subtract, reciprocal, truncation and grid
 step as a named operation with its own width and rounding. `gen.py` searches random triangles (any shape,
 half of them with arbitrary float coordinates, anywhere on the screen) for inputs on which changing ONE
 operation (one or two bits more or less, rounding to nearest, down or up, a reciprocal instead of a division)
@@ -561,9 +561,9 @@ first run, predicted again with the final model: 167, 169, 95 and 56, all of the
 
 ## zmeas: the ISP depth of general triangles, measured as a number (2026-11-15)
 
-    python zmeas/gen.py --mix first|general|zero|scene [--seed N] [--refine meas.json]
+    python pvr-tests/zmeas/gen.py --mix first|general|zero|scene [--seed N] [--refine meas.json]
     bash run.sh zmeas <ip> [emulator dir]
-    python zmeas/read.py /tmp/pvr_tests/zmeas [hw|emu]        # -> meas.json: the stored depth per pixel
+    python pvr-tests/zmeas/read.py /tmp/pvr_tests/zmeas [hw|emu]        # -> meas.json: the stored depth per pixel
 
 Every page draws the polygons under test (depth always passes and is written) and then, over each 32x32
 cell, a flat quad with compare GREATER whose depth is the page's value of a 16 step ladder. The pages
@@ -576,7 +576,7 @@ bounded pixels. The archived runs are in `fit/zmeas_data`.
 (The first version of the probe was a huge flat triangle confined to the tile by the user tile clip. On a
 console that does not work as documented, see `cliptest`.)
 
-What the measurements changed in the model (`ops/model.py`, function `isp_depth`), in the order found:
+What the measurements changed in the model (`pvr-tests/ops/model.py`, function `isp_depth`), in the order found:
 
 1. **The order of the three-term sums.** In rasterizer vertex order the slopes and the determinant are
    `(t1 + t2) + t3` and the constant is `(t1 + t3) + t2`. Every add truncates to 24 bits, so the order is
@@ -617,9 +617,9 @@ measured pixels. The older comparison tests are unchanged by it (precision 6179 
 
 ## wmeas: the 1/w of the TSP at every pixel (2026-11-15)
 
-    python wmeas/gen.py [--seed N] [--mix general|flatedge|flatscan|slopes]
+    python pvr-tests/wmeas/gen.py [--seed N] [--mix general|flatedge|flatscan|slopes]
     bash run.sh wmeas <ip> [emulator dir]
-    python wmeas/read.py /tmp/pvr_tests/wmeas [hw|emu] [out.npz]
+    python pvr-tests/wmeas/read.py /tmp/pvr_tests/wmeas [hw|emu] [out.npz]
 
 The fog readout of `tspw` (bits 11..18 of the mantissa of the 1/w the TSP computed) on general triangles;
 every pixel at least 1.5 pixels inside a triangle is a reading, 400,000 to 780,000 per run. Archived runs
@@ -637,10 +637,10 @@ Established with it (the rest came from `uvmeas`, below, which reads plane value
 
 ## uvmeas, cmeas: TSP plane values read through a wrapping texture coordinate, and colors (2026-11-15)
 
-    python uvmeas/gen.py [--seed N] [--mix first|flatscan|steep|wflat|general|recip|recipscan|reciprow|reciprown]
-    python cmeas/gen.py [--seed N]          # the same for Gouraud colors (run.sh cmeas, cmeas/read.py)
+    python pvr-tests/uvmeas/gen.py [--seed N] [--mix first|flatscan|steep|wflat|general|recip|recipscan|reciprow|reciprown]
+    python pvr-tests/cmeas/gen.py [--seed N]          # the same for Gouraud colors (run.sh cmeas, pvr-tests/cmeas/read.py)
     bash run.sh uvmeas <ip> [emulator dir]
-    python uvmeas/read.py /tmp/pvr_tests/uvmeas [hw|emu] [out.npz]
+    python pvr-tests/uvmeas/read.py /tmp/pvr_tests/uvmeas [hw|emu] [out.npz]
 
 A 1024 texel wide texture in which texel i holds the number i, repeating, point sampled. With 1/w = 1 a
 pixel shows floor(U * 1024) mod 1024: ten bits of the U the TSP computed there, and which ten depends on
@@ -680,7 +680,7 @@ What it showed, in the order found:
    `t[i] = ceil(2^32 / (64 i))` (the exact reciprocal at the start of the block, rounded up to half a unit)
    and a slope `n[i] = t[i] - t[i+1] + c[i]`, c[i] being 0, 1 or 2. It was read off the console for all
    32768 values of D (mix `recipscan`, U = 2^j over a depth of mantissa D shows D * r(D) directly; 14 runs);
-   the 512 digits c[i] are in `ops/model.py` (`RECIP_C`) and in refsw2. No formula was found for them
+   the 512 digits c[i] are in `pvr-tests/ops/model.py` (`RECIP_C`) and in refsw2. No formula was found for them
    (102 zeros, 403 ones, 7 twos). r is the truncated exact reciprocal for 28487 values of D, one less for
    1110 and one more for 3171; 1 / 1.0 is 65535 / 65536.
 8. **The product is cut before it is normalized.** numerator mantissa times reciprocal mantissa (both in
@@ -696,7 +696,7 @@ What it showed, in the order found:
 last step of a color: **the 8 bit color is floor(v + 0.5)** of the attribute. 2,340,000 of 2,340,000
 readings, where 0.498 and 0.502 each lose about 0.4 %.
 
-Model against console (`ops/model.py`: `tsp_plane`, `tsp_divide`, `tsp_attr`, `tsp_color`), and refsw2,
+Model against console (`pvr-tests/ops/model.py`: `tsp_plane`, `tsp_divide`, `tsp_attr`, `tsp_color`), and refsw2,
 which follows it (`PlaneStepper3`, `TexCoordFixed`, `COLOR_BIAS`) and gives the same numbers:
 
 With the two rules of the next section (where a run starts, and the grid of a tile) the model reproduces
@@ -718,9 +718,9 @@ determinant (the model makes it a hair negative).
 
 ## uvspan: where a run starts, and the grid of a tile (2026-11-16)
 
-    python uvspan/gen.py [--seed N] [--list op|tr]
+    python pvr-tests/uvspan/gen.py [--seed N] [--list op|tr]
     bash run.sh uvspan <ip> [emulator dir]
-    python uvspan/read.py /tmp/pvr_tests/uvspan [hw|emu] [out.npz]
+    python pvr-tests/uvspan/read.py /tmp/pvr_tests/uvspan [hw|emu] [out.npz]
 
 The two rules that were missing for general triangles, both found in the archived uvmeas data and then
 tested on their own:
@@ -798,8 +798,8 @@ readings with N = 16, 140,159 with 8, 185,493 with 4 and 206,934 with 2.
 
 ## uvrun: where runs end with modifier volumes, punch-through passes and the per-pixel sort (2026-11-17)
 
-    python3 uvrun/gen.py [--seed N]; bash run2.sh uvrun off hw=<ip>
-    cp uvrun/cases.json /tmp/pvr_tests/uvrun/; python3 uvmeas/read.py /tmp/pvr_tests/uvrun hw fit/uvrun_data/<name>.npz
+    python3 pvr-tests/uvrun/gen.py [--seed N]; bash run2.sh uvrun off hw=<ip>
+    cp pvr-tests/uvrun/cases.json /tmp/pvr_tests/uvrun/; python3 pvr-tests/uvmeas/read.py /tmp/pvr_tests/uvrun hw fit/uvrun_data/<name>.npz
     python3 model/export_uv.py --test uvrun <name>
     model/tspprobe --only <first>-<last triangle> [breaks=8,12,18,24] fit/uvrun_data/<name>.uvm
 
@@ -898,10 +898,10 @@ Coverage next to an edge was the last step that only had pass / fail tests; see 
 
 ## covmeas: which pixels are inside, when an edge passes through pixel centers (2026-11-16)
 
-    python covmeas/gen.py [--seed N] [--mix lattice|axis|skew|diag|tile|lean|leantile|big|sliver|degen|tiny]
+    python pvr-tests/covmeas/gen.py [--seed N] [--mix lattice|axis|skew|diag|tile|lean|leantile|big|sliver|degen|tiny]
                           [--prim tri|strip|sprite|modvol|zprobe] [--list op|tr|pt] [--halfofs N]
     bash run.sh covmeas <ip> [emulator dir]
-    python covmeas/read.py /tmp/pvr_tests/covmeas [hw|emu] [out.npz]
+    python pvr-tests/covmeas/read.py /tmp/pvr_tests/covmeas [hw|emu] [out.npz]
 
 (`--prim zprobe` takes `--probez Z`, the depth of its green polygon, default 0.5.)
 
@@ -929,7 +929,7 @@ the ISP's bit of HALF_OFFSET, and the special edges then pass through pixel corn
 Archived runs: `fit/covmeas_data`.
 
 A console's answer is the same along the whole edge: the edge function is stepped exactly from one value per
-tile, not recomputed per pixel. The model (`ops/model.py`: `edge_values`, `covered`):
+tile, not recomputed per pixel. The model (`pvr-tests/ops/model.py`: `edge_values`, `covered`):
 
 1. **The constant is the depth setup's**: `c = trunc(xb ya) - trunc(xa yb)` in 24 bit arithmetic on absolute
    coordinates. Forms built from coordinate differences are far off (77 %).
@@ -1010,7 +1010,7 @@ the ends of the triangle. Two more rules came out of it:
 **What "drawn" means for a sliver.** Its planes are divided by a determinant of a few units of the last bit,
 so the depth and the color of a sliver are garbage: a flat white one comes out 255 on 6473 pixels of
 sliver30, between 192 and 254 on 2135, between 64 and 191 on 26, never 0 there. (The TSP color model of
-`ops/model.py` gives the console's value on 8588 of those 8634.) `read.py` therefore counts every pixel that
+`pvr-tests/ops/model.py` gives the console's value on 8588 of those 8634.) `read.py` therefore counts every pixel that
 is not black as drawn; with white above 128, as it was first, 75 pixels of the sliver runs looked missing,
 e.g. a whole column of (111, 111, 111). Read that way the model's coverage differs from the console on 7 of
 29,491,200 pixels of the twelve sliver runs with polygons, and those 7 are covered too: the color model puts
@@ -1034,8 +1034,8 @@ console shows (its division by a zero or negative 1/w is not measured).
 
 ### Degenerate triangles without culling: the hardware draws rows of the tile
 
-    python covmeas/gen.py --mix degen [--prim strip]      # corners repeated, or exactly on one line
-    python covmeas/gen.py --mix tiny                      # three corners within 1 ulp .. 0.1 pixel of one point
+    python pvr-tests/covmeas/gen.py --mix degen [--prim strip]      # corners repeated, or exactly on one line
+    python pvr-tests/covmeas/gen.py --mix tiny                      # three corners within 1 ulp .. 0.1 pixel of one point
     ... [--cull none|small|ccw|cw] [--z Z | --zs z1,z2,z3] [--vcol flat|gouraud] [--prim zprobe --probez Z]
 
 With culling off (`PVR_CULLING_NONE`) a console rasterizes triangles that have no area, and what comes out is
@@ -1083,9 +1083,9 @@ equal corner depths (every earlier sliver probe) nothing is off.
 
 ### hugepos: corners at 2^30 to 2^125
 
-    python hugepos/gen.py [--tri all|a|b|c] [16 exponents]
+    python pvr-tests/hugepos/gen.py [--tri all|a|b|c] [16 exponents]
     bash run.sh hugepos <ip> [emulator dir]
-    python hugepos/read.py /tmp/pvr_tests/hugepos [hw|emu]
+    python pvr-tests/hugepos/read.py /tmp/pvr_tests/hugepos [hw|emu]
 
 Three triangles with M = 2^m: a, three huge corners (-4M, -3M) (4M, 3M) (-3M, 4M); b, one huge corner
 (-64, -64) (704, 0) (-3M, 4M); c, two corners huge in x only (-4M, 100) (4M, 380) (320, -1000). One per page
@@ -1191,7 +1191,7 @@ refsw2 with the TSP planes in soft floating point against the archived console r
 695,796 of 695,796.
 
 Done since: the probe for the TSP archives (`model/tspprobe`) and the test generators (see "The generators are
-C++ programs on the refsw2 headers"); `ops/model.py` no longer exists. Still to do on this path: refsw2's
+C++ programs on the refsw2 headers"); `pvr-tests/ops/model.py` no longer exists. Still to do on this path: refsw2's
 shading as a real span pass.
 
 ## Direct harness and refsw2-offline: one source for the offline renderer, a console and the emulator (2026-11-16)
@@ -1254,7 +1254,7 @@ How the harness keeps the three sides on the same input:
   `ISP_BACKGND_T_type`, `FB_W_CTRL_type`, registers as `HALF_OFFSET_addr`. There is no context that fills
   in defaults.
 - **No float arithmetic at run time.** A float is carried as its bit pattern (`f32b`); a test's generator
-  writes them precomputed into the test's tables (`covmeas/gen.py` does), and `f32b_int()` / `f32b_scaled()`
+  writes them precomputed into the test's tables (`pvr-tests/covmeas/gen.py` does), and `f32b_int()` / `f32b_scaled()`
   make a number from integers with integer operations only. So the SH4 and the PC cannot round differently,
   whatever the compiler does.
 - **Every call is fed to a checksum**, printed before each dump (`PVRIO crc ...`). `run2.sh` compares the
@@ -1340,7 +1340,7 @@ without alpha) and another FB_W_CTRL each. Found on the console, and now in refs
   the alpha written is 0x00 below the reference and 0xff from it on. refsw2 already did this.
 - Also in refsw2: the 24 bit format written to a texture used a wrong address (`a & b + 1`).
 
-Console = refsw2-offline on 5,222,400 of 5,222,400 pixels (`python3 fbpack/read.py hw off`).
+Console = refsw2-offline on 5,222,400 of 5,222,400 pixels (`python3 pvr-tests/fbpack/read.py hw off`).
 
 ### Every test is on the direct harness now; regress.sh replaces the emulator scoring (2026-11-16)
 
@@ -1374,7 +1374,7 @@ What a ported test needed besides the harness:
 - **`common/kos_words.sh prog.c`**: builds a PC program against KallistiOS's own header-compile code, to
   see the words a KallistiOS context made.
 - fog: the fog tables and density values KallistiOS computed with libm on the console are constants in
-  `fog/main.c` (from KallistiOS's `pvr_fog.c` built on a PC; the console's old picture confirms them).
+  `pvr-tests/fog/main.c` (from KallistiOS's `pvr_fog.c` built on a PC; the console's old picture confirms them).
 - fb565 / fb555 write FB_W_CTRL themselves (nothing is read back); blend is 16 pages (page = set * 4 + view)
   with one label per blend setting and uses `run2.sh` like the others.
 
@@ -1656,9 +1656,9 @@ else might clear it within a tile, the automatic sort.
 
 ## The TSP's numbers at their limits: zero, infinity, and a 1/w below zero (2026-11-17)
 
-    python3 uvmeas/gen.py --mix whuge|wtiny|wneg|wspec|wzero|wzero2   # with wexp: 1/w at every size and of every kind
-    python3 cmeas/gen.py --mix wext|wsum                   # colours at the same depths; the sums at the bottom of the range
-    python3 mipmeas/gen.py --mix wext|wextd                # the mipmap level at such depths (wextd: DCalcCtrl 1)
+    python3 pvr-tests/uvmeas/gen.py --mix whuge|wtiny|wneg|wspec|wzero|wzero2   # with wexp: 1/w at every size and of every kind
+    python3 pvr-tests/cmeas/gen.py --mix wext|wsum                   # colours at the same depths; the sums at the bottom of the range
+    python3 pvr-tests/mipmeas/gen.py --mix wext|wextd                # the mipmap level at such depths (wextd: DCalcCtrl 1)
     bash run2.sh detinf off hw=<ip>                        # the ISP's depth under an infinite determinant
     bash measure.sh uvmeas <name> --mix ...                # archived: uvmeas wexp1, whuge1, wtiny1, wneg1, wspec1, wzero1,
                                                            # wzero2; cmeas cwext1, cwsum1; mipmeas mwext1, mwextd1
@@ -1824,7 +1824,7 @@ What refsw2-offline does not reproduce after this: `accbuf` (76 cells that depen
 ## The generators are C++ programs on the refsw2 headers (2026-11-16)
 
 covmeas, zmeas, uvspan and ops place their cases by what the hardware will do with them. They took that
-from a Python copy of the model, `ops/model.py`; that copy is gone. Each generator is now `<test>/gen.cpp`
+from a Python copy of the model, `pvr-tests/ops/model.py`; that copy is gone. Each generator is now `<test>/gen.cpp`
 and includes the soft floating point headers of refsw2 directly, through `model/gen_common.h` (which adds a
 JSON reader and writer, a random number generator that is the same with every compiler, and the model asked
 about one pixel: inside or not, the stored depth, a TSP plane, the TSP's division). No Python calls C++.
@@ -1832,8 +1832,8 @@ about one pixel: inside or not, the stored depth, a TSP plane, the TSP's divisio
     bash model/build.sh [test...]          # the probes, and <test>/gen and <test>/read where there is a .cpp
     <test>/gen [the arguments gen.py had]  # cases.h and cases.json in the test's folder
     <test>/gen --regen <set>.cases.json <folder>      # the tables of an archived set (regen.py, run2.sh <test>@<set>)
-    zmeas/gen --check <set>.cases.json     # does the model still give the numbers the set was made with? (also ops)
-    zmeas/read <folder> [hw|off]           # replaces zmeas/read.py, which needed the model for the probe's depths
+    pvr-tests/zmeas/gen --check <set>.cases.json     # does the model still give the numbers the set was made with? (also ops)
+    pvr-tests/zmeas/read <folder> [hw|off]           # replaces pvr-tests/zmeas/read.py, which needed the model for the probe's depths
 
 `measure.sh`, `archive_check.sh` and `regen.py` use these where a test has them; uvmeas, wmeas, cmeas and
 mipmeas never used the model and keep their gen.py. `model/GENPORT.md` is the guide the ports followed. The
@@ -1876,9 +1876,9 @@ Changed on the way:
 
     bash run2.sh timemeas hw=<ip>             # about 30 seconds; the timing is in the console's log
     tr -cd '[:print:]\n' < /tmp/pvr_tests/timemeas/build/hw.log > fit/timemeas_logs/timemeas_run<n>.log
-    python3 timemeas/analyze.py > timemeas/tables.txt
+    python3 pvr-tests/timemeas/analyze.py > pvr-tests/timemeas/tables.txt
 
-**The report is [timemeas/REPORT.md](timemeas/REPORT.md)**, the raw tables are timemeas/tables.txt. In
+**The report is [pvr-tests/timemeas/REPORT.md](pvr-tests/timemeas/REPORT.md)**, the raw tables are pvr-tests/timemeas/tables.txt. In
 short, in clocks of the core (10 ns):
 
 - **Method.** One tile in the region array, interrupts and display off, the TSP's end-of-render bit (the
@@ -1923,7 +1923,7 @@ short, in clocks of the core (10 ns):
 ## accbuf: the TSP's two tile buffers (2026-11-16)
 
     bash run2.sh accbuf off hw=<ip>          # 9 pages; on a console also the timing lines "T end", "T stall"
-    python3 accbuf/analyze.py hw             # what every cell shows (colours, counts, bounding boxes)
+    python3 pvr-tests/accbuf/analyze.py hw             # what every cell shows (colours, counts, bounding boxes)
 
 Every page is one render with a region array of its own, one entry per cell, so that a buffer's old content
 shows up in a later cell. The tools are the entry's keep Z bit (no Z clear, no background: what the tile does
@@ -1992,7 +1992,7 @@ the secondary buffer's pixels come to the tile). Two console runs; logs in `fit/
 ## ta-tests: the tile accelerator against nulldc3's tacore.cpp (2026-11-17)
 
     bash run2.sh ta-tests off hw=<ip>        # 63 cases, 5 s on a console
-    python3 ta-tests/compare_dumps.py [hw|ref] off [-v] [--case N]    # per case: same, or what differs, decoded
+    python3 ta-tests/ta-tests/compare_dumps.py [hw|ref] off [-v] [--case N]    # per case: same, or what differs, decoded
     bash regress.sh ta-tests                 # the archived console run (fit/hw/ta-tests) against refsw2-offline
 
 The TA on its own, no rendering. Every case resets the TA (SOFTRESET bit 0), fills 32 KB of video memory at
@@ -2056,11 +2056,11 @@ looked at by running its seed with dumps. Offline, the 10,000 take about a secon
 ## ta-perf: how long the tile accelerator takes (2026-11-17)
 
     bash run2.sh ta-perf off ; bash run2.sh ta-perf hw=<ip>     # 20 s on a console
-    python3 ta-perf/analyze.py [ta-perf/hw_results.txt]        # costs from the console's lines
+    python3 ta-tests/ta-perf/analyze.py [ta-tests/ta-perf/hw_results.txt]        # costs from the console's lines
 
 Valid input only: the offline run sends every stream through refta, which raises no error and no warning, and the
 console's hashes of the object lists, parameters and TA state after each of the 212 points are refta's, with the
-input sent by the store queues and by DMA alike. Method (ta-perf/main.c): interrupts and display off, a stream made
+input sent by the store queues and by DMA alike. Method (ta-tests/ta-perf/main.c): interrupts and display off, a stream made
 in main memory first, the CPU's cycle counter (5 ns) read at the first block, after the last ("sent") and when
 SB_ISTNRM shows the end of list ("done"); 5 times each, the least kept; each case at three sizes and fitted as
 a + b items. hw_results.txt is the console's run.
@@ -2090,8 +2090,8 @@ shapes (what the cost a tile follows: the bounds' width, the address pattern of 
 
     bash run2.sh ta-probe off ; bash run2.sh ta-probe hw=<ip>       # part 0: 88 cases, 30 s on a console
     TEST_DEFS=-DTA_ERRORS=<n> bash run2.sh ta-probe ...              # part n, below
-    python3 ta-tests/compare_dumps.py --test ta-probe hw off [--case N]   # against the console's dumps of the last run
-    python3 ta-tests/compare_dumps.py --test ta-probe ref off [--case N]  # against the archived ones (all parts)
+    python3 ta-tests/ta-tests/compare_dumps.py --test ta-probe hw off [--case N]   # against the console's dumps of the last run
+    python3 ta-tests/ta-tests/compare_dumps.py --test ta-probe ref off [--case N]  # against the archived ones (all parts)
     REFSW2_TA=tacore bash run2.sh ta-tests off                        # refsw2-offline with lxdream's tacore.cpp, not refta
 
 Parts: 1 bad input (14 cases); 2 the three that stopped a console before the guard; 3 stopping input, object list
@@ -2099,7 +2099,7 @@ set, listless vertices, sprite headers in a strip (19); 4 the write queue step b
 list, TA_LIST_INIT in a strip, the write queue over many tiles (20); 6 and 7 the two parameter pointers (16, 12);
 8 TA_LIST_INIT in a strip with a dump after every block (7).
 
-ta-probe (ta-probe/probes.c, on the ta-tests harness) asks what ta-tests left open, one question a case; besides the
+ta-probe (ta-tests/ta-probe/probes.c, on the ta-tests harness) asks what ta-tests left open, one question a case; besides the
 dumps of ta-tests it dumps TA_OL_POINTERS after each case and in the middle of some, and its grid cases fill all of
 video memory and look for words written outside the area (`pvrio_scan32`). A prelude gives TA_OL_POINTERS and the
 face colours known values first, since a console keeps both from the programs before (SOFTRESET keeps them).
@@ -2266,7 +2266,7 @@ ARGB8888 through a VQ texture.
 ## bumpfn, bumpbil, bumphang: bump maps (2026-11-17)
 
     bash run2.sh bumpfn bumpbil off hw=<ip>         # 7 + 7 pages; refsw2-offline = console in 952 and 1792 regions
-    bash run2.sh bumphang hw=<ip>; python3 bumphang/analyze.py     # stops the console's render 17 times, ~1 min
+    bash run2.sh bumphang hw=<ip>; python3 pvr-tests/bumphang/analyze.py     # stops the console's render 17 times, ~1 min
 
 The old `bump` test draws its result with (ONE, ZERO), and a bump texel's result is its alpha: the pages are
 white on the console and in refsw2, whatever the function. These three show the intensity through
@@ -2283,7 +2283,7 @@ intensity). With the light K1, K2, K3, Q in the offset colour's bytes A, R, G, B
     clamped to 0..255; the texel's colour is white and its alpha is I
 
 - Every product drops its low 8 bits before the next step: K3 = 255 at S = 0, R = Q gives 253, not 255.
-- `sin` and `cos` are two tables of 256 bytes (`bumpfn/tables.txt`; `BM_HW_SIN`, `BM_HW_COS` in
+- `sin` and `cos` are two tables of 256 bytes (`pvr-tests/bumpfn/tables.txt`; `BM_HW_SIN`, `BM_HW_COS` in
   refsw_tile.cpp). They are not a sine and a cosine: sin[64] is 104 where 256 sin(22.5 deg) is 98, sin[128]
   is 177 (181), and the cosine is not the sine read backwards (cos[64] = 231, sin[192] = 233). Each is a
   line per 8 entries, (b + m * (S & 7)) >> 3, with m = (32 - i) >> 1 in the sine's segment i and

@@ -17,7 +17,7 @@ DATA = HERE.parent / "fit" / "zmeas_data"
 
 
 def quad_tri(cell, px, py):
-    """zmeas/zmeas.h, QuadTri: the triangle of the full-cell quad (strip TL, TR, BL, BR) that holds the pixel"""
+    """pvr-tests/zmeas/zmeas.h, QuadTri: the triangle of the full-cell quad (strip TL, TR, BL, BR) that holds the pixel"""
     cx, cy = (cell % 20) * 32.0, (cell // 20) * 32.0
     s = (px - cx) + (py - cy)
     if s == 32.0:
