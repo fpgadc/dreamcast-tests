@@ -688,6 +688,190 @@ static void prelude(void) {
 
 /* ======== the order run ======== */
 
+/* ======== third round (TA_ERRORS 3, a run of its own, the guard in pvrio.h on) ======== */
+
+/* each: the bad input in an opaque list with a triangle in (1, 1) before it, then after_error_reset (a triangle in
+   (3, 2) and the end of the list; m0; SOFTRESET, TA_LIST_INIT, a triangle in (3, 1)) */
+static void q_type2_zero(void) {                /* parameter type 2 (object list set), all words zero, on its own */
+    begin_default(); tri_xy(OP, 0, 1, 1, 1);
+    w8(PCW_(P_OLSET, OP, 0), 0, 0, 0, 0, 0, 0, 0);
+    after_error_reset();
+}
+static void q_type3(void) {                     /* parameter type 3 on its own */
+    begin_default(); tri_xy(OP, 0, 1, 1, 1);
+    w8(PCW_(3, OP, 0), 0, 0, 0, 0, 0, 0, 0);
+    after_error_reset();
+}
+static void q_type6(void) {                     /* parameter type 6 on its own */
+    begin_default(); tri_xy(OP, 0, 1, 1, 1);
+    w8(PCW_(6, OP, 0), 0, 0, 0, 0, 0, 0, 0);
+    after_error_reset();
+}
+/* object list set: the triangle's own entry (0x80201000) as the object, and small numbers in the other words, each
+   word a different one, so that the tiles it lands in say which words are the rectangle */
+static void q_olset_a(void) {
+    begin_default(); tri_xy(OP, 0, 1, 1, 1);
+    w8(PCW_(P_OLSET, OP, 0), 0x80201000u, 0, 1, 2, 0, 3, 2);
+    after_error_reset();
+}
+static void q_olset_b(void) {                   /* the same, other numbers, and a quad entry as the object */
+    begin_default(); tri_xy(OP, 0, 1, 1, 1);
+    w8(PCW_(P_OLSET, OP, 0), 0xa0201000u, 2, 0, 0, 1, 1, 2);
+    after_error_reset();
+}
+/* vertices with no list open: after SOFTRESET and TA_LIST_INIT, after the end of a list; the header before is known */
+static void q_listless_reset(void) {
+    tacfg_t c = cfg();
+    begin(&c);
+    hdr(OP, GROUP(0), ISPW, TSPW, 0); v0(40, 40, 1, 1, 0); v0(48, 40, 1, 2, 0); v0(40, 48, 1, 3, 1); eol();
+    begin_ex(&c, NO_FILL);
+    v0(72, 40, 1, 4, 0); v0(80, 40, 1, 5, 0); v0(72, 48, 1, 6, 1);
+    after_error_reset();
+}
+static void q_listless_eol(void) {
+    begin_default();
+    hdr(OP, GROUP(0), ISPW, TSPW, 0); v0(40, 40, 1, 1, 0); v0(48, 40, 1, 2, 0); v0(40, 48, 1, 3, 1); eol();
+    v0(72, 40, 1, 4, 0); v0(80, 40, 1, 5, 0); v0(72, 48, 1, 6, 1);
+    after_error_reset();
+}
+static void q_listless_tex(void) {              /* the header before textured (packed, offset) */
+    begin_default();
+    hdr(OP, GROUP(0) | TEX | OFFS, ISPW, TSPW, TCWW);
+    v3(40, 40, 1, F1, 0, 1, 0x11, 0); v3(48, 40, 1, 0, F1, 2, 0x12, 0); v3(40, 48, 1, F1, F1, 3, 0x13, 1); eol();
+    v3(72, 40, 1, F1, 0, 4, 0x14, 0); v3(80, 40, 1, 0, F1, 5, 0x15, 0); v3(72, 48, 1, F1, F1, 6, 0x16, 1);
+    after_error_reset();
+}
+static void q_listless_six(void) {              /* six vertices, a strip */
+    int i;
+    begin_default();
+    hdr(OP, GROUP(1), ISPW, TSPW, 0); v0(40, 40, 1, 1, 0); v0(48, 40, 1, 2, 0); v0(40, 48, 1, 3, 1); eol();
+    for(i = 0; i < 6; i++)
+        v0(72.0f + 4.0f * (float)(i / 2), 40.0f + 8.0f * (float)(i & 1), 1, 0x10u + (uint32_t)i, i == 5);
+    after_error_reset();
+}
+static void q_listless_modvol(void) {           /* the list before a modifier volume list */
+    begin_default();
+    mv_xy(OM, 1, 1, 1); eol();
+    vmv(72, 40, 1, 80, 40, 1, 72, 48, 1);
+    after_error_reset();
+}
+static void list_t(int t) {                     /* a header of list type t (5, 6, 7) opening a list, a triangle, the end */
+    begin_default();
+    w8(PCW_(P_POLY, t, GROUP(0)), ISPW, TSPW, 0, 0, 0, 0, 0);
+    v0(40, 40, 1, (uint32_t)t, 0); v0(48, 40, 1, (uint32_t)t, 0); v0(40, 48, 1, (uint32_t)t, 1);
+    w8(0, 0, 0, 0, 0, 0, 0, 0);
+    after_error_reset();
+}
+static void q_list5(void) { list_t(5); }
+static void q_list6(void) { list_t(6); }
+static void q_list7(void) { list_t(7); }
+static void q_sprite_in_mv(void) {              /* a sprite opening a modifier volume list */
+    begin_default();
+    list_of(OM);
+    hdr_sprite(OM, GROUP(0), ISPW, TSPW, TCWW, 0xff112233, 0);
+    vsprite(40, 40, 1, 56, 40, 1, 56, 56, 1, 40, 56, 0, 0, 0);
+    eol();
+    after_error_reset();
+}
+static void q_sprite_hdr_mid(void) {            /* a sprite header after two strip vertices, then a plain vertex */
+    begin_default();
+    hdr(OP, GROUP(0), ISPW, TSPW, 0); v0(40, 40, 1, 1, 0); v0(48, 40, 1, 2, 0);
+    hdr_sprite(OP, GROUP(0), ISPW, TSPW, TCWW, 0xff112233, 0);
+    v0(40, 48, 1, 3, 1);
+    after_error_reset();
+}
+static void sprite_mid(float cy) {              /* the same with a sprite vertex: its second half begins with cy */
+    begin_default();
+    hdr(OP, GROUP(0), ISPW, TSPW, 0); v0(40, 40, 1, 1, 0); v0(48, 40, 1, 2, 0);
+    hdr_sprite(OP, GROUP(0), ISPW, TSPW, TCWW, 0xff112233, 0);
+    vsprite(72, 36, 1, 88, 36, 1, 88, cy, 1, 72, 52, 0, 0, 0);
+    after_error_reset();
+}
+static void q_sprite_mid_clip(void) { sprite_mid(0.5f); }      /* 0x3f000000: as parameter type 1 */
+static void q_sprite_mid_neg(void) { sprite_mid(-0.5f); }      /* 0xbf000000: as parameter type 5 */
+static void q_init_mid_one(void) {              /* TA_LIST_INIT after two strip vertices, then the third */
+    tacfg_t c = cfg();
+    begin(&c);
+    hdr(OP, GROUP(0), ISPW, TSPW, 0); v0(40, 40, 1, 1, 0); v0(48, 40, 1, 2, 0);
+    begin_ex(&c, NO_FILL | NO_RESET);
+    v0(40, 48, 1, 3, 1);
+    after_error_reset();
+}
+static void q_init_mid_hdr(void) {              /* TA_LIST_INIT after two strip vertices, then a new header */
+    tacfg_t c = cfg();
+    begin(&c);
+    hdr(OP, GROUP(0), ISPW, TSPW, 0); v0(40, 40, 1, 1, 0); v0(48, 40, 1, 2, 0);
+    begin_ex(&c, NO_FILL | NO_RESET);
+    tri_xy(OP, 0, 2, 1, 4);
+    after_error_reset();
+}
+
+/* the object list write cache: what of the lists is in memory in the middle of a list (m0), 16 x 8 tiles */
+static void cache_tiles(int n) {                /* a quad in each of the first n tiles */
+    tacfg_t c = cfg();
+    int t;
+    c.tx = 16; c.ty = 8;
+    c.opb[1] = c.opb[2] = c.opb[3] = c.opb[4] = 0;
+    c.opb_init = c.ol_base + matrix_bytes(&c);
+    begin(&c);
+    for(t = 0; t < n; t++)
+        quad(OP, 0, 32.0f * (float)(t % 16) + 4, 32.0f * (float)(t / 16) + 4, 16, 16, 0xff000000u | (uint32_t)t);
+    mid(); eol(); finish();
+}
+static void k_tiles_4(void) { cache_tiles(4); }
+static void k_tiles_16(void) { cache_tiles(16); }
+static void k_tiles_64(void) { cache_tiles(64); }
+static void k_tiles_128(void) { cache_tiles(128); }
+static void k_chain(void) {                     /* 40 quads in one tile: a chain of blocks */
+    tacfg_t c = cfg();
+    c.tx = 16; c.ty = 8;
+    c.opb[1] = c.opb[2] = c.opb[3] = c.opb[4] = 0;
+    c.opb_init = c.ol_base + matrix_bytes(&c);
+    begin(&c); quads_xy(OP, 5, 0, 40); mid(); eol(); finish();
+}
+static void k_far(void) {                       /* tiles 0 and 64 in turn (2 KB apart), 9 quads each */
+    tacfg_t c = cfg();
+    int i;
+    c.tx = 16; c.ty = 8;
+    c.opb[1] = c.opb[2] = c.opb[3] = c.opb[4] = 0;
+    c.opb_init = c.ol_base + matrix_bytes(&c);
+    begin(&c);
+    for(i = 0; i < 9; i++) {
+        quad(OP, 0, 4.0f + (float)i, 4, 16, 16, 0xff000000u | (uint32_t)i);
+        quad(OP, 0, 4.0f + (float)i, 132, 16, 16, 0xff000100u | (uint32_t)i);
+    }
+    mid(); eol(); finish();
+}
+
+/* step by step (TA_ERRORS 4, a run of its own: many dumps): a dump of the area after every quad */
+static void k_chain_steps(void) {               /* 24 quads into one tile: the slot and two blocks */
+    tacfg_t c = cfg();
+    int i;
+    c.tx = 16; c.ty = 8;
+    c.opb[1] = c.opb[2] = c.opb[3] = c.opb[4] = 0;
+    c.opb_init = c.ol_base + matrix_bytes(&c);
+    begin(&c);
+    for(i = 0; i < 24; i++) {
+        quad(OP, 0, 164.0f + (float)(i % 8), 4.0f + (float)(i / 8), 16, 16, 0xff000000u | (uint32_t)i);
+        mid();
+    }
+    eol(); finish();
+}
+static void k_tiles_steps(void) {               /* a quad in each of tiles 0..47, a dump after every two */
+    tacfg_t c = cfg();
+    int t;
+    c.tx = 16; c.ty = 8;
+    c.opb[1] = c.opb[2] = c.opb[3] = c.opb[4] = 0;
+    c.opb_init = c.ol_base + matrix_bytes(&c);
+    begin(&c);
+    for(t = 0; t < 48; t++) {
+        quad(OP, 0, 32.0f * (float)(t % 16) + 4, 32.0f * (float)(t / 16) + 4, 16, 16, 0xff000000u | (uint32_t)t);
+        if(t % 2)
+            mid();
+    }
+    eol(); finish();
+}
+
 static const tcase_t cases[] = {
     { "uclip_default", p_uclip_default, 0 },
     { "olp_reset", p_olp_reset, 0 }, { "olp_entries", p_olp_entries, 0 }, { "olp_sizes", p_olp_sizes, 0 },
@@ -734,5 +918,17 @@ static const tcase_t cases[] = {
     { "grid_46x14", p_grid_46x14, 0 }, { "grid_41x15b", p_grid_41x15b, 0 }, { "grid_max_y_stack", p_grid_max_y_stack, 0 },
     { "alloc_change_op", p_alloc_change_op, 0 }, { "mode_change", p_mode_change, 0 }, { "two_vol_skip", p_two_vol_skip, 0 },
     { "isp_limit_exact", p_isp_limit_exact, 2 }, { "list_cont_same", p_list_cont_same, 0 },   /* isp_limit_exact: a console stopped in it (2026-11-17), own run */
+    /* third round: which input stops the TA, the bad input refta did not have, the object list write cache */
+    { "lock_type2_zero", q_type2_zero, 3 }, { "lock_type3", q_type3, 3 }, { "lock_type6", q_type6, 3 },
+    { "olset_a", q_olset_a, 3 }, { "olset_b", q_olset_b, 3 },
+    { "listless_reset", q_listless_reset, 3 }, { "listless_eol", q_listless_eol, 3 }, { "listless_tex", q_listless_tex, 3 },
+    { "listless_six", q_listless_six, 3 }, { "listless_modvol", q_listless_modvol, 3 },
+    { "list5", q_list5, 3 }, { "list6", q_list6, 3 }, { "list7", q_list7, 3 },
+    { "sprite_in_mv", q_sprite_in_mv, 3 }, { "sprite_hdr_mid", q_sprite_hdr_mid, 3 },
+    { "sprite_mid_clip", q_sprite_mid_clip, 3 }, { "sprite_mid_neg", q_sprite_mid_neg, 3 },
+    { "init_mid_one", q_init_mid_one, 3 }, { "init_mid_hdr", q_init_mid_hdr, 3 },
+    { "cache_tiles_4", k_tiles_4, 0 }, { "cache_tiles_16", k_tiles_16, 0 }, { "cache_tiles_64", k_tiles_64, 0 },
+    { "cache_tiles_128", k_tiles_128, 0 }, { "cache_chain", k_chain, 0 }, { "cache_far", k_far, 0 },
+    { "cache_chain_steps", k_chain_steps, 4 }, { "cache_tiles_steps", k_tiles_steps, 4 },
 };
 static const tgroup_t groups[] = { { "none", 0, 0 } };
