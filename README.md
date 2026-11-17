@@ -1640,6 +1640,18 @@ z = 2^-60. Infinity minus infinity is zero; zero times infinity is zero. Then:
   sums are all zero has a zero numerator whatever z1 is (mipmeas mwextd1: 4,147,200 of 4,147,200; with the
   vertex's own z1 times the determinant instead, 4,146,600).
 
+**The level is a polygon's constant times w^2, and DCalcCtrl says where the constant is taken** (mipmeas
+mpos1: the same perspective quad in all 300 cells of a page). For u = (aX + bY + c) / (pX + qY + r) the
+derivative is du/dX = ((aq - bp) Y + (ar - cp)) / (pX + qY + r)^2: the numerator is linear in the other
+coordinate, the denominator is 1/w^2, so w^2 per pixel. The hardware freezes the numerators once per
+polygon, in the setup, and per pixel only multiplies by w^2 (w being the reciprocal the TSP has for the
+perspective division anyway): two 8 bit multiplies and a leading-one search. With DCalcCtrl 0 the
+numerators are taken at the screen's origin (ar - cp), so a quad with perspective gets another level
+wherever it is put: 47 different pictures in 300 identical quads with 1/w falling along x, 48 along y, 20
+along both; the x numerator moves with the quad's row and the y one with its column, and the level
+follows the larger. With DCalcCtrl 1 (at the first vertex) all 300 are the same, as they are with a flat
+1/w either way. refsw2-offline: 2400 of 2400 cells.
+
 **The ISP's depth under an infinite determinant** (`detinf`: triangle a of `hugepos` at 2^64 .. 2^100 with
 several depths, then probes of many depths with compare GREATER and LESS). refsw2's guess, a depth of 0, gives
 the console's picture for 478 of 480 probes: the stored depth is below 2^-125 (every probe from there up
@@ -1673,6 +1685,7 @@ times 2^-8, no special case for a 1/w that is not positive, a tiny negative quot
 | mipmeas mwext1 | 2,127,698 of 4,147,200 | 4,147,200 |
 | mipmeas mwextd1 (DCalcCtrl 1) | 4,016,968 of 4,147,200 | 4,147,200 |
 | detinf | | 478 of 480 probes |
+| mipmeas mpos1 (position) | | 4,147,200 |
 
 Still not known: whether the limit of the last-addition rule is 2^-125 or 2^-124 (probably not observable:
 an operand of 2^-125 .. 2^-124 keeps its sign either way, and a coefficient made of it is below the range

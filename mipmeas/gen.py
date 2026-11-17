@@ -43,6 +43,14 @@ page 4  ratio 3, z = -2^(c - 126)                page 5  ratio 3, bias 8/4, z = 
 page 6  ratio 1 .. 8, z of any exponent with a 16 bit mantissa
 page 7  ratio 3, z with 24 bit mantissas at 2^-70 .. 2^-58 (cells 0-149) and 2^58 .. 2^70
 --mix wextd: the same with DCalcCtrl 1 (the numerators taken at the first vertex).
+
+--mix pos: does the level depend on where a polygon is? Every cell of a page holds the same quad (the same u, v
+and 1/w at its corners), so a level computed from the derivatives at each pixel would be the same in every
+cell. Ratio 2.5, pass B, bias 4/4.
+page 0  1/w 1 -> 0.5 along x, DCalcCtrl 0      page 1  the same, DCalcCtrl 1
+page 2  1/w 1 -> 0.5 along y, DCalcCtrl 0      page 3  the same, DCalcCtrl 1
+page 4  1/w 1 -> 0.25 along x and y, DCalcCtrl 0     page 5  the same, DCalcCtrl 1
+page 6  flat 1/w = 1, DCalcCtrl 0              page 7  the same, DCalcCtrl 1
 """
 import argparse
 import json
@@ -215,14 +223,20 @@ def pages_wext(rng):
     return pages
 
 
+def pages_pos(rng):
+    zs = [[1.0, 0.5, 1.0, 0.5], [1.0, 1.0, 0.5, 0.5], [1.0, 0.5, 0.5, 0.25], [1.0, 1.0, 1.0, 1.0]]
+    names = ["along x", "along y", "along x and y", "flat"]
+    return [[dict(case(2.5, 2.5, 4, 3, zs[p // 2], "pos " + names[p // 2]), dcalc=p % 2) for c in range(300)] for p in range(PAGES)]
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=1)
-    ap.add_argument("--mix", default="first", choices=["first", "w", "det", "det2", "dcalc", "wext", "wextd"])
+    ap.add_argument("--mix", default="first", choices=["first", "w", "det", "det2", "dcalc", "wext", "wextd", "pos"])
     args = ap.parse_args()
     rng = np.random.default_rng(args.seed)
     pages = {"w": pages_w, "det": pages_det, "det2": pages_det2, "dcalc": pages_dcalc, "wext": pages_wext,
-             "wextd": lambda r: [[dict(q, dcalc=1) for q in pg] for pg in pages_wext(r)]}.get(args.mix, pages_first)(rng)
+             "wextd": lambda r: [[dict(q, dcalc=1) for q in pg] for pg in pages_wext(r)], "pos": pages_pos}.get(args.mix, pages_first)(rng)
     write(HERE, {"seed": args.seed, "mix": args.mix, "pages": pages})
     print(f"seed {args.seed} mix {args.mix}: {PAGES} pages, {sum(len(p) for p in pages)} quads")
 
