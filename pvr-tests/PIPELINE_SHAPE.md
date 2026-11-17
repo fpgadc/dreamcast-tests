@@ -181,6 +181,8 @@ largest of its ISP, TSP and write-out times [M timemeas].
   - Windows of 95 or 97 put 129 to 276 runs out of order; 96 puts none but glitch pixels and the early drains.
   - A run takes one place whatever its length (up to 24 pixels tested); no limit on different primitives below
     96; each tile on its own; the background polygon is a primitive like the others.
+  - A place freed by a drained run is used again at once: not a circular FIFO with holes (485 or more runs out
+    of order at 96 to 320 places).
   - So with many primitives on every line the tile is swept in diagonal batches (32 columns: each column's
     lines 0-3 to 0-7, then column 0 again from line 4), and each visit is a setup of its own (~45 clocks).
   - With few long runs the whole tile is one batch: a sprite with two columns in front is shaded over the whole
@@ -188,6 +190,12 @@ largest of its ISP, TSP and write-out times [M timemeas].
 - **Early drains [M, not understood].** Some whole drains are shaded before the 2 to 9 drains in front of them,
   holding the runs the rule gives them: always the same drains (column 31 of 32 columns of 1x16, not of 1x32;
   the background and column 0 of 16 columns over the background).
+- **Cutting speed, a bound [I timemeas ispq].** Runs exist before the ISP-to-TSP queue (it counts runs), so the
+  tag buffer is cut on the ISP's side, and the cutting must keep up with the ISP's own pace: 8 background tiles
+  (32 runs of 32 pixels each) take the ISP 1502 clocks with its start, at most ~190 a tile including its Z clear and
+  the background (a sprite over each tile adds its full 34 a tile, so the ISP sets that pace). Cutting 4 pixels a
+  clock (256 a tile) would be slower; 8 a clock or a whole line a clock fits. Per run and per line costs of the
+  cutting are not measured.
 - **[I]** A store of 96 runs (parameter address, line, x, length: ~40 bits each, ~480 bytes) after the ISP's run
   queue. The head entry's primitive is compared against every entry; matching entries leave in age order, and the
   queue refills free entries at once.

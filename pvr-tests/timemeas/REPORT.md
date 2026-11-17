@@ -908,6 +908,9 @@ At 96: 13 of the 26 are glitch pixels, the other 13 are the early drains below. 
   puts 11 and 97 out of order (scenes 15, 16, run 38).
 - **No limit on different primitives below 96:** limits of 64 or 32 put 35 and 15 out of order (scene 16, 64
   primitives with up to 64 in the window).
+- **Freed places are used again at once:** a circular FIFO whose new runs must lie within so many places of the
+  oldest run still waiting (holes left by drained runs wait for the oldest to pass) puts 485 to 631 runs out of
+  order at 96 to 320 places (run 38).
 - **Each tile on its own:** two tiles of 32 columns are sorted alike, the second after the first's last pixel.
 - **The background polygon is a primitive like the others** (scene 18), apart from the early drains.
 
