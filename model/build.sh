@@ -1,7 +1,7 @@
 #!/bin/bash
 # Build the standalone probes and the test generators against the model's single source in nulldc3 (refsw2).
 #   bash model/build.sh [test...]
-#   probes       model/covprobe, depthprobe, tspprobe
+#   probes       model/covprobe, depthprobe, tspprobe, reachgen
 #   generators   pvr-tests/<test>/gen from its gen.cpp, pvr-tests/<test>/read from its read.cpp (ta-tests/ too):
 #                of the tests named, or of every test that has one
 # Only what is older than its sources is built (the refsw2 headers and model/gen_common.h count for all).
@@ -13,7 +13,7 @@ newer() {       # is any source newer than the program $1?
   return 1
 }
 FAILED=0
-for t in covprobe depthprobe tspprobe; do
+for t in covprobe depthprobe tspprobe reachgen; do
   newer "$HERE/$t" "$HERE/$t.cpp" || continue
   g++ -O2 -std=c++17 -Wall -I "$REFSW" "$HERE/$t.cpp" -o "$HERE/$t.new.$$" && mv "$HERE/$t.new.$$" "$HERE/$t" && echo "built model/$t" || { rm -f "$HERE/$t.new.$$"; FAILED=1; }
 done

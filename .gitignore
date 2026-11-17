@@ -11,3 +11,4 @@ __pycache__/
 /model/covprobe
 /model/depthprobe
 /model/tspprobe
+/model/reachgen

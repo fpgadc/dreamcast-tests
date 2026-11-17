@@ -2375,7 +2375,7 @@ registers and video memory) with refsw2-offline and compares video memory with t
 same dump (pvr-renderer's vram_out_<scene>.bin). Sonic Adventure's sa_slow1-3 were 88 to 96 % exact before,
 every differing pixel a bilinear sample below the full size; now all of video memory is the console's.
 
-All of them (2026-11-17, about 3 minutes): 32 of the 62 that can be replayed had all of video memory the
+All of them (2026-11-17; one process per core since 2026-11-18, about 6 seconds): 32 of the 62 that can be replayed had all of video memory the
 console's, the others 96.7 to 99.99 % of the framebuffer (jgr, shenmue, thps2_ingame, sc_ingame and xtreme_intro
 the furthest off). With the rules in dumprules and keepz page 3, and a punch through pixel that failed the alpha
 test shaded again only when a later pass draws there (jgr_tree_shadows2), 44 of the 62; the rest differ in 1 to 122
@@ -2432,6 +2432,33 @@ that its shading and alpha test go with. 40 random quads (depths 0.2 .. 0.9, and
 through and then a translucent copy of the same corners with compare greater: a tie fails, so the copy shows only
 where the depth left is below the copy's own ISP depth. Nothing on the console, nothing in refsw2; with the TSP's
 1/w stored, refsw2 shows the copy in 39 of the 40 cells (26,101 pixels). The opaque copies are the reference.
+
+## uvmeas on game frames: how far below the other an operand of the TSP setup still counts (2026-11-18)
+
+    python3 pvr-tests/uvmeas/gen.py --mix dump --tris <json>     # a frame's triangle at its place, attribute * 2^k
+    model/reachgen --lo 10 --hi 54 --per 40 > tris.json; python3 pvr-tests/uvmeas/gen.py --mix list --tris tris.json
+    bash run2.sh uvmeas off; bash run2.sh uvmeas hw=<ip>; python3 pvr-tests/uvmeas/read.py /tmp/pvr_tests/uvmeas hw <set>.npz
+    python3 model/export_uv.py --test uvmeas <set>; model/tspprobe --scan reach=10,...,54 fit/uvmeas_data/<set>.uvm
+
+What was left of the polly2 dumps after the rules above was nearly all one unit (1/256 of a texel) in a bilinear
+coordinate, on a weight step's edge; in gundam_ingame, sa2_ingame2 and daytona_sanic a negative V. gundam_ingame's
+is one triangle, the ground: two corners at nearly one height (a unit of the last place apart in y) with equal depth
+and V, the third at (5187, -2552). Its slope along x is what is left of two large products cancelling and a third
+far smaller: in exact arithmetic about 2^-37, positive, so a run adds nothing along x. On the console the value
+runs away one unit of the tile's grid a pixel, as a slope of -0 does.
+
+uvmeas, mix dump, read that triangle (at its place, V times 2^k so that each page reads another window of the
+mantissa; read.py takes the bounding box of a triangle larger than a cell): refsw2 = the console on 596,862 of
+747,976 readings, every miss one unit low at the end of a run. The setup's adders drop an operand far below the
+other (as the ISP's do, 25 exponents down), and the TSP's had been modelled as exact (reach 53): with the small term
+dropped the two large ones cancel to +0, and over the negative determinant the slope is -0. Reach 24, 25 and 26 all
+give 747,976 of 747,976 and leave every other archived set as it was, so model/reachgen makes triangles that tell:
+for every boundary R | R + 1 from 10 to 54, 40 triangles of 32x32 cells whose readings differ between the two (two
+corners nearly on one line, the attributes there large and at the third corner 2^-s of that, any corner order;
+and random triangles with attributes of very different sizes). Set reach1, 1760 triangles, 95,453 readings: reach
+25 gets all of them, 24 misses 554 and 26 misses 785, and the farther the more. pvr_tsp_plane.h has reach 25; refsw2
+= the console on both sets (archive_check.sh uvmeas), and gundam_ingame, daytona_sanic, daytona_intro, 18wheel_select,
+hotd2_zombies and toy_front are the console's in all of video memory, sa2_ingame2 down from 103 words to 4: 50 of 63.
 
 ## alphafilt: the alpha of a bilinear sample at the edge of a transparent texel (2026-11-18)
 

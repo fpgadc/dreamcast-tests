@@ -44,9 +44,14 @@ def main():
         for t in tris:
             x, y = np.array(t["x"]), np.array(t["y"])
             area = (x[1] - x[0]) * (y[2] - y[0]) - (x[2] - x[0]) * (y[1] - y[0])
-            x0, y0 = int(x.min()), int(y.min())
-            x0, y0 = min(x0, 608), min(y0, 448)
-            sx, sy = gx[y0:y0 + 32, x0:x0 + 32], gy[y0:y0 + 32, x0:x0 + 32]
+            # the triangle's bounding box on the screen (a cell's 32x32 for the generated ones; a game frame's
+            # triangle, mix dump, can be anywhere and larger than the screen)
+            x0, y0 = max(int(np.floor(x.min())), 0), max(int(np.floor(y.min())), 0)
+            x1, y1 = min(int(np.ceil(x.max())), 640), min(int(np.ceil(y.max())), 480)
+            if x1 - x0 <= 32 and y1 - y0 <= 32:
+                x0, y0 = min(x0, 608), min(y0, 448)
+                x1, y1 = x0 + 32, y0 + 32
+            sx, sy = gx[y0:y1, x0:x1], gy[y0:y1, x0:x1]
             dist = np.full(sx.shape, np.inf)
             for i in range(3):
                 j = (i + 1) % 3

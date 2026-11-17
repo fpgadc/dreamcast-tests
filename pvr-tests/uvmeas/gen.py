@@ -33,6 +33,9 @@ a page have consecutive values of D).
 cell c has e = c - 126 (2^-126 .. 2^127), cells 254 .. 299 are denormals, the largest denormal, the largest
 finite number, infinity, NaN and zero. D = 1 on pages 0-3, 16 significant bits on 4-5, 24 on 6-7. Where does
 the TSP's division by 1/w stop working?
+--mix dump --tris <json>: triangles of game frames at their place on the screen (dump_pages).
+--mix list --tris <json>: triangles a program chose, each in its cell and page (list_pages; model/reachgen: where
+the setup's adders stop counting a small operand).
 --mix whuge, wtiny, wneg, wspec: what wexp found, taken apart (see the functions): very large and very small 1/w
 not tied to the place on the screen, 1/w below zero, and the depths that are not ordinary numbers. A depth can
 be given as its bits ("zbits" in cases.json), so that every NaN reaches the console as it is.
@@ -401,15 +404,43 @@ def general_pages(rng):
     return pages
 
 
+def dump_pages(path):
+    """Triangles of game frames (polly2-data dumps) as refsw2 hands them to its rasterizer: corners in that order,
+    exact (refsw2-offline's TRIA log lines, written to a json list by agents' tools: x, y, z and the attribute a
+    of the three corners, a name). One triangle per page, the attribute times 2^k: page k reads the mantissa
+    window of a * 2^k (see the top): the triangles are the screen's own, at their place on it."""
+    tris = json.loads(Path(path).read_text())
+    pages = []
+    for t in tris:
+        for k in t.get("scales", [0, 2, 4, 5, 6, 7, 8, 10]):
+            pages.append([{"x": [float.fromhex(v) for v in t["x"]], "y": [float.fromhex(v) for v in t["y"]],
+                           "z": [float.fromhex(v) for v in t["z"]], "u": [float.fromhex(v) * 2.0 ** k for v in t["a"]],
+                           "group": f"{t['name']} k{k}", "m": k}])
+    return pages[:PAGES]
+
+
+def list_pages(path):
+    """Triangles chosen by a program (model/reachgen: cells of their own, a page each, exact corners): the json list
+    of dump_pages with a "page" for every triangle."""
+    tris = json.loads(Path(path).read_text())
+    pages = [[] for _ in range(PAGES)]
+    for t in tris:
+        pages[t["page"]].append({"x": [float.fromhex(v) for v in t["x"]], "y": [float.fromhex(v) for v in t["y"]],
+                                 "z": [float.fromhex(v) for v in t["z"]], "u": [float.fromhex(v) for v in t["a"]],
+                                 "group": t["name"], "m": 0})
+    return pages
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--start", type=int, default=None, help="recipscan: the first divisor")
-    ap.add_argument("--mix", default="first", choices=["first", "flatscan", "steep", "wflat", "general", "recip", "recipscan", "reciprow", "reciprown", "wexp", "whuge", "wtiny", "wneg", "wspec", "wzero", "wzero2"])
+    ap.add_argument("--tris", default=None, help="dump: the json of the triangles")
+    ap.add_argument("--mix", default="first", choices=["first", "flatscan", "steep", "wflat", "general", "recip", "recipscan", "reciprow", "reciprown", "wexp", "whuge", "wtiny", "wneg", "wspec", "wzero", "wzero2", "dump", "list"])
     args = ap.parse_args()
     rng = np.random.default_rng(args.seed)
     pages = {"flatscan": flatscan_pages, "steep": steep_pages, "wflat": wflat_pages, "general": general_pages, "recip": recip_pages, "recipscan": lambda r: recip_pages(r, True, args.start), "reciprow": reciprow_pages, "reciprown": lambda r: reciprow_pages(r, True), "wexp": wexp_pages,
-             "whuge": whuge_pages, "wtiny": wtiny_pages, "wneg": wneg_pages, "wspec": wspec_pages, "wzero": wzero_pages, "wzero2": wzero2_pages}.get(args.mix, lambda r: [page(r, p) for p in range(PAGES)])(rng)
+             "whuge": whuge_pages, "wtiny": wtiny_pages, "wneg": wneg_pages, "wspec": wspec_pages, "wzero": wzero_pages, "wzero2": wzero2_pages, "dump": lambda r: dump_pages(args.tris), "list": lambda r: list_pages(args.tris)}.get(args.mix, lambda r: [page(r, p) for p in range(PAGES)])(rng)
     for tris in pages:
         for t in tris:
             t.setdefault("z", [1.0, 1.0, 1.0])

@@ -8,9 +8,11 @@ vram_<scene>.bin (video memory, 32 bit area order). dreamster's pvr-renderer rep
 and kept video memory after the render as vram_out_<scene>.bin. Here refsw2-offline renders the same dump
 (regs; vram; render; save) and video memory is compared with the console's: all of it, and the framebuffer
 the registers name pixel by pixel. Scenes: those named, else every dump with a console render (64; a few
-seconds each, some longer). Work in /tmp/pvr_tests/polly2dumps/<scene>.
+seconds each, some longer), one refsw2-offline per core at a time (JOBS=n for n): all of them in about 6
+seconds on 32 cores. Work in /tmp/pvr_tests/polly2dumps/<scene>.
 
 sa_slow1-3 found where a filtered sample falls in a mip level below the full size (pvr-tests/mipbil)."""
+import concurrent.futures
 import os, subprocess, sys
 import numpy as np
 
@@ -47,19 +49,19 @@ def main():
     b = subprocess.run(["bash", os.path.join(NULLDC3, "refsw2-offline", "build.sh"), OFFLINE], capture_output=True, text=True)
     if b.returncode:
         sys.exit("refsw2-offline: build failed\n" + b.stdout[-400:] + b.stderr[-400:])
-    exact = 0
-    for s in scenes:
+    jobs = int(os.environ.get("JOBS", os.cpu_count() or 1))
+
+    def one(s):
+        """a scene: its line of the report, and whether all of video memory is the console's"""
         w = os.path.join(WORK, s)
         os.makedirs(w, exist_ok=True)
         size = os.path.getsize(f"{dumps}/pvr_regs_{s}.bin")
         if size not in (8192, 32768):
-            print(f"{s}: not replayed: its register file is {size} bytes, not the 8 KB of 0x005F8000-0x005F9FFF")
-            continue
+            return f"{s}: not replayed: its register file is {size} bytes, not the 8 KB of 0x005F8000-0x005F9FFF", False
         cmd = f"regs {dumps}/pvr_regs_{s}.bin; vram {dumps}/vram_{s}.bin; render; save {w}"
         r = subprocess.run([os.path.join(OFFLINE, "refsw2-offline"), "--lax", "-c", cmd], capture_output=True, text=True)
         if r.returncode or not os.path.exists(os.path.join(w, "vram.bin")):
-            print(f"{s}: refsw2-offline failed: {(r.stderr or r.stdout).strip().splitlines()[-1:]}")
-            continue
+            return f"{s}: refsw2-offline failed: {(r.stderr or r.stdout).strip().splitlines()[-1:]}", False
         hw = np.fromfile(f"{dumps}/vram_out_{s}.bin", dtype=np.uint8)
         sw = np.fromfile(os.path.join(w, "vram.bin"), dtype=np.uint8)
         os.remove(os.path.join(w, "vram.bin"))
@@ -72,9 +74,14 @@ def main():
             n = fh.shape[0] * fh.shape[1]
             same = int((fh == fs).all(-1).sum())
             px = f"framebuffer {same} of {n} pixels ({100 * same / n:.2f} %)"
-        if words == 0:
-            exact += 1
-        print(f"{s}: {'video memory identical' if words == 0 else f'{words} words of video memory differ'}; {px}")
+        return f"{s}: {'video memory identical' if words == 0 else f'{words} words of video memory differ'}; {px}", words == 0
+
+    # one refsw2-offline per scene, as many at once as there are cores (JOBS=n: n); the report in scene order
+    exact = 0
+    with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as pool:
+        for line, same in pool.map(one, scenes):
+            print(line, flush=True)
+            exact += same
     print(f"{exact} of {len(scenes)} scenes: all of video memory = the console's")
 
 

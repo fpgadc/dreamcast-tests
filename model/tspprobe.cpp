@@ -74,7 +74,7 @@ static const Fields fields[] = {
     { "valueBits", &pvrtsp::PlaneConfig::valueBits },
     { "range", &pvrtsp::PlaneConfig::range }, { "expLow", &pvrtsp::PlaneConfig::expLow }, { "expHigh", &pvrtsp::PlaneConfig::expHigh },
     { "zeroReach", &pvrtsp::PlaneConfig::zeroReach }, { "tileLocal", &pvrtsp::PlaneConfig::tileLocal }, { "macOrder", &pvrtsp::PlaneConfig::macOrder },
-    { "valueFixed", &pvrtsp::PlaneConfig::valueFixed },
+    { "valueFixed", &pvrtsp::PlaneConfig::valueFixed }, { "sumA", &pvrtsp::PlaneConfig::sumA }, { "sumW", &pvrtsp::PlaneConfig::sumW },
 #ifdef PVRTSP_RANGE_FIELDS
     PVRTSP_RANGE_FIELDS
 #endif
