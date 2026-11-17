@@ -1913,6 +1913,12 @@ Changed on the way:
     bash run2.sh timemeas hw=<ip>             # about 30 seconds; the timing is in the console's log
     tr -cd '[:print:]\n' < /tmp/pvr_tests/timemeas/build/hw.log > fit/timemeas_logs/timemeas_run<n>.log
     python3 pvr-tests/timemeas/analyze.py > pvr-tests/timemeas/tables.txt
+    TEST_DEFS="-DTM_ORDER" bash run2.sh timemeas hw=<ip>     # the palette clock: in what order pixels are shaded
+    python3 pvr-tests/timemeas/order.py --fit fit/timemeas_logs/timemeas_run39_order.log
+
+The `TM_ORDER` scenes read the order of shading from the picture: every pixel samples palette entry 0 while
+the CPU rewrites it with a counter. Runs are shaded one primitive at a time through a window of 96 runs (the
+span sorter; REPORT.md "In what order the TSP shades a tile", pvr-tests/PIPELINE_SHAPE.md [2b]).
 
 **The report is [pvr-tests/timemeas/REPORT.md](pvr-tests/timemeas/REPORT.md)**, the raw tables are pvr-tests/timemeas/tables.txt. In
 short, in clocks of the core (10 ns):

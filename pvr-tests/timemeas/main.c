@@ -24,6 +24,7 @@
    polygons of that format in different ways, so that the numbers of pixels, of runs (pixels of one triangle
    next to each other on one line) and of triangles change independently. The pages of this test are the
    layouts drawn once each with every triangle in its own colour. */
+/* #define TM_ORDER */                 /* only the order scenes (the palette clock: when each pixel is shaded): a few seconds */
 /* #define TM_PFETCH */                /* only the pfetch scenes (a shared parameter fetch?): a few seconds */
 /* #define TM_ROWS */                  /* only the rows scenes (shared setup engine or span stage?): a few seconds */
 /* #define TM_ISPQ */                  /* only the ispq scenes (how far the ISP runs ahead): a few seconds */
@@ -172,6 +173,7 @@ static uint32_t own_colour(int n) { return 0xff000080u | (uint32_t)(n & 255) << 
 static int shadow_bit;              /* polygons are sent with the shadow bit: modifier volumes act on them */
 static int dcalc_ctrl;              /* the polygons' DCalcCtrl bit: where the mipmap level's numerators are taken */
 static uint32_t sprite_offs = 0x00202020u;     /* a sprite's offset colour (pfetch: 0, which costs no setup) */
+static int shad_decal;              /* textured polygons: decal instead of modulate (order: the texel as it is) */
 static int two_volumes;             /* strips are sent "with two volumes": a second TSP, TCW and colours for inside */
 static int vol1_blend;              /* the second volume blends 0: as the first; 1: ONE, ONE; 2: ZERO, ONE; 3: SRC_ALPHA, INV_SRC_ALPHA */
 static int vol_flat;                /* colours 0x404040 outside and 0x202020 (blend 3: white, alpha 0x80) inside, to read the result */
@@ -213,7 +215,7 @@ static void header(const format_t *f, int DepthMode, PCW *pcw, ISP_TSP *isp, TSP
         tsp->UseAlpha = f->list == ListType_Punch_Through;
     }
     if(f->textured) {
-        tsp->ShadInstr = ShadInstr_Modulate;
+        tsp->ShadInstr = shad_decal ? ShadInstr_Decal : ShadInstr_Modulate;
         tsp->FilterMode = f->filter;
         tsp->MipMapD = 4;
         tsp->TexU = 5;                          /* 256 texels */
@@ -668,6 +670,51 @@ static void spantex_scene(int uf, int K, int L) {
     }
 }
 
+#ifdef TM_ORDER
+/* The palette clock. Every pixel of the scene is an 8 bpp palette texel of index 0, decal, point sampled, and
+   palette entry 0 (ARGB8888) is rewritten with a counter while the render runs. A pixel's colour is the
+   counter when the TSP looked the entry up: when it was shaded. Lines "O what k tiles writes w counts c" (w
+   writes in c 5 ns counts, STARTRENDER to the TSP's bit), then "R tile y" and the tile's 32 pixels of line y. */
+static void order_go(const char *what, int k, int ntiles) {
+    volatile uint32_t *status = (volatile uint32_t *)0xa05f6900;
+    volatile uint32_t *start = (volatile uint32_t *)(0xa05f8000 + STARTRENDER_addr);
+    volatile uint32_t *pal = (volatile uint32_t *)0xa05f9000;
+    const volatile uint32_t *fb = (const volatile uint32_t *)(0xa5000000 + SETUP_FB);
+    uint32_t v = 1, t;
+    uint64_t t0;
+    int old, x, y, n;
+
+    prepare();
+    pvrio_reg(REGION_BASE_addr, region_addr);
+    old = irq_disable();
+    pal[0] = 0xff000000u;
+    *status = 7;
+    t0 = perf_cntr_count(PRFC0);
+    *start = 0xffffffff;
+    while(!(*status & 4) && v < 0xff0000u) {
+        pal[0] = 0xff000000u | v; v++; pal[0] = 0xff000000u | v; v++;
+        pal[0] = 0xff000000u | v; v++; pal[0] = 0xff000000u | v; v++;
+        pal[0] = 0xff000000u | v; v++; pal[0] = 0xff000000u | v; v++;
+        pal[0] = 0xff000000u | v; v++; pal[0] = 0xff000000u | v; v++;
+    }
+    t = (uint32_t)(perf_cntr_count(PRFC0) - t0);
+    for(n = 0; n < 400 && !(*status & 1); n++) ;
+    *status = 7;
+    irq_restore(old);
+    printf("O %s %d %d writes %lu counts %lu\n", what, k, ntiles, (unsigned long)v, (unsigned long)t);
+    for(n = 0; n < ntiles; n++) {
+        const int tx = n / SETUP_TILES_Y, ty = n % SETUP_TILES_Y;
+        for(y = 0; y < 32; y++) {
+            printf("R %d %d", n, y);
+            for(x = 0; x < 32; x++)
+                printf(" %lx", (unsigned long)(fb[(ty * 32 + y) * 640 + tx * 32 + x] & 0xffffff));
+            printf("\n");
+        }
+    }
+    pvr_frame_begin();
+}
+#endif
+
 static void run_all(void) {
     static const int tsp_layouts[10] = { 0, 2, 14, 5, 10, 4, 3, 12, 1, 8 };
     static const int ks[14] = { 0, 1, 2, 3, 4, 6, 8, 12, 14, 16, 20, 24, 28, 32 };
@@ -687,6 +734,105 @@ static void run_all(void) {
     printf("T display %lx off\n", (unsigned long)fb_r);
     for(f = 0; f < NUM_FORMATS; f++) printf("F %d %s\n", f, formats[f].name);
     for(L = 0; L < NUM_LAYOUTS; L++) printf("L %d %s\n", L, layout_names[L]);
+
+    /* ---- order k: the order in which the TSP shades a tile's pixels, read with the palette clock (order_go).
+       One tile, opaque list, sprites of the palette format over a background of it, all at one depth with
+       compare ALWAYS (the one sent last is seen). k 0 the background alone; 1 one sprite 32x32; 2 32 rows 32x1;
+       3 32 columns 1x32 sent left to right; 4 the same sent right to left; 5 4 columns 8x32; 6 a sprite T 32x32,
+       then columns 1x32 at x 8 and 16 over it (a line: T, S1, T, S2, T); 7 1024 sprites 1x1 sent line by line;
+       8 the same sent in a shuffled order; 9 16 sprites 8x8 sent in a shuffled order (2026-11-17). Telling
+       variants of the sorter apart (order.py): 10 T 32x32 under 95 sprites 1x1 on lines 0-2 but (0, 0); 11
+       columns 1x16; 12 columns 1x2; 13 16 columns 1x32 and a sprite 16x32; 14 8 columns and a sprite 24x32;
+       15 32 columns under rows 32x1 on the odd lines; 16 32 columns under sprites 1x1 on the odd lines; 17
+       columns 1x4. 18 16 columns 1x32 at the even columns, the background between; 19 32 columns 1x32 in
+       each of two tiles; 20 = 11 again; 21 = 11 with lines 16-31 one sprite 32x16; 22 = 3 again. */
+#ifdef TM_ORDER
+    {
+        static const format_t pal_fmt = { "palette 8 bpp decal", OP, 1, 0, 0, PixelFmt_Pal8, 0, 0, 0, P0, 1, 0 };
+        static uint8_t zeros[65536];
+        static uint16_t perm[1024];
+        const uint32_t tex_keep = tex;
+        uint32_t r = 2463534242u;
+        int ok, j, t, q;
+
+        tex = pvr_tex_alloc(sizeof(zeros));
+        pvr_tex_load(tex, zeros, sizeof(zeros));
+        shad_decal = 1;
+        bg_fmt = &pal_fmt;
+        region_addr = ONE_TILE;
+        for(ok = 0; ok < 23; ok++) {
+            ta_list_begin(ListType_Opaque);
+            switch(ok) {
+            case 0: break;
+            case 1: rect(&pal_fmt, 1, DepthMode_Always, 0, 0, 32, 32, front, 0, 0); break;
+            case 2: for(j = 0; j < 32; j++) rect(&pal_fmt, 1, DepthMode_Always, 0, j, 32, 1, front, j, 0); break;
+            case 3: case 22: for(j = 0; j < 32; j++) rect(&pal_fmt, 1, DepthMode_Always, j, 0, 1, 32, front, j, 0); break;
+            case 4: for(j = 31; j >= 0; j--) rect(&pal_fmt, 1, DepthMode_Always, j, 0, 1, 32, front, j, 0); break;
+            case 5: for(j = 0; j < 4; j++) rect(&pal_fmt, 1, DepthMode_Always, 8 * j, 0, 8, 32, front, j, 0); break;
+            case 6:
+                rect(&pal_fmt, 1, DepthMode_Always, 0, 0, 32, 32, front, 0, 0);
+                rect(&pal_fmt, 1, DepthMode_Always, 8, 0, 1, 32, front, 1, 0);
+                rect(&pal_fmt, 1, DepthMode_Always, 16, 0, 1, 32, front, 2, 0);
+                break;
+            case 7: for(j = 0; j < 1024; j++) rect(&pal_fmt, 1, DepthMode_Always, j & 31, j >> 5, 1, 1, front, j, 0); break;
+            case 8: case 9:
+                q = ok == 8 ? 1024 : 16;
+                for(j = 0; j < q; j++) perm[j] = (uint16_t)j;
+                for(j = q - 1; j > 0; j--) {
+                    r ^= r << 13; r ^= r >> 17; r ^= r << 5;
+                    t = (int)(r % (uint32_t)(j + 1));
+                    { const uint16_t sw = perm[j]; perm[j] = perm[t]; perm[t] = sw; }
+                }
+                printf("P %d", ok);
+                for(j = 0; j < q; j++) printf(" %d", perm[j]);
+                printf("\n");
+                for(j = 0; j < q; j++) {
+                    if(ok == 8) rect(&pal_fmt, 1, DepthMode_Always, perm[j] & 31, perm[j] >> 5, 1, 1, front, j, 0);
+                    else rect(&pal_fmt, 1, DepthMode_Always, 8 * (perm[j] & 3), 8 * (perm[j] >> 2), 8, 8, front, j, 0);
+                }
+                break;
+            case 10:
+                rect(&pal_fmt, 1, DepthMode_Always, 0, 0, 32, 32, front, 0, 0);
+                for(j = 1; j < 96; j++) rect(&pal_fmt, 1, DepthMode_Always, j & 31, j >> 5, 1, 1, front, j, 0);
+                break;
+            case 11: case 12: case 17: case 20:
+                q = ok == 11 || ok == 20 ? 16 : ok == 12 ? 2 : 4;
+                for(j = 0; j < 32 * (32 / q); j++) rect(&pal_fmt, 1, DepthMode_Always, j & 31, (j >> 5) * q, 1, q, front, j, 0);
+                break;
+            case 13: case 14:
+                q = ok == 13 ? 16 : 8;
+                for(j = 0; j < q; j++) rect(&pal_fmt, 1, DepthMode_Always, j, 0, 1, 32, front, j, 0);
+                rect(&pal_fmt, 1, DepthMode_Always, q, 0, 32 - q, 32, front, q, 0);
+                break;
+            case 18: for(j = 0; j < 16; j++) rect(&pal_fmt, 1, DepthMode_Always, 2 * j, 0, 1, 32, front, j, 0); break;
+            case 19: for(j = 0; j < 64; j++) rect(&pal_fmt, 1, DepthMode_Always, j & 31, (j >> 5) * 32, 1, 32, front, j, 0); break;
+            case 21:
+                for(j = 0; j < 32; j++) rect(&pal_fmt, 1, DepthMode_Always, j, 0, 1, 16, front, j, 0);
+                rect(&pal_fmt, 1, DepthMode_Always, 0, 16, 32, 16, front, 32, 0);
+                break;
+            case 15: case 16:
+                for(j = 0; j < 32; j++) rect(&pal_fmt, 1, DepthMode_Always, j, 0, 1, 32, front, j, 0);
+                for(j = 0; j < 16; j++) {
+                    if(ok == 15) rect(&pal_fmt, 1, DepthMode_Always, 0, 2 * j + 1, 32, 1, front, 32 + j, 0);
+                    else for(t = 0; t < 32; t++) rect(&pal_fmt, 1, DepthMode_Always, t, 2 * j + 1, 1, 1, front, 32 + 32 * j + t, 0);
+                }
+                break;
+            }
+            if(ok == 19) {
+                tiles_region(2);
+                region_addr = MANY_TILES;
+            }
+            order_go("order", ok, ok == 19 ? 2 : 1);
+            region_addr = ONE_TILE;
+        }
+        shad_decal = 0;
+        bg_fmt = NULL;
+        tex = tex_keep;
+    }
+    *fb_r_ctrl = fb_r;
+    printf("T end\n");
+    return;
+#endif
 
     /* ---- pfetch k n: is the per-primitive resource behind rows (run 36) a parameter fetch shared by ISP and
        TSP (2026-11-17)? 32 rows of 32x1 sprites a tile, n tiles (32, 64: the pace is the difference). Parameter

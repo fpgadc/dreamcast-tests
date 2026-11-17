@@ -864,9 +864,72 @@ ends where the volume state changes: README, uvrun). 16 bit framebuffer; a tile 
   where L = 4 and 8 agree. The texels-8-apart triangle (spanahead v 0) gives erratic times, as the block of
   the "ahead" scenes did.
 
+## In what order the TSP shades a tile: the span sorter (2026-11-17)
+
+Scenes `order` (runs 38 and 39; `#define TM_ORDER`, a few seconds; `python3 pvr-tests/timemeas/order.py`). Timing
+the end of a render cannot tell in what order a tile's runs are shaded, so these scenes read it from the picture.
+**The palette clock:** every pixel of the scene, background included, is an 8 bpp palette texel of index 0,
+decal, point sampled, and while the render runs the CPU rewrites palette entry 0 (ARGB8888) with a counter, one
+write every ~25 counts (12 clocks). A pixel's colour is the counter when the TSP looked the entry up: when that
+pixel was shaded, to about 5 pixels (ARGB8888 entries cost 2 clocks a pixel). About one pixel in a scene reads a
+value 116 to 120 writes old (probably a write meeting the read); order.py sets these glitch pixels apart. One
+tile, opaque list, sprites at one depth with compare ALWAYS (the one sent last is seen).
+
+- **A primitive's runs are shaded together.** A sprite T over the tile with columns S1 and S2 in front (a line
+  is T, S1, T, S2, T): T over the whole tile in raster order, then S1's column, then S2's.
+- **Primitives go in the order they first appear in the tile (raster order), not in list order.** 32 columns
+  sent left to right or right to left, 16 sprites of 8x8 and 1024 of 1x1 sent in a shuffled order: the same
+  order on the console.
+- **Many primitives on every line: the tile is swept in batches.** 32 columns of 1x32: column 0 lines 0-3,
+  column 1 lines 0-3, ..., column 10 lines 0-4, ..., column 31 lines 0-7, then column 0 again from line 4. Each
+  visit sets the column up again (about 3.5 writes, ~45 clocks, a column a sweep, the textured setup's 48).
+- **A primitive being shaded takes its runs that come in meanwhile.** T at (0, 0) and on lines 3-31, 95 sprites
+  of 1x1 on the rest of lines 0-2: T's 30 lines first, then the 95 in raster order.
+
+**The model** (order.py `sort_runs`): the tile's runs (a run: the longest stretch of one primitive on one line)
+enter a window of **96 runs** in raster order as soon as there is room. Repeatedly the oldest run in the window
+chooses the primitive; it and every run of that primitive in the window are shaded, oldest first, including the
+runs that enter while it lasts (each one shaded makes room for the next). Runs out of order along the model's
+order, all 23 scenes, by window size (`order.py --fit`):
+
+| window | 92 | 94 | 95 | **96** | 97 | 98 | 100 |
+|---|---|---|---|---|---|---|---|
+| run 38 (scenes 0-17, 9,800 runs) | 395 | 235 | 129 | **6** | 150 | 247 | 385 |
+| run 39 (scenes 0-22, 17,000 runs) | 861 | 495 | 246 | **20** | 276 | 480 | 704 |
+
+At 96: 13 of the 26 are glitch pixels, the other 13 are the early drains below. What the scenes tell apart
+(scene numbers as in main.c):
+
+- **The window counts runs, not pixels:** a window of 96 pixels puts 4 or 5 runs out of order in 4 columns of
+  8x32 and in 16 sprites of 8x8, 10 to 48 in scenes 13 to 15. A run of 16 or 24 pixels takes one place: one
+  place per 16 pixels puts 10 and 37 out of order (scenes 14, 15), one per 8 pixels 10 to 72 (13 to 15).
+- **A primitive comes back at the end:** once drained, it waits behind every primitive whose runs came in
+  before its next one (that is the oldest-run rule). Keeping each primitive's place in a fixed sweep instead
+  puts 11 and 97 out of order (scenes 15, 16, run 38).
+- **No limit on different primitives below 96:** limits of 64 or 32 put 35 and 15 out of order (scene 16, 64
+  primitives with up to 64 in the window).
+- **Each tile on its own:** two tiles of 32 columns are sorted alike, the second after the first's last pixel.
+- **The background polygon is a primitive like the others** (scene 18), apart from the early drains.
+
+**Not explained: early drains.** Some whole drains are shaded before the 2 to 9 drains in front of them,
+holding the runs the model gives them (its choice of runs is right; the time order of whole drains after it is
+not). Column 31 in 32 columns of 1x16 (scenes 11, 20, 21, twice each, always the same drains), where the same
+columns 1x32 (scenes 3, 22) are in order through the same sequence of drains; and in 16 columns over the
+background (scene 18) the background and column 0 change places when one follows the other, and column 0 goes
+about 2 drains early.
+
+**[I] Hardware:** a store of 96 runs (parameter address, line, x, length: about 40 bits each, ~480 bytes) between
+the ISP's run queue and the TSP's setup, with the head entry's primitive compared against every entry; matching
+entries leave in age order and the queue refills free entries at once. The TSP's setup works on what leaves it:
+a primitive is set up once per drain, so a tile with many primitives on a line sets each up once per sweep.
+Whether that is the "more than about 12 different triangles on a line" cost (a sweep visiting more primitives
+than the TSP keeps set up) is not checked: 17 nested sprites with two runs each a line showed no such cost.
+
 ## Not known
 
 - What makes runs cost more when more than about 12 different triangles are on a line.
+- Why some drains of the span sorter are shaded before the drains in front of them ("In what order the
+  TSP shades a tile").
 - What the per-primitive resource is that the ISP and the TSP share when 32 rows of 32x1 make a tile cost 1736
   (rows: not a run stage, not a shared setup unit; pfetch: not a parameter fetch or VRAM traffic. In untextured
   rows the ISP keeps pace with the TSP instead of running ahead).
@@ -884,6 +947,8 @@ ends where the volume state changes: README, uvrun). 16 bit framebuffer; a tile 
     bash run2.sh timemeas hw=<ip>             # about 30 seconds; the timing is in the console's log
     tr -cd '[:print:]\n' < /tmp/pvr_tests/timemeas/build/hw.log > fit/timemeas_logs/timemeas_run<n>.log
     python3 pvr-tests/timemeas/analyze.py > pvr-tests/timemeas/tables.txt
+    TEST_DEFS="-DTM_ORDER" bash run2.sh timemeas hw=<ip>     # the palette clock scenes only, a few seconds
+    python3 pvr-tests/timemeas/order.py --fit fit/timemeas_logs/timemeas_run39_order.log
 
 Earlier logs are kept in `fit/timemeas_logs/before_flat_bg` (Gouraud background, twins by compare NEVER),
 `first_flat_bg`, `second_flat_bg`, `before_modvol` (the tile had three lists, not five), `before_pt_modvol`,

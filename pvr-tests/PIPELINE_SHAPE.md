@@ -31,7 +31,10 @@ Times are in core clocks (100 MHz, 10 ns). The tile is 32 x 32 pixels.
    |    -> rasterizer, ONE TILE LINE (32 px) A CLOCK -> depth buffer (19-bit mantissa) + tag buffer
    |    + modifier volume bits; passes: opaque, punch-through, translucent (pre-sorted or sorted per pixel)
    v    run queue, ~512 runs: the ISP runs up to ~15 background tiles (32 runs each) ahead of the TSP
- [3] TSP setup: per primitive seen, planes 1/w, ARGB, U/w, V/w, offset ARGB (16-bit floats); mip K;
+ [2b] span sorter: a window of 96 runs filled in raster order; the oldest run's primitive is drained (all its
+   |    runs in the window, also those coming in meanwhile), one primitive at a time, per tile
+   v
+ [3] TSP setup: per drain of the sorter, planes 1/w, ARGB, U/w, V/w, offset ARGB (16-bit floats); mip K;
    |    runs ahead ~11-12 primitives, across tiles
    v
  [4] run start: first value of each run C + floor(A x0) + floor(B y) on the tile's grid; shares an
@@ -163,6 +166,33 @@ largest of its ISP, TSP and write-out times [M timemeas].
     an x range, about 40 bits, so about 2.5 KB. Not known: whether a run cut in two by a nearer polygon counts
     twice.
   - With one dummy entry in front, the first ~1000 clocks of the tile's ISP work are free.
+
+
+## [2b] Span sorter (the order of shading)
+
+- **Method [M timemeas order, palette clock].** Every pixel is a palette texel of index 0 while the CPU rewrites
+  palette entry 0 with a counter during the render: each pixel's colour is when the TSP shaded it, to ~5 pixels.
+- **A primitive's runs are shaded together**, in raster order. Primitives go in the order they first appear in
+  the tile in raster order, not in list order (columns sent in either order, sprites sent shuffled: the same).
+- **Rule [M, 23 scenes, ~17,000 runs].** The tile's runs enter a window of **96 runs** in raster order as soon as
+  there is room. Repeatedly the oldest run in the window chooses the primitive; it and all its runs in the window
+  are shaded, oldest first, also the runs that come in while it lasts (each one shaded makes room for the next).
+  A drained primitive comes back behind every primitive whose runs came in before its next one.
+  - Windows of 95 or 97 put 129 to 276 runs out of order; 96 puts none but glitch pixels and the early drains.
+  - A run takes one place whatever its length (up to 24 pixels tested); no limit on different primitives below
+    96; each tile on its own; the background polygon is a primitive like the others.
+  - So with many primitives on every line the tile is swept in diagonal batches (32 columns: each column's
+    lines 0-3 to 0-7, then column 0 again from line 4), and each visit is a setup of its own (~45 clocks).
+  - With few long runs the whole tile is one batch: a sprite with two columns in front is shaded over the whole
+    tile first, then each column.
+- **Early drains [M, not understood].** Some whole drains are shaded before the 2 to 9 drains in front of them,
+  holding the runs the rule gives them: always the same drains (column 31 of 32 columns of 1x16, not of 1x32;
+  the background and column 0 of 16 columns over the background).
+- **[I]** A store of 96 runs (parameter address, line, x, length: ~40 bits each, ~480 bytes) after the ISP's run
+  queue. The head entry's primitive is compared against every entry; matching entries leave in age order, and the
+  queue refills free entries at once.
+- **[G]** The crowded-lines cost (below) is the sweeps: each visits every primitive again, and the TSP keeps about
+  12 set up. Not checked against the costs (17 nested sprites with two runs each a line showed no such cost).
 
 
 ## [3] TSP setup (one primitive seen per ~39-64 clocks, running ahead)
@@ -323,6 +353,7 @@ largest of its ISP, TSP and write-out times [M timemeas].
 | pixel: texels far apart | +2.25 (memory bound 2.14 at 4 apart) |
 | write-out: 16 / 24 / 32 bpp | 1045 / 1105 / 1357 |
 | look-ahead: setup / run start / ISP | ~12 primitives / ~150-200 pixels / ~512 runs (~15 background tiles) |
+| span sorter window | 96 runs (any length) |
 
 
 ## Storage, roughly
@@ -333,6 +364,7 @@ largest of its ISP, TSP and write-out times [M timemeas].
 | ISP tag buffer + stencil / modifier bits | 1024 x (parameter address + a few bits) |
 | ISP to TSP run queue | ~512 runs x ~40 bits (parameter address, line, x range) = ~2.5 KB [I] |
 | TSP primitive store | ~12 x (11 planes x 3 x 16-bit floats + mip K + texture/blend words) [G] |
+| span sorter window | 96 runs x ~40 bits + a primitive compare on every entry [M size, I layout] |
 | run queue | ~150-200 pixels |
 | TSP reciprocal table | 512 entries (t[i], n[i], c[i]) |
 | bump tables | 2 x 256 bytes |
@@ -358,8 +390,8 @@ largest of its ISP, TSP and write-out times [M timemeas].
 
 ## Open questions
 
-1. **ISP to TSP run queue:** what an entry holds, and whether a run cut in two by a nearer polygon counts twice.
-   Also why 32 sprites of 32x1 a tile cost 1736 a tile in a render of many tiles: more than either unit's own
+1. **ISP to TSP run queue:** what an entry holds. (A run cut in two by a nearer polygon is two runs in the span
+   sorter's window [M order].) Also why 32 sprites of 32x1 a tile cost 1736 a tile in a render of many tiles: more than either unit's own
    cost (timemeas ispq). Measured (timemeas rows): not a stage counting runs (primitives that never pass add
    their ISP cost, ~16 each), and not a setup unit shared by ISP and TSP (DCalcCtrl's +5 of TSP setup adds
    nothing; offset rows cost 64, not 64 + 15), and not a parameter fetch whose cost grows with size or VRAM
@@ -370,7 +402,8 @@ largest of its ISP, TSP and write-out times [M timemeas].
 2. **Two depth pixels one step high** (zmeas zero6, reach1r cell 227): both a negative start with the plane
    crossing zero in the tile, the exact sum just under a stored boundary.
 3. **Crowded lines:** why runs cost up to twice as much with more than ~12 different triangles on a line, opaque
-   pass only.
+   pass only. Probably the span sorter's sweeps setting each primitive up again ([2b]); not checked against the
+   costs.
 4. **Texture caching:** its organisation. The first tile pays +35..+455 once per render; texels far apart pay
    2.25 every time.
 5. **The fixed 335 clocks** of an empty tile, and the 55-90 a tile with seen polygons costs once: how they
@@ -384,3 +417,5 @@ largest of its ISP, TSP and write-out times [M timemeas].
    modifier volume skipped its background. It is history-dependent [timemeas].
 10. **Untimed:** the scaler and strip buffer in the write-out, translucent sorting with many layers per pixel, and
    the TA writing VRAM during a render.
+11. **Early drains of the span sorter** ([2b]): why some whole drains are shaded before the ones in front of
+   them.
