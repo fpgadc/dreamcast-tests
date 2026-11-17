@@ -462,5 +462,30 @@ def main():
                 print(f"    {name:30s} E {E:2d}: {pace:7.1f} a tile ({pace / 32:5.1f} a row), ISP's bit {isp:7.1f}; {pace - base:+7.1f}")
 
 
+    if "pfetch" in D:
+        print()
+        print("29. Is the rows' per-primitive resource a parameter fetch shared by the ISP and the TSP? Parameter size")
+        print("    without setup work (an offset colour of 0: 4 more words a sprite, no TSP setup) and the write-out's")
+        print("    VRAM traffic. Pace a tile (n 32 -> 64); lead: the TSP's end less the ISP's at 64 tiles.")
+        names = [("rows untextured", 19), ("rows untextured, 565 framebuffer", 19), ("rows untextured, no write-out", 19),
+                 ("rows 565", 23), ("rows 565, offset colour 0", 27), ("rows 565, offset colour", 27),
+                 ("rows untextured + 32 never passing, 19 words", 19), ("rows untextured + 32 never passing, 27 words", 19)]
+        pace = {}
+        for k, (name, words) in enumerate(names):
+            if (k, 64, 0, 0) not in D["pfetch"]:
+                continue
+            pace[k] = (T("pfetch", k, 64) - T("pfetch", k, 32)) / 32 / 2
+            isp = (I("pfetch", k, 64) - I("pfetch", k, 32)) / 32 / 2
+            lead = (T("pfetch", k, 64) - I("pfetch", k, 64)) / 2
+            print(f"    {name:46s} {words:2d} words: {pace[k]:7.1f} a tile ({pace[k] / 32:5.1f} a row), ISP's bit {isp:7.1f},"
+                  f" lead {lead:6.0f} ({lead / pace[k]:4.1f} tiles)")
+        if len(pace) == 8:
+            print(f"    16 bit framebuffer {pace[1] - pace[0]:+.1f} a tile, no write-out {pace[2] - pace[0]:+.1f}")
+            print(f"    4 more words a passing sprite: {(pace[4] - pace[3]) / 32:+.2f} a row; the offset colour's setup:"
+                  f" {(pace[5] - pace[4]) / 32:+.2f} a row")
+            print(f"    never passing extras: {(pace[6] - pace[0]) / 32:.2f} each at 19 words, {(pace[7] - pace[0]) / 32:.2f}"
+                  f" at 27 words")
+
+
 if __name__ == "__main__":
     main()

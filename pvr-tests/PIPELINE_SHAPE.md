@@ -362,10 +362,11 @@ largest of its ISP, TSP and write-out times [M timemeas].
    Also why 32 sprites of 32x1 a tile cost 1736 a tile in a render of many tiles: more than either unit's own
    cost (timemeas ispq). Measured (timemeas rows): not a stage counting runs (primitives that never pass add
    their ISP cost, ~16 each), and not a setup unit shared by ISP and TSP (DCalcCtrl's +5 of TSP setup adds
-   nothing; offset rows cost 64, not 64 + 15). Both units wait on a per-primitive resource whose cost grows
-   with the parameters' size (565 +7, offset +10 a row; the ISP slows in textured rows too). **[G]** One
-   parameter fetch (VRAM port) for the ISP and the TSP. A probe varying parameter size alone, or VRAM traffic
-   (framebuffer depth, no write-out), would test it.
+   nothing; offset rows cost 64, not 64 + 15), and not a parameter fetch whose cost grows with size or VRAM
+   traffic (timemeas pfetch: 4 more words a passing sprite +0.3 a row, 8 more words a never-passing one +0,
+   a 16 bit framebuffer or no write-out +0). In untextured rows the ISP ends only ~2870 clocks (~1.7 tiles)
+   before the TSP at any number of tiles, against ~15 tiles in ispq: the ISP is the limit there or is held to
+   the TSP by something other than the run queue. Still unexplained.
 2. **Two depth pixels one step high** (zmeas zero6, reach1r cell 227): both a negative start with the plane
    crossing zero in the tile, the exact sum just under a stored boundary.
 3. **Crowded lines:** why runs cost up to twice as much with more than ~12 different triangles on a line, opaque

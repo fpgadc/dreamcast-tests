@@ -556,7 +556,37 @@ and get no TSP setup. Pace a tile from 32 to 64 tiles:
 - **A per-primitive resource both use, whose cost grows with the parameters' size** fits: untextured rows ~16
   (the ISP's part) + ~38, 565 +7, offset +10, and in textured rows the ISP's own bit slows too (1843 and 1929 a
   tile against 1737), although the ISP does not look at textures. **[G]** One parameter fetch (VRAM reads of each
-  primitive's parameters) for the ISP and the TSP. Quads are bound by the TSP's setup of two triangles (2 x 39).
+  primitive's parameters) for the ISP and the TSP. *(Rejected by run 37, next section.)* Quads are bound by the TSP's setup of two triangles (2 x 39).
+
+## Is it a parameter fetch shared by the ISP and the TSP? No (2026-11-17)
+
+The `pfetch` scenes (run 37; `#define TM_PFETCH`, about 10 s) test the guess above. If one fetch of each
+primitive's parameters served both units, a bigger primitive or more VRAM traffic beside it would slow the
+rows. An offset colour of 0 adds 4 words to each sprite (27 against 23) but no TSP setup. Pace a tile from 32
+to 64 tiles; lead: the TSP's end less the ISP's at 64 tiles:
+
+| a tile | words a sprite | pace | a row | ISP's bit | lead |
+|---|---|---|---|---|---|
+| 32 rows untextured | 19 | 1736.6 | 54.3 | 1736.6 | 2868 |
+| the same, 565 framebuffer | 19 | 1737.8 | 54.3 | 1737.8 | 2528 |
+| the same, no write-out (all tiles but the last) | 19 | 1735.9 | 54.2 | 1735.9 | 2840 |
+| 32 rows 565 | 23 | 1952.8 | 61.0 | 1824.7 | 22266 |
+| 32 rows 565, offset colour 0 | 27 | 1962.2 | 61.3 | 1971.7 | 13586 |
+| 32 rows 565, offset colour | 27 | 2047.9 | 64.0 | 1931.4 | 27170 |
+| 32 rows untextured + 32 never passing, 19 words | | 2249.4 | | 2249.0 | 2868 |
+| the same, the never passing ones 27 words (565 offset 0) | | 2248.9 | | 2248.9 | 2868 |
+
+- **Size costs nothing.** 4 more words a passing sprite: +0.3 a row (2 beats of VRAM would be +2). 8 more
+  words a never-passing sprite: 16.01 against 16.03 each. The offset rows' +10 a row of run 36 is the offset
+  colour's setup (+2.7 a row here over offset 0), not their 4 words.
+- **VRAM traffic costs nothing.** Half the write-out (565 framebuffer) or none: +1.3, -0.6 a tile.
+- **The ISP keeps pace in untextured rows.** Its bit is the pace, and it ends ~2870 clocks before the TSP
+  (one tile's TSP work and write-out) at 32 and at 64 tiles, with or without the never-passing extras. In
+  ispq it led by ~15 tiles. In textured rows it leads by 7 to 13 tiles and its bit (1825 to 1972) is not the
+  same from one scene to the next, so "the ISP slows in textured rows too" (run 36) is not evidence.
+
+So the cost is not a fetch of the parameters. Left: the ISP is the limit in untextured rows (54 a passing
+32x1 sprite, 16 a never-passing 1x1), or something other than the run queue holds it to the TSP. Not known.
 
 ## What changed against my earlier numbers
 
@@ -838,7 +868,8 @@ ends where the volume state changes: README, uvrun). 16 bit framebuffer; a tile 
 
 - What makes runs cost more when more than about 12 different triangles are on a line.
 - What the per-primitive resource is that the ISP and the TSP share when 32 rows of 32x1 make a tile cost 1736
-  (rows: not a run stage, not a shared setup unit; a parameter fetch is the guess).
+  (rows: not a run stage, not a shared setup unit; pfetch: not a parameter fetch or VRAM traffic. In untextured
+  rows the ISP keeps pace with the TSP instead of running ahead).
 - How the 335 clocks of a tile with nothing to do divide between the start, the ISP, the TSP and the
   hand-overs, and what the 55 to 90 are that a tile with seen polygons costs once.
 - How texels are kept: the first tile's cost is small and paid once per render, yet texels 8 apart cost

@@ -24,6 +24,7 @@
    polygons of that format in different ways, so that the numbers of pixels, of runs (pixels of one triangle
    next to each other on one line) and of triangles change independently. The pages of this test are the
    layouts drawn once each with every triangle in its own colour. */
+/* #define TM_PFETCH */                /* only the pfetch scenes (a shared parameter fetch?): a few seconds */
 /* #define TM_ROWS */                  /* only the rows scenes (shared setup engine or span stage?): a few seconds */
 /* #define TM_ISPQ */                  /* only the ispq scenes (how far the ISP runs ahead): a few seconds */
 /* #define TM_QUICK */                 /* only the scenes before the TM_QUICK line in run_all: a few seconds */
@@ -170,6 +171,7 @@ static uint32_t own_colour(int n) { return 0xff000080u | (uint32_t)(n & 255) << 
 
 static int shadow_bit;              /* polygons are sent with the shadow bit: modifier volumes act on them */
 static int dcalc_ctrl;              /* the polygons' DCalcCtrl bit: where the mipmap level's numerators are taken */
+static uint32_t sprite_offs = 0x00202020u;     /* a sprite's offset colour (pfetch: 0, which costs no setup) */
 static int two_volumes;             /* strips are sent "with two volumes": a second TSP, TCW and colours for inside */
 static int vol1_blend;              /* the second volume blends 0: as the first; 1: ONE, ONE; 2: ZERO, ONE; 3: SRC_ALPHA, INV_SRC_ALPHA */
 static int vol_flat;                /* colours 0x404040 outside and 0x202020 (blend 3: white, alpha 0x80) inside, to read the result */
@@ -259,7 +261,7 @@ static void rect(const format_t *f, int sprite, int DepthMode, int x, int y, int
         isp.Offset = f->offset;
         s.pcw = pcw; s.isp = isp; s.tsp = tsp; s.tcw = tcw;
         s.BaseCol = own ? own_colour(2 * n) : corner[3];
-        s.OffsCol = 0x00202020u;
+        s.OffsCol = sprite_offs;
         ta_send(&s, sizeof(s));
         if(f->textured) {
             TA_Sprite1 v;
@@ -685,6 +687,47 @@ static void run_all(void) {
     printf("T display %lx off\n", (unsigned long)fb_r);
     for(f = 0; f < NUM_FORMATS; f++) printf("F %d %s\n", f, formats[f].name);
     for(L = 0; L < NUM_LAYOUTS; L++) printf("L %d %s\n", L, layout_names[L]);
+
+    /* ---- pfetch k n: is the per-primitive resource behind rows (run 36) a parameter fetch shared by ISP and
+       TSP (2026-11-17)? 32 rows of 32x1 sprites a tile, n tiles (32, 64: the pace is the difference). Parameter
+       size without setup work: an offset colour of 0 costs no setup (offs3, vol2off) but the sprite's parameters
+       are 4 words longer. VRAM traffic beside it: the write-out (16 bit framebuffer: half; no write-out: none).
+       k 0 untextured (as rows); 1 untextured, 565 framebuffer; 2 untextured, no write-out but the last tile;
+       3 565; 4 565 with the offset bit and an offset colour of 0; 5 565 with an offset colour (as rows);
+       6 untextured + 32 primitives that never pass, untextured; 7 the same with those 565 with an offset of 0. */
+    {
+        volatile uint32_t *fb_w_ctrl = (volatile uint32_t *)(0xa05f8000 + FB_W_CTRL_addr);
+        const uint32_t fbw = *fb_w_ctrl;
+        static const int pn[2] = { 32, 64 }, pf[8] = { 0, 0, 0, 2, 4, 4, 0, 0 };
+        int pk, pi, t, j;
+        for(pk = 0; pk < 8; pk++)
+            for(pi = 0; pi < 2; pi++) {
+                *fb_w_ctrl = pk == 1 ? ((fbw & ~15u) | 1u) : fbw;
+                region_nowo = pk == 2;
+                sprite_offs = pk == 4 || pk == 7 ? 0 : 0x00202020u;
+                tiles_region(pn[pi]);
+                region_addr = MANY_TILES;
+                ta_list_begin(ListType_Opaque);
+                for(t = 0; t < pn[pi]; t++) {
+                    const int x = (t / SETUP_TILES_Y) * 32, y = (t % SETUP_TILES_Y) * 32;
+                    if(pk >= 6)
+                        for(j = 0; j < 32; j++)
+                            rect(&formats[pk == 7 ? 4 : 0], 1, DepthMode_Never, x + j, y, 1, 1, front, j, 0);
+                    for(j = 0; j < 32; j++)
+                        rect(&formats[pf[pk]], 1, DepthMode_Always, x, y + j, 32, 1, front, j, 0);
+                }
+                measure("pfetch", pk, pn[pi], 0, 0);
+            }
+        *fb_w_ctrl = fbw;
+        region_nowo = 0;
+        sprite_offs = 0x00202020u;
+        region_addr = ONE_TILE;
+    }
+#ifdef TM_PFETCH
+    *fb_r_ctrl = fb_r;
+    printf("T end\n");
+    return;
+#endif
 
     /* ---- rows k n E: what makes 32 sprites of 32x1 a tile cost 1736 a tile in a render of many tiles (ispq)
        (2026-11-17)? 1736 / 32 = 54 a primitive = the TSP's setup (39) + the ISP's (~15), as if one setup engine
