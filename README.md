@@ -2104,6 +2104,9 @@ dumps of ta-tests it dumps TA_OL_POINTERS after each case and in the middle of s
 video memory and look for words written outside the area (`pvrio_scan32`). A prelude gives TA_OL_POINTERS and the
 face colours known values first, since a console keeps both from the programs before (SOFTRESET keeps them).
 
+What these results suggest about the TA's hardware (stages, storage, throughput, open questions):
+ta-tests/PIPELINE_SHAPE.md.
+
 refta (nulldc3 libswirl/rend/refsw2/refta.cpp, refta_fp.h) is a new tile accelerator written from these results and
 those of ta-tests, every rule with the case that shows it. No float or double: the TA only takes floats apart
 (refta_fp.h, its own: the ISP and TSP setup units are not like it). refsw2-offline uses it (REFSW2_TA=tacore: lxdream's tacore.cpp), and so does
