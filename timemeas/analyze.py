@@ -344,5 +344,31 @@ def main():
                 print(f"    {F[f]:32s} {L[lay]:16s} {w[0]:8.0f} {w[1]:8.0f} {w[1] - w[0]:+7.0f} {(w[1] - w[0]) / seen[lay]:+13.2f}")
 
 
+    if "dcalcs" in D:
+        print()
+        print("21. DCalcCtrl with sprites of w x h covering the tile: clocks per sprite, (scene - twin + 1035) / sprites,")
+        print("    the least of the passes; and what DCalcCtrl 1 adds.")
+        shapes = sorted({k[1] for k in D["dcalcs"]}, key=lambda v: ((v // 100) * (v % 100), v))
+        for f in (0, 2):
+            print(f"    {F[f]}")
+            print(f"    {'w x h':>8s} {'DCalc 0':>8s} {'DCalc 1':>8s} {'extra':>7s}")
+            for wh in shapes:
+                n = 1024 // ((wh // 100) * (wh % 100))
+                w = [min(T("dcalcs", f, wh, d, ps) - T("dcalcsH", f, wh, d, ps) for ps in (0, 1)) / 2 / n + 1035 / n for d in (0, 1)]
+                print(f"    {wh // 100:>5d}x{wh % 100:<2d} {w[0]:8.1f} {w[1]:8.1f} {w[1] - w[0]:+7.2f}")
+
+
+    if "dcalct" in D:
+        print()
+        print("22. DCalcCtrl, latency: the first n tiles, each covered by one primitive of its own, 16 bit framebuffer.")
+        print("    TSP's bit in clocks for 1 and 64 tiles, and per tile ((64 - 1) / 63), DCalcCtrl 0 / 1.")
+        for f in (0, 2, 7, 8):
+            for q, qn in ((1, "sprite"), (2, "quad")):
+                v = [[min(T("dcalct", f, 10 * n + q, d, ps) for ps in (0, 1)) / 2 for n in (1, 64)] for d in (0, 1)]
+                per = [(x[1] - x[0]) / 63 for x in v]
+                print(f"    {F[f]:32s} {qn:6s}  1 tile {v[0][0]:6.0f} / {v[1][0]:6.0f}   64 tiles {v[0][1]:7.0f} / {v[1][1]:7.0f}"
+                      f"   per tile {per[0]:7.1f} / {per[1]:7.1f} ({per[1] - per[0]:+5.2f})")
+
+
 if __name__ == "__main__":
     main()

@@ -459,28 +459,72 @@
     TSP work of the scene against its twin, clocks, the least of two passes; and the difference per seen
     triangle (1x1 quads: one of each quad's two triangles holds the pixel's center).
     format                           layout            DCalc 0  DCalc 1   1 - 0  per triangle
-    untextured gouraud               1 quad 32x32           75       84      +9         +4.50
-    untextured gouraud               16 quads 8x8          294      448    +154         +4.81
-    untextured gouraud               64 quads 4x4         4002     4638    +636         +4.97
-    untextured gouraud               256 quads 2x2       18982    21534   +2552         +4.98
-    untextured gouraud               1024 quads 1x1      38930    44054   +5124         +5.00
-    565 gouraud                      1 quad 32x32          163      160      -3         -1.50
+    untextured gouraud               1 quad 32x32           74       84     +10         +4.75
+    untextured gouraud               16 quads 8x8          286      440    +154         +4.81
+    untextured gouraud               64 quads 4x4         4011     4647    +636         +4.97
+    untextured gouraud               256 quads 2x2       18977    21534   +2557         +4.99
+    untextured gouraud               1024 quads 1x1      38936    44055   +5120         +5.00
+    565 gouraud                      1 quad 32x32          164      168      +4         +2.00
     565 gouraud                      16 quads 8x8          651      801    +150         +4.69
-    565 gouraud                      64 quads 4x4         5222     5850    +628         +4.91
-    565 gouraud                      256 quads 2x2       23628    26189   +2561         +5.00
-    565 gouraud                      1024 quads 1x1      48180    53322   +5142         +5.02
-    565 gouraud mipmapped point      1 quad 32x32          213      230     +17         +8.50
-    565 gouraud mipmapped point      16 quads 8x8          650      804    +154         +4.81
+    565 gouraud                      64 quads 4x4         5219     5854    +635         +4.96
+    565 gouraud                      256 quads 2x2       23624    26189   +2565         +5.01
+    565 gouraud                      1024 quads 1x1      48184    53322   +5138         +5.02
+    565 gouraud mipmapped point      1 quad 32x32          221      227      +6         +3.00
+    565 gouraud mipmapped point      16 quads 8x8          654      801    +147         +4.59
     565 gouraud mipmapped point      64 quads 4x4         5221     5858    +637         +4.98
-    565 gouraud mipmapped point      256 quads 2x2       23623    26175   +2552         +4.98
-    565 gouraud mipmapped point      1024 quads 1x1      48190    53318   +5128         +5.01
-    565 gouraud mipmapped bilinear   1 quad 32x32          569      558     -11         -5.50
-    565 gouraud mipmapped bilinear   16 quads 8x8         1138     1132      -6         -0.19
-    565 gouraud mipmapped bilinear   64 quads 4x4         5222     5848    +626         +4.89
-    565 gouraud mipmapped bilinear   256 quads 2x2       23642    26204   +2562         +5.00
-    565 gouraud mipmapped bilinear   1024 quads 1x1      48207    53316   +5109         +4.99
-    565 gouraud trilinear A          1 quad 32x32          564      553     -11         -5.50
-    565 gouraud trilinear A          16 quads 8x8         1152     1160      +8         +0.25
-    565 gouraud trilinear A          64 quads 4x4         5220     5858    +638         +4.98
-    565 gouraud trilinear A          256 quads 2x2       23638    26208   +2570         +5.02
-    565 gouraud trilinear A          1024 quads 1x1      48203    53329   +5126         +5.01
+    565 gouraud mipmapped point      256 quads 2x2       23623    26180   +2556         +4.99
+    565 gouraud mipmapped point      1024 quads 1x1      48192    53314   +5122         +5.00
+    565 gouraud mipmapped bilinear   1 quad 32x32          560      563      +3         +1.50
+    565 gouraud mipmapped bilinear   16 quads 8x8         1129     1143     +14         +0.44
+    565 gouraud mipmapped bilinear   64 quads 4x4         5216     5849    +633         +4.95
+    565 gouraud mipmapped bilinear   256 quads 2x2       23641    26198   +2557         +4.99
+    565 gouraud mipmapped bilinear   1024 quads 1x1      48203    53318   +5115         +5.00
+    565 gouraud trilinear A          1 quad 32x32          561      560      -1         -0.50
+    565 gouraud trilinear A          16 quads 8x8         1157     1171     +14         +0.44
+    565 gouraud trilinear A          64 quads 4x4         5226     5858    +632         +4.94
+    565 gouraud trilinear A          256 quads 2x2       23640    26195   +2555         +4.99
+    565 gouraud trilinear A          1024 quads 1x1      48208    53330   +5122         +5.00
+
+21. DCalcCtrl with sprites of w x h covering the tile: clocks per sprite, (scene - twin + 1035) / sprites,
+    the least of the passes; and what DCalcCtrl 1 adds.
+    untextured flat
+       w x h  DCalc 0  DCalc 1   extra
+        1x1      39.0     44.0   +5.00
+        2x2      39.1     44.1   +4.99
+        1x8      74.6     84.1   +9.57
+        2x8      44.5     49.2   +4.72
+        4x4      39.7     44.6   +4.81
+        8x2      39.7     44.5   +4.84
+       16x1      39.7     44.5   +4.77
+        4x8      44.4     45.9   +1.47
+        8x4      41.0     45.9   +4.92
+       16x2      40.9     45.6   +4.62
+       32x1      40.4     45.7   +5.25
+        8x8      69.7     69.1   -0.62
+       32x2      69.8     69.4   -0.31
+    565 flat
+       w x h  DCalc 0  DCalc 1   extra
+        1x1      48.1     53.1   +5.01
+        2x2      48.4     53.3   +4.93
+        1x8      92.1    101.6   +9.53
+        2x8      55.5     60.2   +4.70
+        4x4      49.6     54.6   +5.02
+        8x2      49.5     54.5   +5.05
+       16x1      49.3     54.3   +5.00
+        4x8      56.5     57.1   +0.62
+        8x4      51.7     56.7   +4.98
+       16x2      51.9     56.8   +4.94
+       32x1      51.2     56.4   +5.25
+        8x8      75.9     76.8   +0.88
+       32x2      77.0     78.2   +1.19
+
+22. DCalcCtrl, latency: the first n tiles, each covered by one primitive of its own, 16 bit framebuffer.
+    TSP's bit in clocks for 1 and 64 tiles, and per tile ((64 - 1) / 63), DCalcCtrl 0 / 1.
+    untextured flat                  sprite  1 tile   3586 /   3586   64 tiles   69172 /   69186   per tile  1041.0 /  1041.3 (+0.22)
+    untextured flat                  quad    1 tile   3592 /   3588   64 tiles   69300 /   69298   per tile  1043.0 /  1043.0 (+0.05)
+    565 flat                         sprite  1 tile   3586 /   3584   64 tiles   94598 /   94612   per tile  1444.6 /  1444.9 (+0.24)
+    565 flat                         quad    1 tile   3598 /   3600   64 tiles   95040 /   94944   per tile  1451.5 /  1449.9 (-1.57)
+    565 gouraud mipmapped point      sprite  1 tile   3586 /   3592   64 tiles   89432 /   89524   per tile  1362.6 /  1364.0 (+1.40)
+    565 gouraud mipmapped point      quad    1 tile   3648 /   3650   64 tiles   93304 /   93418   per tile  1423.1 /  1424.9 (+1.78)
+    565 gouraud mipmapped bilinear   sprite  1 tile   3900 /   3900   64 tiles  112948 /  112852   per tile  1730.9 /  1729.4 (-1.54)
+    565 gouraud mipmapped bilinear   quad    1 tile   3984 /   3984   64 tiles  115942 /  116022   per tile  1777.1 /  1778.4 (+1.25)

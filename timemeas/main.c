@@ -643,6 +643,59 @@ static void run_all(void) {
                         }
         dcalc_ctrl = 0; vis = DepthMode_Always; bg_depth = 0;
     }
+
+    /* ---- dcalcs f (100 w + h) d: the same for sprites of w x h covering the tile, untextured (f 0) and 565 (f 2),
+       whose times are known from the sprites table: setup-bound ones should pay the setup's extra in full,
+       ones whose runs take a little longer than the setup only part of it, and the rest nothing. */
+    {
+        static const int sh[13][2] = { { 1, 1 }, { 2, 2 }, { 4, 4 }, { 8, 2 }, { 16, 1 }, { 16, 2 }, { 32, 1 }, { 8, 4 },
+                                       { 2, 8 }, { 4, 8 }, { 1, 8 }, { 8, 8 }, { 32, 2 } };
+        static const int sf[2] = { 0, 2 };
+        int pass;
+        for(pass = 0; pass < 2; pass++)
+            for(i = 0; i < 2; i++)
+                for(k = 0; k < 13; k++)
+                    for(p = 0; p < 2; p++)
+                        for(c = 0; c < 2; c++) {
+                            dcalc_ctrl = p;
+                            vis = c ? DepthMode_Greater : DepthMode_Always; bg_depth = c ? f32b_int(2) : 0;
+                            cur = &formats[sf[i]]; cur_own = 0;
+                            begin(ListType_Opaque);
+                            tiles(1, sh[k][0], sh[k][1]);
+                            measure(c ? "dcalcsH" : "dcalcs", sf[i], sh[k][0] * 100 + sh[k][1], p, pass);
+                        }
+        dcalc_ctrl = 0; vis = DepthMode_Always; bg_depth = 0;
+    }
+
+    /* ---- dcalct f (10 n + q) d: latency. The first n tiles of the screen (n 1 or 64), each covered by one
+       primitive of its own: q 1 a sprite, q 2 a quad (two triangles), in format f, 16 bit framebuffer (RGB565)
+       so that a tile is bound by the TSP, not by its write-out. Nothing in a tile is shaded before that
+       primitive's first pixel: if the first pixel waits for the whole setup, DCalcCtrl 1 costs 5 a tile; if it
+       starts as soon as the planes it needs are there, an untextured primitive does not wait for the bit's work. */
+    {
+        volatile uint32_t *fb_w_ctrl = (volatile uint32_t *)(0xa05f8000 + FB_W_CTRL_addr);
+        const uint32_t fbw = *fb_w_ctrl;
+        static const int tf[4] = { 0, 2, 7, 8 };
+        static const int tn[2] = { 1, 64 };
+        int pass, q, t;
+        *fb_w_ctrl = (fbw & ~15u) | 1u;
+        for(pass = 0; pass < 2; pass++)
+            for(i = 0; i < 4; i++)
+                for(q = 1; q <= 2; q++)
+                    for(k = 0; k < 2; k++)
+                        for(p = 0; p < 2; p++) {
+                            dcalc_ctrl = p;
+                            tiles_region(tn[k]);
+                            region_addr = MANY_TILES;
+                            ta_list_begin(ListType_Opaque);
+                            for(t = 0; t < tn[k]; t++)
+                                rect(&formats[tf[i]], q == 1, DepthMode_Always, (t / SETUP_TILES_Y) * 32, (t % SETUP_TILES_Y) * 32, 32, 32, front, t, 0);
+                            measure("dcalct", tf[i], 10 * tn[k] + q, p, pass);
+                        }
+        *fb_w_ctrl = fbw;
+        dcalc_ctrl = 0;
+        region_addr = ONE_TILE;
+    }
 #ifdef TM_DCALC
     *fb_r_ctrl = fb_r;
     printf("T end\n");

@@ -511,6 +511,52 @@ table 20): five formats in five layouts with the bit 0 and 1, each against its t
 - In the terms of "Per triangle" above: the setup of a seen triangle goes from about 39 to 44 untextured and
   from 48 to 53 textured with the bit set.
 
+**How it is hidden.** The TSP sets up a polygon while it shades the runs of polygons before it, so extra
+setup is free where the run stage has more to do than the setup stage. But it is not simply the larger of
+the two totals. Sprites covering the tile (scenes `dcalcs`, table 21; clocks per sprite, untextured / 565):
+
+| sprite | DCalc 0 | DCalc 1 adds | | sprite | DCalc 0 | DCalc 1 adds |
+|---|---|---|---|---|---|---|
+| 1x1 | 39.0 / 48.1 | 5.0 / 5.0 | | 2x8 | 44.5 / 55.5 | 4.8 / 4.7 |
+| 2x2 | 39.1 / 48.3 | 5.0 / 5.0 | | 4x8 | 44.7 / 56.6 | 1.5 / 0.7 |
+| 4x4, 8x2, 16x1 | 39.7-39.9 / 49.4-49.7 | 4.8-4.9 / 5.0-5.1 | | 8x8 | 69.6 / 76.4 | -0.5 / 0.0 |
+| 8x4, 16x2, 32x1 | 40.4-41.0 / 51.2-51.8 | 4.9-5.7 / 4.6-5.4 | | 32x2 | 70.4 / 77.4 | -0.4 / 0.8 |
+| | | | | 1x8 | 74.6 / 92.0 | 9.5 / 9.6 |
+
+- Up to 4 lines a sprite is bound by its setup (the 0.5 to 2 above it are the tile's fixed time spread over
+  the sprites) and pays the 5 in full.
+- Sprites of 8 lines that take longer than the setup still pay in full (2x8: 44.5 + 4.8) or in part (4x8:
+  44.7 + 1.5), where "the larger of the two" would make them pay nothing. What counts is where the work
+  falls in the tile, not its total: the TSP goes through the tile line by line, and every sprite of a row
+  of sprites needs its setup at the same line, the first of the row (16 of them for 2x8, 8 for 4x8). My
+  reading, not measured directly: the setup can only work ahead so far, so such a burst stalls the runs, and
+  only the runs of the other lines give it time to hide in.
+- Long runs (8x8, 32x2: 8 pixels or more a run, 64 pixels a sprite) hide it completely.
+- 1x8 sprites pay about twice the 5: 32 different sprites on every line, more than the TSP keeps (see
+  "Many different triangles on a line" above), and a sprite is set up about twice on average. So that
+  crowding cost is, at least in part, setting triangles up again.
+
+**Latency: never seen.** A primitive's first pixel needs its mipmap constant, so the question is whether the
+pixels wait for the whole setup or start on the planes they need while the rest is worked out. Scenes
+`dcalct` (table 22): the first 64 tiles, each covered by one primitive of its own (a sprite, or a quad of
+two triangles), 16 bit framebuffer so that the TSP and not the write-out sets the pace:
+
+| one primitive a tile | per tile, DCalc 0 / 1 (clocks) |
+|---|---|
+| untextured sprite / quad | 1041.0 / 1041.3, 1043.0 / 1043.0 |
+| 565 sprite / quad | 1444.6 / 1444.9, 1451.5 / 1449.9 |
+| 565 mipmapped point, sprite / quad | 1362.6 / 1364.0, 1423.1 / 1424.9 |
+| 565 mipmapped bilinear, sprite / quad | 1730.9 / 1729.4, 1777.1 / 1778.4 |
+
+(the passes differ by up to 1.5 a tile). A tile does not pay the 5, and does not even pay the setup
+itself: an untextured tile is its 1024 pixels at 1.01 and 7 clocks, not 1035 + 39. So the setup of a tile's
+first primitive is done while the tile before is still being shaded or written out, and in a tile alone
+(3586 either way) it is hidden behind the tile's start. The setup runs ahead of the pixels across
+primitives and across tiles; it shows only where it cannot keep ahead: many small primitives, or many
+first runs on one line. Whether a primitive's pixels could start before its setup is complete can therefore
+not be seen in the timing; what is seen is that the setup is the same sequence for every primitive (the 5
+clocks are paid by untextured ones, which have no level to compute).
+
 That fits the level's model: per pixel the level is a polygon's constant times w^2, and the constant is made
 in the setup. With DCalcCtrl 1 the setup also evaluates the planes at the first vertex (a x1 + b y1 + c);
 5 clocks for that is what a pass of the 1/w, U and V planes through a shared multiplier would take (a guess).
