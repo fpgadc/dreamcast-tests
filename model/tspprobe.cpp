@@ -7,7 +7,9 @@
 // the number of the texel the console showed there) is computed with the model: the triangle's 1/w and U/w
 // planes, evaluated at the run of the triangle's pixels on that line of the tile, divided, and turned into a
 // texel of the 1024 wide repeating texture. --scan repeats the scoring for each value of one parameter;
-// --cells prints one character per triangle (. all readings right, x not). Sets: python export_uv.py.
+// --cells prints one character per triangle (. all readings right, x not); --summary prints a line per
+// triangle: its number, readings, how many are right, and the console's and the model's texel at its first,
+// middle and last reading. Sets: python export_uv.py.
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -51,13 +53,16 @@ static bool load(const char* path, Set& s)
 // the texel of a 1024 wide repeating texture that a coordinate selects (refsw_tile.cpp: TexCoordFixed, point sampling)
 static int texel(double u)
 {
-    double f = floor((double)(float)u * 1024.0 * 256.0);
+    double uf = (double)(float)u;
+    if (uf == 0 && u < 0)
+        uf = -1e-30;                 // a quotient below zero stays below zero however small: the texel before 0
+    double f = floor(uf * 1024.0 * 256.0);
     if (f >= 1073741824.0)
         f = 1073741824.0 + fmod(f, 67108864.0);
     else if (f < -1073741824.0)
         f = -1073741824.0 + fmod(fmod(f, 67108864.0) + 67108864.0, 67108864.0);
-    else if (!(f == f))
-        f = 0;
+    if (!(f == f))
+        f = 0;                       // a quotient that is not a number, or too large to wrap: texel 0
     return (((int)f) >> 8) & 1023;
 }
 
@@ -67,6 +72,8 @@ static const Fields fields[] = {
     { "reach", &pvrtsp::PlaneConfig::reach }, { "recipBits", &pvrtsp::PlaneConfig::recipBits },
     { "coefBits", &pvrtsp::PlaneConfig::coefBits }, { "gridBits", &pvrtsp::PlaneConfig::gridBits },
     { "valueBits", &pvrtsp::PlaneConfig::valueBits },
+    { "range", &pvrtsp::PlaneConfig::range }, { "expLow", &pvrtsp::PlaneConfig::expLow }, { "expHigh", &pvrtsp::PlaneConfig::expHigh },
+    { "zeroReach", &pvrtsp::PlaneConfig::zeroReach },
 #ifdef PVRTSP_RANGE_FIELDS
     PVRTSP_RANGE_FIELDS
 #endif
@@ -80,6 +87,8 @@ static bool set_field(pvrtsp::PlaneConfig& cfg, const std::string& name, int val
 }
 
 // the model's reading for every reading of the set; returns how many are the console's
+static bool summary = false;
+static int onlyFrom = 0, onlyTo = 1 << 30;      // --only a-b: score these triangles only
 static long score(const Set& s, const pvrtsp::PlaneConfig& cfg, int misses, bool cells)
 {
     static const pvrisp::EdgeConfig ecfg;
@@ -100,7 +109,9 @@ static long score(const Set& s, const pvrtsp::PlaneConfig& cfg, int misses, bool
         pvrisp::EdgeTile e[3];
         long before = right;
         size_t first = r;
+        std::vector<int> gots;
         for (; r < s.ti.size() && s.ti[r] == t; r++) {
+            if (t < onlyFrom || t > onlyTo) { right++; continue; }
             int tx = s.px[r] / 32, ty = s.py[r] / 32, i = s.px[r] % 32, j = s.py[r] % 32;
             if (ty * 20 + tx != tile) {
                 tile = ty * 20 + tx;
@@ -114,20 +125,33 @@ static long score(const Set& s, const pvrtsp::PlaneConfig& cfg, int misses, bool
                     if (e[0].Inside(q, j) && e[1].Inside(q, j) && e[2].Inside(q, j)) { start[j] = q; break; }
             }
             int got = -9;
+            Fp dbgW, dbgU;
             if (!w.bad && !u.bad && !bad) {
                 int64_t x0h = 2 * (int64_t)(tx * 32 + start[j]) + 1, yh = 2 * (int64_t)(ty * 32 + j) + 1;
                 Fp wv = w.Value(x0h, yh, i - start[j], tx * 32, ty * 32), uv = u.Value(x0h, yh, i - start[j], tx * 32, ty * 32);
-                double den = wv.toDouble(), num = uv.toDouble();
-                double q = (!(den > 0) || num == 0) ? num / den : pvrtsp::Divide(uv, wv).toDouble();
-                got = !(den > 0) ? 1023 : texel(q);      // a 1/w that is not above zero: the largest result (refsw_tile.h, Divide)
+                dbgW = wv; dbgU = uv;
+                if (cfg.range) {
+                    got = texel(pvrtsp::Divide(uv, wv).toDouble());
+                } else {                                    // before the limits were measured
+                    double den = wv.toDouble(), num = uv.toDouble();
+                    double q = (!(den > 0) || num == 0) ? num / den : pvrtsp::Divide(uv, wv).toDouble();
+                    got = !(den > 0) ? 1023 : texel(q);
+                }
             }
+            if (summary)
+                gots.push_back(got);
             if (got == s.t[r])
                 right++;
             else if (misses-- > 0)
-                printf("    %s triangle %d pixel (%d, %d): model %d, console %d\n", s.name.c_str(), t, s.px[r], s.py[r], got, s.t[r]);
+                printf("    %s triangle %d pixel (%d, %d): model %d, console %d   1/w %s%llu * 2^%d   U/w %s%llu * 2^%d\n", s.name.c_str(), t, s.px[r], s.py[r], got, s.t[r],
+                       dbgW.neg ? "-" : "+", (unsigned long long)dbgW.mant, dbgW.exp, dbgU.neg ? "-" : "+", (unsigned long long)dbgU.mant, dbgU.exp);
         }
         if (cells)
             map += (right - before == (long)(r - first)) ? '.' : 'x';
+        if (summary && r > first) {
+            size_t n = r - first, mid = n / 2;
+            printf("S %d %zu %ld  %d %d %d  %d %d %d\n", t, n, right - before, s.t[first], s.t[first + mid], s.t[r - 1], gots[0], gots[mid], gots[n - 1]);
+        }
     }
     if (cells)
         for (size_t k = 0; k < map.size(); k += 100)
@@ -160,6 +184,10 @@ int main(int argc, char** argv)
             misses = atoi(argv[++a]);
         } else if (arg == "--cells") {
             cells = true;
+        } else if (arg == "--summary") {
+            summary = true;
+        } else if (arg == "--only" && a + 1 < argc) {
+            sscanf(argv[++a], "%d-%d", &onlyFrom, &onlyTo);
         } else if (eq != std::string::npos && arg.find('/') == std::string::npos) {
             if (!set_field(cfg, arg.substr(0, eq), atoi(arg.c_str() + eq + 1))) { fprintf(stderr, "no parameter %s\n", arg.c_str()); return 1; }
         } else {

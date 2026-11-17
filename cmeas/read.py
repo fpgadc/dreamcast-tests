@@ -32,6 +32,7 @@ def main():
     pages = json.loads(((d / "cases.json") if (d / "cases.json").exists() else (HERE / "cases.json")).read_text())["pages"]
     gy, gx = np.mgrid[0:32, 0:32]
     TX, TY, TC, GRP, TI, PX, PY, RGB = [], [], [], [], [], [], [], []
+    TZB = []                    # the depths' bits
     for p, tris in enumerate(pages):
         im = load(d, p, kind)
         for t in tris:
@@ -47,7 +48,8 @@ def main():
             rows, cols = np.nonzero(dist > MARGIN)
             TI.append(np.full(len(rows), len(TX))); PX.append(x0 + cols + 0.5); PY.append(y0 + rows + 0.5); RGB.append(im[y0 + rows, x0 + cols])
             TX.append(t["x"]); TY.append(t["y"]); TC.append(t["col"]); GRP.append(t["group"])
-    np.savez_compressed(out, tx=np.array(TX), ty=np.array(TY), tc=np.array(TC), group=np.array(GRP),
+            TZB.append(t.get("zbits", [0x3f800000] * 3))
+    np.savez_compressed(out, tx=np.array(TX), ty=np.array(TY), tc=np.array(TC), group=np.array(GRP), tzbits=np.array(TZB, dtype=np.uint32),
                         ti=np.concatenate(TI), px=np.concatenate(PX), py=np.concatenate(PY), rgb=np.concatenate(RGB))
     print(f"{kind}: {len(TX)} triangles, {sum(len(t) for t in TI)} pixels -> {out}")
 

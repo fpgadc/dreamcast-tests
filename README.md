@@ -325,6 +325,7 @@ the hardware's range is very large, not that arbitrary huge coordinates are plac
 
 - **Negative depth:** hardware does not draw a polygon with negative z at all, even with compare ALWAYS;
   refsw2 draws it. In comparisons both treat it as behind everything.
+  (2026-11-17: it is drawn, and black. See "The TSP's numbers at their limits".)
 - **z = 2^127:** hardware draws it, refsw2 does not.
 - **Special values** (0, -0, denormals, smallest normal, largest finite, infinities, NaNs) with compare
   ALWAYS: hardware draws all of them; refsw2 draws only the denormals and the smallest normal.
@@ -1530,33 +1531,88 @@ showed as settings 193 and 196 reading alpha 0 in three squares of four: every s
 refsw2: `tspAlphaStuck`. Not measured: textured polygons (the alpha after the texture is replaced), what
 else might clear it within a tile, the automatic sort.
 
-## The TSP at very small 1/w: there is no zero (2026-11-16)
+## The TSP's numbers at their limits: zero, infinity, and a 1/w below zero (2026-11-17)
 
-`uvmeas --mix wexp` (archive wexp1: a flat depth 2^e for every exponent of single precision, 780,000
-readings) is at 607,574 readings now, was 558,068. What was found, and what was not:
+    python3 uvmeas/gen.py --mix whuge|wtiny|wneg|wspec     # with wexp: 1/w at every size and of every kind
+    python3 cmeas/gen.py --mix wext                        # colours at the same depths
+    bash measure.sh uvmeas <name> --mix ...                # archived: wexp1, whuge1, wtiny1, wneg1, wspec1; cmeas cwext1
+    model/tspprobe [--cells] [--summary] [--misses N] [--only a-b] [range=0] fit/uvmeas_data/<set>.uvm
 
-- **A coefficient that is zero counts as +-2^-127.** The TSP's numbers have no zero: exponent field 0 is
-  2^-127, with its sign. For any ordinary plane that is the old rule "a negative zero floors to one unit
-  below zero". With 1/w below 2^-106 the plane's grid (22 bits under its exponent) gets fine enough to see
-  2^-127, and a flat plane runs away by that much a pixel, along x and along y: texel readings that change
-  every few pixels and are constant on diagonals. A scan of the exponent picks -127 and nothing else
-  (609,000 against 575,000 to 582,000 for -125 .. -132), and with it every reading from 2^-126 to 2^-107
-  is right on the pages with a flat texture coordinate (pages 0, 4, 7); `Plane::Value` in pvr_tsp_plane.h.
-- **A 1/w that is not above zero at the pixel gives the largest result** (texel 1023; 255 for a colour):
-  `Divide` in refsw_tile.h. Weaker evidence: 4,500 more readings in wexp1, and four regions of `huge`
-  (depth 0.0 and -0.0).
-- **Above: every reading is right as long as no product of the setup reaches 2^128** (125 triangles of 125
-  with 1/w from 2^96 up), the largest being attribute x 1/w x (x1 y2 - x2 y1), so from about 2^104 for a
-  texture coordinate of 100 in the lower right of the screen. Past that the console gives 0, 1023 or other
-  values, and neither letting the exponent wrap around in 8 bits nor saturating it reproduces them (both
-  make the score worse). Not solved.
-- Not solved either: denormal depths, infinity, NaN (console: 1023 nearly everywhere), the lowest ten
-  exponents on the pages whose texture coordinate is not flat, and colours. `huge` has four regions that
-  the old model had right and this one has not: white at 2^-113 comes out as fe (console ff), and white at
-  2^-126 and at denormal depths comes out nearly black where the console shows white. In exchange four
-  others are right now (same count, 195 of 250). Colours are measured in units of 1 to 255, so the same
-  2^-127 a pixel on both planes pulls the quotient towards 1; the console does something else there. What
-  is needed is cmeas with the depths of wexp, which does not exist yet.
+This replaces the section "The TSP at very small 1/w: there is no zero" (2026-11-16), which had one of its
+rules wrong. Five sets of texture coordinates (3,900,000 readings) and one of colours (2,340,000 values) at
+depths of 2^-149 to 2^127, below zero, zero, infinite and NaN are reproduced reading for reading by the model
+(`pvr_tsp_plane.h`) and by refsw2-offline, together with every earlier set: uvmeas 29 sets, 22,080,053
+readings; cmeas 2 sets; and covmeas, whose 8 open sets are right now (98 of 98).
+
+**The numbers of the setup** have a sign, an exponent field of 8 bits and a mantissa, and two of the 256
+exponents are not numbers:
+
+- Field 0 is **zero**, whatever the mantissa: a denormal depth is zero. Field 255 is **infinity**: a NaN is one.
+- **Product**: zero times anything is zero, also times infinity; infinity times anything else is infinity. A
+  result of 2^128 or more is infinity, one below 2^-126 is zero. The sign is the product's in every case.
+- **Sum**: infinity plus a number is that infinity; infinity minus infinity is +0. A result of 2^128 or more
+  is infinity. A result below 2^-126 is **+0**, whatever its sign was (like an exact cancellation).
+- **The last addition of a three term sum**, (t1 + t2) + t3: when one of the two operands is zero and the
+  other is 2^-126 .. 2^-125, the zero is added as 2^-127 with its sign. -2.5 * 2^-127 + 0 comes out as
+  -1.5 * 2^-127, which is below the range, so +0, and the slope made of it gets the other sign. In t1 + t2 a
+  zero is a zero. (5 cells of wtiny1, 21 of cwext1, one of them telling the two additions apart. Whether
+  the upper limit is 2^-125 or 2^-124 is not told.)
+- Infinity is sticky and beats everything except zero and its opposite, so one overflowing product is
+  enough: U * 1/w * (x1 y2 - x2 y1) reaching 2^128 makes the whole U/w plane an infinity or, with a second
+  one of the other sign, a zero.
+
+**The evaluator** (the plane at a pixel) has neither. It reads a coefficient's exponent as a signed 8 bit
+number: a zero is **2^-127** with its sign, as found before, and an infinity (+128) wraps to **2^-128**.
+With every product overflowing, both planes are -2^-128 - 2^-127 (x + y) on one winding (4875 of 4875
+readings in a joint fit), and the texel is the same for any depth and any U. The grid of a tile counts these
+two as the numbers they are read as. The value at the pixel becomes a float again with an exponent of at
+least -128: below 2^-128 the mantissa is kept and the exponent stays. A value of -1 grid unit (every bit
+set, no leading bit to find) is -2^-128; 0 is taken to be +2^-128 (no reading tells).
+
+**The divider** takes any denominator:
+
+- **A 1/w below zero is not negated properly.** The leading bit stays and the 15 bits under it are negated:
+  a mantissa m (32768 .. 65535) is read as 32768 + (-m mod 32768). So -v between two powers of two is seen
+  as 3 * 2^p - v (-1.25 as 1.75, -1.75 as 1.25) and a power of two as itself. The sign is dropped: the
+  quotient has the sign of the numerator alone. wneg1: 780,000 of 780,000 readings with 1/w of -2^-6 .. -2^8
+  and with both signs inside one triangle.
+- A quotient below zero stays below zero however small: its texel is the one before 0.
+- There is no "1/w that is not above zero gives the largest result" (the rule of 2026-11-16). What looked
+  like it: with a zero, denormal, infinite or NaN depth both planes are the same zeros (or infinities), the
+  quotient is one unit under 1, and that is texel 1023, or white.
+
+**Colours are fractions.** In the planes a colour is its 8 bit value times 2^-8. With ordinary depths that
+changes nothing; at the limits it decides what overflows (a colour of 0x86 at 1/w = 2^110 is still 0x86) and
+makes the quotient of two equal planes white. cwext1: 2,333,331 of 2,340,000 with 2^-8 against 1,688,587 with
+2^-7 and 2,124,860 with 2^-9 (and all 2,340,000 with the rule of the last addition).
+
+**A pixel with a depth below zero is drawn.** `huge` said it is not, "even with compare ALWAYS": its quads
+are untextured and white, the colour's quotient has the sign of colour / w, which is negative, and the
+result is black. refsw2 no longer skips such pixels, which is what the 8 open covmeas sets needed.
+
+How it was found, in case it has to be done again: wexp1 has the exponent tied to the place on the screen,
+which hides what depends on what; the new mixes draw exponent, size of U, winding and place independently.
+On the winding where the planes fall with x + y, a denominator below zero makes the reading depend strongly
+on both planes (quotient -v / (3 * 2^p - v)), and fitting the six coefficients to a cell's 325 readings
+gives them to a fraction of 2^-127. That is how 2^-128 for an infinity and the sign rules were read off.
+
+What changed in refsw2 (uncommitted): `pvr_tsp_plane.h` (the range in `Plane::Setup`, `Plane::Value`,
+`DenominatorSeen`, `Divide`), `refsw_tile.h` (colours times 2^-8, no special case for a 1/w that is not
+positive, a tiny negative quotient kept negative), `refsw_tile.cpp` (pixels with a negative depth are
+drawn). `PlaneConfig::range = 0` gives the arithmetic as it was.
+
+| | before | now |
+|---|---|---|
+| uvmeas wexp1 | 607,574 of 780,000 | 780,000 |
+| uvmeas whuge1, wtiny1, wneg1, wspec1 | 323,400 / 481,958 / 95,721 / 296,023 | 780,000 each |
+| cmeas cwext1 | 1,468,125 of 2,340,000 | 2,340,000 |
+| covmeas | 90 of 98 sets | 98 |
+| huge | 195 of 250 regions | 228 |
+
+Not measured: a first term or a first sum of zero in a three term sum next to a term of 2^-126 (the vertex
+orders of these sets do not make one); an infinite coordinate or determinant; the mipmap level at such
+depths; and the ISP: the 22 regions of `huge` that are left are depth comparisons with 2^127, the largest
+number, infinities and NaNs, where the console often draws one triangle of a quad and not the other.
 
 ## The generators are C++ programs on the refsw2 headers (2026-11-16)
 

@@ -18,6 +18,8 @@ def export(data, name):
     z = np.load(data / f"{name}.npz")
     tz = z["tz"] if "tz" in z.files else np.ones_like(z["tx"])
     tris = np.concatenate([z["tx"], z["ty"], z["tu"], tz], axis=1).astype("<f4")
+    if "tzbits" in z.files:             # the depths bit for bit (NaNs)
+        tris[:, 9:12] = z["tzbits"].astype("<u4").view("<f4")
     out = bytearray(b"PVRUVM1\0") + struct.pack("<2i", len(tris), len(z["ti"]))
     out += tris.tobytes() + z["ti"].astype("<i4").tobytes() + np.floor(z["px"]).astype("<i2").tobytes()
     out += np.floor(z["py"]).astype("<i2").tobytes() + z["t"].astype("<i2").tobytes()

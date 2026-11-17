@@ -36,6 +36,7 @@ def main():
     gy, gx = np.mgrid[0:480, 0:640]
     gx, gy = gx + 0.5, gy + 0.5
     TX, TY, TU, TZ, GRP, MM, TI, PX, PY, TT = [], [], [], [], [], [], [], [], [], []
+    TZB = []                    # the depths as bits: a NaN does not survive json or float64
     for p, tris in enumerate(pages):
         im = load(d, p, kind)
         tex = ((im[:, :, 1] >> 2) << 5) | (im[:, :, 2] >> 3)
@@ -54,7 +55,9 @@ def main():
             rows, cols = np.nonzero(dist > MARGIN)
             TI.append(np.full(len(rows), len(TX))); PX.append(x0 + cols + 0.5); PY.append(y0 + rows + 0.5); TT.append(tex[y0 + rows, x0 + cols])
             TX.append(t["x"]); TY.append(t["y"]); TU.append(t["u"]); TZ.append(t.get("z", [1.0, 1.0, 1.0])); GRP.append(t["group"]); MM.append(t["m"])
+            TZB.append(t["zbits"] if "zbits" in t else [int(np.float32(q).view(np.uint32)) for q in t.get("z", [1.0, 1.0, 1.0])])
     np.savez_compressed(out, tx=np.array(TX), ty=np.array(TY), tu=np.array(TU), tz=np.array(TZ), group=np.array(GRP), m=np.array(MM),
+                        tzbits=np.array(TZB, dtype=np.uint32),
                         ti=np.concatenate(TI), px=np.concatenate(PX), py=np.concatenate(PY), t=np.concatenate(TT))
     tt = np.concatenate(TT)
     print(f"{kind}: {len(TX)} triangles, {len(tt)} readings ({int((tt < 0).sum())} not a texel color) -> {out}")

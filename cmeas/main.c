@@ -44,7 +44,7 @@ static void test_page(int page) {
             continue;
         ta_polygon(pcw, isp, tsp, tcw);
         for(k = 0; k < 3; k++)
-            ta_vertex0(tris[i].xy[k][0], tris[i].xy[k][1], F32B_ONE, tris[i].argb[k], k == 2);
+            ta_vertex0(tris[i].xy[k][0], tris[i].xy[k][1], tris[i].z[k], tris[i].argb[k], k == 2);     /* the depth: 1.0, or the set's */
     }
     ta_list_end();
 }
