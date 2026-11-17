@@ -652,14 +652,46 @@ ends where the volume state changes: README, uvrun). 16 bit framebuffer; a tile 
   triangle's (its coefficients loaded again), the inside of a cheap-shadow volume, or the other set of a
   two-volume polygon. My reading, not measured.
 
-- **Is part of a run start kept for the line?** (scenes `lineshare`, `#define TM_LINE`, log run22): nine runs
-  of one pixel a line, either a sprite behind four 1 x L sprites (its runs repeat on the line) or nine
-  sprites (only first runs), slope over the number of such lines: the repeating version costs 2.0 a line
-  less at column 0 and 1.6 at column 16, about 0.5 a repeated run. Moving the runs from column 0 to column
-  16 changes a line by -2.3 (repeating) and -2.8 (first runs): no sign of a run start that takes longer
-  further right. If ⌊C⌋ + ⌊B y⌋ is kept for a line and a triangle, it saves at most about half a clock
-  (these lines are only partly bound by run starts). The rounding of the values (README, uvspan) says each
-  product is cut by itself with the screen's coordinates, which allows either.
+- **Is part of a run start kept for the line?** (scenes `lineshare` to `lineshare5`, `#define TM_LINE`, logs run22
+  to run26, tables from `python3 lineshare.py <log>`). Lines of one-pixel runs; the cost of such a line is the
+  slope over the number L of them (per-tile costs drop out). The same scene in different runs agrees to 0.1 a
+  line; the two passes of a run to 0.1 to 3 clocks a tile.
+  - `lineshare` (run22, untextured): a triangle whose runs repeat on the line costs 2.0 a line less than the
+    same runs from different triangles, at column 0 and 16 alike; runs further right cost nothing more.
+  - `lineshare2` (run23, 24): R is a sprite T behind K sprites of 1 x L at columns 1, 3, .. (K + 1 first and K
+    repeated runs a line), D the same runs from 2K + 1 different sprites, with a sprite behind everything so
+    that the plain lines are the same. R - D a line:
+
+| format | K 3 | K 4 |
+|---|---|---|
+| untextured | -2.2 | -1.9 |
+| 565 | -10.4 | -12.0 |
+| 565 with offset colour | -9.9 | -14.1 |
+
+  - `lineshare5` (run26; `lineshare3` and `lineshare4`, runs 24 and 25, are parts of it): 565 with offset
+    colour, a pattern line is a first run, M sprites of 1 x L and a tail: R = T, S1..SM, T; R' = T, S1..SM, U;
+    D = U0, S1..SM, U. A pattern line over a plain one, first run 1 pixel (2 pixels gives the same within 1.3):
+
+| M | R | R' | D | R' - R: the tail is T's second run | D - R': the first run is T or U0 |
+|---|---|---|---|---|---|
+| 1 | -0.2 | 2.5 | 3.4 | 2.7 | 0.9 |
+| 2 | 5.0 | 11.3 | 12.6 | 6.3 | 1.3 |
+| 3 | 14.5 | 21.4 | 21.0 | 6.9 | -0.5 |
+| 4 | 24.8 | 30.4 | 31.0 | 5.6 | 0.6 |
+| 5 | 34.9 | 36.4 | 36.3 | 1.6 | -0.1 |
+| 6 | 40.8 | 45.0 | 47.8 | 4.2 | 2.8 |
+| 7 | 52.5 | 53.9 | 52.4 | 1.4 | -1.5 |
+| 8 | 55.5 | 57.8 | 55.7 | 2.3 | -2.1 |
+
+  A triangle's second run on a line costs less than another triangle's run: 6 to 7 clocks less with 2 or 3
+  runs between, 5.6 and 4.2 with 4 and 6, 1.4 to 2.3 with 5, 7 and 8. A first run of the triangle of the
+  lines around it costs the same as any other first run. A run added to a line costs 3 to 12 clocks,
+  alternating with the number of runs on the line (R: 5.2, 9.6, 10.3, 10.0, 5.9, 11.7, 3.0 from M 1 to 8; R'
+  and D alike), the same at both parities of column: it follows the count of runs, not their columns.
+  So this is not a fixed part of every run start (C + B y) kept for a line and triangle: what a repeated run
+  saves, and what a run costs, depend on how many runs the line has. A stage that takes a line's runs
+  together (sorting or grouping them over a window of a few runs) would fit better; my reading, not shown.
+  The rounding of the values (README, uvspan: each product cut by itself, screen coordinates) allows either.
 - Not understood: the cut lines 20 to 25 (L = 6) give 80 to 87 hidden in two series and 50 in the third,
   where L = 4 and 8 agree. The texels-8-apart triangle (spanahead v 0) gives erratic times, as the block of
   the "ahead" scenes did.

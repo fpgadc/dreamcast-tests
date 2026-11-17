@@ -662,6 +662,139 @@ static void run_all(void) {
                         }
                         measure("lineshare", vv, o, L, ps);
                     }
+        /* lineshare2 f (10 K + v) L pass: the same, better made. Format f 0 (untextured) or 4 (565 with offset colour:
+           run starts of about 8 clocks against about 45 of shading a line, so the lines are bound by run starts),
+           K 3 or 4 sprites in front, and in D (v 1) a sprite T' over the whole tile behind everything, hidden on the
+           first L lines, so that the lines from L on are the same in R and D (T, or T'). R has K + 1 first runs and K
+           repeated runs of T a line, D has 2K + 1 first runs: R - D a line is K (repeated - first). Format 2 (565
+           without offset colour) added later: 7 planes against 5 (format 0) and 11 (format 4). */
+        {
+            static const int fmt2[3] = { 0, 2, 4 };
+            int fi2, K;
+            for(ps = 0; ps < 2; ps++)
+                for(fi2 = 0; fi2 < 3; fi2++)
+                    for(K = 3; K <= 4; K++)
+                        for(vv = 0; vv < 2; vv++)
+                            for(li = 0; li < 4; li++) {
+                                const format_t *fm = &formats[fmt2[fi2]];
+                                const int L = lL[li];
+                                tiles_region(64);
+                                region_addr = MANY_TILES;
+                                ta_list_begin(ListType_Opaque);
+                                for(t = 0; t < 64; t++) {
+                                    const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                                    rect(fm, 1, DepthMode_Always, x0, y0, 32, 32, front, 0, 0);          /* T, or T' */
+                                    if(vv == 1) {
+                                        for(n = 0; n < K; n++)                                          /* U0 .. U(K-1) */
+                                            rect(fm, 1, DepthMode_Always, x0 + 2 * n, y0, 1, L, front, 1 + n, 0);
+                                        rect(fm, 1, DepthMode_Always, x0 + 2 * K, y0, 32 - 2 * K, L, front, 1 + K, 0);   /* UK */
+                                    }
+                                    for(n = 0; n < K; n++)                                              /* S1 .. SK */
+                                        rect(fm, 1, DepthMode_Always, x0 + 1 + 2 * n, y0, 1, L, front, 8 + n, 0);
+                                }
+                                measure("lineshare2", fmt2[fi2], 10 * K + vv, L, ps);
+                            }
+        }
+        /* lineshare3 4 (10 M + v) L pass: is what a repeated run saves kept for the line, or only for the last few
+           triangles? 565 with offset colour. R (v 0): T over the tile behind M sprites of 1 x L at columns 1 .. M, so
+           that a pattern line is T, S1 .. SM, T and T's second run comes after M other triangles' runs. D (v 1): T'
+           behind everything, U0 at column 0, S1 .. SM, U1 from column M + 1: the same runs, every one a first run.
+           R - D a line is (repeated - first) for one run: the same for every M if it is kept for the line, 0 from
+           some M on if only the last few triangles' are kept. */
+        {
+            static const int mM[5] = { 1, 2, 4, 6, 8 };
+            int mi;
+            for(ps = 0; ps < 2; ps++)
+                for(mi = 0; mi < 5; mi++)
+                    for(vv = 0; vv < 2; vv++)
+                        for(li = 0; li < 4; li++) {
+                            const format_t *fm = &formats[4];
+                            const int L = lL[li], M = mM[mi];
+                            tiles_region(64);
+                            region_addr = MANY_TILES;
+                            ta_list_begin(ListType_Opaque);
+                            for(t = 0; t < 64; t++) {
+                                const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                                rect(fm, 1, DepthMode_Always, x0, y0, 32, 32, front, 0, 0);              /* T, or T' */
+                                if(vv == 1) {
+                                    rect(fm, 1, DepthMode_Always, x0, y0, 1, L, front, 1, 0);            /* U0 */
+                                    rect(fm, 1, DepthMode_Always, x0 + M + 1, y0, 31 - M, L, front, 2, 0);   /* U1 */
+                                }
+                                for(n = 0; n < M; n++)                                                  /* S1 .. SM */
+                                    rect(fm, 1, DepthMode_Always, x0 + 1 + n, y0, 1, L, front, 8 + n, 0);
+                            }
+                            measure("lineshare3", 4, 10 * M + vv, L, ps);
+                        }
+        }
+        /* lineshare4 k (10 M + v) L pass: what bounds the distance over which lineshare3's saving holds: spans, triangles
+           or pixels? 565 with offset colour, T over the tile behind everything; a pattern line is T at column 0, a middle
+           part, and from column e on T again (v 0, R) or a sprite U in front (v 1, R'). R - R' a line is what T's
+           second run on the line saves. Middle parts:
+             k 1: M sprites of 1 x L at columns 1 .. M (M spans, M triangles, M pixels between T's runs; as lineshare3)
+             k 2: M sprites of 2 x L at columns 1 .. 2M (M spans, M triangles, 2M pixels)
+             k 3: a sprite Q over columns 1 .. 2M + 1 behind M sprites of 1 x L at columns 2, 4, .. 2M (2M + 1 spans,
+                  M + 1 triangles, 2M + 1 pixels) */
+        {
+            static const int kk[8] = { 1, 1, 2, 2, 2, 3, 3, 3 }, mm[8] = { 5, 7, 3, 4, 6, 2, 3, 4 };
+            int ci;
+            for(ps = 0; ps < 2; ps++)
+                for(ci = 0; ci < 8; ci++)
+                    for(vv = 0; vv < 2; vv++)
+                        for(li = 0; li < 4; li++) {
+                            const format_t *fm = &formats[4];
+                            const int L = lL[li], k = kk[ci], M = mm[ci];
+                            const int e = k == 1 ? M + 1 : 2 * M + 1 + (k == 3);
+                            tiles_region(64);
+                            region_addr = MANY_TILES;
+                            ta_list_begin(ListType_Opaque);
+                            for(t = 0; t < 64; t++) {
+                                const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                                rect(fm, 1, DepthMode_Always, x0, y0, 32, 32, front, 0, 0);              /* T */
+                                if(k == 3)
+                                    rect(fm, 1, DepthMode_Always, x0 + 1, y0, 2 * M + 1, L, front, 1, 0);    /* Q */
+                                for(n = 0; n < M; n++) {
+                                    if(k == 1)
+                                        rect(fm, 1, DepthMode_Always, x0 + 1 + n, y0, 1, L, front, 8 + n, 0);
+                                    else if(k == 2)
+                                        rect(fm, 1, DepthMode_Always, x0 + 1 + 2 * n, y0, 2, L, front, 8 + n, 0);
+                                    else
+                                        rect(fm, 1, DepthMode_Always, x0 + 2 + 2 * n, y0, 1, L, front, 8 + n, 0);
+                                }
+                                if(vv == 1)
+                                    rect(fm, 1, DepthMode_Always, x0 + e, y0, 32 - e, L, front, 2, 0);       /* U */
+                            }
+                            measure("lineshare4", k, 10 * M + vv, L, ps);
+                        }
+        }
+        /* lineshare5 s (10 M + v) L pass: lineshare3 and 4 in one sweep, M 1 .. 8, at two parities. 565 with offset
+           colour, T (T' for v 2) over the tile behind everything; a pattern line is a first part over columns 0 .. s,
+           M sprites S1 .. SM of 1 x L at columns s + 1 .. s + M, and a tail from column s + M + 1:
+             v 0 (R):  T, S1 .. SM, T          v 1 (R'): T, S1 .. SM, U          v 2 (D): U0, S1 .. SM, U */
+        {
+            int sh, M;
+            for(ps = 0; ps < 2; ps++)
+                for(sh = 0; sh < 2; sh++)
+                    for(M = 1; M <= 8; M++)
+                        for(vv = 0; vv < 3; vv++)
+                            for(li = 0; li < 4; li++) {
+                                const format_t *fm = &formats[4];
+                                const int L = lL[li], e = sh + M + 1;
+                                tiles_region(64);
+                                region_addr = MANY_TILES;
+                                ta_list_begin(ListType_Opaque);
+                                for(t = 0; t < 64; t++) {
+                                    const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                                    rect(fm, 1, DepthMode_Always, x0, y0, 32, 32, front, 0, 0);          /* T, or T' */
+                                    if(vv == 2)
+                                        rect(fm, 1, DepthMode_Always, x0, y0, sh + 1, L, front, 1, 0);   /* U0 */
+                                    for(n = 0; n < M; n++)                                              /* S1 .. SM */
+                                        rect(fm, 1, DepthMode_Always, x0 + sh + 1 + n, y0, 1, L, front, 8 + n, 0);
+                                    if(vv >= 1)
+                                        rect(fm, 1, DepthMode_Always, x0 + e, y0, 32 - e, L, front, 2, 0);   /* U */
+                                }
+                                measure("lineshare5", sh, 10 * M + vv, L, ps);
+                            }
+        }
         *fb_w_ctrl = fbw;
         region_addr = ONE_TILE;
     }
