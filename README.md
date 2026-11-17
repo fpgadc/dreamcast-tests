@@ -1819,7 +1819,7 @@ pass, from `huge` and `detinf`).
 
 What refsw2-offline does not reproduce after this: `accbuf` (76 cells that depend on the write-out's timing,
 70 of them different from console run to console run; see accbuf),
-`blendpos` (69 regions that differ from run to run on the console), `modvol` (5 regions of two-volume
+`blendpos` (69 regions that differ from run to run on the console), `modvol` (5 regions of two-volume polygons in intensity mode: an edge with a corner past 2^127, see faredge; was 
 polygons), `detinf` (2 probes, above) and one depth bracket of zmeas `zero6`.
 
 ## The generators are C++ programs on the refsw2 headers (2026-11-16)
@@ -1989,6 +1989,38 @@ the secondary buffer's pixels come to the tile). Two console runs; logs in `fit/
   the tile beyond the empty one has drawn into the same buffer.
 - The console's timing part runs before page 0; its input is now left out of the "PVRIO crc" checksum, so that
   regress.sh sees that the console and refsw2-offline got the same pages.
+
+## faredge: edges whose far corner is past 2^127 (2026-11-17)
+
+    bash run2.sh faredge off hw=<ip>         # 36 pages; console log in fit/faredge_logs (lines "FE")
+
+**What modvol's 5 cells are.** In intensity mode a polygon sent with two volumes is read with the single-volume
+layout (a 3 word header, 4 word vertices), which refsw2 already does. The strip's second triangle then has the
+corners (32, 0.5), (0.5, -2.56e38) (the first base colour 0xff4080c0 read as y) and (0, 64), and depths NaN and
+-2.56e38 (base colours). The console draws it as a wedge in the first tile column, white: its colour quotient
+saturates at those depths. refsw2 drew a one-pixel sliver.
+
+- **Colour: the cheap shadow's intensity scales the colour before it is clamped.** The white wedge stays white
+  at intensity 0x80 and 0xff and is black at 0. refsw2 now does it (refsw_tile: InterpolateBase, IpWide); modvol
+  187 of 192 cells as before, 31 pixels more right.
+- **Edges: the measured rule holds, with one exception.** faredge draws strips: triangles with two corners in a
+  cell and one far along the column or row (+-m 2^(K-23)), in the first tile column and row (where dx y0 - dy x0
+  stays in range and only the constant takes the start past 2^128) and, as a control, in the second (where
+  dx y0 - dy x0 overflows first). Background 0x204060: such triangles' determinants pass 2^128 and the TSP
+  shades them black. Pages 0 to 7 (8 strips each, K 116 .. 127): the hugepos rule (the start saturates at 2^127)
+  is the console's on 7 of 8 pages; "the start is an infinity, the edge one-sided" is wrong on 7. Pages 12 to 35:
+  one triangle a page in the first column and one in the first row, the edge's crossing read off per line:
+
+| far corner | crossing | what the start must be |
+|---|---|---|
+| K 124 .. 126, down or right; K 127 to the right | 1 to 9 pixels | 2^127, saturated (42 triangles) |
+| K 127 down (far y 2^127 .. 2^128, the column step 2^127 or more) | 19 to 24 pixels, whatever xa (exact: 3 to 28) | as if the constant were +-Q, Q = 2^132.056 .. 2^132.081, plus dx y0 - dy x0 (6 triangles) |
+
+  modvol's triangle (far y -2^127.6) fits the same Q: its edge crosses the first tile 22 pixels in (pages 8 to
+  11, its corners alone and as the strip, depth 1 and modvol's depths: the depths change the colour, not the
+  pixels). Why only a far y of 2^127 or more, and what Q is, is not known; refsw2 keeps the hugepos rule.
+  faredge: 1245 of 1340 cells; the rest are pages 8 to 11, the six K 127 vertical triangles, and on page 1 a
+  control strip in the second column (K 122, dy x0 at 2^128) that the console draws 9 pixels wider.
 
 ## yuvbil: YUV422 texels and bilinear filtering (2026-11-16)
 

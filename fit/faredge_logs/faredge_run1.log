@@ -1,0 +1,129 @@
+Console enabled
+Upload </tmp/pvr_tests/faredge/build/hw.elf>
+File format is ELF, start address is 0x8c010000
+Section .text, lma 0x8c010000, size 271076
+dcload-ip 2.0.3 using Broadband Adapter (HIT-0400)
+Section .init, lma 0x8c0522e4, size 54
+Section .fini, lma 0x8c05231c, size 42
+Section .rodata, lma 0x8c052348, size 45648
+Section .eh_frame, lma 0x8c05d598, size 452
+Section .ctors, lma 0x8c05d7dc, size 8
+Section .dtors, lma 0x8c05d7e4, size 8
+Section .data, lma 0x8c05d800, size 11884
+Section .got, lma 0x8c06066c, size 12
+Transferred 329184 bytes at 12694670.638054 bytes / sec
+Executing at <0xac010000>
+Sending execute command (0xac010000, console=1, cdfsredir=0)...executing
+
+--
+KallistiOS v2.1.0
+  Git revision: a02b86e8
+  Tue Mar  3 18:50:08 EET 2026
+  skmp@flora.localdomain:/opt/toolchains/dc/kos
+  sh-elf-gcc (GCC) 13.2.0
+thd: pre-emption enabled, HZ=100
+maple: active drivers:
+    Dreameye (Camera): Camera
+    Sound Input Peripheral: Microphone
+    PuruPuru (Vibration) Pack: JumpPack
+    VMU Driver: Clock, LCD, MemoryCard
+    Mouse Driver: Mouse
+    Keyboard Driver: Keyboard
+    Controller Driver: Controller
+    Lightgun: LightGun
+  DMA Buffer at ac1a2f40
+vid_set_mode: 640x480 VGA with 1 framebuffers.
+dc-load console support enabled
+maple: attached devices:
+  A0: Dreamcast Controller           (01000000: Controller)
+
+vid_set_mode: 640x480 VGA with 1 framebuffers.
+PVRIO crc 557574b4 before page0
+PVRIO crc 429e7355 before page1
+PVRIO crc 35572935 before page2
+PVRIO crc ed8fcebe before page3
+PVRIO crc 1322e977 before page4
+PVRIO crc 69d98a5e before page5
+PVRIO crc 5f28bc1b before page6
+PVRIO crc 5e94f7aa before page7
+PVRIO crc 75c98992 before page8
+PVRIO crc 7c3e76c3 before page9
+PVRIO crc 5dc8481b before page10
+PVRIO crc 6c1c92a6 before page11
+FE 12 0 274 23 126 12261658
+FE 12 1 126 12 126 11530278
+PVRIO crc 7d0ad114 before page12
+FE 13 0 449 16 127 13584597
+FE 13 1 208 5 126 14648653
+PVRIO crc dcdce3ce before page13
+FE 14 0 158 17 125 13678577
+FE 14 1 255 23 126 16353126
+PVRIO crc 46cdff94 before page14
+FE 15 0 231 27 124 13652622
+FE 15 1 203 2 124 12883087
+PVRIO crc 77269281 before page15
+FE 16 0 238 14 125 10258636
+FE 16 1 180 5 127 16453354
+PVRIO crc 4acd051e before page16
+FE 17 0 65 11 126 15847116
+FE 17 1 330 2 126 12819605
+PVRIO crc 80b7cc77 before page17
+FE 18 0 401 16 124 12262572
+FE 18 1 301 24 127 12167090
+PVRIO crc a8f83d71 before page18
+FE 19 0 239 30 127 14839437
+FE 19 1 124 7 124 8773215
+PVRIO crc 28b3c99f before page19
+FE 20 0 137 22 127 11617423
+FE 20 1 153 15 127 8827582
+PVRIO crc ff2301ec before page20
+FE 21 0 401 22 124 12657362
+FE 21 1 115 15 127 8968942
+PVRIO crc 4e8324fe before page21
+FE 22 0 469 31 126 16519542
+FE 22 1 362 9 127 9425166
+PVRIO crc 74faf475 before page22
+FE 23 0 134 17 126 11345051
+FE 23 1 270 28 125 11424576
+PVRIO crc 1243402e before page23
+FE 24 0 357 13 126 10540129
+FE 24 1 431 8 124 15655842
+PVRIO crc 041fcd42 before page24
+FE 25 0 48 17 127 14011624
+FE 25 1 157 12 127 13387862
+PVRIO crc ddd53182 before page25
+FE 26 0 313 30 125 12394064
+FE 26 1 40 10 124 12192634
+PVRIO crc d808e031 before page26
+FE 27 0 142 20 124 9102521
+FE 27 1 192 1 126 12385072
+PVRIO crc 6e25d54a before page27
+FE 28 0 192 20 124 9879619
+FE 28 1 437 17 124 9677206
+PVRIO crc d7b6dcb9 before page28
+FE 29 0 352 28 126 13391118
+FE 29 1 214 26 124 15658190
+PVRIO crc c9d4822d before page29
+FE 30 0 476 13 124 11258682
+FE 30 1 277 27 125 12214006
+PVRIO crc 55a94ab4 before page30
+FE 31 0 374 8 127 14307047
+FE 31 1 273 22 126 16047664
+PVRIO crc 844d9df2 before page31
+FE 32 0 76 11 127 12750901
+FE 32 1 90 10 125 10030234
+PVRIO crc e5e34e6b before page32
+FE 33 0 320 23 124 12927812
+FE 33 1 48 23 125 9818198
+PVRIO crc d1074d9b before page33
+FE 34 0 128 12 126 16359476
+FE 34 1 35 28 125 14078850
+PVRIO crc 700aed4c before page34
+FE 35 0 77 11 126 16638757
+FE 35 1 259 27 127 14484544
+PVRIO crc e34aeae7 before page35
+
+arch: exit return code 0
+arch: shutting down kernel
+maple: final stats -- device count = 23, vbl_cntr = 508, dma_cntr = 508
+vid_set_mode: 640x480 VGA with 1 framebuffers.
