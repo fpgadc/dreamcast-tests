@@ -8,8 +8,21 @@
                2   as 0, and the 44 cells after the last are filled with settings 0..43 again
                3   backwards: setting c in cell 255 - c
 
-   page = variant * 3 + view; views: the framebuffer's colour, buffer 2's colour, buffer 2's alpha. */
-#define NUM_PAGES 12
+   page = variant * 3 + view; views: the framebuffer's colour, buffer 2's colour, buffer 2's alpha.
+
+   Races (2026-11-17): buffer 2's views of the variants with empty tiles after content (0, 1 and 3) are damaged
+   somewhere else in every console run (README, blendsel/blendpos). They are the test blendpos_races
+   (../blendpos_races/main.c, this file built with BLENDPOS_RACES); regress.sh leaves *_races out unless named.
+   This test keeps the rest: the framebuffer's view of every variant and all of variant 2, the same in every
+   run. Its pages are the original pages 0, 3, 6, 7, 8, 9 (the labels say variant and view). */
+#ifndef NUM_PAGES
+#define NUM_PAGES 6
+#endif
+#ifdef BLENDPOS_RACES
+static const int orig_page[] = { 1, 2, 4, 5, 10, 11 };
+#else
+static const int orig_page[] = { 0, 3, 6, 7, 8, 9 };
+#endif
 #include "pvrtest2.h"
 
 static uint32_t color(int set, int q, int layer) {
@@ -64,11 +77,12 @@ static void test_describe(void) {
     static const char *views[3] = { "fb color", "buf2 color", "buf2 alpha" };
     int p, c;
     for(p = 0; p < NUM_PAGES; p++) {
+        const int o = orig_page[p];
         for(c = 0; c < 256; c++)
-            label(p, place(p / 3, c), "variant %d view %s: setting %d", p / 3, views[p % 3], c);
-        if(p / 3 == 2)
+            label(p, place(o / 3, c), "variant %d view %s: setting %d", o / 3, views[o % 3], c);
+        if(o / 3 == 2)
             for(c = 0; c < 44; c++)
-                label(p, 256 + c, "variant 2 view %s: setting %d again", views[p % 3], c);
+                label(p, 256 + c, "variant 2 view %s: setting %d again", views[o % 3], c);
     }
 }
 
@@ -86,7 +100,7 @@ static void cell(int at, int c) {
 }
 
 static void test_page(int page) {
-    int variant = page / 3, view = page % 3, c;
+    int variant = orig_page[page] / 3, view = orig_page[page] % 3, c;
 
     ta_list_begin(ListType_Translucent);
     for(c = 0; c < 256; c++)

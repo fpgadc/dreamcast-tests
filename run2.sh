@@ -86,7 +86,8 @@ while [ $# -gt 0 ]; do
   off|hw=*|emu|emu=*) KINDS+=("$1") ;;
   *) T=${1%%@*}
      TD=$(testdir $T) && [ -f "$TD/main.c" ] || { echo "no such test: $T"; exit 1; }
-     grep -q 'pvrtest2.h\|pvrio.h' $TD/main.c || { echo "$T is not on pvrtest2.h or pvrio.h: use run.sh"; exit 1; }
+     # (a <test>_races folder is another test's main.c built with a define: it includes that main.c)
+     grep -q 'pvrtest2.h\|pvrio.h\|#include "\.\./[a-z0-9_]*/main.c"' $TD/main.c || { echo "$T is not on pvrtest2.h or pvrio.h: use run.sh"; exit 1; }
      RUNS+=("$1") ;;
   esac
   shift

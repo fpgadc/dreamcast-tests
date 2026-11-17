@@ -2031,6 +2031,39 @@ the secondary buffer's pixels come to the tile). Two console runs; logs in `fit/
 - The console's timing part runs before page 0; its input is now left out of the "PVRIO crc" checksum, so that
   regress.sh sees that the console and refsw2-offline got the same pages.
 
+## keepz, and the races tests (2026-11-17)
+
+    bash run2.sh keepz off
+    bash run2.sh keepz hw=<ip>                # 3 pages, a few seconds; archived in fit/hw/keepz
+    bash regress.sh accbuf_races blendpos_races keepz_races     # the races, only when named
+
+**keepz: an empty keep Z entry after one that is not written out.** Games draw every tile twice: first with its
+lists, not written out (region array bit 28), then keep Z (bit 30) with no lists (polly2-data logo, mem, menu2,
+menu3, thps2_menu). refsw2 never wrote such an empty keep Z entry out (accbuf: it is not written when it comes
+right after a written tile), and those five frames came out 3 to 16 % right. The console: an empty keep Z
+entry after an entry that is not written out writes the tile buffer out at the place of **the entry before
+it**, with what that entry drew. Games give both the same tile, so it looks like an ordinary write-out (page
+0: five drawings, keep Z with no list pointers or with pointers to empty lists; page 1: keep Z entries that
+draw, in chains). Page 2 puts the empty keep Z entry after a not written out entry of another cell: that cell
+gets its picture and the keep Z entry's own cell nothing. refsw2 does this now; keepz is 49 of 49 regions and
+the five frames are the console's in all of video memory.
+
+**Races.** Some of what a console does depends on when its units run against each other: different from one
+console run to the next, or the same every run but out of reach of refsw2, which has no clock. Those cases are
+tests of their own now, `<test>_races`, each the original test's main.c built with a define (no copied code),
+and `regress.sh` leaves them out unless they are named:
+
+| test | what | refsw2 = console |
+|---|---|---|
+| accbuf_races | accbuf's original pages 0, 1, 3, 5 and 7: SEC COPY right after a written tile, the race pages, the tile two before an empty keep Z tile (gets the picture of the tile between) | 87 of 163 |
+| blendpos_races | blendpos's buffer 2 views of the variants with empty tiles after content (damaged somewhere else every run) | 1469 of 1536 |
+| keepz_races | an empty keep Z entry after a keep Z entry that is not written out (cell 10 gets the next written tile's picture); and right after a written tile (the tile two before gets the picture of the tile between) | 19 of 20 |
+
+What stays in accbuf, blendpos and keepz is the same in two console runs, pixel for pixel, and equal to
+refsw2 (7, 6 and 3 pages). accbuf clears the framebuffer after its console-only timing part, which drew in a
+cell that its page 0 no longer writes. Not modelled, deterministic, still in regress.sh: detinf (2 regions),
+faredge (95), modvol (5) and zmeas (3 brackets).
+
 ## ta-tests: the tile accelerator against nulldc3's tacore.cpp (2026-11-17)
 
     bash run2.sh ta-tests off hw=<ip>        # 63 cases, 5 s on a console

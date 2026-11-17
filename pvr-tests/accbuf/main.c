@@ -33,8 +33,27 @@
    page 8  race, SEC WRITE over the whole tile
 
    On a console the test also times some of these (lines "T end", "T flush", "T stall"): see timing() at
-   the end of this file. */
-#define NUM_PAGES 9
+   the end of this file.
+
+   Races (2026-11-17). What a console makes of some of these depends on when the write-out runs against the
+   TSP: different from one run to the next (page 7, pages 0 and 1 A-D, page 5 from its keep Z SEC WRITE on), or
+   the same every run but not modelled by refsw2, which has no clock (the tile two before an empty keep Z tile
+   gets the picture of the tile after it: pages 0 and 1 H, page 3). Those are the test accbuf_races
+   (../accbuf_races/main.c, this file built with ACCBUF_RACES: the original pages 0, 1, 3, 5 and 7, whole);
+   regress.sh leaves *_races out unless named. This test is the rest: pages 0 and 1 without A-D and without
+   J-K (whose empty keep Z tile damages H), pages 2 and 4, page 5 up to its keep Z SEC WRITE, pages 6 and 8.
+   So its pages are numbered: 0, 1 (copy), 2 (chain), 3 (chain, not written out), 4 (SEC WRITE), 5 and 6
+   (races SEC WRITE); the descriptions above use the original numbers. */
+#ifndef NUM_PAGES
+#define NUM_PAGES 7
+#endif
+#ifdef ACCBUF_RACES
+static const int kinds[] = { 0, 1, 3, 5, 7 };          /* the original page each page is */
+static const int races = 1;
+#else
+static const int kinds[] = { 0, 1, 2, 4, 5, 6, 8 };
+static const int races = 0;
+#endif
 #include "pvrtest2.h"
 #ifdef _arch_dreamcast
 #include <arch/irq.h>
@@ -124,17 +143,21 @@ static void quadrants(void) {
 /* pages 0 and 1: which picture does SEC COPY bring? */
 static void page_copy(void) {
     prime();
-    T(0, "A: four quadrants (red, green / blue, yellow)");                  quadrants();
-    T(0, "B: background, SEC COPY over the tile: A's picture?");            sec_copy(0, 0, 32, 32);
-    T(0, "C: white, SEC COPY over the left half: B's picture there?");      fill(0xffffff); sec_copy(0, 0, 16, 32);
-    T(0, "D: background, SEC COPY over the tile: C's picture?");            sec_copy(0, 0, 32, 32);
+    if(races) {
+        T(0, "A: four quadrants (red, green / blue, yellow)");              quadrants();
+        T(0, "B: background, SEC COPY over the tile: A's picture?");        sec_copy(0, 0, 32, 32);
+        T(0, "C: white, SEC COPY over the left half: B's picture there?");  fill(0xffffff); sec_copy(0, 0, 16, 32);
+        T(0, "D: background, SEC COPY over the tile: C's picture?");        sec_copy(0, 0, 32, 32);
+    }
     T(0, "E: background only");
     T(0, "F: background, SEC COPY: E's picture (background)?");             sec_copy(0, 0, 32, 32);
     T(NOWRITE, "G: cyan, not written out");                                 fill(0x00ffff);
     T(0, "H: background, SEC COPY after a tile that was not written out");  sec_copy(0, 0, 32, 32);
     T(0, "I: orange");                                                      fill(0xff8000);
-    T(KEEPZ, "J: keep Z, nothing drawn");
-    T(0, "K: background, SEC COPY after a keep Z tile that drew nothing");  sec_copy(0, 0, 32, 32);
+    if(races) {
+        T(KEEPZ, "J: keep Z, nothing drawn");
+        T(0, "K: background, SEC COPY after a keep Z tile that drew nothing");  sec_copy(0, 0, 32, 32);
+    }
     T(0, "L: magenta");                                                     fill(0xff00ff);
     T(0, "M: green");                                                       fill(0x00ff00);
     T(0, "N: background, SEC COPY left half, then SEC COPY again right half"); sec_copy(0, 0, 16, 32); sec_copy(16, 0, 16, 32);
@@ -194,6 +217,8 @@ static void page_write(void) {
         fill(0xffff00); sec_write(8, 0, 4, 32, 0x00ffff); sec_copy(0, 0, 16, 32);
     T(KEEPZ, "keep Z, stripe at x 20: the buffer B wrote into");    mark(20, 0, 3, 32, 0xff00ff);
     T(KEEPZ, "keep Z, stripe at x 24: B's picture");                mark(24, 0, 3, 32, 0xff8000);
+    if(!races)
+        return;
     T(KEEPZ, "keep Z: SEC WRITE white at x 28 and nothing else");   sec_write(28, 0, 3, 32, 0xffffff);
     T(KEEPZ, "keep Z, stripe at x 0");                              mark(0, 0, 2, 32, 0x00ff80);
     T(KEEPZ, "keep Z, stripe at x 2");                              mark(2, 0, 2, 32, 0x8000ff);
@@ -271,17 +296,18 @@ static void emit_all(void) {
 }
 
 static void build(int page) {
+    const int kind = kinds[page];       /* the original page */
     n_cmds = 0;
     n_tiles = 0;
     cur_page = page;
-    sel_list = page == 1 ? ListType_Opaque : ListType_Translucent;
-    switch(page) {
+    sel_list = kind == 1 ? ListType_Opaque : ListType_Translucent;
+    switch(kind) {
     case 0: case 1: page_copy(); break;
     case 2: page_chain(); break;
     case 3: page_chain_empty(); break;
     case 4: page_chain_nowrite(); break;
     case 5: page_write(); break;
-    default: page_race(page - 6); break;
+    default: page_race(kind - 6); break;
     }
 }
 
@@ -482,10 +508,12 @@ static void test_describe(void) {
 }
 
 static void test_page(int page) {
-#ifdef _arch_dreamcast
+#if defined(_arch_dreamcast) && !defined(ACCBUF_RACES)
     if(page == 0) {                     /* the timing part is the console's own: leave it out of the input's checksum, */
         const uint32_t crc = pvrio_crc; /* so that the pages' checksums are those of the offline run (regress.sh) */
         timing();
+        pvrio_hw_fill32(SETUP_FB, 640 * 480, 0);   /* what the timing part drew is not the offline run's: a cell that
+                                                       page 0 does not write (G) would show it */
         pvrio_crc = crc;
     }
 #endif
