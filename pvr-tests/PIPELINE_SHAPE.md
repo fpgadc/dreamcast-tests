@@ -140,6 +140,12 @@ largest of its ISP, TSP and write-out times [M timemeas].
   precision, depth].
 - **[I]** A stored depth is about 28 bits: an 8-bit exponent and a 19-bit mantissa (plus a sign?). ISP_BACKGND_D
   reads back with its low 4 bits zero (23 - 4 = 19) [M regdump].
+- **ISP_BACKGND_D below 2^-20 is zero** (exponent field under 107): nothing is behind the background, in any list,
+  sort mode or compare, a polygon at depth 0 included; from 2^-20 up it hides as any depth does, while polygon
+  depths far below 2^-20 still order among themselves [M dumprules pages 4-7, polly2-data xtreme_intro].
+- **A punch-through polygon leaves the ISP's depth** (its depth plane), not the TSP's 1/w [M zsource].
+- **A modifier volume triangle at exactly a pixel's depth is not in front of it** (strictly greater) [M dumprules,
+  polly2-data jgr_tree_shadows].
 - Depth processing is invisible in the timing: failing, passing or writing all cost 16 a triangle [M timemeas].
 
 ### Passes, sorting, modifier volumes
@@ -150,12 +156,21 @@ largest of its ISP, TSP and write-out times [M timemeas].
   - inside, the second volume's parameters replace the first's;
   - the part of a polygon inside a volume is its own triangle to the TSP (its own setup and runs).
 - **Punch-through list.** Pixels inside an opaque modifier volume are shaded twice, the second time with the
-  second volume's parameters and blend mode. Pixels failing the alpha test are shaded later as runs of their own
-  [M timemeas, uvrun]. Untextured punch-through polygons are drawn at every pixel, even below PT_ALPHA_REF
-  [M fbpack].
+  second volume's parameters and blend mode, alpha tested like the first [M dumprules]. Pixels failing the alpha
+  test are shaded later as runs of their own [M timemeas, uvrun], only where a later pass draws a polygon [polly2-data
+  jgr_tree_shadows2]. A pixel that fails is still blended with alpha 0: drawn with ONE, ZERO even below
+  PT_ALPHA_REF [M fbpack], left as it was with SRC_ALPHA, INV_SRC_ALPHA [M dumprules]. In one plane the last
+  polygon in the list goes first, then where it fails the one before it, and so on [M dumprules, polly2-data
+  sc_ingame].
 - **Translucent list.** A pre-sorted tile (region entry bit) is shaded in list order. A tile sorted per pixel is
   shaded in layers, back to front. A translucent modifier volume works only in a tile sorted per pixel [M
-  timemeas tr_modvol, uvrun].
+  timemeas tr_modvol, uvrun]. Sorted per pixel, polygons in one plane are all drawn, also after one behind them
+  later in the list [M dumprules, polly2-data shenmue_menu]; a keep-Z entry after it gets the depth from before the
+  translucent polygons with the depth of the layers that write depth [M keepz page 3, polly2-data thps2_ingame*].
+- **Shading rules from game frames [M dumprules]:** intensity shadow scales each vertex colour ((c * scale) >> 8,
+  not alpha) before interpolation [sc_ingame2]; vertex fog is (c * (256 - a) + f * a) >> 8 with a the offset
+  alpha, and an offset colour comes only with a texture [sc_ingame, refta]; trilinear filtering of a texture
+  without mipmaps is point sampling [shenmue_intro].
 - **ISP ahead of the TSP: a queue of runs [M timemeas ispq].** The ISP's end-of-render bit is not the end of the
   ISP's work. In a render of 16 or more background tiles it comes 19980 clocks (14.6 tiles) before the TSP's bit.
   - When the ISP ends, about 430-480 runs are still to be shaded, whatever the tiles hold. A background tile is

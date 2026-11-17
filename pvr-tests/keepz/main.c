@@ -24,19 +24,21 @@
            19 nothing). Not modelled: after a keep Z entry that is not written out (cells 10 and 11), cell 10
            gets the yellow of the tile two entries later, as if that write-out had come late (accbuf's races).
            Pages are not cleared: a cell nothing writes shows the page before.
+   page 3  a keep Z entry after an autosort entry (polly2-data thps2_ingame*): it gets the depth from before the
+           translucent polygons (page_autosort).
 
    The races are the test keepz_races (../keepz_races/main.c: this file built with KEEPZ_RACES, page 2 whole);
    regress.sh leaves *_races out unless named. Here page 2 goes without cells 10 and 11, and without cells 12
    and 13 (an empty keep Z entry right after a written tile: the tile two before it gets the picture of the
    tile between, accbuf's race, which shows here once 10 and 11 are gone). */
 #ifndef NUM_PAGES
-#define NUM_PAGES 3
+#define NUM_PAGES 4
 #endif
 #ifdef KEEPZ_RACES
 static const int kinds[] = { 2 };
 static const int races = 1;
 #else
-static const int kinds[] = { 0, 1, 2 };
+static const int kinds[] = { 0, 1, 2, 3 };
 static const int races = 0;
 #endif
 #include "pvrtest2.h"
@@ -47,9 +49,10 @@ static const int races = 0;
 #define NOLISTS  4                  /* the entry has no list pointer at all */
 #define SAME     8                  /* the cell of the entry before */
 #define EMPTY    16                 /* list pointers to the lists of tile (19, 14), where nothing is drawn */
+#define AUTO     32                 /* translucent autosort (pre_sort 0) */
 #define MAX_CMDS 2000
 
-typedef struct { int16_t x, y, w, h; uint32_t colour; uint8_t list; } cmd_t;
+typedef struct { int16_t x, y, w, h; uint32_t colour; uint8_t list, depth; f32b z; } cmd_t;
 
 static cmd_t cmds[MAX_CMDS];
 static int n_cmds;
@@ -78,7 +81,7 @@ static void T(int flags, const char *what) {
     e.control.tiley = y;
     e.control.z_keep = (flags & KEEPZ) != 0;
     e.control.no_writeout = (flags & NOWRITE) != 0;
-    e.control.pre_sort = 1;
+    e.control.pre_sort = (flags & AUTO) == 0;
     e.opaque.ptr_in_words = (pvr_list_base[ListType_Opaque] + (uint32_t)pvr_cfg.opb_words[ListType_Opaque] * 4 * (uint32_t)(SETUP_TILES_X * y + x)) >> 2;
     e.trans.ptr_in_words = (pvr_list_base[ListType_Translucent] + (uint32_t)pvr_cfg.opb_words[ListType_Translucent] * 4 * (uint32_t)(SETUP_TILES_X * y + x)) >> 2;
     e.opaque_mod.empty = e.trans_mod.empty = e.puncht.empty = 1;
@@ -100,7 +103,18 @@ static void add(int list, int x, int y, int w, int h, uint32_t colour) {
     c->x = (int16_t)(tx() + x); c->y = (int16_t)(ty() + y); c->w = (int16_t)w; c->h = (int16_t)h;
     c->colour = colour;
     c->list = (uint8_t)list;
+    c->depth = DepthMode_Always;
+    c->z = F32B_ONE;
     n_cmds++;
+}
+
+/* the same at depth z, compare greater (page 3) */
+static void zadd(int list, int x, int y, int w, int h, f32b z, uint32_t colour) {
+    if(describing || n_cmds >= MAX_CMDS)
+        return;
+    add(list, x, y, w, h, colour);
+    cmds[n_cmds - 1].depth = DepthMode_Greater;
+    cmds[n_cmds - 1].z = z;
 }
 
 static void fill(uint32_t c)                               { add(ListType_Opaque, 0, 0, 32, 32, 0xff000000u | c); }
@@ -194,6 +208,30 @@ static void page_drawing(void) {
     T(KEEPZ | SAME, "");                                                   mark(0, 0, 16, 16, 0xff0000); mark(16, 0, 16, 16, 0x00ff00);
 }
 
+/* After an autosort entry, the depth a keep Z entry gets is the one from before the translucent polygons, not
+   the depth the sort left (polly2-data thps2_ingame*: three entries a tile, the second and third keep Z). Both
+   entries of a cell draw the cell's lists: grey (opaque) at 0.3, white translucent stripes (alpha 0x80) at 0.6 and
+   0.7, compare greater, depth written. The keep Z entry is pre-sort: where it gets the depth 0.3 its stripes pass
+   again and are blended twice; where it got a stripe's depth they fail and are blended once. The first entry is
+   not written out, as in the games: after one that is, the keep Z entry draws in the other tile buffer (accbuf). */
+static void page_autosort(void) {
+    const f32b Z3 = F(0.3f), Z6 = F(0.6f), Z7 = F(0.7f);
+    prime();
+    T(AUTO | NOWRITE, "autosort, not written out: grey 0.3, a white stripe 0.7 at x 8..15; keep Z (pre-sort): stripe twice?");
+    zadd(ListType_Opaque, 0, 0, 32, 32, Z3, 0xff808080); zadd(ListType_Translucent, 8, 0, 8, 32, Z7, 0x80ffffff);
+    T(KEEPZ | SAME, "");
+    T(NOWRITE, "pre-sort (reference), not written out: grey 0.3, a white stripe 0.7 at x 8..15; keep Z: stripe once");
+    zadd(ListType_Opaque, 0, 0, 32, 32, Z3, 0xff808080); zadd(ListType_Translucent, 8, 0, 8, 32, Z7, 0x80ffffff);
+    T(KEEPZ | SAME, "");
+    T(AUTO | NOWRITE, "autosort, not written out: grey 0.3, white stripes 0.6 at x 4..19 and 0.7 at x 12..27; keep Z: twice?");
+    zadd(ListType_Opaque, 0, 0, 32, 32, Z3, 0xff808080);
+    zadd(ListType_Translucent, 4, 0, 16, 32, Z6, 0x80ffffff); zadd(ListType_Translucent, 12, 0, 16, 32, Z7, 0x80ffffff);
+    T(KEEPZ | SAME, "");
+    T(AUTO | NOWRITE, "autosort, not written out: only a white stripe 0.7 at x 8..15 (over the background); keep Z: twice?");
+    zadd(ListType_Translucent, 8, 0, 8, 32, Z7, 0x80ffffff);
+    T(KEEPZ | SAME, "");
+}
+
 /* the polygons of one list, in the order given, and the region array */
 static void emit_list(int list) {
     int i;
@@ -210,14 +248,14 @@ static void emit_list(int list) {
         pcw.ListType = list;
         pcw.Group_En = 1;
         pcw.Strip_Len = 1;
-        isp.DepthMode = DepthMode_Always;
+        isp.DepthMode = c->depth;
         isp.CullMode = CullMode_None;
         tsp.SrcInstr = list == ListType_Translucent ? BlendInstr_SrcAlpha : BlendInstr_One;
         tsp.DstInstr = list == ListType_Translucent ? BlendInstr_InvSrcAlpha : BlendInstr_Zero;
         tsp.FogCtrl = FogCtrl_None;
         tsp.UseAlpha = 1;
         ta_polygon(pcw, isp, tsp, tcw);
-        quad0(c->x, c->y, c->w, c->h, F32B_ONE, c->colour);
+        quad0(c->x, c->y, c->w, c->h, c->z, c->colour);
     }
     ta_list_end();
 }
@@ -242,7 +280,8 @@ static void build(int page) {
     switch(kinds[page]) {
     case 0: page_pairs(); break;
     case 1: page_drawing(); break;
-    default: page_contexts(); break;
+    case 2: page_contexts(); break;
+    default: page_autosort(); break;
     }
 }
 

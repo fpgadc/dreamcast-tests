@@ -2034,7 +2034,7 @@ the secondary buffer's pixels come to the tile). Two console runs; logs in `fit/
 ## keepz, and the races tests (2026-11-17)
 
     bash run2.sh keepz off
-    bash run2.sh keepz hw=<ip>                # 3 pages, a few seconds; archived in fit/hw/keepz
+    bash run2.sh keepz hw=<ip>                # 4 pages, a few seconds; archived in fit/hw/keepz
     bash regress.sh accbuf_races blendpos_races keepz_races     # the races, only when named
 
 **keepz: an empty keep Z entry after one that is not written out.** Games draw every tile twice: first with its
@@ -2047,6 +2047,14 @@ it**, with what that entry drew. Games give both the same tile, so it looks like
 draw, in chains). Page 2 puts the empty keep Z entry after a not written out entry of another cell: that cell
 gets its picture and the keep Z entry's own cell nothing. refsw2 does this now; keepz is 49 of 49 regions and
 the five frames are the console's in all of video memory.
+
+Page 3: a keep Z entry after an autosort entry gets the depth from before the translucent polygons, plus the
+depth of the sorted layers that write depth (ZWriteDis 0), the nearest where several do. Both entries draw grey
+at 0.3 and white stripes at 0.6 and 0.7 (compare greater, depth written); the keep Z entry is pre-sort, and its
+stripes fail where they left their depth: blended once on the console. The depth the sort's passes leave behind
+(refsw2 before) is not it (polly2-data thps2_ingame*, whose translucent polygons do not write depth, broke on that),
+and neither is the depth from before the sort alone (refsw2 after thps2, blended twice here). refsw2 keeps the
+ISP's depth of each layer it draws now: 53 of 53 regions, thps2 unchanged.
 
 **Races.** Some of what a console does depends on when its units run against each other: different from one
 console run to the next, or the same every run but out of reach of refsw2, which has no clock. Those cases are
@@ -2365,11 +2373,48 @@ registers and video memory) with refsw2-offline and compares video memory with t
 same dump (pvr-renderer's vram_out_<scene>.bin). Sonic Adventure's sa_slow1-3 were 88 to 96 % exact before,
 every differing pixel a bilinear sample below the full size; now all of video memory is the console's.
 
-All of them (2026-11-17, about 12 minutes): 32 of the 62 that can be replayed have all of video memory the
+All of them (2026-11-17, about 3 minutes): 32 of the 62 that can be replayed had all of video memory the
 console's, the others 96.7 to 99.99 % of the framebuffer (jgr, shenmue, thps2_ingame, sc_ingame and xtreme_intro
-the furthest off). menu's register file is 4 KB, without the palette, and is not replayed. logo, mem, menu2,
+the furthest off). With the rules in dumprules and keepz page 3, and a punch through pixel that failed the alpha
+test shaded again only when a later pass draws there (jgr_tree_shadows2), 44 of the 62; the rest differ in 1 to 122
+words, nearly all by one step of one channel (daytona_sanic, sa2_ingame2, gundam_ingame, daytona_intro the most). menu's register file is 4 KB, without the palette, and is not replayed. logo, mem, menu2,
 menu3 and thps2_menu were 3 to 16 % exact until refsw2 wrote out an empty keep-Z tile after a tile that is
 not written out (pvr-tests/PIPELINE_SHAPE.md, [6]).
+
+## dumprules, zsource: what game frames showed, checked on their own (2026-11-17)
+
+    bash run2.sh dumprules off; bash run2.sh dumprules hw=<ip>    # 8 pages, a few seconds; archived in fit/hw/dumprules
+    bash run2.sh zsource off; bash run2.sh zsource hw=<ip>        # 1 page; archived in fit/hw/zsource
+    ./dumprender.sh <scene> x,y ... [drop=<tag>,...] [nolists=<mask>] [reg=<offset>:<value> ...] hw=<ip>
+
+Each rule refsw2 got from a polly2 dump (polly2dumps.py, then partial renders on a console with dumprender.sh:
+some tiles only, objects or whole lists left out, registers changed) has cells of its own in dumprules, on its
+own polygons; the cells' labels say what the rule predicts. 90 of 90 regions are the console's. The rules (the
+scene each came from):
+
+| rule | scene | cells |
+|---|---|---|
+| A modifier volume triangle at exactly the depth of the pixel is not in front of it (strictly greater) | jgr_tree_shadows | page 0 cells 0-5, page 1 cells 20-21: sheets made of the polygon's own corners, in the order the ISP gets a strip's |
+| Intensity shadow: (c * scale) >> 8 per vertex, before interpolation; alpha not scaled | sc_ingame2, jgr_tree_shadows2 | page 0 cells 20-23 |
+| Punch through shaded again inside a modifier volume is alpha tested: its colour replaces the pixel's | (dumprules itself) | page 0 cell 22 |
+| Vertex fog (c * (256 - a) + f * a) >> 8; an offset colour (so vertex fog) only with a texture (refta) | sc_ingame | page 0 cells 40-43 |
+| Trilinear filtering of a texture without mipmaps is point sampled | shenmue_intro | page 0 cells 60-67 |
+| Punch through in one plane: the last in the list where it passes, then the one before it where it fails, and so on | sc_ingame | page 0 cells 80-85 |
+| Autosort: translucent polygons in one plane after one behind them later in the list are all drawn | shenmue_menu | page 1 cells 0-3 |
+| ISP_BACKGND_D below 2^-20 (exponent field under 107) is zero: nothing is behind the background | xtreme_intro | pages 2-7 |
+
+The last one replaced a wrong guess. In xtreme_intro two translucent triangles at about 1e-8, behind the
+background's 1e-8, are drawn; refsw2 had taken the background out of the translucent sort's depth. On the console
+that frame's tiles draw them for every ISP_BACKGND_D up to 0x1.f8p-21 (13 settings, all 593 pixels at once) and
+none from 2^-20, and dumprules shows it is the background's depth alone: with it at 2^-26, opaque, translucent and
+punch through polygons behind it are drawn in both sort modes, one at depth 0 included (compare greater or equal),
+while opaque polygons at 2^-24 and 2^-22 still hide one another; at 0.5 or 2^-20 the background hides as before.
+
+zsource: a punch through polygon leaves the ISP's depth (its depth plane) in the depth buffer, not the TSP's 1/w
+that its shading and alpha test go with. 40 random quads (depths 0.2 .. 0.9, and the same / 256), each punch
+through and then a translucent copy of the same corners with compare greater: a tie fails, so the copy shows only
+where the depth left is below the copy's own ISP depth. Nothing on the console, nothing in refsw2; with the TSP's
+1/w stored, refsw2 shows the copy in 39 of the 40 cells (26,101 pixels). The opaque copies are the reference.
 
 ## bumpfn, bumpbil, bumphang: bump maps (2026-11-17)
 

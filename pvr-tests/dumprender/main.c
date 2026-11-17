@@ -7,6 +7,13 @@
      SCENE     the scene's name
      TILES     optional: { x0, y0, x1, y1, ... } and NTILES: only the region array entries of these tiles
                (in their order in the array), the rest left out: a partial render
+     DROP      optional: { t0, t1, ... }: the objects of these refsw2 tags (as its render log prints them: the
+               parameter offset in words in bits 3-23) are left out of every list of every entry kept: their
+               object list entries become strips with no triangle enabled
+     NOLISTS   optional: a mask of the lists to leave out of every entry kept (1 opaque, 2 opaque modifier
+               volumes, 4 translucent, 8 translucent modifier volumes, 16 punch through): their pointers are emptied
+     SETREGS   optional: { offset, value, ... }: registers written after the dump's (e.g. SCALER_CTL 0x400, so that
+               the framebuffer is the tiles as they were shaded, without the vertical filter)
    Output: frame.off.raw (PC) / frame.hw.raw (console): the framebuffer FB_W_SOF1 .. FB_Y_CLIP's last line.
 
    On a console (pvr-renderer's rules, polly2-rtl): the core is reset before video memory is written (a render
@@ -23,6 +30,9 @@
 #endif
 #ifdef TILES
 static const int tiles[] = TILES;
+#endif
+#ifdef DROP
+static const uint32_t drop[] = DROP;
 #endif
 
 /* a message: on a PC stdout is refsw2-offline's input, so there it is an echo command */
@@ -117,6 +127,55 @@ static int load(void) {
     return 1;
 }
 
+/* words of the dump's video memory (32 bit area): the embedded copy on a console, the file on a PC */
+static void dump_words(uint32_t addr, uint32_t *out, int n) {
+#ifdef _arch_dreamcast
+    memcpy(out, dr_vram + addr / 4, 4 * (size_t)n);
+#else
+    FILE *f = open_dump("vram");
+    fseek(f, (long)addr, SEEK_SET);
+    if(fread(out, 4, (size_t)n, f) != (size_t)n)
+        memset(out, 0, 4 * (size_t)n);
+    fclose(f);
+#endif
+}
+
+#ifdef DROP
+/* every object of the lists that start at these pointers: entries of dropped parameters become empty strips */
+static void drop_objects(const uint32_t *ptrs, int n_ptrs) {
+    static uint32_t seen[8192];
+    static int n_seen;
+    int k;
+    for(k = 0; k < n_ptrs; k++) {
+        uint32_t at = ptrs[k] & 0xfffffcu, w;
+        int steps = 0, j;
+        if(ptrs[k] >> 31)
+            continue;                                   /* the list is empty */
+        while(steps++ < 100000) {
+            dump_words(at, &w, 1);
+            if(w >> 31 && ((w >> 29) & 7) == 7) {       /* a link, or the end */
+                if((w >> 28) & 1)
+                    break;
+                at = w & 0xfffffcu;
+                continue;
+            }
+            for(j = 0; j < (int)(sizeof(drop) / 4); j++)
+                if((w & 0x1fffff) == ((drop[j] >> 3) & 0x1fffff)) {
+                    uint32_t e = w & 0x1fffff;          /* a strip of nothing */
+                    int q;
+                    for(q = 0; q < n_seen && seen[q] != at; q++) ;
+                    if(q == n_seen && n_seen < 8192) {
+                        seen[n_seen++] = at;
+                        pvrio_w32(at, &e, 1);
+                    }
+                    break;
+                }
+            at += 4;
+        }
+    }
+}
+#endif
+
 #ifdef TILES
 /* the region array with only the entries of the tiles asked for */
 static void keep_tiles(void) {
@@ -140,6 +199,14 @@ static void keep_tiles(void) {
             if(tiles[2 * k] == x && tiles[2 * k + 1] == y) {
                 memcpy(&out[size * n_out], &in[size * i], 4 * (size_t)size);
                 out[size * n_out] &= 0x7fffffffu;
+#ifdef NOLISTS
+                {
+                    int l;
+                    for(l = 0; l < size - 1; l++)
+                        if((NOLISTS >> l) & 1)
+                            out[size * n_out + 1 + l] = 0x80000000u;
+                }
+#endif
                 n_out++;
                 break;
             }
@@ -153,6 +220,10 @@ static void keep_tiles(void) {
     out[size * (n_out - 1)] |= 0x80000000u;
     pvrio_w32(base, out, size * n_out);
     printf(SAY "%d of %d region array entries kept\n", n_out, i + 1);
+#ifdef DROP
+    for(i = 0; i < n_out; i++)
+        drop_objects(&out[size * i + 1], size - 1);
+#endif
 }
 #endif
 
@@ -165,14 +236,26 @@ int main(int argc, char **argv) {
 #endif
     pvrio_open();
     if(load()) {
-        const uint32_t sof = regs[FB_W_SOF1_addr / 4] & 0xfffffcu, stride = (regs[FB_W_LINESTRIDE_addr / 4] & 0x1ff) * 8;
-        const uint32_t lines = ((regs[FB_Y_CLIP_addr / 4] >> 16) & 0x3ff) + 1;
+#ifdef SETREGS
+        {
+            static const uint32_t set[] = SETREGS;
+            unsigned k;
+            for(k = 0; k + 1 < sizeof(set) / 4; k += 2) {
+                pvrio_reg(set[k], set[k + 1]);
+                regs[set[k] / 4] = set[k + 1];      /* the framebuffer dumped follows (FB_W_CTRL, FB_W_LINESTRIDE) */
+            }
+        }
+#endif
 #ifdef TILES
         keep_tiles();
 #endif
-        pvrio_reg(STARTRENDER_addr, 0xffffffff);
-        pvrio_wait(PVRIO_RENDER_DONE);
-        pvrio_dump32(sof, (int)(stride * lines / 4), "frame", ".raw");
+        {
+            const uint32_t sof = regs[FB_W_SOF1_addr / 4] & 0xfffffcu, stride = (regs[FB_W_LINESTRIDE_addr / 4] & 0x1ff) * 8;
+            const uint32_t lines = ((regs[FB_Y_CLIP_addr / 4] >> 16) & 0x3ff) + 1;
+            pvrio_reg(STARTRENDER_addr, 0xffffffff);
+            pvrio_wait(PVRIO_RENDER_DONE);
+            pvrio_dump32(sof, (int)(stride * lines / 4), "frame", ".raw");
+        }
     }
     pvrio_close();
     return 0;
