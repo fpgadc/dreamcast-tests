@@ -1,0 +1,231 @@
+Console enabled
+Upload </tmp/pvr_tests/timemeas/build/hw.elf>
+File format is ELF, start address is 0x8c010000
+Section .text, lma 0x8c010000, size 279044
+dcload-ip 2.0.3 using Broadband Adapter (HIT-0400)
+Section .init, lma 0x8c054204, size 54
+Section .fini, lma 0x8c05423c, size 42
+Section .rodata, lma 0x8c054268, size 49752
+Section .eh_frame, lma 0x8c0604c0, size 452
+Section .ctors, lma 0x8c060704, size 8
+Section .dtors, lma 0x8c06070c, size 8
+Section .data, lma 0x8c060720, size 11884
+Section .got, lma 0x8c06358c, size 12
+Transferred 341256 bytes at 13305922.654098 bytes / sec
+Executing at <0xac010000>
+Sending execute command (0xac010000, console=1, cdfsredir=0)...executing
+
+--
+KallistiOS v2.1.0
+  Git revision: a02b86e8
+  Tue Mar  3 18:50:08 EET 2026
+  skmp@flora.localdomain:/opt/toolchains/dc/kos
+  sh-elf-gcc (GCC) 13.2.0
+thd: pre-emption enabled, HZ=100
+maple: active drivers:
+    Dreameye (Camera): Camera
+    Sound Input Peripheral: Microphone
+    PuruPuru (Vibration) Pack: JumpPack
+    VMU Driver: Clock, LCD, MemoryCard
+    Mouse Driver: Mouse
+    Keyboard Driver: Keyboard
+    Controller Driver: Controller
+    Lightgun: LightGun
+  DMA Buffer at ac2e64a0
+vid_set_mode: 640x480 VGA with 1 framebuffers.
+dc-load console support enabled
+maple: attached devices:
+  A0: Dreamcast Controller           (01000000: Controller)
+
+vid_set_mode: 640x480 VGA with 1 framebuffers.
+T display 80000d off
+F 0 untextured flat
+F 1 untextured gouraud
+F 2 565 flat
+F 3 565 gouraud
+F 4 565 flat offset
+F 5 565 gouraud offset
+F 6 565 gouraud bilinear
+F 7 565 gouraud mipmapped point
+F 8 565 gouraud mipmapped bilinear
+F 9 565 gouraud trilinear A
+F 10 565 gouraud trilinear B
+F 11 1555 gouraud
+F 12 4444 gouraud
+F 13 YUV422 gouraud
+F 14 bump gouraud offset
+F 15 palette 4 bpp gouraud
+F 16 palette 8 bpp gouraud
+F 17 565 VQ gouraud
+F 18 565 VQ mipmapped gouraud
+F 19 565 not twiddled gouraud
+F 20 YUV422 gouraud bilinear
+F 21 palette 8 bpp gouraud bilinear
+F 22 565 VQ gouraud bilinear
+F 23 565 gouraud, 8 texels a pixel
+F 24 565 gouraud mipmapped, 8 texels a pixel
+F 25 565 gouraud trilinear A, 6 texels a pixel
+F 26 565 gouraud, fog table
+F 27 565 gouraud, punch through list
+F 28 565 gouraud, translucent list
+F 29 untextured gouraud, translucent list
+F 30 YUV422 not twiddled gouraud
+F 31 YUV422 not twiddled gouraud bilinear
+F 32 565 not twiddled gouraud bilinear
+F 33 1555 gouraud bilinear
+F 34 4444 gouraud bilinear
+F 35 YUV422 gouraud mipmapped bilinear
+F 36 YUV422 gouraud, 8 texels a pixel
+F 37 YUV422 gouraud bilinear, 8 texels a pixel
+F 38 565 gouraud bilinear, 8 texels a pixel
+F 39 YUV422 VQ gouraud
+F 40 YUV422 VQ gouraud bilinear
+F 41 palette 4 bpp VQ gouraud
+F 42 palette 8 bpp VQ gouraud
+F 43 palette 8 bpp VQ gouraud bilinear
+F 44 palette 4 bpp gouraud bilinear
+F 45 565 VQ gouraud, 8 texels a pixel
+F 46 palette 8 bpp gouraud, 8 texels a pixel
+F 47 565 gouraud offset, 8 texels a pixel
+L 0 nothing (the background)
+L 1 1 sprite 32x32
+L 2 1 quad 32x32
+L 3 32 quads 32x1
+L 4 32 quads 1x32
+L 5 1024 quads 1x1
+L 6 32 sprites 32x1
+L 7 32 sprites 1x32
+L 8 1024 sprites 1x1
+L 9 16 quads 8x8
+L 10 64 quads 4x4
+L 11 256 quads 2x2
+L 12 4 quads 8x32
+L 13 4 quads 32x8
+L 14 1 quad 32x16
+L 15 1 quad 16x32
+L 16 256 sprites 2x2
+T spanfmt 0 0 0 0 W 108012 108016 138374 138386 30335 30360 P 184218 184218
+T spanfmt 0 8 0 0 W 222980 222996 231360 231376 8355 8380 P 0c4218 184218
+T spanfmt 0 16 0 0 W 319494 319500 326032 326048 6520 6548 P 0c4218 184218
+T spanfmt 0 24 0 0 W 414748 414758 420858 420886 6103 6128 P 0c4218 0c4218
+T spanfmt 0 32 0 0 W 536328 536378 542006 542066 5647 5683 P 0c4218 0c4218
+T spanfmt 1 0 0 0 W 108014 108020 138374 138380 30335 30360 P 08ba08 8d828d
+T spanfmt 1 8 0 0 W 222974 222992 231358 231372 8355 8380 P 04ba08 8d828d
+T spanfmt 1 16 0 0 W 319486 319508 326032 326040 6495 6548 P 04ba08 8d828d
+T spanfmt 1 24 0 0 W 414748 414776 420876 420904 6103 6128 P 04ba08 46828d
+T spanfmt 1 32 0 0 W 536248 536409 541956 542076 5647 5680 P 04ba08 46828d
+T spanfmt 2 0 0 0 W 147204 147484 188700 189008 41443 41527 P 260103 5730eb
+T spanfmt 2 8 0 0 W 282912 283239 292244 292568 9304 9332 P 830103 5730eb
+T spanfmt 2 16 0 0 W 385680 385732 393158 393192 7431 7472 P 830103 5730eb
+T spanfmt 2 24 0 0 W 512998 513049 520096 520150 7055 7092 P 830103 2b30eb
+T spanfmt 2 32 0 0 W 642884 642936 649530 649578 6607 6647 P 830103 2b30eb
+T spanfmt 3 0 0 0 W 147202 147367 188676 188866 41456 41512 P 420101 4d7126
+T spanfmt 3 8 0 0 W 282902 283236 292234 292572 9291 9332 P a10101 4d7126
+T spanfmt 3 16 0 0 W 385682 385750 393166 393222 7447 7472 P a10101 4d7126
+T spanfmt 3 24 0 0 W 513012 513052 520120 520144 7080 7095 P a10101 267126
+T spanfmt 3 32 0 0 W 642908 642927 649550 649576 6632 6635 P a10101 267126
+T spanfmt 4 0 0 0 W 147344 147472 188716 188928 41372 41400 P 32640f 5f93f7
+T spanfmt 4 8 0 0 W 336214 336318 347170 347246 10887 10915 P 09640f 5f93f7
+T spanfmt 4 16 0 0 W 512544 512604 521718 521758 9139 9167 P 09640f 5f93f7
+T spanfmt 4 24 0 0 W 703834 703890 712690 712746 8828 8856 P 09640f b193f7
+T spanfmt 4 32 0 0 W 897936 898014 906372 906438 8411 8427 P 09640f b193f7
+T spanfmt 5 0 0 0 W 147400 147633 188830 189092 41400 41468 P 462205 34aaed
+T spanfmt 5 8 0 0 W 336200 336260 347154 347188 10887 10940 P 232205 34aaed
+T spanfmt 5 16 0 0 W 512546 512584 521734 521776 9139 9192 P 232205 34aaed
+T spanfmt 5 24 0 0 W 703831 703899 712662 712744 8831 8831 P 232205 0aaaed
+T spanfmt 5 32 0 0 W 897926 898016 906362 906442 8411 8436 P 232205 0aaaed
+T spanfmt 0 0 1 0 W 108012 108020 138376 138382 30335 30360 P 184218 184218
+T spanfmt 0 8 1 0 W 222970 222988 231366 231376 8355 8380 P 0c4218 184218
+T spanfmt 0 16 1 0 W 319488 319500 326030 326036 6507 6548 P 0c4218 184218
+T spanfmt 0 24 1 0 W 414748 414776 420876 420890 6103 6128 P 0c4218 0c4218
+T spanfmt 0 32 1 0 W 536250 536361 541930 542038 5655 5680 P 0c4218 0c4218
+T spanfmt 1 0 1 0 W 108012 108016 138376 138398 30360 30363 P 08ba08 8d828d
+T spanfmt 1 8 1 0 W 222974 222996 231358 231376 8355 8380 P 04ba08 8d828d
+T spanfmt 1 16 1 0 W 319488 319500 326036 326048 6520 6548 P 04ba08 8d828d
+T spanfmt 1 24 1 0 W 414750 414775 420886 420904 6103 6128 P 04ba08 46828d
+T spanfmt 1 32 1 0 W 536355 536419 542038 542102 5680 5683 P 04ba08 46828d
+T spanfmt 2 0 1 0 W 147152 147316 188682 188840 41456 41524 P 260103 5730eb
+T spanfmt 2 8 1 0 W 282956 283388 292288 292720 9304 9332 P 830103 5730eb
+T spanfmt 2 16 1 0 W 385668 385726 393162 393198 7447 7484 P 830103 5730eb
+T spanfmt 2 24 1 0 W 513024 513042 520110 520142 7055 7092 P 830103 2b30eb
+T spanfmt 2 32 1 0 W 642908 642936 649552 649586 6619 6660 P 830103 2b30eb
+T spanfmt 3 0 1 0 W 147047 147268 188506 188784 41459 41524 P 420101 4d7126
+T spanfmt 3 8 1 0 W 282928 283264 292254 292596 9304 9332 P a10101 4d7126
+T spanfmt 3 16 1 0 W 385676 385736 393134 393192 7447 7472 P a10101 4d7126
+T spanfmt 3 24 1 0 W 513004 513036 520122 520150 7067 7095 P a10101 267126
+T spanfmt 3 32 1 0 W 642895 642919 649530 649572 6607 6644 P a10101 267126
+T spanfmt 4 0 1 0 W 147372 147574 188784 189014 41328 41428 P 32640f 5f93f7
+T spanfmt 4 8 1 0 W 336214 336262 347154 347206 10887 10940 P 09640f 5f93f7
+T spanfmt 4 16 1 0 W 512542 512612 521754 521766 9139 9164 P 09640f 5f93f7
+T spanfmt 4 24 1 0 W 703834 703882 712690 712730 8831 8856 P 09640f b193f7
+T spanfmt 4 32 1 0 W 897920 898004 906372 906442 8399 8427 P 09640f b193f7
+T spanfmt 5 0 1 0 W 147266 147602 188728 189010 41384 41440 P 462205 34aaed
+T spanfmt 5 8 1 0 W 336204 336260 347160 347204 10887 10956 P 232205 34aaed
+T spanfmt 5 16 1 0 W 512526 512588 521730 521768 9139 9192 P 232205 34aaed
+T spanfmt 5 24 1 0 W 703828 703874 712686 712720 8831 8856 P 232205 0aaaed
+T spanfmt 5 32 1 0 W 897926 898022 906362 906434 8399 8424 P 232205 0aaaed
+T spanshad 0 16 0 0 W 385736 385764 393216 393230 7447 7472 P c30303 d7a2ab
+T spanshad 0 24 0 0 W 513008 513042 520122 520144 7083 7092 P c30303 6ba2ab
+T spanshad 0 32 0 0 W 642880 642923 649540 649578 6635 6660 P c30303 6ba2ab
+T spanshad 1 16 0 0 W 385698 385735 393182 393204 7447 7475 P e80405 3fdbaf
+T spanshad 1 24 0 0 W 513030 513057 520122 520162 7083 7092 P e80405 3fdbaf
+T spanshad 1 32 0 0 W 642881 642935 649516 649568 6619 6635 P e80405 3fdbaf
+T spanshad 2 16 0 0 W 385726 385760 393188 393222 7444 7459 P c30303 d7a2ab
+T spanshad 2 24 0 0 W 513030 513065 520116 520162 7067 7095 P c30303 6ba2ab
+T spanshad 2 32 0 0 W 642908 642934 649538 649578 6607 6644 P c30303 6ba2ab
+T spanshad 3 16 0 0 W 512560 512588 521724 521764 9139 9167 P 49660f dffdb7
+T spanshad 3 24 0 0 W 703826 703877 712678 712712 8831 8856 P 49660f f1fdb7
+T spanshad 3 32 0 0 W 897967 898008 906378 906444 8411 8411 P 49660f f1fdb7
+T spanshad 4 16 0 0 W 512554 512600 521742 521780 9139 9167 P 6e6711 3ffebb
+T spanshad 4 24 0 0 W 703812 703899 712696 712758 8828 8856 P 6e6711 bffebb
+T spanshad 4 32 0 0 W 897922 898021 906358 906434 8411 8424 P 6e6711 bffebb
+T spanshad 5 16 0 0 W 319400 319416 325964 325976 6548 6560 P 18c618 18c618
+T spanshad 5 24 0 0 W 414580 414594 420706 420720 6103 6128 P 18c618 18c618
+T spanshad 5 32 0 0 W 515226 515244 520906 520920 5655 5680 P 18c618 18c618
+T spanshad 6 16 0 0 W 319398 319416 325964 325980 6548 6551 P 18c618 18c618
+T spanshad 6 24 0 0 W 414576 414603 420704 420728 6103 6128 P 18c618 18c618
+T spanshad 6 32 0 0 W 515300 515312 520976 520984 5655 5680 P 18c618 18c618
+T spanshad 0 16 1 0 W 385650 385754 393134 393206 7447 7472 P c30303 d7a2ab
+T spanshad 0 24 1 0 W 513002 513059 520112 520150 7067 7108 P c30303 6ba2ab
+T spanshad 0 32 1 0 W 642890 642936 649550 649582 6632 6635 P c30303 6ba2ab
+T spanshad 1 16 1 0 W 385682 385767 393154 393226 7431 7456 P e80405 3fdbaf
+T spanshad 1 24 1 0 W 513034 513049 520138 520154 7083 7108 P e80405 3fdbaf
+T spanshad 1 32 1 0 W 642880 642918 649540 649568 6607 6660 P e80405 3fdbaf
+T spanshad 2 16 1 0 W 385676 385727 393146 393194 7419 7484 P c30303 d7a2ab
+T spanshad 2 24 1 0 W 513018 513060 520114 520140 7055 7083 P c30303 6ba2ab
+T spanshad 2 32 1 0 W 642902 642923 649546 649578 6632 6647 P c30303 6ba2ab
+T spanshad 3 16 1 0 W 512554 512610 521746 521778 9139 9192 P 49660f dffdb7
+T spanshad 3 24 1 0 W 703835 703874 712666 712730 8831 8856 P 49660f f1fdb7
+T spanshad 3 32 1 0 W 897932 898007 906368 906446 8411 8436 P 49660f f1fdb7
+T spanshad 4 16 1 0 W 512554 512597 521744 521774 9139 9192 P 6e6711 3ffebb
+T spanshad 4 24 1 0 W 703848 703880 712702 712740 8831 8856 P 6e6711 bffebb
+T spanshad 4 32 1 0 W 897934 897963 906364 906392 8411 8436 P 6e6711 bffebb
+T spanshad 5 16 1 0 W 319408 319420 325964 325970 6523 6548 P 18c618 18c618
+T spanshad 5 24 1 0 W 414578 414590 420710 420728 6103 6128 P 18c618 18c618
+T spanshad 5 32 1 0 W 515228 515246 520900 520924 5655 5680 P 18c618 18c618
+T spanshad 6 16 1 0 W 319398 319416 325964 325976 6548 6560 P 18c618 18c618
+T spanshad 6 24 1 0 W 414580 414590 420708 420734 6103 6128 P 18c618 18c618
+T spanshad 6 32 1 0 W 515274 515300 520974 520990 5655 5696 P 18c618 18c618
+T end
+PVRIO crc f04b9a19 before page0
+PVRIO crc 8f5f74e8 before page1
+PVRIO crc 58e5ca7a before page2
+PVRIO crc 115b3a01 before page3
+PVRIO crc a577ae0d before page4
+PVRIO crc 520575e1 before page5
+PVRIO crc c7cc3c57 before page6
+PVRIO crc f3776deb before page7
+PVRIO crc f1a5506f before page8
+PVRIO crc 3c700130 before page9
+PVRIO crc cc881f84 before page10
+PVRIO crc 0815697d before page11
+PVRIO crc 497b8896 before page12
+PVRIO crc c9f20223 before page13
+PVRIO crc a2c5e52b before page14
+PVRIO crc 0a82fda5 before page15
+PVRIO crc e083e3cc before page16
+
+arch: exit return code 0
+arch: shutting down kernel
+maple: final stats -- device count = 23, vbl_cntr = 649, dma_cntr = 649
+vid_set_mode: 640x480 VGA with 1 framebuffers.

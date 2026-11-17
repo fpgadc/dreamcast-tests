@@ -671,6 +671,65 @@ static void run_all(void) {
                     }
                     measure("spanfmt", ff[fi], fL[li], ps, 0);
                 }
+        /* spanshad m L pass: what the pitch of run starts depends on. 565 triangle, cut as above over lines 0 .. L - 1.
+           m 0: modulate (format 2); 1: decal (the base colour not used); 2: modulate alpha; 3: offset, modulate
+           (format 4); 4: offset, decal; 5: two volumes (both sets 565 modulate); 6: two volumes with offset. */
+        {
+            static const int sL[3] = { 16, 24, 32 };
+            for(ps = 0; ps < 2; ps++)
+                for(fi = 0; fi < 7; fi++)
+                    for(li = 0; li < 3; li++) {
+                        const format_t *fm = &formats[fi == 3 || fi == 4 || fi == 6 ? 4 : 2];
+                        tiles_region(64);
+                        region_addr = MANY_TILES;
+                        ta_list_begin(ListType_Opaque);
+                        for(t = 0; t < 64; t++) {
+                            const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                            static const int cx[3] = { 0, 64, 0 }, cy[3] = { 0, 0, 64 };
+                            PCW pcw; ISP_TSP isp; TSP tsp; TCW tcw;
+                            header(fm, DepthMode_Always, &pcw, &isp, &tsp, &tcw);
+                            pcw.ParaType = ParamType_Polygon_or_Modifier_Volume;
+                            pcw.Group_En = 1;
+                            pcw.Strip_Len = 1;
+                            tsp.ShadInstr = fi == 1 || fi == 4 ? ShadInstr_Decal : fi == 2 ? ShadInstr_ModulateAlpha : ShadInstr_Modulate;
+                            if(fi >= 5) {
+                                TA_PolyParam3 pp;
+                                memset(&pp, 0, sizeof(pp));
+                                pcw.Volume = 1;
+                                isp.Texture = 1;
+                                isp.Offset = fm->offset;
+                                pp.pcw = pcw; pp.isp = isp; pp.tsp = tsp; pp.tcw = tcw; pp.tsp1 = tsp; pp.tcw1 = tcw;
+                                ta_send(&pp, sizeof(pp));
+                                for(n = 0; n < 3; n++) {
+                                    const int vx = x0 + cx[n], vy = y0 + cy[n];
+                                    vertex11_t vv;
+                                    memset(&vv, 0, sizeof(vv));
+                                    vv.pcw = pcw_vertex(n == 2);
+                                    vv.xyz[0] = f32b_int(vx); vv.xyz[1] = f32b_int(vy); vv.xyz[2] = front;
+                                    vv.u0 = vv.u1 = f32b_scaled(vx, -8);
+                                    vv.v0 = vv.v1 = f32b_scaled(vy, -8);
+                                    vv.BaseCol0 = vv.BaseCol1 = 0xffc0c0c0u;
+                                    vv.OffsCol0 = vv.OffsCol1 = 0x00202020u;
+                                    ta_send(&vv, sizeof(vv));
+                                }
+                                continue;
+                            }
+                            ta_polygon(pcw, isp, tsp, tcw);
+                            for(n = 0; n < 3; n++) {
+                                const int vx = x0 + cx[n], vy = y0 + cy[n];
+                                ta_vertex3(f32b_int(vx), f32b_int(vy), front, f32b_scaled(vx, -8), f32b_scaled(vy, -8),
+                                           0xffc0c0c0u, 0x00202020u * (uint32_t)(n + 1), n == 2);
+                            }
+                        }
+                        ta_list_begin(ListType_Opaque_Modifier_Volume);
+                        for(t = 0; t < 64; t++) {
+                            const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                            for(n = 0; n < 15; n++)
+                                sheet(VolumeMode_Inside_Last, x0 + 2 * n + 1, y0, 1, sL[li]);
+                        }
+                        measure("spanshad", fi, sL[li], ps, 0);
+                    }
+        }
         shadow_bit = 0; shad_scale = 1;
         *fb_w_ctrl = fbw;
         region_addr = ONE_TILE;

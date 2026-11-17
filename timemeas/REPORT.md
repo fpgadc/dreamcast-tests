@@ -629,6 +629,29 @@ ends where the volume state changes: README, uvrun). 16 bit framebuffer; a tile 
   with offset colour.** Flat and Gouraud are the same to the clock in every case, so the colour channels are
   not what a run start costs (they are evaluated, or not, alike); the texture's two planes add 0.3, the
   offset colour 2.1. It is not so many clocks per plane.
+- **These are pitches, not latencies**: the slope of the time over more and more runs in a stream, where each
+  run adds it. A latency would be paid once per stall, and the queue (about 150 to 200 pixels of shading)
+  hides any latency shorter than that; none was seen.
+- **What the pitch depends on** (scenes `spanshad`, same cuts, 565 triangle; lines 24-31, two passes agree
+  to the clock): modulate 4.21, decal 4.21, modulate alpha 4.21 (the planes a shading instruction does not
+  use are not skipped); offset colour with modulate 6.31, with decal 6.30; **a polygon with two volumes
+  3.26, with offset colour 3.26** (the offset colour of a two-volume polygon costs nothing, as in its setup:
+  48.1 a triangle either way).
+
+| run start | pitch, clocks |
+|---|---|
+| runs of different triangles (table "Per run" above): untextured / 565 / 565 offset | 4.7 / 6 / 8 |
+| one triangle cut by cheap-shadow volumes: untextured / 565 / 565 offset | 3.9 / 4.2 / 6.3 |
+| one two-volume triangle cut by volumes: 565, with or without offset | 3.3 |
+
+  So the pitch is not so many products over so many multipliers: flat and Gouraud, decal and modulate cost
+  the same, the texture's two planes add 0.3 in one context and 1.3 in another. The one increment that looks
+  like arithmetic is the offset colour's 4 planes: +2.1 (cheap shadow) and +2 (different triangles), about
+  2 planes a clock; if a plane's run start is A x0 + B y + C, that is 4 products a clock (or 2, if B y + C
+  is kept for the line). The rest, 3.3 to 4.7 clocks a run, follows the context: whether the run is another
+  triangle's (its coefficients loaded again), the inside of a cheap-shadow volume, or the other set of a
+  two-volume polygon. My reading, not measured.
+
 - Not understood: the cut lines 20 to 25 (L = 6) give 80 to 87 hidden in two series and 50 in the third,
   where L = 4 and 8 agree. The texels-8-apart triangle (spanahead v 0) gives erratic times, as the block of
   the "ahead" scenes did.

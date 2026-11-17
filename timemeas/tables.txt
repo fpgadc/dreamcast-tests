@@ -653,6 +653,16 @@
     untextured flat          lines 0-7  3.03  8-15  3.08  16-23  3.09  24-31  3.94
     untextured gouraud       lines 0-7  3.03  8-15  3.08  16-23  3.09  24-31  3.94
     565 flat                 lines 0-7  3.37  8-15  3.29  16-23  4.13  24-31  4.21
-    565 gouraud              lines 0-7  3.37  8-15  3.28  16-23  4.13  24-31  4.21
+    565 gouraud              lines 0-7  3.38  8-15  3.28  16-23  4.13  24-31  4.21
     565 flat offset          lines 0-7  5.16  8-15  5.68  16-23  6.21  24-31  6.31
     565 gouraud offset       lines 0-7  5.16  8-15  5.68  16-23  6.22  24-31  6.31
+
+26. What the run pitch depends on: a 565 triangle cut into one-pixel runs over lines 0 .. L - 1; clocks a run
+    start from lines 24-31 (both passes).
+    modulate                4.21
+    decal                   4.21
+    modulate alpha          4.21
+    offset, modulate        6.31
+    offset, decal           6.30
+    two volumes             3.26
+    two volumes, offset     3.26

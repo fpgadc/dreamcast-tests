@@ -413,5 +413,15 @@ def main():
             print(f"    {F[f]:24s} lines 0-7 {segs[0]:5.2f}  8-15 {segs[1]:5.2f}  16-23 {segs[2]:5.2f}  24-31 {segs[3]:5.2f}")
 
 
+    if "spanshad" in D:
+        print()
+        print("26. What the run pitch depends on: a 565 triangle cut into one-pixel runs over lines 0 .. L - 1; clocks a run")
+        print("    start from lines 24-31 (both passes).")
+        names = ["modulate", "decal", "modulate alpha", "offset, modulate", "offset, decal", "two volumes", "two volumes, offset"]
+        for m, name in enumerate(names):
+            v = {L: sum(T("spanshad", m, L, ps) for ps in (0, 1)) / 4 / 64 for L in (24, 32)}
+            print(f"    {name:22s} {(v[32] - v[24]) / 240:5.2f}")
+
+
 if __name__ == "__main__":
     main()
