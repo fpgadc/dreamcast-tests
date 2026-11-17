@@ -12,7 +12,7 @@ bash run2.sh $TESTS off | grep -v 'offline: [0-9]* of [0-9]* pages$'
 for t in $TESTS; do
   W=/tmp/pvr_tests/$t
   note=""; cmp -s $W/off.crc fit/hw/$t/hw.crc || note="   <-- NOT the input the console was given: run it on the console again"
-  CMP="compare2.py $t"; [ -f $t/compare.py ] && CMP="$t/compare.py"      # a test with dumps of its own (ta-tests)
+  CMP="compare2.py $t"; [ -f $t/compare_dumps.py ] && CMP="$t/compare_dumps.py"      # a test with dumps of its own (ta-tests)
   echo "$(python3 $CMP ref off -q 2>&1 | tail -n 1)$note"
 done
 [ $# -eq 0 ] && bash archive_check.sh all

@@ -1992,7 +1992,7 @@ the secondary buffer's pixels come to the tile). Two console runs; logs in `fit/
 ## ta-tests: the tile accelerator against nulldc3's tacore.cpp (2026-11-17)
 
     bash run2.sh ta-tests off hw=<ip>        # 63 cases, 5 s on a console
-    python3 ta-tests/compare.py [hw|ref] off [-v] [--case N]    # per case: same, or what differs, decoded
+    python3 ta-tests/compare_dumps.py [hw|ref] off [-v] [--case N]    # per case: same, or what differs, decoded
     bash regress.sh ta-tests                 # the archived console run (fit/hw/ta-tests) against refsw2-offline
 
 The TA on its own, no rendering. Every case resets the TA (SOFTRESET bit 0), fills 32 KB of video memory at

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Compare two runs of ta-tests case by case, and decode what differs.
 
-    python3 ta-tests/compare.py [A] [B] [-q] [-v] [--case N]     A: hw (default), ref or off; B: off (default) or hw
+    python3 ta-tests/compare_dumps.py [A] [B] [-q] [-v] [--case N]     A: hw (default), ref or off; B: off (default) or hw
 
 hw: the last console run (/tmp/pvr_tests/ta-tests), ref: the archived console run (fit/hw/ta-tests), off:
 refsw2-offline's (nulldc3's tacore.cpp). Per case the TA state (TA_ISP_CURRENT, TA_NEXT_OPB, list-done and error
@@ -48,9 +48,9 @@ cfgs = {}
 for log in (RUN / "off.log", RUN / "build/hw.log"):
     if log.exists():
         for l in log.read_text(errors="replace").splitlines():
-            m = re.match(r"TACFG (\d+) (.*)", l.strip())
+            m = re.fullmatch(r"TACFG (\d+)((?: -?\d+){8}(?: [0-9a-f]+){5})", l.strip())
             if m:
-                v = m.group(2).split()
+                v = m.group(2).split()          # (a line that stderr got into does not match)
                 cfgs[int(m.group(1))] = dict(tx=int(v[0]), ty=int(v[1]), opb=[int(x) for x in v[2:7]], down=int(v[7]),
                                              ol_base=int(v[8], 16), ol_limit=int(v[9], 16), opb_init=int(v[10], 16),
                                              isp_base=int(v[11], 16), isp_limit=int(v[12], 16))
@@ -128,8 +128,20 @@ def state(s):
     return f"TA_ISP_CURRENT {s[0]:x} TA_NEXT_OPB {s[1]:x} events {ev} errors {er}"
 
 
+FEATS = ["sprite", "after a modifier volume", "clip mode 1", "clip without a rectangle", "a list without blocks",
+         "growing down", "intensity", "two volumes", "clip rectangle", "clip inside or outside"]
+KNOWN = 1 | 2 | 4 | 8 | 16 | 32 | 64          # features with a difference known from the fixed cases
+feats = {}
+for log in (RUN / "off.log",):
+    if log.exists():
+        for l in log.read_text(errors="replace").splitlines():
+            m = re.fullmatch(r"TAFEAT (\d+) ([0-9a-f]+)", l.strip())
+            if m:
+                feats[int(m.group(1))] = int(m.group(2), 16)
+fuzz_rows = []                                  # (case, same, features)
 cases = sorted(labels)
 ran = same = 0
+groups = {}                                     # name without its number: [cases, same]
 tally = {"state": 0, "params": 0, "lists": 0}
 for n in cases:
     if only is not None and n != only:
@@ -141,12 +153,22 @@ for n in cases:
         continue
     ran += 1
     c = cfgs.get(n)
+    sized = len(ma) == len(mb)
+    if not sized:                               # an archive from before the case's area changed: compare what both have
+        k = min(len(ma), len(mb))
+        ma, mb = ma[:k], mb[:k]
     st_same = sa is not None and sb is not None and np.array_equal(sa, sb)
     diff = np.nonzero(ma != mb)[0]
     in_prm = [i for i in diff if c and c["isp_base"] <= AREA + 4 * i < c["isp_limit"]]
     in_ol = [i for i in diff if i not in set(in_prm)]
-    ok = st_same and not len(diff)
+    ok = st_same and not len(diff) and sized
     same += ok
+    gname = re.sub(r"_\d+$", "", name) if re.search(r"_\d{3}$", name) else "fixed"
+    groups.setdefault(gname, [0, 0])
+    groups[gname][0] += 1
+    groups[gname][1] += ok
+    if n in feats:
+        fuzz_rows.append((n, ok, feats[n]))
     tally["state"] += st_same
     tally["params"] += not in_prm
     tally["lists"] += not in_ol
@@ -155,7 +177,7 @@ for n in cases:
     if ok and only is None:
         print(f"c{n:03d} {name:22s} same")
         continue
-    print(f"c{n:03d} {name:22s} {'same' if ok else 'DIFFERENT'}")
+    print(f"c{n:03d} {name:22s} {'same' if ok else 'DIFFERENT'}" + ("" if sized else " (dumps of different sizes)"))
     if not st_same or only is not None:
         print(f"      {A:3s}: {state(sa)}\n      {B:3s}: {state(sb)}")
     if in_prm:
@@ -174,4 +196,14 @@ for n in cases:
                     print(f"        {LISTS[k[0]]} ({k[1]}, {k[2]}): {'; '.join(v)}")
     elif in_ol:
         print(f"      object lists: {len(in_ol)} words differ (no TACFG for this case)")
+if fuzz_rows and not quiet:
+    print("fuzz cases by what they used (different / same):")
+    for b, name in enumerate(FEATS):
+        d = sum(1 for _, ok, f in fuzz_rows if f >> b & 1 and not ok)
+        sm = sum(1 for _, ok, f in fuzz_rows if f >> b & 1 and ok)
+        print(f"    {name:28s} {d:4d} / {sm:4d}")
+    unexplained = [n for n, ok, f in fuzz_rows if not ok and not f & KNOWN]
+    print(f"    different with none of the known differences' features: {len(unexplained)}: {unexplained[:40]}")
+if not quiet:
+    print("by group: " + ", ".join(f"{g} {v[1]} of {v[0]}" for g, v in groups.items()))
 print(f"ta-tests: {A} = {B} in {same} of {ran} cases (state {tally['state']}, parameters {tally['params']}, object lists {tally['lists']})")

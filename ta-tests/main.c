@@ -9,7 +9,7 @@
                                       inside the area
        c<n>s.hw.raw / c<n>s.off.raw   TA_ISP_CURRENT, TA_NEXT_OPB, the list-done interrupts (SB_ISTNRM bits
                                       7-10, 21) and the error interrupts (SB_ISTERR) seen during the case
-   compare.py compares the two and decodes the object lists. Register names are refsw2's (pvr_params.h).
+   compare_dumps.py compares the two and decodes the object lists. Register names are refsw2's (pvr_params.h).
 
    Cases of bad input are run only with TA_ERRORS 1, and then only they: on their own, so that a TA that stops
    taking data cannot cost the rest of a console run. */
@@ -18,7 +18,7 @@
 #ifndef TA_ERRORS
 #define TA_ERRORS 0                 /* 1: the cases of bad input, and only those */
 #endif
-#define NUM_PAGES 126               /* for run2.sh: dump files of a run without TA_ERRORS (two per case) */
+#define NUM_PAGES 588               /* for run2.sh: dump files of a run without TA_ERRORS (two per case) */
 
 #define FILL        0xa5a5a5a5u
 #define AREA        0x100000u
@@ -53,18 +53,17 @@ static tacfg_t cfg(void) {
 
 static int case_no, cur_list = -1;
 static uint32_t case_want;
+static int dump_words = AREA_WORDS;     /* from AREA: as far as the case's lists and parameters may reach */
 
 static void begin(const tacfg_t *c) {
-    static uint32_t fill[1024];
     TA_GLOB_TILE_CLIP_type clip = { .full = 0 };
     TA_ALLOC_CTRL_type alloc = { .full = 0 };
-    int i;
-
-    if(!fill[0])
-        for(i = 0; i < 1024; i++)
-            fill[i] = FILL;
-    for(i = 0; i < AREA_WORDS; i += 1024)
-        pvrio_w32(AREA + (uint32_t)i * 4, fill, 1024);
+    uint32_t end = AREA + AREA_WORDS * 4u;
+    if(c->ol_limit > end) end = c->ol_limit;
+    if(c->isp_limit > end) end = c->isp_limit;
+    if(end > AREA + 0x80000u) end = AREA + 0x80000u;
+    dump_words = (int)((end - AREA) / 4);
+    pvrio_fill32(AREA, dump_words, FILL);
     pvrio_reg(SOFTRESET_addr, 1);           /* the TA alone */
     pvrio_reg(SOFTRESET_addr, 0);
     clip.tile_x_num = (uint32_t)(c->tx - 1);
@@ -107,7 +106,7 @@ static void finish(void) {
         ;
 #endif
     snprintf(name, sizeof(name), "c%03d", case_no);
-    pvrio_dump32(AREA, AREA_WORDS, name, ".raw");
+    pvrio_dump32(AREA, dump_words, name, ".raw");
     snprintf(name, sizeof(name), "c%03ds", case_no);
     pvrio_dump_ta_state(name, ".raw");
 }
@@ -868,6 +867,328 @@ static void c_modvol_isp(void) {                /* ISP words of modifier volume 
     eol(); finish();
 }
 
+/* ======== the sprays: every value of the small fields, every boundary of the conversions, random streams ======== */
+
+/* where the values of the generated vertices come from: a counter (sweeps), or the fuzzer's random numbers */
+static uint32_t fz;                             /* xorshift32 state; 0: not fuzzing */
+static uint32_t vcount;
+static uint32_t frand(void) { fz ^= fz << 13; fz ^= fz >> 17; fz ^= fz << 5; return fz; }
+enum { V_COL, V_FLOAT, V_UV };
+static uint32_t vword(int kind) {
+    vcount++;
+    if(fz) {
+        if(kind == V_FLOAT && frand() % 10 < 7)
+            return sweep[frand() % NSWEEP];
+        return frand();
+    }
+    if(kind == V_COL) return 0xff000000u ^ (vcount * 0x00010203u);
+    if(kind == V_FLOAT) return sweep[vcount % NSWEEP];
+    return 0x3f000000u + vcount;
+}
+static const uint32_t face_a[4] = { F1, 0x3f000000, 0x3e800000, 0x3f400000 }, face_b[4] = { 0x3f000000, F1, 0x3f7f0000, 0x3b808081 };
+
+/* the header of a polygon with the object, colour, volume and shadow bits b (PCW bits 0-7), in the format the
+   documents give: Volume makes it two-volume (type 3, or 4 with intensity), intensity a face colour (type 1, or
+   2 with offset on a textured polygon). Float colour with Volume is no documented type: sent as type 3. */
+static void any_hdr(int list, uint32_t b, uint32_t flags, uint32_t isp, uint32_t tsp, uint32_t tcw) {
+    const int tex = (b & TEX) != 0, col = (int)(b >> 4 & 3);
+    if(b & VOLUME) {
+        if(col == 2) hdr_face2(list, flags | b, isp, tsp, tcw, TSP1, TCW1, face_a, face_b);
+        else hdr_vol(list, flags | b, isp, tsp, tcw, TSP1, TCW1);
+    } else if(col == 2) {
+        if(tex && (b & OFFS)) hdr_face2(list, flags | b, isp, tsp, tcw, 0, 0, face_a, face_b);
+        else hdr_face(list, flags | b, isp, tsp, tcw, face_a[0], face_a[1], face_a[2], face_a[3]);
+    } else
+        hdr(list, flags | b, isp, tsp, tcw);
+}
+/* one vertex for such a polygon, coordinates as bits; the other words from vword() */
+static void any_vtx(uint32_t b, uint32_t X, uint32_t Y, uint32_t Z, int eos) {
+    const int tex = (b & TEX) != 0, uv16 = tex && (b & UV16), col = (int)(b >> 4 & 3), in = col >= 2;
+    const int ck = in ? V_FLOAT : V_COL;
+    uint32_t w[16] = { VP(eos), X, Y, Z };
+    int n = 8;
+    if(!(b & VOLUME)) {
+        if(!tex) {
+            if(col == 1) { w[4] = vword(V_FLOAT); w[5] = vword(V_FLOAT); w[6] = vword(V_FLOAT); w[7] = vword(V_FLOAT); }
+            else w[6] = vword(ck);
+        } else if(col == 1) {
+            int k;
+            w[4] = vword(V_UV); w[5] = uv16 ? 0 : vword(V_UV);
+            for(k = 8; k < 16; k++) w[k] = vword(V_FLOAT);
+            n = 16;
+        } else {
+            w[4] = vword(V_UV); w[5] = uv16 ? 0 : vword(V_UV); w[6] = vword(ck); w[7] = vword(ck);
+        }
+    } else if(!tex) {
+        w[4] = vword(ck); w[5] = vword(ck);
+    } else {
+        w[4] = vword(V_UV); w[5] = uv16 ? 0 : vword(V_UV); w[6] = vword(ck); w[7] = vword(ck);
+        w[8] = vword(V_UV); w[9] = uv16 ? 0 : vword(V_UV); w[10] = vword(ck); w[11] = vword(ck);
+        n = 16;
+    }
+    ta_words(w, n);
+}
+
+/* every combination of PCW bits 0-7, sixteen a case, each a triangle in tile (1, 1) */
+static void c_combo(int g) {
+    uint32_t b;
+    begin_default();
+    for(b = (uint32_t)g * 16; b < (uint32_t)g * 16 + 16; b++) {
+        const float x = 36.0f + (float)(b % 4) * 2, y = 36.0f + (float)(b / 4 % 4) * 2;
+        any_hdr(OP, b, GROUP(0), ISPW ^ (b << 8), TSPW ^ b, TCWW ^ b);
+        any_vtx(b, fl(x), fl(y), F1, 0);
+        any_vtx(b, fl(x + 8), fl(y), 0x3f000000, 0);
+        any_vtx(b, fl(x), fl(y + 8), 0x3e800000, 1);
+    }
+    eol(); finish();
+}
+/* the reserved bits of the header's PCW (8-15, 20-22, 27, and 28 on a header) and every bit but 28 of a vertex's */
+static void c_reserved_bits(int g) {
+    static const int hb[13] = { 8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 27, 28 };
+    int i;
+    (void)g;
+    begin_default();
+    for(i = 0; i < 13; i++) {
+        list_of(OP);
+        w8(PCW_(P_POLY, OP, GROUP(0)) | 1u << hb[i], ISPW, TSPW, 0, 0, 0, 0, 0);
+        v0(36, 36, 1, (uint32_t)i, 0); v0(44, 36, 1, (uint32_t)i, 0); v0(36, 44, 1, (uint32_t)i, 1);
+    }
+    hdr(OP, GROUP(0), ISPW, TSPW, 0);
+    for(i = 0; i < 28; i++) {
+        const uint32_t bit = 1u << i;
+        w8(VP(0) | bit, fl(40), fl(40), F1, 0, 0, 0x100u + (uint32_t)i, 0);
+        w8(VP(0) | bit, fl(48), fl(40), F1, 0, 0, 0x100u + (uint32_t)i, 0);
+        w8(VP(1) | bit, fl(40), fl(48), F1, 0, 0, 0x100u + (uint32_t)i, 0);
+    }
+    eol(); finish();
+}
+
+/* float values at every boundary of the 8 bit conversion: k/256 and k/255 with their neighbours, every exponent
+   with the smallest and largest mantissa, both signs */
+static uint32_t fvals[2600];
+static int float_values(void) {
+    int n = 0, k, e;
+    for(k = 0; k <= 256; k++) {
+        const uint32_t b = k ? f32b_scaled(k, -8) : 0;
+        if(k) { fvals[n++] = b - 1; fvals[n++] = b; fvals[n++] = b + 1; }
+        else { fvals[n++] = 0; fvals[n++] = 1; fvals[n++] = 0x80000001u; }
+    }
+    for(k = 1; k < 256; k++) {
+        const uint32_t b = fl((float)k / 255.0f);
+        fvals[n++] = b - 1; fvals[n++] = b; fvals[n++] = b + 1;
+    }
+    for(e = 0; e < 256; e++) {
+        fvals[n++] = (uint32_t)e << 23; fvals[n++] = (uint32_t)e << 23 | 0x7fffff;
+        fvals[n++] = 0x80000000u | (uint32_t)e << 23; fvals[n++] = 0x80000000u | (uint32_t)e << 23 | 0x7fffff;
+    }
+    return n;
+}
+static void c_float_bounds(int g) {             /* g 0: type 1 (float colour); 1: type 5 (textured, offset) */
+    const int n = float_values();
+    int k, v = 0;
+    tacfg_t c = cfg();
+    c.isp_limit = c.isp_base + 0x8000u;
+    begin(&c);
+    if(!g) hdr(OP, GROUP(0) | COL(1), ISPW, TSPW, 0);
+    else hdr(OP, GROUP(0) | COL(1) | TEX | OFFS, ISPW, TSPW, TCWW);
+    for(k = 0; k < n; k += 4, v++) {
+        const uint32_t q[4] = { fvals[k], fvals[(k + 1) % n], fvals[(k + 2) % n], fvals[(k + 3) % n] };
+        const uint32_t o[4] = { fvals[(k + n / 2) % n], fvals[(k + n / 2 + 1) % n], fvals[(k + n / 2 + 2) % n], fvals[(k + n / 2 + 3) % n] };
+        const uint32_t X = fl(36.0f + (float)(v % 3 == 1) * 8), Y = fl(36.0f + (float)(v % 3 == 2) * 8);
+        if(!g) w8(VP(v % 3 == 2), X, Y, F1, q[0], q[1], q[2], q[3]);
+        else {
+            const uint32_t w[16] = { VP(v % 3 == 2), X, Y, F1, (uint32_t)k, (uint32_t)v, 0, 0, q[0], q[1], q[2], q[3], o[0], o[1], o[2], o[3] };
+            ta_words(w, 16);
+        }
+    }
+    while(v % 3) {                              /* the last triangle filled up */
+        if(!g) w8(VP(v % 3 == 2), fl(36), fl(44), F1, F1, F1, F1, F1);
+        else { const uint32_t w[16] = { VP(v % 3 == 2), fl(36), fl(44), F1, 0, 0, 0, 0, F1, F1, F1, F1, F1, F1, F1, F1 }; ta_words(w, 16); }
+        v++;
+    }
+    eol(); finish();
+}
+/* the face colour times the intensity: face channel values 0..255 (as (c + 1) / 256), 32 a case in eight headers,
+   each with intensities k/256 and their neighbours, k = 0..256 */
+static void c_int_table(int g) {
+    int h, k, j;
+    tacfg_t c = cfg();
+    c.isp_limit = c.isp_base + 0x20000u;
+    begin(&c);
+    for(h = 0; h < 8; h++) {
+        const int f = (g * 8 + h) * 4;
+        hdr_face(OP, GROUP(0) | COL(2), ISPW, TSPW, 0, f32b_scaled(f + 1, -8), f32b_scaled(f + 2, -8), f32b_scaled(f + 3, -8), f32b_scaled(f + 4, -8));
+        for(k = 0; k <= 256; k++)
+            for(j = 0; j < 3; j++) {
+                const uint32_t b = k ? f32b_scaled(k, -8) + (uint32_t)(j - 1) : (j == 0 ? 0 : j == 1 ? 1u : 0x80000001u);
+                w8(VP(j == 2), fl(36.0f + (float)(j == 1) * 8), fl(36.0f + (float)(j == 2) * 8), F1, 0, 0, b, 0);
+            }
+    }
+    eol(); finish();
+}
+/* coordinates at every tile boundary, -1/2, -1 ulp, exact, +1 ulp, +1/2: as the least and as the greatest corner.
+   g 0: x on a 20 x 15 grid; 1: y */
+static void c_bin_bounds(int g) {
+    const int nb = g ? 16 : 21;
+    int b, d, side;
+    tacfg_t c = cfg();
+    c.tx = 20; c.ty = 15;
+    c.opb[1] = c.opb[2] = c.opb[3] = c.opb[4] = 0;
+    c.opb_init = c.ol_base + matrix_bytes(&c);
+    begin(&c);
+    hdr(OP, GROUP(0), ISPW, TSPW, 0);
+    for(b = 0; b < nb; b++)
+        for(d = 0; d < 5; d++)
+            for(side = 0; side < 2; side++) {
+                const uint32_t e = b ? f32b_int(32 * b) : 0;
+                const uint32_t v = d == 0 ? f32b_scaled(64 * b - 1, -1) : d == 1 ? (b ? e - 1 : 0x80000001u) : d == 2 ? e : d == 3 ? (b ? e + 1 : 1u) : f32b_scaled(64 * b + 1, -1);
+                const uint32_t o = f32b_int(32 * b + (side ? -4 : 4));
+                const uint32_t a0 = f32b_int(32 * (b % (g ? 20 : 15)) + 8), a1 = f32b_int(32 * (b % (g ? 20 : 15)) + 16);
+                const uint32_t col = (uint32_t)(b << 8 | d << 4 | side);
+                if(!g) { w8(VP(0), v, a0, F1, 0, 0, col, 0); w8(VP(0), o, a0, F1, 0, 0, col, 0); w8(VP(1), o, a1, F1, 0, 0, col, 0); }
+                else { w8(VP(0), a0, v, F1, 0, 0, col, 0); w8(VP(0), a0, o, F1, 0, 0, col, 0); w8(VP(1), a1, o, F1, 0, 0, col, 0); }
+            }
+    eol(); finish();
+}
+/* a corner at every exponent, smallest and largest mantissa, both signs: g 0 in x, 1 in y; 4 x 3 tiles */
+static void c_bin_exponents(int g) {
+    int e, m, sg;
+    tacfg_t c = cfg();
+    c.opb[1] = c.opb[2] = c.opb[3] = c.opb[4] = 0;
+    c.opb_init = c.ol_base + matrix_bytes(&c);
+    c.ol_limit = AREA + 0x10000u;
+    c.isp_base = AREA + 0x10000u; c.isp_limit = AREA + 0x20000u;
+    begin(&c);
+    hdr(OP, GROUP(0), ISPW, TSPW, 0);
+    for(e = 0; e < 256; e++)
+        for(m = 0; m < 2; m++)
+            for(sg = 0; sg < 2; sg++) {
+                const uint32_t v = (uint32_t)sg << 31 | (uint32_t)e << 23 | (m ? 0x7fffffu : 0);
+                const uint32_t col = (uint32_t)(e << 8 | m << 4 | sg);
+                if(!g) { w8(VP(0), v, fl(40), F1, 0, 0, col, 0); w8(VP(0), fl(48), fl(40), F1, 0, 0, col, 0); w8(VP(1), fl(48), fl(48), F1, 0, 0, col, 0); }
+                else { w8(VP(0), fl(40), v, F1, 0, 0, col, 0); w8(VP(0), fl(40), fl(48), F1, 0, 0, col, 0); w8(VP(1), fl(48), fl(48), F1, 0, 0, col, 0); }
+            }
+    eol(); finish();
+}
+
+/* ---- the fuzzer: random but well-formed streams, the same on a PC and a console (integers only) ---- */
+
+static const uint32_t fspecial[12] = { 0x00000000, 0x80000000, FINF, FNINF, FNAN, 0x7149f2ca, 0xf149f2ca, 0x00000001,
+                                       0x4f000000, 0x3f800000, 0x42000000, 0x427fffff };
+/* what a fuzz case used, for compare.py (lines "TAFEAT <case> <bits>"): bits as FT_* */
+enum { FT_SPRITE = 1, FT_AFTER_MV = 2, FT_CLIP1 = 4, FT_CLIP_NO_RECT = 8, FT_OPB0 = 16, FT_DOWN = 32, FT_INTENSITY = 64,
+       FT_TWO_VOL = 128, FT_RECT = 256, FT_CLIP = 512 };
+static uint32_t ffeat;
+static int fmv_seen, frect_seen;
+static uint32_t fcoord(int lim) {               /* a coordinate up to lim pixels, in 1/16 pixel, now and then special */
+    const uint32_t r = frand() % 100;
+    if(r < 85)
+        return f32b_scaled((int32_t)(frand() % (uint32_t)((lim + 32) * 16)) - 256, -4);
+    if(r < 96)
+        return fspecial[frand() % 12];
+    return frand();
+}
+static uint32_t fdepth(void) {
+    const uint32_t r = frand() % 4;
+    return r == 0 ? F1 : r == 1 ? 0x3f000000u : r == 2 ? fspecial[frand() % 12] : frand();
+}
+static void fuzz_poly(int list, int lx, int ly) {
+    uint32_t b = frand() & 0xbf;                /* object, colour and shadow bits; Volume below */
+    uint32_t flags = 0;
+    int n, k;
+    if(frand() % 5 == 0) b |= VOLUME | SHADOW;  /* two volumes as documented: with the shadow bit */
+    if((b & VOLUME) && (b >> 4 & 3) == 1) b &= ~COL(3);   /* no float colour with two volumes */
+    if(frand() % 4) flags |= GROUP(frand() % 4);
+    else flags |= (frand() % 4) << 18;
+    k = (int)(frand() % 8);
+    k = k < 5 ? 0 : k == 5 ? 2 : k == 6 ? 3 : 1;
+    flags |= UCLIP(k);
+    if(frand() % 8 == 0) {                      /* every random number in a statement of its own: the same order */
+        const uint32_t x1 = frand() % 8, y1 = frand() % 6, x2 = frand() % 8, y2 = frand() % 6;   /* on every compiler */
+        uclip(x1, y1, x2, y2);
+        frect_seen = 1;
+        ffeat |= FT_RECT;
+    }
+    if(k == 1) ffeat |= FT_CLIP1;
+    if(k >= 2) { ffeat |= FT_CLIP; if(!frect_seen) ffeat |= FT_CLIP_NO_RECT; }
+    if(b & VOLUME) ffeat |= FT_TWO_VOL;
+    if((b >> 4 & 3) >= 2) ffeat |= FT_INTENSITY;
+    if(fmv_seen) ffeat |= FT_AFTER_MV;
+    {
+        const uint32_t isp = frand(), tsp = frand(), tcw = frand();
+        any_hdr(list, b, flags, isp, tsp, tcw);
+    }
+    n = 3 + (int)(frand() % 8);
+    for(k = 0; k < n; k++) {
+        const uint32_t X = fcoord(lx), Y = fcoord(ly), Z = fdepth();
+        any_vtx(b, X, Y, Z, k == n - 1);
+    }
+}
+static void fuzz_sprite(int list, int lx, int ly) {
+    const uint32_t b = frand() & (TEX | OFFS | UV16 | GOUR | SHADOW);
+    uint32_t w[16], g = 0;
+    ffeat |= FT_SPRITE | (fmv_seen ? FT_AFTER_MV : 0);
+    int k;
+    if(frand() % 2) g = GROUP(frand() % 4);
+    {
+        const uint32_t isp = frand(), tsp = frand(), tcw = frand(), base = frand(), offs = frand();
+        hdr_sprite(list, b | g, isp, tsp, tcw, base, offs);
+    }
+    w[0] = VP(1);
+    for(k = 1; k < 12; k++)
+        w[k] = (k % 3 == 0 && k < 10) ? fdepth() : fcoord(k % 3 == 1 ? lx : ly);
+    w[10] = fcoord(lx); w[11] = fcoord(ly);
+    w[12] = frand(); w[13] = frand(); w[14] = frand(); w[15] = frand();
+    ta_words(w, 16);
+}
+static void fuzz_modvol(int list, int lx, int ly) {
+    uint32_t extra = 0, w[16] = { VP(1) }, mode;
+    int k;
+    if(frand() % 4 == 0) extra = frand() & 0xff;
+    mode = frand() % 3;
+    for(k = 1; k < 10; k++)
+        w[k] = k % 3 == 0 ? fdepth() : fcoord(k % 3 == 1 ? lx : ly);
+    hdr_mv(list, extra, mode);
+    ta_words(w, 16);
+    fmv_seen = 1;
+}
+static void c_fuzz(int i) {
+    tacfg_t c = cfg();
+    int l, nl, p, np, k;
+    fz = 0x9e3779b9u * (uint32_t)(i + 1);
+    frand(); frand();
+    c.tx = 1 + (int)(frand() % 8); c.ty = 1 + (int)(frand() % 6);
+    for(k = 0; k < 5; k++) c.opb[k] = (int)(frand() % 4);
+    c.down = frand() % 5 == 0;
+    while(matrix_bytes(&c) > (c.down ? 0x2000u : 0x3000u))      /* the matrix inside its part of the area */
+        for(k = 0; k < 5; k++) if(c.opb[k] > 1) c.opb[k]--;
+    if(c.down) { c.ol_base = AREA + 0x2000u; c.opb_init = c.ol_base; c.ol_limit = AREA; }
+    else c.opb_init = c.ol_base + matrix_bytes(&c);
+    begin(&c);
+    ffeat = c.down ? FT_DOWN : 0;
+    fmv_seen = frect_seen = 0;
+    nl = 1 + (int)(frand() % 3);
+    for(l = 0; l < nl; l++) {
+        const int list = (int)(frand() % 5);
+        if(!c.opb[list]) ffeat |= FT_OPB0;
+        np = 1 + (int)(frand() % 6);
+        for(p = 0; p < np; p++) {
+            if(list == OM || list == TM) fuzz_modvol(list, 32 * c.tx, 32 * c.ty);
+            else if(frand() % 5 == 0) fuzz_sprite(list, 32 * c.tx, 32 * c.ty);
+            else fuzz_poly(list, 32 * c.tx, 32 * c.ty);
+        }
+        list_of(list);
+        eol();
+    }
+    {
+        char line[64];
+        snprintf(line, sizeof(line), "TAFEAT %d %x", case_no, (unsigned)ffeat);
+        pvrio_hw_say(line);
+    }
+    finish();
+    fz = 0;
+}
+
 /* ======== cases of bad input (TA_ERRORS) ======== */
 
 static void c_err_vertex_first(void) {          /* a vertex before any header */
@@ -922,6 +1243,16 @@ static void c_err_list_switch(void) {           /* a header of another list whil
     tri(TR, 0, 72, 40, 88, 40, 72, 56, 2);
     eol(); finish();
 }
+static void c_err_list_types(void) {            /* headers of list types 5, 6 and 7 */
+    int t;
+    begin_default();
+    for(t = 5; t < 8; t++) {
+        w8(PCW_(P_POLY, t, GROUP(0)), ISPW, TSPW, 0, 0, 0, 0, 0);
+        v0(36.0f + (float)t, 36, 1, (uint32_t)t, 0); v0(44, 36, 1, (uint32_t)t, 0); v0(36, 44, 1, (uint32_t)t, 1);
+        w8(0, 0, 0, 0, 0, 0, 0, 0);
+    }
+    finish();
+}
 static void c_err_para_types(void) {            /* parameter types 2 (object list set), 3 and 6 */
     begin_default();
     tri(OP, 0, 40, 40, 56, 40, 40, 56, 1);
@@ -965,7 +1296,16 @@ static const tcase_t cases[] = {
     { "err_clip_in_strip", c_err_clip_in_strip, 1 }, { "err_short_strip", c_err_short_strip, 1 },
     { "err_vertex_after_eol", c_err_vertex_after_eol, 1 }, { "err_eol_only", c_err_eol_only, 1 },
     { "err_list_switch", c_err_list_switch, 1 }, { "err_para_types", c_err_para_types, 1 },
+    { "err_list_types", c_err_list_types, 1 },
 };
+/* the generated cases, numbered on after the ones above: name_<k>, k = 0 .. count - 1 */
+typedef struct { const char *name; void (*fn)(int); int count; } tgroup_t;
+static const tgroup_t groups[] = {
+    { "combo", c_combo, 16 }, { "reserved_bits", c_reserved_bits, 1 }, { "float_bounds", c_float_bounds, 2 },
+    { "int_table", c_int_table, 8 }, { "bin_bounds", c_bin_bounds, 2 }, { "bin_exponents", c_bin_exponents, 2 },
+    { "fuzz", c_fuzz, 200 },
+};
+#define NGROUPS ((int)(sizeof(groups) / sizeof(groups[0])))
 #define NCASES ((int)(sizeof(cases) / sizeof(cases[0])))
 
 int main(int argc, char **argv) {
@@ -973,8 +1313,12 @@ int main(int argc, char **argv) {
     (void)argc; (void)argv;
 #ifndef _arch_dreamcast
     if(argc > 1 && !strcmp(argv[1], "--labels")) {
+        int g, k, n = NCASES;
         for(i = 0; i < NCASES; i++)
             printf("CASE %d %s %d\n", i, cases[i].name, cases[i].error);
+        for(g = 0; g < NGROUPS; g++)
+            for(k = 0; k < groups[g].count; k++)
+                printf("CASE %d %s_%03d 0\n", n++, groups[g].name, k);
         return 0;
     }
     if(argc > 1)
@@ -986,6 +1330,13 @@ int main(int argc, char **argv) {
             continue;
         case_no = i;
         cases[i].fn();
+    }
+    if(!TA_ERRORS) {
+        int g, k;
+        case_no = NCASES;
+        for(g = 0; g < NGROUPS; g++)
+            for(k = 0; k < groups[g].count; k++, case_no++)
+                groups[g].fn(k);
     }
     pvrio_reg(SOFTRESET_addr, 1);
     pvrio_reg(SOFTRESET_addr, 0);

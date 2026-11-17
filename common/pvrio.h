@@ -28,6 +28,7 @@ static void pvrio_video(int fb_packmode, uint32_t fb);      /* display mode 640x
 static void pvrio_reg(uint32_t addr, uint32_t value);       /* write a register (offset from 0x005f8000) */
 static void pvrio_w32(uint32_t addr, const uint32_t *words, int count);    /* video memory, 32 bit area */
 static void pvrio_w64(uint32_t addr, const uint32_t *words, int count);    /* video memory, 64 bit area (textures) */
+static void pvrio_fill32(uint32_t addr, int count, uint32_t value);         /* one word count times, 32 bit area */
 static void pvrio_ta(const void *params, int words);        /* to the tile accelerator; a multiple of 8 words */
 static void pvrio_wait(uint32_t events);                    /* until all of these have happened */
 static void pvrio_vblank(void);                             /* until the next vertical blank (nothing on a PC) */
@@ -68,6 +69,7 @@ static void pvrio_hash(uint32_t kind, uint32_t addr, const uint32_t *words, int 
 
 static void pvrio_hw_reg(uint32_t addr, uint32_t value);
 static void pvrio_hw_mem(int area64, uint32_t addr, const uint32_t *words, int count);
+static void pvrio_hw_fill32(uint32_t addr, int count, uint32_t value);
 static void pvrio_hw_ta(const uint32_t *words, int count);
 static void pvrio_hw_wait(uint32_t events);
 static void pvrio_hw_dump32(uint32_t addr, int words, const char *name, const char *suffix);
@@ -85,6 +87,11 @@ static void pvrio_w32(uint32_t addr, const uint32_t *words, int count) {
 static void pvrio_w64(uint32_t addr, const uint32_t *words, int count) {
     pvrio_hash('T', addr, words, count);
     pvrio_hw_mem(1, addr, words, count);
+}
+static void pvrio_fill32(uint32_t addr, int count, uint32_t value) {
+    const uint32_t w[2] = { (uint32_t)count, value };
+    pvrio_hash('F', addr, w, 2);
+    pvrio_hw_fill32(addr, count, value);
 }
 static void pvrio_ta(const void *params, int words) {
     pvrio_hash('A', 0, (const uint32_t *)params, words);
@@ -154,6 +161,10 @@ static void pvrio_hw_mem(int area64, uint32_t addr, const uint32_t *words, int c
     }
     if(count)
         printf("\n");
+}
+
+static void pvrio_hw_fill32(uint32_t addr, int count, uint32_t value) {
+    printf("fill32 %06x %x %08x\n", (unsigned)addr, (unsigned)count, (unsigned)value);
 }
 
 static void pvrio_hw_ta(const uint32_t *words, int count) {
@@ -250,6 +261,13 @@ static void pvrio_hw_mem(int area64, uint32_t addr, const uint32_t *words, int c
     int i;
     for(i = 0; i < count; i++)
         dst[i] = words[i];
+}
+
+static void pvrio_hw_fill32(uint32_t addr, int count, uint32_t value) {
+    volatile uint32_t *dst = (volatile uint32_t *)(0xa5000000 + addr);
+    int i;
+    for(i = 0; i < count; i++)
+        dst[i] = value;
 }
 
 static void pvrio_hw_ta(const uint32_t *words, int count) {
