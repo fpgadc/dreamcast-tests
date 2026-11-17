@@ -34,6 +34,7 @@
 /* #define TM_OFFS */                  /* only the offs2 and offs3 scenes: a few seconds */
 /* #define TM_SHARE */                 /* only the share scenes: a few seconds */
 /* #define TM_SPANTEX */               /* only the spantex scenes: a few seconds */
+/* #define TM_SPANTEX3 */              /* only the spantex3 scenes: about 20 seconds */
 #define NUM_LAYOUTS 17
 #define NUM_PAGES NUM_LAYOUTS
 #define TEST_MODIFIERS              /* the two modifier volume lists exist */
@@ -461,6 +462,7 @@ static void sort(uint32_t *v, int n) {
 static uint32_t region_addr = ONE_TILE;
 
 /* a region array of the first n tiles in KallistiOS's order (column by column), at MANY_TILES */
+static int region_nowo;            /* tiles_region: every tile's no-write-out bit */
 static void tiles_region(int n) {
     static uint32_t words[6 * 65];
     RegionArrayEntry e;
@@ -474,6 +476,7 @@ static void tiles_region(int n) {
     for(k = 0; k < n; k++) {
         const int x = k / SETUP_TILES_Y, y = k % SETUP_TILES_Y;
         memset(&e, 0, sizeof(e));
+        e.control.no_writeout = region_nowo && k != n - 1;     /* the last is written out: the TSP bit is its end */
         e.control.tilex = x;
         e.control.tiley = y;
         e.control.last_region = k == n - 1;
@@ -627,6 +630,40 @@ static void sheet(int mode, int x, int y, int w, int h) {
     }
 }
 
+/* spantex3: one scene of spantex / spantex2 (64 tiles): a 565 triangle T over each tile, a sprite U of 32 x K in
+   format uf over lines 0 .. K - 1 (K 0: none), and 15 one-pixel sheets over lines 20 .. 20 + L - 1. */
+static void spantex_scene(int uf, int K, int L) {
+    const format_t *fm = &formats[3];
+    const f32b z = F32B_ONE;
+    int t, n;
+    tiles_region(64);
+    region_addr = MANY_TILES;
+    ta_list_begin(ListType_Opaque);
+    for(t = 0; t < 64; t++) {
+        const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+        static const int cx[3] = { 0, 64, 0 }, cy[3] = { 0, 0, 64 };
+        PCW pcw; ISP_TSP isp; TSP tsp; TCW tcw;
+        header(fm, DepthMode_Always, &pcw, &isp, &tsp, &tcw);
+        pcw.ParaType = ParamType_Polygon_or_Modifier_Volume;
+        pcw.Group_En = 1;
+        pcw.Strip_Len = 1;
+        ta_polygon(pcw, isp, tsp, tcw);
+        for(n = 0; n < 3; n++) {
+            const int vx = x0 + cx[n], vy = y0 + cy[n];
+            ta_vertex3(f32b_int(vx), f32b_int(vy), z, f32b_scaled(vx, -8), f32b_scaled(vy, -8), 0xffc0c0c0u, 0x00202020u, n == 2);
+        }
+        if(K)
+            rect(&formats[uf], 1, DepthMode_Always, x0, y0, 32, K, z, 0, 0);
+    }
+    ta_list_begin(ListType_Opaque_Modifier_Volume);
+    for(t = 0; t < 64; t++) {
+        const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+        if(L)
+            for(n = 0; n < 15; n++)
+                sheet(VolumeMode_Inside_Last, x0 + 2 * n + 1, y0 + 20, 1, L);
+    }
+}
+
 static void run_all(void) {
     static const int tsp_layouts[10] = { 0, 2, 14, 5, 10, 4, 3, 12, 1, 8 };
     static const int ks[14] = { 0, 1, 2, 3, 4, 6, 8, 12, 14, 16, 20, 24, 28, 32 };
@@ -647,6 +684,36 @@ static void run_all(void) {
     for(f = 0; f < NUM_FORMATS; f++) printf("F %d %s\n", f, formats[f].name);
     for(L = 0; L < NUM_LAYOUTS; L++) printf("L %d %s\n", L, layout_names[L]);
 
+    /* ---- spantex3 (100 w + r) L pass K: is the write-out behind spantex's uneven steps and the cost of slow lines?
+       w 0: 16 bit framebuffer, written out (as spantex); 1: 16 bit, not written out (no-write-out bit in every
+       entry); 2: 0888 framebuffer, written out (about 1358 a tile instead of 1045). r: the lines before the burst,
+       0 all T (565); 1 a 565 sprite over 0 .. 19; 2 8 texels a pixel over 0 .. 3; 3 8 texels a pixel over 0 .. 19. */
+    {
+        volatile uint32_t *fb_w_ctrl = (volatile uint32_t *)(0xa05f8000 + FB_W_CTRL_addr);
+        const uint32_t fbw = *fb_w_ctrl;
+        static const int rf[4] = { 3, 3, 23, 23 }, rK[4] = { 0, 20, 4, 20 }, xL[7] = { 0, 2, 4, 6, 8, 10, 12 };
+        int ps, wo, ri, li;
+        shadow_bit = 1; shad_scale = 0x180;
+        for(ps = 0; ps < 2; ps++)
+            for(wo = 0; wo < 3; wo++) {
+                *fb_w_ctrl = wo == 2 ? fbw : ((fbw & ~15u) | 1u);
+                region_nowo = wo == 1;
+                for(ri = 0; ri < 4; ri++)
+                    for(li = 0; li < 7; li++) {
+                        spantex_scene(rf[ri], rK[ri], xL[li]);
+                        measure("spantex3", 100 * wo + ri, xL[li], ps, rK[ri]);
+                    }
+            }
+        region_nowo = 0;
+        shadow_bit = 0; shad_scale = 1;
+        *fb_w_ctrl = fbw;
+        region_addr = ONE_TILE;
+    }
+#ifdef TM_SPANTEX3
+    *fb_r_ctrl = fb_r;
+    printf("T end\n");
+    return;
+#endif
     /* ---- spantex f L pass: is texturing after the queue of runs started ahead (about 150 to 200 pixels)? 64 tiles,
        each: a 565 triangle T over the tile (shadow bit, cheap shadow), a sprite U of 32x20 over lines 0 .. 19 in
        format f (3: 565, 1.01 a pixel; 20: YUV422 bilinear, 2.00, a clock more once the texels are in; 23: 565 with

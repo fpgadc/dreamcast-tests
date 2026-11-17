@@ -719,35 +719,35 @@ ends where the volume state changes: README, uvrun). 16 bit framebuffer; a tile 
   saves, and what a run costs, depend on how many runs the line has. A stage that takes a line's runs
   together (sorting or grouping them over a window of a few runs) would fit better; my reading, not shown.
   The rounding of the values (README, uvspan: each product cut by itself, screen coordinates) allows either.
-- **The queue is after the texturing** (scenes `spantex` and `spantex2`, `#define TM_SPANTEX`, logs run31
-  and run32, tables from `python3 spantex.py <log>`; the two runs agree within 2 clocks a tile, the passes
-  within 1 to 6). 64 tiles, each a 565 triangle T, a sprite U over lines 0 .. 19 (or 0 .. K - 1), and a
-  burst of 30 L runs of one pixel (15 sheets) on lines 20 .. 20 + L - 1. Clocks the burst adds to a tile:
+- **Slow texturing before a burst: nothing shown, and the write-out is not the unevenness** (scenes `spantex`,
+  `spantex2`, `spantex3`, `#define TM_SPANTEX` / `TM_SPANTEX3`, logs run31 to run34, tables from `python3
+  spantex.py <log>` and `python3 spantex3.py <log>`). 64 tiles, each a 565 triangle T, a sprite U over lines
+  0 .. K - 1 (565, YUV422 bilinear, or 8 texels a pixel), and a burst of 30 L one-pixel runs (15 sheets) on
+  lines 20 .. 20 + L - 1. spantex3 repeats it with the tiles written out at 16 bits, not written out (all but
+  the last), and written out at 0888. Clocks a tile, all lines 565, steps for two more cut lines:
 
-| lines before the burst | L 2 | 4 | 6 | 8 | 10 | 12 |
-|---|---|---|---|---|---|---|
-| 0 .. 19 565, 1.01 a pixel | 129 | 275 | 433 | 814 | 1050 | 1141 |
-| 0 .. 19 YUV422 bilinear | 470 | 603 | 962 | 1170 | 1455 | 1600 |
-| 0 .. 19 565 with 8 texels a pixel, 3.27 a pixel | 290 | 640 | 757 | 1021 | 1241 | 1849 |
+| | L 0 -> 2 | 2 -> 4 | 4 -> 6 | 6 -> 8 | 8 -> 10 | 10 -> 12 | tile, L 0 |
+|---|---|---|---|---|---|---|---|
+| 16 bit, written out | 99 | 194 | 125 | 376 | 280 | 65 | 1474 |
+| 16 bit, not written out | 453 | 209 | 123 | 379 | 279 | 65 | 1104 |
+| 0888, written out | 73 | 98 | 98 | 86 | 276 | 68 | 1918 |
 
-| 8 texels a pixel over lines 0 .. K - 1, 565 on K .. 19 | L 4 | 8 | 12 |
-|---|---|---|---|
-| K 0 | 287 | 796 | 1140 |
-| K 4 (16 fast lines, 512 pixels, before the burst) | 554 | 1090 | 1439 |
-| K 10 | 652 | 1222 | 1865 |
-| K 16 | 819 | 1163 | 1992 |
-| K 20 | 635 | 1023 | 1848 |
+  - From L = 2 on the steps are the same with and without the write-out: the uneven cost of a cut line by
+    where it is in the tile (lines 26-27 about 188 each, 30-31 about 33) is not the write-out's. At 0888 the
+    write-out sets the pace (1918 a tile) and hides most of it. Not understood.
+  - The step from L = 0 is where the 15 sheets (30 modifier volume triangles a tile) first appear; it holds
+    their fixed cost when it shows (453 without the write-out, where the tile is short).
+  - What spantex and spantex2 had shown (a burst after slow lines costs more; 4 slow lines at the top take
+    about 300 clocks away that 16 fast lines do not give back) is all in that first step: from L = 2 on, the
+    rows with slow lines add the same as the 565 rows (16 bit written out, 8 texels on lines 0-3: within
+    about 60 of the 565 row at every L). So it tells nothing about where the queue lies; the reading "the
+    queue is after the texturing", written here before, is withdrawn. Whether texturing is before or after
+    the queue is not known.
+  - The write-out costs about 370 a tile here even at 16 bits (1474 written out, 1104 not), though it is
+    shorter than a tile: a tile's write-out and the next tile's shading do not fully overlap.
+  - The old spanpos numbers (log run19), steps per added cut line from L = 1 on, also vary from 10 to 187:
+    the "about 45 to 70 runs hidden" above sums uneven steps and is to be taken as rough.
 
-  Were the queue of about 150 to 200 pixels between the run starts and the texturing, slow pixels in it
-  would hide more of a burst, and 512 fast pixels would fill it again. Neither: after slow lines a burst
-  costs more at every L, and 4 slow lines at the top of the tile take about 270 to 300 clocks of hiding away
-  (about the whole that is hidden after 565 lines) that 16 fast lines do not give back. My reading: the run
-  starts, the stepping, the division and the texturing (fetch, YUV conversion, filter) are one front end
-  that stalls as a whole, and the queue lies after it, before the stage that finishes the pixels in the
-  tile. It is filled where that stage waits (at the change of tile: the front end goes on into the next
-  tile, the "run starts made ahead across the tile boundary" above) and only there; where both go at a
-  pixel a clock it stays as it is, and slow texturing drains it. The steps from one L or K to the next are
-  uneven in every row (as at L = 6 above), well beyond the passes' agreement; not understood.
 - **Do setup and run starts share the arithmetic?** (scenes `share`, `#define TM_SHARE`, logs run29 and run30,
   tables from `python3 share.py <log>`). 64 tiles, a triangle T over each, lines 0 .. L - 1 of it cut into 31
   one-pixel runs by 15 cheap-shadow sheets (paced by run starts); at column 31 of those lines a 16th sheet (32
