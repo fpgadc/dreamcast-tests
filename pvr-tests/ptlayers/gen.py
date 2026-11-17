@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 
 HERE = Path(__file__).parent
-KINDS = 7
+KINDS = 9
 spec = importlib.util.spec_from_file_location("uvgen", HERE.parent / "uvmeas" / "gen.py")
 uv = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(uv)

@@ -2491,7 +2491,7 @@ refsw2 = the console on 8 of 8 pages; with the old behaviour 21,827 to 35,681 pi
 
 ## ptlayers: which pixels a later punch-through pass takes in (2026-11-18)
 
-    bash run2.sh ptlayers off; bash run2.sh ptlayers hw=<ip>    # 14 pages; archived in fit/hw/ptlayers
+    bash run2.sh ptlayers off; bash run2.sh ptlayers hw=<ip>    # 18 pages; archived in fit/hw/ptlayers
 
 shenmue_intro*'s last differences were punch-through foliage several layers deep (PT_ALPHA_REF 0xff) whose
 coordinates in the later passes fit runs that start further left than refsw2's. Partial renders of the tiles in 32
@@ -2505,7 +2505,8 @@ shaded; those that passed go on to their next fragment too, for that one pass, a
 they resolved to. With A failing on columns 8-15 over B, B's run in the second pass starts at B's first pixel (the
 resolved pixels of A go on to B as well); with A1 failing on 8-15 over A2 failing on 12-19, B's run in the third
 pass starts at column 8: the pixels resolved by A2 in the second pass take part, those resolved by A1 in the first
-do not. refsw2 = the console on 14 of 14 pages (1120 regions); before: 6 pages wrong. shenmue_intro4 33 words to
+do not. The list order of the layers does not matter (kinds 7, 8). refsw2 = the console on 18 of 18 pages (1440
+regions); before: 6 pages wrong. shenmue_intro4 33 words to
 15, shenmue_intro2 21 to 17, shenmue_intro3 8 to 7.
 
 ## coordfix: from the texture coordinate to a texel and a bilinear weight (2026-11-18)

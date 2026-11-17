@@ -16,8 +16,10 @@
      kind 5  A fails on columns 0-15; E (untextured, alpha 0: fails, depth 2.5) over columns 0-3 in front: one layer
              more there (polly2-data shenmue_intro4, a polygon over two columns of a stack)
      kind 6  the same with E alpha 0xff (it passes)
+     kind 7  kind 0 with B sent after A (the list order of the layers the other way: B's tag above A's)
+     kind 8  kind 4 with B sent after A1 and A2
    Two pages of triangles per kind (page = 2 kind + 0 or 1). Blend SRC_ALPHA, INV_SRC_ALPHA. */
-#define KINDS 7
+#define KINDS 9
 #define NUM_PAGES (2 * KINDS)
 #include "pvr_params.h"
 #include "cases.h"
@@ -60,7 +62,8 @@ static void test_describe(void)
 {
     static const char *what[KINDS] = { "A fails 8-15", "A fails 8-15, 20-23", "A fails 0-15", "A fails 8-15, D over 0-3 between",
                                        "A1 fails 8-15, A2 fails 12-19", "A fails 0-15, E over 0-3 in front fails",
-                                       "A fails 0-15, E over 0-3 in front passes" };
+                                       "A fails 0-15, E over 0-3 in front passes", "A fails 8-15, B sent after A",
+                                       "A1 fails 8-15, A2 fails 12-19, B sent after them" };
     int p, c;
     for(p = 0; p < NUM_PAGES; p++)
         for(c = 0; c < 300; c++)
@@ -122,14 +125,21 @@ static void test_page(int page)
         n++;
         if((x / 32) % 2 || (y / 32) % 2)
             continue;
-        pt_poly(1, tex_read, 7, PixelFmt_565);           /* B: the reading */
-        for(k = 0; k < 3; k++)
-            ta_vertex3(t->v[k][0], t->v[k][1], t->v[k][3], t->v[k][2], F32B_HALF, 0xffffffff, 0, k == 2);
-        if(kind == 4) {
+        if(kind < 7) {
+            pt_poly(1, tex_read, 7, PixelFmt_565);       /* B: the reading */
+            for(k = 0; k < 3; k++)
+                ta_vertex3(t->v[k][0], t->v[k][1], t->v[k][3], t->v[k][2], F32B_HALF, 0xffffffff, 0, k == 2);
+        }
+        if(kind == 4 || kind == 8) {
             front(x, y, F(3.0f), tex_fail[0]);
             front(x, y, F(2.0f), tex_fail[3]);
         } else {
-            front(x, y, F(2.0f), tex_fail[kind == 3 ? 0 : kind >= 5 ? 2 : kind]);
+            front(x, y, F(2.0f), tex_fail[kind == 3 || kind == 7 ? 0 : kind >= 5 ? 2 : kind]);
+        }
+        if(kind >= 7) {
+            pt_poly(1, tex_read, 7, PixelFmt_565);       /* B after the front layers */
+            for(k = 0; k < 3; k++)
+                ta_vertex3(t->v[k][0], t->v[k][1], t->v[k][3], t->v[k][2], F32B_HALF, 0xffffffff, 0, k == 2);
         }
         if(kind == 3) {
             pt_poly(0, 0, 0, 0);
