@@ -88,6 +88,7 @@ static bool set_field(pvrtsp::PlaneConfig& cfg, const std::string& name, int val
 
 // the model's reading for every reading of the set; returns how many are the console's
 static bool summary = false;
+static int splitRuns = 0;      // split=N: runs also start at every N-th column of the tile (to test that they do not)
 static long zeroDen = 0, zeroDenRight = 0, zeroNum = 0, zeroNumRight = 0;     // readings where the model's 1/w, U/w is exactly 0
 static int onlyFrom = 0, onlyTo = 1 << 30;      // --only a-b: score these triangles only
 static long score(const Set& s, const pvrtsp::PlaneConfig& cfg, int misses, bool cells)
@@ -128,8 +129,11 @@ static long score(const Set& s, const pvrtsp::PlaneConfig& cfg, int misses, bool
             int got = -9;
             Fp dbgW, dbgU;
             if (!w.bad && !u.bad && !bad) {
-                int64_t x0h = 2 * (int64_t)(tx * 32 + start[j]) + 1, yh = 2 * (int64_t)(ty * 32 + j) + 1;
-                Fp wv = w.Value(x0h, yh, i - start[j], tx * 32, ty * 32), uv = u.Value(x0h, yh, i - start[j], tx * 32, ty * 32);
+                int s0 = start[j];
+                if (splitRuns > 0 && i - i % splitRuns > s0)
+                    s0 = i - i % splitRuns;
+                int64_t x0h = 2 * (int64_t)(tx * 32 + s0) + 1, yh = 2 * (int64_t)(ty * 32 + j) + 1;
+                Fp wv = w.Value(x0h, yh, i - s0, tx * 32, ty * 32), uv = u.Value(x0h, yh, i - s0, tx * 32, ty * 32);
                 dbgW = wv; dbgU = uv;
                 if (cfg.range) {
                     got = texel(pvrtsp::Divide(uv, wv).toDouble());
@@ -187,6 +191,8 @@ int main(int argc, char** argv)
             misses = atoi(argv[++a]);
         } else if (arg == "--cells") {
             cells = true;
+        } else if (arg.rfind("split=", 0) == 0) {
+            splitRuns = atoi(arg.c_str() + 6);
         } else if (arg == "--summary") {
             summary = true;
         } else if (arg == "--only" && a + 1 < argc) {

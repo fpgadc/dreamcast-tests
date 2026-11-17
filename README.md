@@ -756,6 +756,11 @@ whole; the band is drawn over it afterwards. refsw2 finds the runs in its tag bu
 and matches both lists reading for reading. Not measured: whether a run also ends where the modifier volume
 state changes, and the punch-through passes; refsw2 ends it there.
 
+**A run is not cut anywhere else** (2026-11-17): it goes on to the last pixel of the stretch, up to the
+tile's width. `model/tspprobe split=N` starts a new run also at every N-th column of the tile; on the uvmeas
+sets uv1, ugen5, usteep3, uflat2 and uwflat4 (3,360,053 readings, all right without it) that costs 63,619
+readings with N = 16, 140,159 with 8, 185,493 with 4 and 206,934 with 2.
+
 ## State of refsw2 after zmeas / wmeas / uvmeas / cmeas / uvspan (2026-11-16, uncommitted working tree)
 
 The older comparison tests, scored against the same console dumps as before
