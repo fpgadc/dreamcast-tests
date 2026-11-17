@@ -28,6 +28,7 @@
 /* #define TM_DCALC */                 /* only the dcalc scenes: a few seconds */
 /* #define TM_AHEAD */                 /* only the ahead scenes: a few seconds */
 /* #define TM_SPAN */                  /* only the spanahead scenes: a few seconds */
+/* #define TM_SPANFMT */               /* only the spanfmt scenes: a few seconds */
 #define NUM_LAYOUTS 17
 #define NUM_PAGES NUM_LAYOUTS
 #define TEST_MODIFIERS              /* the two modifier volume lists exist */
@@ -622,6 +623,63 @@ static void run_all(void) {
     printf("T display %lx off\n", (unsigned long)fb_r);
     for(f = 0; f < NUM_FORMATS; f++) printf("F %d %s\n", f, formats[f].name);
     for(L = 0; L < NUM_LAYOUTS; L++) printf("L %d %s\n", L, layout_names[L]);
+
+    /* ---- spanfmt f L pass: what a run start costs by format. In each of the first 64 tiles one triangle of format f
+       covers the tile (shadow bit, cheap shadow), 15 opaque modifier volumes of one pixel's width (columns 1, 3, ..
+       29) cut lines 0 .. L - 1 into 31 runs (30 of one pixel), L 0, 8, 16, 24, 32. The volumes are the same for
+       every L but 0; what L adds is runs: the slope over L is 30 run starts a line. 16 bit framebuffer. */
+    {
+        volatile uint32_t *fb_w_ctrl = (volatile uint32_t *)(0xa05f8000 + FB_W_CTRL_addr);
+        const uint32_t fbw = *fb_w_ctrl;
+        static const int ff[6] = { 0, 1, 2, 3, 4, 5 };
+        static const int fL[5] = { 0, 8, 16, 24, 32 };
+        int fi, li, ps, t;
+        *fb_w_ctrl = (fbw & ~15u) | 1u;
+        shadow_bit = 1; shad_scale = 0x180;
+        for(ps = 0; ps < 2; ps++)
+            for(fi = 0; fi < 6; fi++)
+                for(li = 0; li < 5; li++) {
+                    const format_t *fm = &formats[ff[fi]];
+                    tiles_region(64);
+                    region_addr = MANY_TILES;
+                    ta_list_begin(ListType_Opaque);
+                    for(t = 0; t < 64; t++) {
+                        const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                        static const int cx[3] = { 0, 64, 0 }, cy[3] = { 0, 0, 64 };
+                        static const uint32_t col[3] = { 0xffc04040u, 0xff40c040u, 0xff4040c0u };
+                        PCW pcw; ISP_TSP isp; TSP tsp; TCW tcw;
+                        header(fm, DepthMode_Always, &pcw, &isp, &tsp, &tcw);
+                        pcw.ParaType = ParamType_Polygon_or_Modifier_Volume;
+                        pcw.Group_En = 1;
+                        pcw.Strip_Len = 1;
+                        ta_polygon(pcw, isp, tsp, tcw);
+                        for(n = 0; n < 3; n++) {
+                            const int vx = x0 + cx[n], vy = y0 + cy[n];
+                            if(fm->textured)
+                                ta_vertex3(f32b_int(vx), f32b_int(vy), front, f32b_scaled(vx * fm->scale, -8), f32b_scaled(vy * fm->scale, -8),
+                                           col[n], 0x00202020u * (uint32_t)(n + 1), n == 2);
+                            else
+                                ta_vertex0(f32b_int(vx), f32b_int(vy), front, col[n], n == 2);
+                        }
+                    }
+                    ta_list_begin(ListType_Opaque_Modifier_Volume);
+                    for(t = 0; t < 64; t++) {
+                        const int x0 = (t / SETUP_TILES_Y) * 32, y0 = (t % SETUP_TILES_Y) * 32;
+                        if(fL[li])
+                            for(n = 0; n < 15; n++)
+                                sheet(VolumeMode_Inside_Last, x0 + 2 * n + 1, y0, 1, fL[li]);
+                    }
+                    measure("spanfmt", ff[fi], fL[li], ps, 0);
+                }
+        shadow_bit = 0; shad_scale = 1;
+        *fb_w_ctrl = fbw;
+        region_addr = ONE_TILE;
+    }
+#ifdef TM_SPANFMT
+    *fb_r_ctrl = fb_r;
+    printf("T end\n");
+    return;
+#endif
 
     /* ---- spanahead v k f: how many runs ahead can the TSP start? In each of the first 64 tiles one triangle covers the
        whole tile (corners at the tile's origin, 64 to the right and 64 down), with the shadow bit, cheap shadow on.

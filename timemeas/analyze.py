@@ -403,5 +403,15 @@ def main():
             print(f"    lines 0-19 in runs of {32 // P:2d}, cut from line 20: {c:.2f} a run; " + " ".join(f"L{L} +{ex[L]:.0f} ({30 * L - ex[L] / c:.0f})" for L in (4, 6, 8)))
 
 
+    if "spanfmt" in D:
+        print()
+        print("25. What a run start costs, by format: one triangle over each of 64 tiles, 15 one-pixel volume columns over")
+        print("    lines 0 .. L - 1 (31 runs a line). Clocks a run start, from the 8 lines added (both passes averaged).")
+        for f in (0, 1, 2, 3, 4, 5):
+            v = {L: sum(T("spanfmt", f, L, ps) for ps in (0, 1)) / 4 / 64 for L in (0, 8, 16, 24, 32)}
+            segs = [(v[b] - v[a]) / 240 for a, b in ((0, 8), (8, 16), (16, 24), (24, 32))]
+            print(f"    {F[f]:24s} lines 0-7 {segs[0]:5.2f}  8-15 {segs[1]:5.2f}  16-23 {segs[2]:5.2f}  24-31 {segs[3]:5.2f}")
+
+
 if __name__ == "__main__":
     main()

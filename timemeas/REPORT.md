@@ -614,6 +614,21 @@ ends where the volume state changes: README, uvrun). 16 bit framebuffer; a tile 
 - So the TSP has two stages that run ahead of its shading: the setup of primitives (about 11 primitives
   ahead, table 23) and the start of runs (about 150 to 200 pixels ahead). In the 4.7 / 6 / 8 a run of the
   table "Per run" the queue was always empty: every line had the same short runs.
+- **By format** (scenes `spanfmt`, `#define TM_SPANFMT`, log timemeas_run20_spanfmt, table 25): the same 15
+  columns over lines 0 .. L - 1, L = 0, 8, 16, 24, 32; clocks a run start, by the 8 lines added (two passes
+  agree to the clock):
+
+| | lines 0-7 | 8-15 | 16-23 | 24-31 (nothing left to hide in) |
+|---|---|---|---|---|
+| untextured, flat or Gouraud | 3.03 | 3.08 | 3.09 | **3.94** |
+| 565, flat or Gouraud | 3.37 | 3.29 | 4.13 | **4.21** |
+| 565 with offset colour, flat or Gouraud | 5.16 | 5.68 | 6.21 | **6.31** |
+
+  The cost per run grows as fewer uncut lines are left after the cut ones: the queue still hides part of
+  the run starts while long runs follow. The last 8 lines show it whole: **3.9 untextured, 4.2 textured, 6.3
+  with offset colour.** Flat and Gouraud are the same to the clock in every case, so the colour channels are
+  not what a run start costs (they are evaluated, or not, alike); the texture's two planes add 0.3, the
+  offset colour 2.1. It is not so many clocks per plane.
 - Not understood: the cut lines 20 to 25 (L = 6) give 80 to 87 hidden in two series and 50 in the third,
   where L = 4 and 8 agree. The texels-8-apart triangle (spanahead v 0) gives erratic times, as the block of
   the "ahead" scenes did.

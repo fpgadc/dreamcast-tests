@@ -647,3 +647,12 @@
     lines 0-19 in runs of 32, cut from line 20: 4.24 a run; L4 +287 (52) L6 +419 (81) L8 +795 (52)
     lines 0-19 in runs of 16, cut from line 20: 4.18 a run; L4 +218 (68) L6 +387 (87) L8 +719 (68)
     lines 0-19 in runs of  8, cut from line 20: 3.89 a run; L4 +209 (66) L6 +507 (50) L8 +676 (66)
+
+25. What a run start costs, by format: one triangle over each of 64 tiles, 15 one-pixel volume columns over
+    lines 0 .. L - 1 (31 runs a line). Clocks a run start, from the 8 lines added (both passes averaged).
+    untextured flat          lines 0-7  3.03  8-15  3.08  16-23  3.09  24-31  3.94
+    untextured gouraud       lines 0-7  3.03  8-15  3.08  16-23  3.09  24-31  3.94
+    565 flat                 lines 0-7  3.37  8-15  3.29  16-23  4.13  24-31  4.21
+    565 gouraud              lines 0-7  3.37  8-15  3.28  16-23  4.13  24-31  4.21
+    565 flat offset          lines 0-7  5.16  8-15  5.68  16-23  6.21  24-31  6.31
+    565 gouraud offset       lines 0-7  5.16  8-15  5.68  16-23  6.22  24-31  6.31
