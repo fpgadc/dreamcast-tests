@@ -719,6 +719,30 @@ ends where the volume state changes: README, uvrun). 16 bit framebuffer; a tile 
   saves, and what a run costs, depend on how many runs the line has. A stage that takes a line's runs
   together (sorting or grouping them over a window of a few runs) would fit better; my reading, not shown.
   The rounding of the values (README, uvspan: each product cut by itself, screen coordinates) allows either.
+- **Do setup and run starts share the arithmetic?** (scenes `share`, `#define TM_SHARE`, logs run29 and run30,
+  tables from `python3 share.py <log>`). 64 tiles, a triangle T over each, lines 0 .. L - 1 of it cut into 31
+  one-pixel runs by 15 cheap-shadow sheets (paced by run starts); at column 31 of those lines a 16th sheet (32
+  runs, all of T), or a sprite of 1x1 on every line (one more triangle, so one more setup, a line), or one
+  sprite of 1 x L (the same runs and triangle changes, one setup a tile). The same without the 15 sheets gives
+  lines paced by shading. Clocks a line (run30; run29 the same within 0.2):
+
+| | 565 | 565 with offset colour |
+|---|---|---|
+| a 16th cut (one more run of T) | 4.1 | 4.2 |
+| the tall sprite instead: two triangle changes a line | +1.7 | +2.2 |
+| a 1x1 sprite on every line: a setup a line on top, paced by run starts | **+13.7** | **+22.8** |
+| the same, paced by shading | +30.6 | +39.7 |
+| a triangle's setup where setups set the pace (table "Per triangle") | 48 | 64 |
+
+  Changing triangle costs about 1 clock a change. A setup takes 13.7 (565, 7 planes) and 22.8 (offset
+  colour, 11 planes) from a line paced by run starts: about 2 clocks a plane (the offset colour's 4 planes
+  9.1, 2.3 each); the rest of the setup, 34 and 41, is made alongside. So the setup's work per plane and
+  the run starts go through one unit, and the rest of the setup does not. My reading of the rates: one unit
+  of about 4 products a clock fits them all, with a plane's setup about 9 products (A, B and C each a sum
+  of three: 2.25 clocks) and a run start 2 products a plane (A x and B y: 0.5 a plane, the offset colour's
+  +2.1 for 4 planes, hidden under the run's about 4 clocks up to 7 planes). With C + B y kept for the line a
+  run start would be one product a plane, 2 a clock against the setup's 4: possible, but not what the rates
+  suggest.
 - Not understood: the cut lines 20 to 25 (L = 6) give 80 to 87 hidden in two series and 50 in the third,
   where L = 4 and 8 agree. The texels-8-apart triangle (spanahead v 0) gives erratic times, as the block of
   the "ahead" scenes did.
