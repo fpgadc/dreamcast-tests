@@ -157,7 +157,8 @@ largest of its ISP, TSP and write-out times [M timemeas].
   - inside, the second volume's parameters replace the first's;
   - the part of a polygon inside a volume is its own triangle to the TSP (its own setup and runs).
 - **Punch-through list.** Pixels inside an opaque modifier volume are shaded twice, the second time with the
-  second volume's parameters and blend mode, alpha tested like the first [M dumprules]. Pixels failing the alpha
+  second volume's parameters and blend mode, alpha tested like the first [M dumprules]; a polygon without the
+  shadow bit too, with its own parameters, in runs over the pixels inside [M uvrun kind 7]. Pixels failing the alpha
   test are shaded later as runs of their own [M timemeas, uvrun], only where a later pass draws a polygon [polly2-data
   jgr_tree_shadows2]. A pixel that fails is still blended with alpha 0: drawn with ONE, ZERO even below
   PT_ALPHA_REF [M fbpack], left as it was with SRC_ALPHA, INV_SRC_ALPHA [M dumprules]. In one plane the last
@@ -173,6 +174,10 @@ largest of its ISP, TSP and write-out times [M timemeas].
   (list order), unique per fragment (polly2-rtl isp_depth_cmp_lp): sorted translucency takes the smallest key above
   the layer drawn last (the opaque depth first, below every fragment at its depth); punch-through the largest key
   below the one that last failed the alpha test, at or in front of the opaque depth.
+- **A run ends at a modifier volume's edge** whatever the polygon's shadow bit: opaque and sorted translucent
+  polygons; not translucent polygons in the order sent, which an opaque volume shadows without cutting their runs
+  [M uvrun kinds 6-11]. A punch-through pixel that fails the alpha test is shaded again only where a later pass
+  draws a polygon [M ptruns].
 - **Shading rules from game frames [M dumprules]:** intensity shadow scales each vertex colour ((c * scale) >> 8,
   not alpha) before interpolation [sc_ingame2]; vertex fog is (c * (256 - a) + f * a) >> 8 with a the offset
   alpha, and an offset colour comes only with a texture [sc_ingame, refta]; trilinear filtering of a texture

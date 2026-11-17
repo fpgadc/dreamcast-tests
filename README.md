@@ -2460,6 +2460,35 @@ and random triangles with attributes of very different sizes). Set reach1, 1760 
 = the console on both sets (archive_check.sh uvmeas), and gundam_ingame, daytona_sanic, daytona_intro, 18wheel_select,
 hotd2_zombies and toy_front are the console's in all of video memory, sa2_ingame2 down from 103 words to 4: 50 of 63.
 
+## uvrun kinds 6-11, ptruns: volumes and polygons they do not affect; failed punch-through pixels (2026-11-18)
+
+    bash run2.sh uvrun off; bash run2.sh uvrun hw=<ip>        # 24 pages; archived in fit/hw/uvrun
+    bash run2.sh ptruns off; bash run2.sh ptruns hw=<ip>      # 8 pages; archived in fit/hw/ptruns
+
+jgr_tree_shadows2's last differences were punch-through foliage whose coordinate was right standing alone (uvmeas
+dump_jgr2a: 92,952 of 92,952) and one unit off in the frame. A partial render of one tile into a 32 bit framebuffer
+(dumprender.sh reg=f4:400 reg=48:5 reg=4c:140, exact colours) put the run start of a resolved pixel at the first pixel
+of a modifier volume on its line, though the polygon has no shadow bit. Two rules, each of its own uvrun kind
+(pixels wrong of the 24 pages, refsw2 before / with the rule):
+
+| kind | what | before | after |
+|---|---|---|---|
+| 6 | opaque, no shadow bit, opaque volumes over the bands: runs end at a volume's edge all the same | 68,999 | 0 |
+| 7 | punch-through, no shadow bit, opaque volumes: every resolved pixel inside a volume is shaded again after the passes, with the polygon's own parameters, in runs over the pixels inside | 36,296 | 0 |
+| 8 | punch-through, cheap shadow (the documented second shading; control) | 0 | 0 |
+| 9 | translucent sorted per pixel, no shadow bit, translucent volumes: runs end at a volume's edge | 68,999 | 0 |
+| 10, 11 | translucent in the order sent, no shadow bit / cheap shadow, opaque volumes: runs do not end there (refsw2 had cut them for shadow polygons) | 0 / 68,999 | 0 / 0 |
+
+refsw2 = the console on all 24 pages. In the polly2 dumps: jgr_tree_shadows2 49 words to 4, jgr_tree_shadows 13
+to 6, jgr_car 7 to 2; sa2_ingame2, taxi3 and xtreme_intro the console's in all of video memory: 53 of 63.
+
+ptruns: a punch-through pixel that fails the alpha test is shaded again only where a later pass draws a polygon
+(refsw2 shaded it again in every later pass, from another run start, until the rewrite on the depth key). Steep
+triangles with uvmeas's texture in 1555, alpha 0 on every texel i with i % 5 == 2, so that a pixel shaded again from
+another run start reads another texel and may pass; the triangle alone, with a quad behind columns 0-15 (a later pass
+happens, the failed pixels at 16-31 have nothing new), behind the whole cell, and with failing bands in front.
+refsw2 = the console on 8 of 8 pages; with the old behaviour 21,827 to 35,681 pixels a page are wrong.
+
 ## alphafilt: the alpha of a bilinear sample at the edge of a transparent texel (2026-11-18)
 
     bash run2.sh alphafilt off; bash run2.sh alphafilt hw=<ip>    # 2 pages; archived in fit/hw/alphafilt

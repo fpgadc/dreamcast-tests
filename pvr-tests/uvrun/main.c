@@ -14,8 +14,18 @@
              (PT_ALPHA_REF 0xff): the triangle under them is shaded in a later pass
      kind 5  translucent list sorted per pixel (pre-sort bit 0); the bands are polygons behind the triangle, blend
              ONE, ZERO for both: where a band is, the triangle is the second layer of the pixel
+   Polygons a volume does not affect (no shadow bit), 2026-11-18 (polly2-data jgr_tree_shadows*, sa2_ingame2, taxi3,
+   xtreme_intro: their runs end at a volume's edge all the same, and punch-through pixels inside a volume are shaded
+   again):
+     kind 6  opaque list, no shadow bit, an opaque modifier volume over each band
+     kind 7  punch-through list (every pixel passes the alpha test), no shadow bit, opaque volumes over the bands
+     kind 8  punch-through list, cheap shadow (FPU_SHAD_SCALE 0x180), opaque volumes over the bands (the documented
+             second shading)
+     kind 9  translucent list sorted per pixel, no shadow bit, a translucent modifier volume over each band
+     kind 10 translucent list in the order sent, no shadow bit, opaque modifier volumes over the bands
+     kind 11 the same with cheap shadow (FPU_SHAD_SCALE 0x180)
    The PVR is driven directly (../../common/pvrtest2.h). */
-#define KINDS 6
+#define KINDS 12
 #define NUM_PAGES (2 * KINDS)
 #define TEST_MODIFIERS
 #include "pvr_params.h"
@@ -56,7 +66,7 @@ static void triangle(int kind, const tri_t *t) {
     ISP_TSP isp = { .full = 0 };
     TSP tsp = { .full = 0 };
     TCW tcw = { .full = 0 };
-    const int list = kind == 0 || kind == 5 ? ListType_Translucent : kind == 4 ? ListType_Punch_Through : ListType_Opaque;
+    const int list = kind == 0 || kind == 5 || kind >= 9 ? ListType_Translucent : kind == 4 || kind == 7 || kind == 8 ? ListType_Punch_Through : ListType_Opaque;
     int k;
 
     pcw.ParaType = ParamType_Polygon_or_Modifier_Volume;
@@ -64,10 +74,10 @@ static void triangle(int kind, const tri_t *t) {
     pcw.Group_En = 1;
     pcw.Strip_Len = 1;
     pcw.Texture = 1;
-    pcw.Shadow = kind >= 1 && kind <= 3;
+    pcw.Shadow = (kind >= 1 && kind <= 3) || kind == 8 || kind == 11;
     pcw.Volume = kind == 2 || kind == 3;
-    isp.DepthMode = kind == 0 ? DepthMode_Always : DepthMode_GreaterEqual;
-    isp.ZWriteDis = kind == 0;
+    isp.DepthMode = kind == 0 || kind >= 10 ? DepthMode_Always : DepthMode_GreaterEqual;
+    isp.ZWriteDis = kind == 0 || kind >= 10;
     isp.Texture = 1;
     tsp.SrcInstr = BlendInstr_One;
     tsp.DstInstr = BlendInstr_Zero;
@@ -122,8 +132,9 @@ static void band_quad(int list, int x, int y, int b, f32b z, uint32_t argb) {
     quad0(x + bands[b][0], y, bands[b][1], 32, z, argb);
 }
 
-/* an opaque modifier volume over band b: a rectangle of two triangles in front of everything, closed "inside" */
-static void band_volume(int x, int y, int b) {
+/* a modifier volume over band b (in list: opaque or translucent): a rectangle of two triangles in front of
+   everything, closed "inside" */
+static void band_volume(int list, int x, int y, int b) {
     const int x0 = x + bands[b][0], x1 = x0 + bands[b][1];
     int k;
     for(k = 0; k < 2; k++) {
@@ -131,7 +142,7 @@ static void band_volume(int x, int y, int b) {
         TA_ModVol v;
         memset(&m, 0, sizeof(m));
         m.pcw.ParaType = ParamType_Polygon_or_Modifier_Volume;
-        m.pcw.ListType = ListType_Opaque_Modifier_Volume;
+        m.pcw.ListType = list;
         m.isp.modvol.VolumeMode = k ? VolumeMode_Inside_Last : VolumeMode_Normal;
         m.isp.modvol.CullMode = CullMode_None;
         ta_send(&m, sizeof(m));
@@ -146,12 +157,15 @@ static void band_volume(int x, int y, int b) {
 
 static void test_page(int page) {
     const int kind = page / 2;
-    const int list = kind == 0 || kind == 5 ? ListType_Translucent : kind == 4 ? ListType_Punch_Through : ListType_Opaque;
+    const int list = kind == 0 || kind == 5 || kind >= 9 ? ListType_Translucent : kind == 4 || kind == 7 || kind == 8 ? ListType_Punch_Through : ListType_Opaque;
+    const int volumes = kind == 1 || kind == 2 || kind == 6 || kind == 7 || kind == 8 || kind >= 10 ? ListType_Opaque_Modifier_Volume
+                      : kind == 9 ? ListType_Translucent_Modifier_Volume : -1;
     int i, b, n;
 
-    pvr_cfg.pre_sort = kind == 5 ? 0 : 1;
+    pvr_cfg.pre_sort = kind == 5 || kind == 9 ? 0 : 1;
     pvr_region_write(0);
-    pvrio_reg(FPU_SHAD_SCALE_addr, kind == 1 ? 0x180u : 0x001u);
+    pvrio_reg(FPU_SHAD_SCALE_addr, kind == 1 || kind == 8 || kind == 11 ? 0x180u : 0x001u);
+    pvrio_reg(PT_ALPHA_REF_addr, 0xff);
     ta_list_begin(list);
     for(i = 0, n = 0; i < NUM_TRIS; i++) {
         const tri_t *t = &tris[i];
@@ -166,13 +180,13 @@ static void test_page(int page) {
         n++;
     }
     ta_list_end();
-    if(kind == 1 || kind == 2) {
-        ta_list_begin(ListType_Opaque_Modifier_Volume);
+    if(volumes >= 0) {
+        ta_list_begin(volumes);
         for(i = 0, n = 0; i < NUM_TRIS; i++) {
             if(tris[i].page != page)
                 continue;
             for(b = 0; b < 2; b++)
-                band_volume(cell_px(n), cell_py(n), b);
+                band_volume(volumes, cell_px(n), cell_py(n), b);
             n++;
         }
         ta_list_end();
