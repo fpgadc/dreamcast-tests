@@ -39,6 +39,8 @@ static void pvrio_dump32(uint32_t addr, int words, const char *name, const char 
    interrupts (SB_ISTNRM bits 7-10 and 21) and the error interrupts (SB_ISTERR bits) seen since the last call */
 static void pvrio_dump_ta_state(const char *name, const char *suffix);
 static uint32_t pvrio_ta_events(void);                      /* list-done bits seen so far (on a PC: all of them) */
+/* instead of the two dumps: one line "PVRIO hash <name> <crc>", CRC-32 of the area and then of the four state words */
+static void pvrio_ta_hash(uint32_t addr, int words, const char *name);
 static void pvrio_close(void);
 #define PVRIO_TA_EVENTS         ((0xfu << 7) | (1u << 21))
 
@@ -74,6 +76,7 @@ static void pvrio_hw_ta(const uint32_t *words, int count);
 static void pvrio_hw_wait(uint32_t events);
 static void pvrio_hw_dump32(uint32_t addr, int words, const char *name, const char *suffix);
 static void pvrio_hw_dump_ta_state(const char *name, const char *suffix);
+static void pvrio_hw_ta_hash(uint32_t addr, int words, const char *name);
 static void pvrio_hw_say(const char *text);
 
 static void pvrio_reg(uint32_t addr, uint32_t value) {
@@ -106,6 +109,24 @@ static void pvrio_dump32(uint32_t addr, int words, const char *name, const char 
     snprintf(line, sizeof(line), "PVRIO crc %08x before %s", (unsigned)pvrio_crc, name);
     pvrio_hw_say(line);
     pvrio_hw_dump32(addr, words, name, suffix);
+}
+static void pvrio_ta_hash(uint32_t addr, int words, const char *name) {
+    pvrio_hw_ta_hash(addr, words, name);
+}
+static uint32_t pvrio_crc32_words(uint32_t crc, const uint32_t *w, int n) {     /* CRC-32 steps, crc starts at ~0 */
+    static uint32_t table[256];
+    int i, k;
+    if(!table[1])
+        for(i = 0; i < 256; i++) {
+            uint32_t v = (uint32_t)i;
+            for(k = 0; k < 8; k++)
+                v = (v & 1) ? 0xedb88320u ^ (v >> 1) : v >> 1;
+            table[i] = v;
+        }
+    for(i = 0; i < n; i++)
+        for(k = 0; k < 32; k += 8)
+            crc = table[(crc ^ (w[i] >> k)) & 255] ^ (crc >> 8);
+    return crc;
 }
 static void pvrio_dump_ta_state(const char *name, const char *suffix) {
     char line[160];
@@ -187,6 +208,10 @@ static void pvrio_hw_dump_ta_state(const char *name, const char *suffix) {
 
 static uint32_t pvrio_ta_events(void) {
     return PVRIO_TA_EVENTS;
+}
+
+static void pvrio_hw_ta_hash(uint32_t addr, int words, const char *name) {
+    printf("tahash %06x %x %s\n", (unsigned)addr, (unsigned)words, name);
 }
 
 static void pvrio_hw_say(const char *text) {
@@ -361,6 +386,27 @@ static void pvrio_hw_dump_ta_state(const char *name, const char *suffix) {
 
 static uint32_t pvrio_ta_events(void) {
     return pvrio_seen_events & PVRIO_TA_EVENTS;
+}
+
+static void pvrio_hw_ta_hash(uint32_t addr, int words, const char *name) {
+    static uint32_t copy[4096];
+    const volatile uint32_t *src = (const volatile uint32_t *)(0xa5000000 + addr);
+    uint32_t crc = 0xffffffffu, w[4];
+    int i, n, old;
+    for(i = 0; i < words; i += n) {
+        n = words - i < 4096 ? words - i : 4096;
+        { int k; for(k = 0; k < n; k++) copy[k] = src[i + k]; }
+        crc = pvrio_crc32_words(crc, copy, n);
+    }
+    w[0] = *(volatile uint32_t *)(0xa05f8000 + TA_ISP_CURRENT_addr);
+    w[1] = *(volatile uint32_t *)(0xa05f8000 + TA_NEXT_OPB_addr);
+    old = irq_disable();
+    w[2] = pvrio_seen_events & PVRIO_TA_EVENTS;
+    w[3] = pvrio_seen_errors;
+    pvrio_seen_events = pvrio_seen_errors = 0;
+    irq_restore(old);
+    crc = pvrio_crc32_words(crc, w, 4);
+    printf("PVRIO hash %s %08lx\n", name, (unsigned long)~crc);
 }
 
 static void pvrio_hw_say(const char *text) {

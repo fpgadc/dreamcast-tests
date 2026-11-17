@@ -2036,6 +2036,23 @@ infinite and NaN corner, user clip inside and outside and clip order is the mode
 
 TA_NEXT_OPB reads in words (0x401e0 for 0x100780), as tacore.cpp has it.
 
+**The sprays (2026-11-17)**, after the fixed cases: every combination of PCW bits 0-7 in its documented format
+(16 cases), every reserved PCW bit of headers and vertices, every float colour boundary (k/256 and k/255 with
+their neighbours, every exponent: about 2,560 values, packed and textured with offset), the whole face colour x
+intensity table (256 x 771), every tile boundary at -1/2, -1 ulp, 0, +1 ulp, +1/2 and every exponent as a
+coordinate, and 200 seeded fuzz cases of random but well-formed streams (lines "TAFEAT" say what each used).
+First console run: the boundaries and the reserved bits all as tacore.cpp has them; the combinations differ only
+where Volume comes without Shadow and where an intensity is NaN; fuzz 21 of 200, not yet sorted.
+
+**The long fuzz is kept as hashes** (`TA_LONG`, 10,000 cases by default, seeds 200 on): each case prints one
+line "PVRIO hash c<case> <crc>", CRC-32 of its 32 KB area and then of the four state words, computed on the
+console itself (pvrio_ta_hash; refsw2-offline's `tahash`), so that no dump crosses the network. archive_hw.sh
+keeps those lines in fit/hw/ta-tests/hashes.txt.gz, and compare_dumps.py compares them with the offline run's
+and sorts the different ones by what they used. The last case is the first long one again, dumped: its CRC
+computed from the dump has to be its hash, on each side (a check of the two CRCs). A different long case is
+looked at by running its seed with dumps. Offline, the 10,000 take about a second.
+
+
 ## faredge: edges whose far corner is past 2^127 (2026-11-17)
 
     bash run2.sh faredge off hw=<ip>         # 36 pages; console log in fit/faredge_logs (lines "FE")

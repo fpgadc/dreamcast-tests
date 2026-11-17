@@ -9,6 +9,7 @@ interrupts), the parameters and the object lists. -q: only the last line; -v: th
 differing case; --case N: one case, in full."""
 import gzip
 import re
+import zlib
 import sys
 from pathlib import Path
 
@@ -139,6 +140,22 @@ for log in (RUN / "off.log",):
             if m:
                 feats[int(m.group(1))] = int(m.group(2), 16)
 fuzz_rows = []                                  # (case, same, features)
+def hashes(kind):
+    """{case: crc} of the long fuzz"""
+    if kind == "ref":
+        f = HERE.parent / "fit/hw/ta-tests/hashes.txt.gz"
+        text = gzip.open(f, "rt").read() if f.exists() else ""
+    else:
+        f = RUN / ("build/hw.log" if kind == "hw" else "off.log")
+        text = f.read_text(errors="replace") if f.exists() else ""
+    out = {}
+    for l in text.splitlines():
+        m = re.fullmatch(r"PVRIO hash c(\d+) ([0-9a-f]{8})", l.strip())
+        if m:
+            out[int(m.group(1))] = int(m.group(2), 16)
+    return out
+
+
 cases = sorted(labels)
 ran = same = 0
 groups = {}                                     # name without its number: [cases, same]
@@ -196,6 +213,30 @@ for n in cases:
                     print(f"        {LISTS[k[0]]} ({k[1]}, {k[2]}): {'; '.join(v)}")
     elif in_ol:
         print(f"      object lists: {len(in_ol)} words differ (no TACFG for this case)")
+# ---- the long fuzz: hashes ----
+ha, hb = hashes(A), hashes(B)
+long_same = sum(1 for k in ha if k in hb and ha[k] == hb[k])
+long_both = sum(1 for k in ha if k in hb)
+if ha and hb and not quiet:
+    long_cases = sorted(k for k in ha if k in hb)
+    first_long = long_cases[0]
+    check = [n for n, (nm, _) in labels.items() if nm == "lfuzz_check"]
+    for kind, hs in ((A, ha), (B, hb)):         # the dumped repeat of the first long case: its CRC as the hash says
+        if check:
+            m, st = load(kind, f"c{check[0]:03d}"), load(kind, f"c{check[0]:03d}s")
+            if m is not None and st is not None:
+                crc = zlib.crc32(np.concatenate([m, st]).astype("<u4").tobytes())
+                print(f"long fuzz, CRC check ({kind}): dump of the first case again {crc:08x}, its hash {hs.get(first_long, 0):08x}"
+                      + ("  ok" if crc == hs.get(first_long) else "  <-- DIFFERENT"))
+    bad = [k for k in long_cases if ha[k] != hb[k]]
+    print(f"long fuzz: {A} = {B} in {long_same} of {long_both} hashed cases")
+    if bad:
+        print("  the different ones by what they used:")
+        for b, name in enumerate(FEATS):
+            d = sum(1 for k in bad if feats.get(k, 0) >> b & 1)
+            print(f"    {name:28s} {d:5d} of {len(bad)}")
+        une = [k for k in bad if not feats.get(k, 0) & KNOWN]
+        print(f"    with none of the known differences' features: {len(une)}: {une[:30]}")
 if fuzz_rows and not quiet:
     print("fuzz cases by what they used (different / same):")
     for b, name in enumerate(FEATS):
@@ -206,4 +247,5 @@ if fuzz_rows and not quiet:
     print(f"    different with none of the known differences' features: {len(unexplained)}: {unexplained[:40]}")
 if not quiet:
     print("by group: " + ", ".join(f"{g} {v[1]} of {v[0]}" for g, v in groups.items()))
-print(f"ta-tests: {A} = {B} in {same} of {ran} cases (state {tally['state']}, parameters {tally['params']}, object lists {tally['lists']})")
+print(f"ta-tests: {A} = {B} in {same} of {ran} cases (state {tally['state']}, parameters {tally['params']}, object lists {tally['lists']})"
+      + (f"; long fuzz {long_same} of {long_both}" if long_both else ""))

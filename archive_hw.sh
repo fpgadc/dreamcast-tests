@@ -9,5 +9,7 @@ for t in "$@"; do
   rm -rf fit/hw/$t; mkdir -p fit/hw/$t
   for f in $W/*.hw.raw $W/*.hw16.raw; do [ -f $f ] && gzip -c $f > fit/hw/$t/$(basename $f).gz; done
   cp $W/hw.crc fit/hw/$t/hw.crc
+  grep -a '^PVRIO hash' $W/build/hw.log 2>/dev/null | tr -d '\r' | gzip > fit/hw/$t/hashes.txt.gz      # hashed cases (ta-tests)
+  [ -n "$(zcat fit/hw/$t/hashes.txt.gz | head -1)" ] || rm -f fit/hw/$t/hashes.txt.gz
   echo "$t: $(ls fit/hw/$t/*.gz | wc -l) pages archived"
 done

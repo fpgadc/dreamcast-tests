@@ -18,7 +18,10 @@
 #ifndef TA_ERRORS
 #define TA_ERRORS 0                 /* 1: the cases of bad input, and only those */
 #endif
-#define NUM_PAGES 588               /* for run2.sh: dump files of a run without TA_ERRORS (two per case) */
+#define NUM_PAGES 590               /* for run2.sh: dump files of a run without TA_ERRORS (two per case) */
+#ifndef TA_LONG
+#define TA_LONG 10000               /* fuzz cases after the dumped ones, hashed: one "PVRIO hash" line each */
+#endif
 
 #define FILL        0xa5a5a5a5u
 #define AREA        0x100000u
@@ -54,6 +57,7 @@ static tacfg_t cfg(void) {
 static int case_no, cur_list = -1;
 static uint32_t case_want;
 static int dump_words = AREA_WORDS;     /* from AREA: as far as the case's lists and parameters may reach */
+static int hash_mode;                   /* the long fuzz: a hash of the case's area and TA state instead of dumps */
 
 static void begin(const tacfg_t *c) {
     TA_GLOB_TILE_CLIP_type clip = { .full = 0 };
@@ -78,7 +82,10 @@ static void begin(const tacfg_t *c) {
     pvrio_reg(TA_ALLOC_CTRL_addr, alloc.full);
     pvrio_reg(TA_NEXT_OPB_INIT_addr, c->opb_init);
     pvrio_reg(TA_LIST_INIT_addr, 0x80000000u);
-    {                                           /* for compare.py: how to read this case's dump */
+#ifdef _arch_dreamcast
+    if(!hash_mode)                              /* (the offline run says it for hashed cases: less to print here) */
+#endif
+    {                                           /* for compare_dumps.py: how to read this case's dump */
         char line[200];
         snprintf(line, sizeof(line), "TACFG %d %d %d %d %d %d %d %d %d %x %x %x %x %x", case_no, c->tx, c->ty, c->opb[0], c->opb[1],
                  c->opb[2], c->opb[3], c->opb[4], c->down, (unsigned)c->ol_base, (unsigned)c->ol_limit, (unsigned)c->opb_init,
@@ -99,12 +106,17 @@ static void finish(void) {
     char name[16];
 #ifdef _arch_dreamcast
     uint64_t t0 = timer_ms_gettime64();
-    while((pvrio_ta_events() & case_want) != case_want && timer_ms_gettime64() - t0 < 100)
+    while((pvrio_ta_events() & case_want) != case_want && timer_ms_gettime64() - t0 < (hash_mode ? 20u : 100u))
         ;
     t0 = timer_ms_gettime64();
     while(timer_ms_gettime64() - t0 < 2)
         ;
 #endif
+    if(hash_mode) {
+        snprintf(name, sizeof(name), "c%05d", case_no);
+        pvrio_ta_hash(AREA, dump_words, name);
+        return;
+    }
     snprintf(name, sizeof(name), "c%03d", case_no);
     pvrio_dump32(AREA, dump_words, name, ".raw");
     snprintf(name, sizeof(name), "c%03ds", case_no);
@@ -1180,6 +1192,9 @@ static void c_fuzz(int i) {
         list_of(list);
         eol();
     }
+#ifdef _arch_dreamcast
+    if(!hash_mode)
+#endif
     {
         char line[64];
         snprintf(line, sizeof(line), "TAFEAT %d %x", case_no, (unsigned)ffeat);
@@ -1319,6 +1334,10 @@ int main(int argc, char **argv) {
         for(g = 0; g < NGROUPS; g++)
             for(k = 0; k < groups[g].count; k++)
                 printf("CASE %d %s_%03d 0\n", n++, groups[g].name, k);
+        for(k = 0; k < TA_LONG; k++)
+            printf("CASE %d lfuzz_%05d 0\n", n++, k);
+        if(TA_LONG)
+            printf("CASE %d lfuzz_check 0\n", n++);
         return 0;
     }
     if(argc > 1)
@@ -1337,6 +1356,17 @@ int main(int argc, char **argv) {
         for(g = 0; g < NGROUPS; g++)
             for(k = 0; k < groups[g].count; k++, case_no++)
                 groups[g].fn(k);
+        hash_mode = 1;                          /* the long fuzz: seeds after the 200 dumped ones */
+        for(k = 0; k < TA_LONG; k++, case_no++)
+            c_fuzz(200 + k);
+        hash_mode = 0;
+        if(TA_LONG)                             /* the first long fuzz case again, dumped: its hash checks the CRC */
+            c_fuzz(200);
+        {
+            char line[64];
+            snprintf(line, sizeof(line), "PVRIO crc %08x before end", (unsigned)pvrio_crc);
+            pvrio_hw_say(line);
+        }
     }
     pvrio_reg(SOFTRESET_addr, 1);
     pvrio_reg(SOFTRESET_addr, 0);
