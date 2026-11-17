@@ -88,6 +88,7 @@ static bool set_field(pvrtsp::PlaneConfig& cfg, const std::string& name, int val
 
 // the model's reading for every reading of the set; returns how many are the console's
 static bool summary = false;
+static long zeroDen = 0, zeroDenRight = 0, zeroNum = 0, zeroNumRight = 0;     // readings where the model's 1/w, U/w is exactly 0
 static int onlyFrom = 0, onlyTo = 1 << 30;      // --only a-b: score these triangles only
 static long score(const Set& s, const pvrtsp::PlaneConfig& cfg, int misses, bool cells)
 {
@@ -138,6 +139,8 @@ static long score(const Set& s, const pvrtsp::PlaneConfig& cfg, int misses, bool
                     got = !(den > 0) ? 1023 : texel(q);
                 }
             }
+            if (dbgW.zero() && !w.bad) { zeroDen++; zeroDenRight += got == s.t[r]; }
+            if (dbgU.zero() && !u.bad) { zeroNum++; zeroNumRight += got == s.t[r]; }
             if (summary)
                 gots.push_back(got);
             if (got == s.t[r])
@@ -206,6 +209,8 @@ int main(int argc, char** argv)
             if (scan_name.empty())
                 printf("%-12s model = console on %ld of %zu readings%s\n", s.name.c_str(), n, s.ti.size(), n == (long)s.ti.size() ? "" : "   <--");
         }
+        if (zeroDen || zeroNum)
+            printf("readings with 1/w exactly 0: %ld (%ld right); with U/w exactly 0: %ld (%ld right)\n", zeroDen, zeroDenRight, zeroNum, zeroNumRight);
         if (!scan_name.empty())
             printf("%s = %d: %ld of %ld\n", scan_name.c_str(), v, right, total);
         else if (sets.size() > 1)

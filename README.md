@@ -1533,9 +1533,11 @@ else might clear it within a tile, the automatic sort.
 
 ## The TSP's numbers at their limits: zero, infinity, and a 1/w below zero (2026-11-17)
 
-    python3 uvmeas/gen.py --mix whuge|wtiny|wneg|wspec     # with wexp: 1/w at every size and of every kind
-    python3 cmeas/gen.py --mix wext                        # colours at the same depths
-    bash measure.sh uvmeas <name> --mix ...                # archived: wexp1, whuge1, wtiny1, wneg1, wspec1; cmeas cwext1
+    python3 uvmeas/gen.py --mix whuge|wtiny|wneg|wspec|wzero|wzero2   # with wexp: 1/w at every size and of every kind
+    python3 cmeas/gen.py --mix wext|wsum                   # colours at the same depths; the sums at the bottom of the range
+    python3 mipmeas/gen.py --mix wext                      # the mipmap level at such depths
+    bash measure.sh uvmeas <name> --mix ...                # archived: uvmeas wexp1, whuge1, wtiny1, wneg1, wspec1, wzero1,
+                                                           # wzero2; cmeas cwext1, cwsum1; mipmeas mwext1
     model/tspprobe [--cells] [--summary] [--misses N] [--only a-b] [range=0] fit/uvmeas_data/<set>.uvm
 
 This replaces the section "The TSP at very small 1/w: there is no zero" (2026-11-16), which had one of its
@@ -1543,7 +1545,9 @@ rules wrong. Five sets of texture coordinates (3,900,000 readings) and one of co
 depths of 2^-149 to 2^127, below zero, zero, infinite and NaN are reproduced reading for reading by the model
 (`pvr_tsp_plane.h`) and by refsw2-offline, together with every earlier set: uvmeas 29 sets, 22,080,053
 readings; cmeas 2 sets; and covmeas, whose 8 open sets are right now (98 of 98). The same limits in the ISP's
-depth setup make `huge` the console's in all 250 regions.
+depth setup make `huge` the console's in all 250 regions. A second round (the corners that the first left
+unmeasured) added uvmeas wzero1 and wzero2, cmeas cwsum1 and mipmeas mwext1, and made `hugepos` exact:
+uvmeas 31 sets, 23,640,053 readings; cmeas 3 sets; mipmeas 6 sets; all the console's.
 
 **The numbers of the setup** have a sign, an exponent field of 8 bits and a mantissa, and two of the 256
 exponents are not numbers:
@@ -1556,8 +1560,9 @@ exponents are not numbers:
 - **The last addition of a three term sum**, (t1 + t2) + t3: when one of the two operands is zero and the
   other is 2^-126 .. 2^-125, the zero is added as 2^-127 with its sign. -2.5 * 2^-127 + 0 comes out as
   -1.5 * 2^-127, which is below the range, so +0, and the slope made of it gets the other sign. In t1 + t2 a
-  zero is a zero. (5 cells of wtiny1, 21 of cwext1, one of them telling the two additions apart. Whether
-  the upper limit is 2^-125 or 2^-124 is not told.)
+  zero is a zero. (5 cells of wtiny1, 21 of cwext1, one of them telling the two additions apart; cwsum1,
+  with the zero term in every place: 2,340,000 of 2,340,000, against 2,335,162 if a zero counted in t1 + t2
+  too and 2,318,225 without the rule. Whether the upper limit is 2^-125 or 2^-124 is still not told.)
 - Infinity is sticky and beats everything except zero and its opposite, so one overflowing product is
   enough: U * 1/w * (x1 y2 - x2 y1) reaching 2^128 makes the whole U/w plane an infinity or, with a second
   one of the other sign, a zero.
@@ -1568,7 +1573,9 @@ With every product overflowing, both planes are -2^-128 - 2^-127 (x + y) on one 
 readings in a joint fit), and the texel is the same for any depth and any U. The grid of a tile counts these
 two as the numbers they are read as. The value at the pixel becomes a float again with an exponent of at
 least -128: below 2^-128 the mantissa is kept and the exponent stays. A value of -1 grid unit (every bit
-set, no leading bit to find) is -2^-128; 0 is taken to be +2^-128 (no reading tells).
+set, no leading bit to find) gets the smallest exponent with a mantissa of -1 in its last place: -2^-143
+(wzero1: four readings that -2^-128 got wrong; all that is told is that it is below 2^-130). A value of 0
+stays 0.
 
 **The divider** takes any denominator:
 
@@ -1578,6 +1585,10 @@ set, no leading bit to find) is -2^-128; 0 is taken to be +2^-128 (no reading te
   quotient has the sign of the numerator alone. wneg1: 780,000 of 780,000 readings with 1/w of -2^-6 .. -2^8
   and with both signs inside one triangle.
 - A quotient below zero stays below zero however small: its texel is the one before 0.
+- **A numerator of 0 gives 0**, whatever the denominator (`hugepos` triangle c: the one pixel where both
+  planes are exactly 0 is black, not white). **A denominator of 0** under a numerator that is not is read as
+  2^-128, like everything else without a leading bit (wzero2: 1/w falls through exactly 0 on a diagonal of
+  each cell, 32,784 readings there; 2^-127 and 2^-129 each get 23,000 fewer).
 - There is no "1/w that is not above zero gives the largest result" (the rule of 2026-11-16). What looked
   like it: with a zero, denormal, infinite or NaN depth both planes are the same zeros (or infinities), the
   quotient is one unit under 1, and that is texel 1023, or white.
@@ -1599,6 +1610,30 @@ draws one triangle of a quad and not the other; with these rules the two triangl
 of opposite sign, and `huge` matches in 250 of 250 regions. An infinite determinant (corners at 2^64 and
 beyond) is taken to give a depth of 0: a guess, which one pixel of `modvol` needs and nothing contradicts.
 
+**The reciprocal of the determinant has the range too.** Of a determinant above 2^126 it is below 2^-126, so
+zero, and every coefficient of the TSP's planes is a zero with the sign of its sum times the determinant's.
+That is the `hugepos` limit that was not modelled: triangle c (determinant -2^127.4) is black, the quotient of
+two planes below zero; b (+2^127.7) is white exactly where x <= y, where -2^-127 x + 2^-127 y + 2^-127 is
+above zero. `hugepos` (triangle c, archived): 16 of 16 pages. Triangles a and b, and the three together in
+the translucent list, were run on the console again: b exact, a and the three together exact up to 2^124;
+at 2^125, where a coordinate difference itself overflows in the edge unit, the console draws 4 pixels at
+the origin and refsw2 one (neither saturating that difference nor zeroing it gives the 4).
+
+**The mipmap level** (mipmeas mwext1: 2400 quads with flat 1/w of 2^-126 .. 2^127, below zero, zero,
+infinite and NaN, several ratios, biases and both passes; 4,147,200 of 4,147,200 colour values, the five
+earlier sets unchanged). The level's numerators, a_u c_w - c_u a_w and the like, are made of the planes'
+sums before their division by the determinant, and the limits apply to those products: with a flat 1/w = z
+on a 32x32 quad a product is about z^2 2^15.6, so it is an infinity from z = 2^57 on and zero below
+z = 2^-60. Infinity minus infinity is zero; zero times infinity is zero. Then:
+
+- K, the longer length times the bias, gets the texture's size added to its exponent field without a look
+  at what the field means: a zero (field 0) becomes 2^(-127 + size), an infinity (field 255) wraps to
+  2^(-128 + size). Below 2^-60 the level climbs by two for every halving of z, up to the smallest map;
+  above 2^56 it is the largest map with no blending; near the top w * w is small again and the level climbs.
+- w * w (8 bits) does not leave the range: its exponent stops at 127 and the mantissa is kept.
+- The sign of 1/w does not matter: w is the divider's reciprocal of the denominator as it reads it
+  (DenominatorSeen), and its sign is dropped.
+
 How it was found, in case it has to be done again: wexp1 has the exponent tied to the place on the screen,
 which hides what depends on what; the new mixes draw exponent, size of U, winding and place independently.
 On the winding where the planes fall with x + y, a denominator below zero makes the reading depend strongly
@@ -1618,15 +1653,20 @@ times 2^-8, no special case for a 1/w that is not positive, a tiny negative quot
 | cmeas cwext1 | 1,468,125 of 2,340,000 | 2,340,000 |
 | covmeas | 90 of 98 sets | 98 |
 | huge | 195 of 250 regions | 250 (228 with the TSP's rules alone) |
+| hugepos (triangle c) | 9 of 16 pages | 16 |
+| uvmeas wzero1, wzero2 | 779,996 / 757,439 of 780,000 | 780,000 each |
+| cmeas cwsum1 | 2,318,225 of 2,340,000 without the last-addition rule | 2,340,000 |
+| mipmeas mwext1 | 2,127,698 of 4,147,200 | 4,147,200 |
 
-Not measured: a first term of zero in a three term sum next to a term of 2^-126 (the vertex orders of these
-sets do not make one); an infinite coordinate or determinant, in either unit; the mipmap level at such
-depths; the ISP's stored depth as a number at these depths (zmeas has no such set: what is known is which
-pixels pass, from `huge`).
+Still not measured: whether the limit of the last-addition rule is 2^-125 or 2^-124; an infinite
+coordinate, and an infinite determinant in the ISP (the depth of 0 above is a guess); the edge unit when a
+coordinate difference overflows (the 3 pixels of `hugepos` a at 2^125); the ISP's stored depth as a number
+at these depths (zmeas has no such set: what is known is which pixels pass, from `huge`); the mipmap level
+with DCalcCtrl 1 at such depths (an infinite or NaN first vertex gives level 0 in refsw2, a guess).
 
 What refsw2-offline does not reproduce after this: `accbuf` (the two tile buffers are not modelled),
-`blendpos` (69 regions that differ from run to run on the console), `hugepos` (7 of 16 pages: edges with
-corners beyond 2^112), `modvol` (5 regions of two-volume polygons) and one depth bracket of zmeas `zero6`.
+`blendpos` (69 regions that differ from run to run on the console), `modvol` (5 regions of two-volume
+polygons) and one depth bracket of zmeas `zero6`.
 
 ## The generators are C++ programs on the refsw2 headers (2026-11-16)
 

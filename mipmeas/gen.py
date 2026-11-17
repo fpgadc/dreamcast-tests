@@ -33,6 +33,15 @@ in 18 steps for each size, which brackets the level value finely.
 page 0  legs (32, b), b = 17 .. 32      page 1  (a, 32)      page 2  (b, b)      page 3  (24, b)
 page 4  (32, b) with bias 5/4           page 5  (b, 20)      page 6  (17 .. 32, 17 .. 32) random
 page 7  (32, b), ratio around 1.25
+
+--mix wext: the level at depths that are not ordinary (flat 1/w; pass B and bias 4/4 unless said). With 1/w = z
+the level comes from products like z * z, which leave the range of the TSP's numbers long before z does.
+page 0  ratio 3, z = 2^(c - 126) for cells 0-253, then denormals, the largest numbers, infinity, NaN, zero and
+        numbers below zero                       page 1  the same, pass A
+page 2  ratio 1.5, z = 1.5 * 2^(c - 126)         page 3  ratio 6, z = 2^(c - 126)
+page 4  ratio 3, z = -2^(c - 126)                page 5  ratio 3, bias 8/4, z = 2^(c - 126)
+page 6  ratio 1 .. 8, z of any exponent with a 16 bit mantissa
+page 7  ratio 3, z with 24 bit mantissas at 2^-70 .. 2^-58 (cells 0-149) and 2^58 .. 2^70
 """
 import argparse
 import json
@@ -180,13 +189,38 @@ def pages_dcalc(rng):
     return pages
 
 
+def pages_wext(rng):
+    m24 = lambda: float(rng.integers(1 << 23, 1 << 24)) / (1 << 23)
+    f32 = lambda v: float(np.float32(v))
+    bits = lambda b: float(np.uint32(b).view(np.float32))
+    special = [bits(0x00400000), bits(0x00000001), bits(0x007fffff), bits(0x7f7fffff), float("inf"), float("nan"), 0.0, -0.0, float("-inf"),
+               -1.0, f32(-2.0 ** -100), f32(-2.0 ** 100), bits(0x7f400000), bits(0x00800000), bits(0x80800000), bits(0xff7fffff)]
+    pages = []
+    for p in range(PAGES):
+        cells = []
+        for c in range(300):
+            pw = f32(2.0 ** (c - 126)) if c < 254 else special[(c - 254) % len(special)]
+            if p == 0: q = case(3, 3, 4, 3, pw, "wext ratio 3")
+            elif p == 1: q = case(3, 3, 4, 2, pw, "wext ratio 3 pass A")
+            elif p == 2: q = case(1.5, 1.5, 4, 3, f32(1.5 * pw) if c < 254 else pw, "wext ratio 1.5")
+            elif p == 3: q = case(6, 6, 4, 3, pw, "wext ratio 6")
+            elif p == 4: q = case(3, 3, 4, 3, -pw if c < 254 else pw, "wext ratio 3, below zero")
+            elif p == 5: q = case(3, 3, 8, 3, pw, "wext ratio 3 bias 8")
+            elif p == 6: q = case(2.0 ** rng.uniform(0, 3), 2.0 ** rng.uniform(0, 3), 4, 3,
+                                  f32(float(rng.integers(1 << 15, 1 << 16)) / (1 << 15) * 2.0 ** int(rng.integers(-126, 128))), "wext random")
+            else: q = case(3, 3, 4, 3, f32(m24() * 2.0 ** (int(rng.integers(-70, -57)) if c < 150 else int(rng.integers(58, 71)))), "wext edges")
+            cells.append(q)
+        pages.append(cells)
+    return pages
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=1)
-    ap.add_argument("--mix", default="first", choices=["first", "w", "det", "det2", "dcalc"])
+    ap.add_argument("--mix", default="first", choices=["first", "w", "det", "det2", "dcalc", "wext"])
     args = ap.parse_args()
     rng = np.random.default_rng(args.seed)
-    pages = {"w": pages_w, "det": pages_det, "det2": pages_det2, "dcalc": pages_dcalc}.get(args.mix, pages_first)(rng)
+    pages = {"w": pages_w, "det": pages_det, "det2": pages_det2, "dcalc": pages_dcalc, "wext": pages_wext}.get(args.mix, pages_first)(rng)
     write(HERE, {"seed": args.seed, "mix": args.mix, "pages": pages})
     print(f"seed {args.seed} mix {args.mix}: {PAGES} pages, {sum(len(p) for p in pages)} quads")
 

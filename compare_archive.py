@@ -37,7 +37,7 @@ if test == "zmeas":         # its readings are brackets (lo, hi) of the stored d
 h = np.load(HERE / f"fit/{test}_data/{name}.npz")
 e = np.load(d / (f"{test}.npz" if kind == "hw" else f"{test}.{kind}.npz"))
 same, measured = TESTS[test]
-if any(h[k].shape != e[k].shape or not (h[k] == e[k]).all() for k in same):
+if any(h[k].shape != e[k].shape or not np.array_equal(h[k], e[k], equal_nan=h[k].dtype.kind == "f") for k in same):      # a NaN depth is the same case
     sys.exit(f"{test} {name}: this run is not of the archived cases")
 parts = []
 for k in measured:

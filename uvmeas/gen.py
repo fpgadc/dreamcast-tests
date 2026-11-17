@@ -36,6 +36,10 @@ the TSP's division by 1/w stop working?
 --mix whuge, wtiny, wneg, wspec: what wexp found, taken apart (see the functions): very large and very small 1/w
 not tied to the place on the screen, 1/w below zero, and the depths that are not ordinary numbers. A depth can
 be given as its bits ("zbits" in cases.json), so that every NaN reaches the console as it is.
+--mix wzero: a 1/w that is exactly 0 at pixel centers, under a U/w that is not. 1/w = s (X - x0 - k - 1/2) along x
+(pages 0-3) or the same along y (4-7), zero on column (row) k = 8 .. 23 of the cell, s = 2^-126 .. 2^-119, and
+U changing the other way, so that U/w on that column is d s (k + 1/2) (j + 1/2) / 32, some units of 2^-127.
+What does the divider make of a denominator of 0? Odd cells have the other winding.
 """
 import argparse
 import json
@@ -281,6 +285,56 @@ def wspec_pages(rng):
     return pages
 
 
+def wzero2_pages(rng):
+    """1/w = s ((X - x0) + (Y - y0) - K - 1): exactly 0 at the pixel centers of the diagonal i + j = K of the cell,
+    with both slopes numbers (a slope that is zero counts as 2^-127 and moves the crossing off the centers, which
+    is what was wrong with wzero). U changes along x: on the diagonal U/w = d s (31 - K) (i + 1/2) / 32."""
+    pages = []
+    for p in range(PAGES):
+        tris = []
+        for cell in range(300):
+            ccw = cell % 2 == 1
+            K, e = int(rng.integers(8, 26)), int(rng.integers(-126, -116)) if p < 6 else int(rng.integers(-20, 4))
+            s = 2.0 ** e
+            lo, hi = -(K + 1.0) * s, (31.0 - K) * s
+            u0 = float(rng.integers(64 * 256, 128 * 256)) / 256.0
+            d = float(rng.choice([-8, -4, -2, -1, 1, 2, 4, 8])) * 2.0 ** int(rng.integers(-2, 3))
+            z3, u3 = [lo, hi, hi], ([u0, u0 + d, u0] if p % 2 == 0 else [u0, u0, u0 + d])      # TL, TR, BL
+            t = tri_of(cell, f32(u3), ccw, "wzero2", 6)
+            zz = [z3[0], z3[2], z3[1]] if ccw else z3
+            t["z"] = [float(np.float32(v)) for v in zz]
+            t["zbits"] = [int(np.float32(v).view(np.uint32)) for v in zz]
+            t["zname"] = "zero on %d, 2^%d" % (K, e)
+            tris.append(t)
+        pages.append(tris)
+    return pages
+
+
+def wzero_pages(rng):
+    pages = []
+    for p in range(PAGES):
+        tris = []
+        for cell in range(300):
+            ccw = cell % 2 == 1
+            k, e = int(rng.integers(8, 24)), int(rng.integers(-126, -118))
+            s = 2.0 ** e
+            lo, hi = -(k + 0.5) * s, (31.5 - k) * s                # 1/w at the near and the far side of the cell
+            u0 = float(rng.integers(64 * 256, 128 * 256)) / 256.0  # 16 bits
+            d = float(rng.choice([-8, -4, -2, -1, 1, 2, 4, 8])) * 2.0 ** int(rng.integers(-2, 3))
+            if p < 4:       # corners TL, TR, BL: 1/w along x, U along y
+                z3, u3 = [lo, hi, lo], [u0, u0, u0 + d]
+            else:           # 1/w along y, U along x
+                z3, u3 = [lo, lo, hi], [u0, u0 + d, u0]
+            t = tri_of(cell, f32(u3), ccw, "wzero " + ("col" if p < 4 else "row"), 6)
+            zz = [z3[0], z3[2], z3[1]] if ccw else z3
+            t["z"] = [float(np.float32(v)) for v in zz]
+            t["zbits"] = [int(np.float32(v).view(np.uint32)) for v in zz]
+            t["zname"] = "zero at %d, 2^%d" % (k, e)
+            tris.append(t)
+        pages.append(tris)
+    return pages
+
+
 def recip_pages(rng, scan=False, first=None):
     """scan: 2400 consecutive values of D, from a random start (--seed picks it)."""
     pages = []
@@ -351,11 +405,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--start", type=int, default=None, help="recipscan: the first divisor")
-    ap.add_argument("--mix", default="first", choices=["first", "flatscan", "steep", "wflat", "general", "recip", "recipscan", "reciprow", "reciprown", "wexp", "whuge", "wtiny", "wneg", "wspec"])
+    ap.add_argument("--mix", default="first", choices=["first", "flatscan", "steep", "wflat", "general", "recip", "recipscan", "reciprow", "reciprown", "wexp", "whuge", "wtiny", "wneg", "wspec", "wzero", "wzero2"])
     args = ap.parse_args()
     rng = np.random.default_rng(args.seed)
     pages = {"flatscan": flatscan_pages, "steep": steep_pages, "wflat": wflat_pages, "general": general_pages, "recip": recip_pages, "recipscan": lambda r: recip_pages(r, True, args.start), "reciprow": reciprow_pages, "reciprown": lambda r: reciprow_pages(r, True), "wexp": wexp_pages,
-             "whuge": whuge_pages, "wtiny": wtiny_pages, "wneg": wneg_pages, "wspec": wspec_pages}.get(args.mix, lambda r: [page(r, p) for p in range(PAGES)])(rng)
+             "whuge": whuge_pages, "wtiny": wtiny_pages, "wneg": wneg_pages, "wspec": wspec_pages, "wzero": wzero_pages, "wzero2": wzero2_pages}.get(args.mix, lambda r: [page(r, p) for p in range(PAGES)])(rng)
     for tris in pages:
         for t in tris:
             t.setdefault("z", [1.0, 1.0, 1.0])

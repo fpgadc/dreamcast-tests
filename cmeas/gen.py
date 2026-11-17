@@ -18,6 +18,12 @@ wneg and wspec): pages 0-1 very large (2^98 .. 2^127), 2-3 very small (2^-126 ..
 denormals and zero), 4-5 below zero (-2^-6 .. -2^8), 6-7 infinity, NaNs, the largest and smallest numbers of
 both signs. Odd pages have the other winding; every fourth cell has small color differences. A depth is given
 as the bits of the single precision number ("zbits").
+
+--mix wsum: the sums of the setup at the bottom of the range. Colors of 0 .. 47 (a quarter of the cells: any)
+at a depth of 1 .. 1.75 times 2^-126 .. 2^-123, so that the three terms of a slope are zeros or numbers of
+2^-126 .. 2^-122, and the corners in all six orders (three rotations of each winding), so that the zero term
+is the first, the second or the third. Which zero counts as 2^-127 in which addition shows in the sign of
+the slope.
 """
 import argparse
 import json
@@ -87,13 +93,38 @@ def wext_pages(rng):
     return pages
 
 
+def wsum_pages(rng):
+    pages = []
+    for p in range(PAGES):
+        tris = []
+        for cell in range(300):
+            cx, cy = (cell % 20) * 32.0, (cell // 20) * 32.0
+            order = int(rng.integers(0, 6))
+            corners = [(cx, cy), (cx + 32, cy), (cx, cy + 32)]                  # TL, TR, BL: one winding
+            if order >= 3:
+                corners = [corners[0], corners[2], corners[1]]                  # the other
+            corners = corners[order % 3:] + corners[:order % 3]
+            hi = 256 if cell % 4 == 3 else 48
+            cols = rng.integers(0, hi, (3, 3))
+            if rng.uniform() < 0.3:
+                cols[1] = cols[0]
+            if rng.uniform() < 0.3:
+                cols[2] = cols[0]
+            m, e = 1 + int(rng.integers(0, 4)) / 4.0, int(rng.integers(-126, -122))
+            b = int(np.float32(m * 2.0 ** e).view(np.uint32))
+            tris.append({"x": [c[0] for c in corners], "y": [c[1] for c in corners], "col": cols.astype(int).tolist(),
+                         "group": "wsum order %d" % order, "zbits": [b, b, b], "zname": "%g * 2^%d" % (m, e)})
+        pages.append(tris)
+    return pages
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=1)
-    ap.add_argument("--mix", default="first", choices=["first", "wext"])
+    ap.add_argument("--mix", default="first", choices=["first", "wext", "wsum"])
     args = ap.parse_args()
     rng = np.random.default_rng(args.seed)
-    pages = wext_pages(rng) if args.mix == "wext" else [page(rng, p) for p in range(PAGES)]
+    pages = wext_pages(rng) if args.mix == "wext" else wsum_pages(rng) if args.mix == "wsum" else [page(rng, p) for p in range(PAGES)]
     write(HERE, {"seed": args.seed, "mix": args.mix, "pages": pages})
     print(f"seed {args.seed}: {PAGES} pages, {sum(len(p) for p in pages)} triangles")
 
