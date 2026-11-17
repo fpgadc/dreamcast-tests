@@ -2416,6 +2416,20 @@ through and then a translucent copy of the same corners with compare greater: a 
 where the depth left is below the copy's own ISP depth. Nothing on the console, nothing in refsw2; with the TSP's
 1/w stored, refsw2 shows the copy in 39 of the 40 cells (26,101 pixels). The opaque copies are the reference.
 
+## alphafilt: the alpha of a bilinear sample at the edge of a transparent texel (2026-11-18)
+
+    bash run2.sh alphafilt off; bash run2.sh alphafilt hw=<ip>    # 2 pages; archived in fit/hw/alphafilt
+
+shenmue_intro3 and shenmue_intro4 (PT_ALPHA_REF 0xff) have punch-through pixels that pass the alpha test on a
+console and fail in refsw2, which filters their alpha to 0xf7. A white texel of alpha 1 next to one of alpha 0
+(1555, 1555 VQ, 4444; along u and along v), sampled at every 256th of a texel between them, read out translucently
+over black and through the alpha test with references 0xff and 0x80: refsw2 = the console on 112 of 112 regions.
+The weights have 5 bits (the coordinate's fraction >> 3): fractions 0-7 give the opaque texel alone, 8 gives
+1/32 of the transparent one (0xf7). refsw2's fraction at those shenmue pixels is 8, so a coordinate 1/256 of a
+texel lower on the console is all it takes: the same one-unit coordinate difference as the polly2 dumps' one-step
+colour differences (every differing pixel left in daytona_sanic, sa2_ingame2, gundam_ingame and daytona_intro has
+a bilinear layer; in gundam_ingame all 42 are at a weight step's edge, against 40 % of the pixels that agree).
+
 ## bumpfn, bumpbil, bumphang: bump maps (2026-11-17)
 
     bash run2.sh bumpfn bumpbil off hw=<ip>         # 7 + 7 pages; refsw2-offline = console in 952 and 1792 regions
