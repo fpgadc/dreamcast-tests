@@ -703,12 +703,12 @@ static const tcase_t cases[] = {
     { "err_vertex_after_eol", e_vertex_after_eol, 1 }, { "err_eol_only", e_eol_only, 1 },
     { "err_list_switch", e_list_switch, 1 }, { "err_list_types", e_list_types, 1 },
     { "err_para_types", e_para_types, 1 }, { "err_vtx_half", e_vtx_half, 1 }, { "err_hdr_half", e_hdr_half, 1 },
-    { "err_sprite_in_mv", e_sprite_in_mv, 1 }, { "err_init_in_strip", e_init_in_strip, 1 },
-    { "err_cont_in_strip", e_cont_in_strip, 1 },
+    { "err_sprite_in_mv", e_sprite_in_mv, 1 }, { "err_init_in_strip", e_init_in_strip, 2 },
+    { "err_cont_in_strip", e_cont_in_strip, 2 },   /* 2: may leave a console unable to send: own run */
     { "mvleak_volumes", p_mvleak_volumes, 0 }, { "mvleak_open2", p_mvleak_open2, 0 },
     { "mvleak_second_list", p_mvleak_second_list, 0 }, { "grid_61x10", p_grid_61x10, 0 },
     { "grid_46x14", p_grid_46x14, 0 }, { "grid_41x15b", p_grid_41x15b, 0 }, { "grid_max_y_stack", p_grid_max_y_stack, 0 },
     { "alloc_change_op", p_alloc_change_op, 0 }, { "mode_change", p_mode_change, 0 }, { "two_vol_skip", p_two_vol_skip, 0 },
-    { "isp_limit_exact", p_isp_limit_exact, 0 }, { "list_cont_same", p_list_cont_same, 0 },
+    { "isp_limit_exact", p_isp_limit_exact, 2 }, { "list_cont_same", p_list_cont_same, 0 },   /* isp_limit_exact: a console stopped in it (2026-11-17), own run */
 };
 static const tgroup_t groups[] = { { "none", 0, 0 } };
