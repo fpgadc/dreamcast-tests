@@ -2489,6 +2489,17 @@ another run start reads another texel and may pass; the triangle alone, with a q
 happens, the failed pixels at 16-31 have nothing new), behind the whole cell, and with failing bands in front.
 refsw2 = the console on 8 of 8 pages; with the old behaviour 21,827 to 35,681 pixels a page are wrong.
 
+## coordfix: from the texture coordinate to a texel and a bilinear weight (2026-11-18)
+
+    bash run2.sh coordfix off; bash run2.sh coordfix hw=<ip>    # 6 pages; archived in fit/hw/coordfix
+
+refsw2's conversion was a guess, checked only above zero: C = floor(u * size * 256) as a two's complement integer,
+minus the half texel (128) when filtering, texel C >> 8, weight (C & 255) >> 3. Quads of depth 1 whose coordinate
+is C = c0 + x / 4 + y / 128 at their pixels sweep C over every weight step from -4 to +4 texels (U and V), point
+sampled, at up to 2^17 texels of a 1024 texel texture, clamped and flipped; texels alternating black and white show
+each pixel's weight and texel. refsw2 = the console on 1568 of 1568 regions. Truncating a negative C toward zero
+would get 437 of them wrong, and weights from the magnitude 489: the guess was right.
+
 ## alphafilt: the alpha of a bilinear sample at the edge of a transparent texel (2026-11-18)
 
     bash run2.sh alphafilt off; bash run2.sh alphafilt hw=<ip>    # 2 pages; archived in fit/hw/alphafilt
