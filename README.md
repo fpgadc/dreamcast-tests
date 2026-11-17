@@ -2489,6 +2489,25 @@ another run start reads another texel and may pass; the triangle alone, with a q
 happens, the failed pixels at 16-31 have nothing new), behind the whole cell, and with failing bands in front.
 refsw2 = the console on 8 of 8 pages; with the old behaviour 21,827 to 35,681 pixels a page are wrong.
 
+## ptlayers: which pixels a later punch-through pass takes in (2026-11-18)
+
+    bash run2.sh ptlayers off; bash run2.sh ptlayers hw=<ip>    # 14 pages; archived in fit/hw/ptlayers
+
+shenmue_intro*'s last differences were punch-through foliage several layers deep (PT_ALPHA_REF 0xff) whose
+coordinates in the later passes fit runs that start further left than refsw2's. Partial renders of the tiles in 32
+bits and a scan of forced run starts per pixel (the console's exact colour against refsw2 with that pixel's run
+started at each column) pointed at pixels resolved in an earlier pass taking part in the later runs. ptlayers puts
+uvmeas's steep triangle B at the back (it passes the alpha test; its reading tells where its run started) under one
+or two single-tag triangles over the cell that fail on chosen columns, and a narrow polygon in some kinds.
+
+**A pass takes in the pixels shaded in the pass before it.** Those that failed go on to their next fragment and are
+shaded; those that passed go on to their next fragment too, for that one pass, as part of its runs, and keep what
+they resolved to. With A failing on columns 8-15 over B, B's run in the second pass starts at B's first pixel (the
+resolved pixels of A go on to B as well); with A1 failing on 8-15 over A2 failing on 12-19, B's run in the third
+pass starts at column 8: the pixels resolved by A2 in the second pass take part, those resolved by A1 in the first
+do not. refsw2 = the console on 14 of 14 pages (1120 regions); before: 6 pages wrong. shenmue_intro4 33 words to
+15, shenmue_intro2 21 to 17, shenmue_intro3 8 to 7.
+
 ## coordfix: from the texture coordinate to a texel and a bilinear weight (2026-11-18)
 
     bash run2.sh coordfix off; bash run2.sh coordfix hw=<ip>    # 6 pages; archived in fit/hw/coordfix

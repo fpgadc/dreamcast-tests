@@ -177,7 +177,8 @@ largest of its ISP, TSP and write-out times [M timemeas].
 - **A run ends at a modifier volume's edge** whatever the polygon's shadow bit: opaque and sorted translucent
   polygons; not translucent polygons in the order sent, which an opaque volume shadows without cutting their runs
   [M uvrun kinds 6-11]. A punch-through pixel that fails the alpha test is shaded again only where a later pass
-  draws a polygon [M ptruns].
+  draws a polygon [M ptruns]. A punch-through pass takes in the pixels shaded in the pass before it: failed ones go
+  on to their next fragment, passed ones too for that one pass, in its runs, keeping their colour [M ptlayers].
 - **Shading rules from game frames [M dumprules]:** intensity shadow scales each vertex colour ((c * scale) >> 8,
   not alpha) before interpolation [sc_ingame2]; vertex fog is (c * (256 - a) + f * a) >> 8 with a the offset
   alpha, and an offset colour comes only with a texture [sc_ingame, refta]; trilinear filtering of a texture
