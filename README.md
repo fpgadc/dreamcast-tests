@@ -2553,6 +2553,34 @@ top-end pages, bump and 565, were the console's already). refsw2 now clamps the 
 it into a texel and a weight: 1792 of 1792 regions; rayman_ingame and rayman_ingame2 are the console's in all of
 video memory (polly2dumps: 56 of 63 scenes).
 
+## volrun, optrun: opaque runs, modifier volumes and punch-through (2026-11-18)
+
+    bash run2.sh volrun off; bash run2.sh volrun hw=<ip>      # 24 pages; archived in fit/hw/volrun
+    bash run2.sh optrun off; bash run2.sh optrun hw=<ip>      # 24 pages; archived in fit/hw/optrun
+
+polly2-data jgr_car, jgr_tree_shadows and jgr_tree_shadows2 had pixels one coordinate unit off in opaque polygons
+near a shadow's edge. A partial render of jgr_car's tile 16,7 in 32 bits on the console, cut down step by step
+(dumprender drop=, nolists=, poke= of the volumes' depths), showed that only the punch-through list mattered: without
+it the console was refsw2's. Both tests read the run start of uvrun's steep opaque triangles (cheap shadow, shadow bit)
+with uvmeas's texture.
+
+volrun, volumes alone (12 kinds): a volume whose state changes by the depth test (a face through the triangle,
+entering or leaving), triangles behind the triangle coming and going, a change of front triangle, two volumes, a
+volume in front twice, jgr_car's own triangles a billion units across: a run ends where the volume state changes,
+and only there, as refsw2 had it (24 of 24 pages; with no volume breaks 12 pages are wrong).
+
+optrun, punch-through in front of the opaque triangle (12 kinds): one to five punch-through polygons over columns
+8-11 that pass or fail the alpha test, one failing over one passing, and a volume over columns 18-23 with and
+without punch-through drawn in the tile:
+- punch-through pixels in front of an opaque polygon do not end its runs (kinds 1-8: refsw2 as it was);
+- in a tile where the first punch-through pass draws something (anywhere: kind 10 has it only in a corner outside
+  the triangle), the opaque runs do not end at volume edges, and the opaque pixels inside a volume are shaded again
+  in the punch-through volume pass, in its runs together with the punch-through pixels there (not alpha tested);
+- a punch-through list that draws nothing in the tile changes nothing (polly2-data sa2_ingame, 18wheel_select).
+refsw2 now looks at the first punch-through pass before shading the opaque list: 24 of 24 pages; jgr_car, jgr and
+jgr_tree_shadows are the console's in all of video memory, jgr_tree_shadows2 is down to one word (a third
+punch-through pass, open with shenmue's): polly2dumps 58 of 63.
+
 ## alphafilt: the alpha of a bilinear sample at the edge of a transparent texel (2026-11-18)
 
     bash run2.sh alphafilt off; bash run2.sh alphafilt hw=<ip>    # 2 pages; archived in fit/hw/alphafilt

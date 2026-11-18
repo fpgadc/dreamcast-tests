@@ -315,6 +315,10 @@ largest of its ISP, TSP and write-out times [M timemeas].
   of video memory; with the half texel at the level's size, 74,673 of 921,600 pixels were wrong, every one a
   bilinear sample below the full size. pvr-tests/mipbil tests it on the console (1120 of 1120 cells; the old
   rule gets 568 wrong), non-square declared sizes and trilinear passes included.
+- **Opaque runs with punch-through [M optrun, volrun].** Opaque runs end at volume edges (edges made by the depth
+  test too), except in a tile where the first punch-through pass draws something: there they do not, and the opaque
+  pixels inside a volume are shaded again in the punch-through volume pass with the punch-through ones.
+  Punch-through pixels in front do not end opaque runs.
 - **Texture fetch [M timemeas align2, yuvbil].**
   - Four 16-bit words come in per clock, and words that came in for the pixel before don't count again.
   - A palette with ARGB8888 entries pays exactly one more clock a pixel, point or bilinear.
