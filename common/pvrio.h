@@ -161,8 +161,7 @@ static void pvrio_dump_ta_state(const char *name, const char *suffix) {
 #ifndef _arch_dreamcast
 /* ======== on a PC: commands for refsw2-offline on standard output ======== */
 
-#include <stdlib.h>
-#include <unistd.h>
+#include <unistd.h>                         /* not stdlib.h: its quad_t (sys/types.h) is a test's type name (mipmeas) */
 
 static const char *pvrio_folder = ".";
 static int pvrio_mute;                      /* print nothing (the test is only asked for its labels) */
@@ -268,7 +267,7 @@ static void pvrio_read32(uint32_t addr, int words, uint32_t *out) {
     for(waited = 0; !(f = fopen(done, "rb")); waited++) {
         if(waited == 20000) {               /* 20 s: no refsw3-offline reading the commands */
             fprintf(stderr, "pvrio: no %s after 20 s (is the output piped into refsw3-offline?)\n", done);
-            exit(1);
+            _exit(1);
         }
         usleep(1000);
     }
@@ -276,7 +275,7 @@ static void pvrio_read32(uint32_t addr, int words, uint32_t *out) {
     f = fopen(data, "rb");
     if(!f || fread(out, 4, (size_t)words, f) != (size_t)words) {
         fprintf(stderr, "pvrio: %s is short\n", data);
-        exit(1);
+        _exit(1);
     }
     fclose(f);
 }

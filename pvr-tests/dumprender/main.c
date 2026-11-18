@@ -239,6 +239,7 @@ static void keep_tiles(void) {
    back from the dump after the tile. Tile (0, 0) is written out (0888, no scaling) in that area too, so the dump's
    own framebuffer is left alone. Output: depth.off.raw / depth.hw.raw, 640x480 words, each tile's depths at its
    place (and depthr: the tiles of x 20-39, of a frame rendered 1280 wide). */
+#include <stdlib.h>                     /* calloc */
 #include "zexfil.h"
 
 static const uint32_t *dz_vram;         /* the dump's video memory, 32 bit area */
