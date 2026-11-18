@@ -1,10 +1,14 @@
 /* A dump of a game's frame (dreamster's polly2-data: pvr_regs_<scene>.bin, the 8 KB of 0x005F8000-0x005F9FFF,
-   and vram_<scene>.bin, video memory in 32 bit area order) rendered by refsw2-offline and by a console, with the
-   frame or a part of it: the same input on both sides, and the framebuffer dumped from both.
+   and vram_<scene>.bin, video memory in 32 bit area order; or <scene>.pvrdmp, both in one PVR core dump) rendered by
+   refsw3-offline and by a console, with the frame or a part of it: the same input on both sides, and the framebuffer
+   dumped from both.
 
    Built by ../../dumprender.sh, which gives the defines:
      DUMPS     the folder of the dumps (on a console read through dc-load's /pc)
      SCENE     the scene's name
+     PVRDMP    the dump is <scene>.pvrdmp (nulldc3 libswirl/hw/pvr/pvr_coredump.h: "pvrcoredump", a gzip member of
+               video memory, a gzip member of the registers): both sides inflate it (common/gunzip.h); the console
+               gets it inside the program, compressed, and the PC's refsw3-offline loads it with its pvrdmp command
      TILES     optional: { x0, y0, x1, y1, ... } and NTILES: only the region array entries of these tiles
                (in their order in the array), the rest left out: a partial render
      DROP      optional: { t0, t1, ... }: the objects of these refsw2 tags (as its render log prints them: the
@@ -50,12 +54,71 @@ static const uint32_t drop[] = DROP;
 static uint32_t regs[REG_BYTES / 4];
 static uint32_t chunk[16384];
 
-#ifdef _arch_dreamcast
 /* On a console the dump is part of the program: dc-load sends a program at about 13 MB/s, where reading the
-   files through /pc takes minutes */
+   files through /pc takes minutes. A .pvrdmp is inflated into memory on both sides (DR_IN_MEMORY: the dump's
+   words come from dr_vram, dr_regs there, not from the files) */
+#if defined(_arch_dreamcast) || defined(PVRDMP)
+#define DR_IN_MEMORY 1
+#else
+#define DR_IN_MEMORY 0
+#endif
 #define DR_STR2(x) #x
 #define DR_STR(x) DR_STR2(x)
 #define DR_P DR_STR(__USER_LABEL_PREFIX__)    /* sh-elf: C names have a leading underscore */
+#ifdef PVRDMP
+#include <stdlib.h>                     /* malloc */
+#include "gunzip.h"
+static uint32_t dr_vram_buf[VRAM_BYTES / 4], dr_regs_buf[REG_BYTES / 4];
+static const uint32_t *dr_regs, *dr_vram, *dr_vram_end;
+#ifdef _arch_dreamcast
+__asm__(".section .rodata\n.balign 32\n.global " DR_P "dr_pvrdmp\n" DR_P "dr_pvrdmp:\n.incbin \"" DUMPS "/" SCENE ".pvrdmp\"\n"
+        ".global " DR_P "dr_pvrdmp_end\n" DR_P "dr_pvrdmp_end:\n.section .text\n");
+extern const uint8_t dr_pvrdmp[], dr_pvrdmp_end[];
+#endif
+
+/* the dump inflated: video memory and the registers */
+static int unpack(void) {
+    const uint8_t *in;
+    size_t len, pos = 11;
+    long n;
+#ifdef _arch_dreamcast
+    in = dr_pvrdmp;
+    len = (size_t)(dr_pvrdmp_end - dr_pvrdmp);
+#else
+    static uint8_t *file;
+    FILE *f = fopen(DUMPS "/" SCENE ".pvrdmp", "rb");
+    if(!f) {
+        printf(SAY "cannot open %s\n", DUMPS "/" SCENE ".pvrdmp");
+        return 0;
+    }
+    fseek(f, 0, SEEK_END);
+    len = (size_t)ftell(f);
+    fseek(f, 0, SEEK_SET);
+    file = (uint8_t *)malloc(len);
+    if(!file || fread(file, 1, len, f) != len)
+        len = 0;
+    fclose(f);
+    in = file;
+#endif
+    if(len < 11 || memcmp(in, "pvrcoredump", 11)) {
+        printf(SAY "%s.pvrdmp is not a PVR core dump\n", SCENE);
+        return 0;
+    }
+    n = gz_member(in, len, &pos, (uint8_t *)dr_vram_buf, VRAM_BYTES);
+    if(n != (long)VRAM_BYTES) {
+        printf(SAY "%s.pvrdmp: no 8 MB of video memory (a NAOMI's 16 MB, or a broken file)\n", SCENE);
+        return 0;
+    }
+    if(gz_member(in, len, &pos, (uint8_t *)dr_regs_buf, REG_BYTES) != (long)REG_BYTES) {
+        printf(SAY "%s.pvrdmp: no 8 KB of registers\n", SCENE);
+        return 0;
+    }
+    dr_regs = dr_regs_buf;
+    dr_vram = dr_vram_buf;
+    dr_vram_end = dr_vram_buf + VRAM_BYTES / 4;
+    return 1;
+}
+#elif defined(_arch_dreamcast)
 __asm__(".section .rodata\n.balign 32\n.global " DR_P "dr_regs\n" DR_P "dr_regs:\n.incbin \"" DUMPS "/pvr_regs_" SCENE ".bin\"\n"
         ".balign 32\n.global " DR_P "dr_vram\n" DR_P "dr_vram:\n.incbin \"" DUMPS "/vram_" SCENE ".bin\"\n"
         ".global " DR_P "dr_vram_end\n" DR_P "dr_vram_end:\n.section .text\n");
@@ -76,6 +139,10 @@ static FILE *open_dump(const char *what) {
 static int load(void) {
     uint32_t at;
     int n;
+#ifdef PVRDMP
+    if(!unpack())
+        return 0;
+#endif
 #ifdef _arch_dreamcast
     memcpy(regs, dr_regs, REG_BYTES);
     *(volatile uint32_t *)0xa05f8008 = 3;           /* core and TA reset: nothing may be touching video memory */
@@ -91,6 +158,14 @@ static int load(void) {
         pvrio_hash('V', at, src, n);
         for(i = 0; i < n; i++)
             dst[i] = src[i];
+    }
+#elif defined(PVRDMP)
+    memcpy(regs, dr_regs, REG_BYTES);
+    printf("pvrdmp %s/%s.pvrdmp\n", DUMPS, SCENE);
+    pvrio_hash('G', 0, regs, REG_BYTES / 4);
+    for(at = 0; at < VRAM_BYTES; at += (uint32_t)n * 4) {        /* in the console's pieces: the same checksum */
+        n = (int)(sizeof(chunk) / 4);
+        pvrio_hash('V', at, dr_vram + at / 4, n);
     }
 #else
     FILE *f = open_dump("pvr_regs");
@@ -131,7 +206,7 @@ static int load(void) {
 
 /* words of the dump's video memory (32 bit area): the embedded copy on a console, the file on a PC */
 static void dump_words(uint32_t addr, uint32_t *out, int n) {
-#ifdef _arch_dreamcast
+#if DR_IN_MEMORY
     memcpy(out, dr_vram + addr / 4, 4 * (size_t)n);
 #else
     FILE *f = open_dump("vram");
@@ -185,7 +260,7 @@ static void keep_tiles(void) {
     const uint32_t base = regs[REGION_BASE_addr / 4] & 0xfffffcu;
     const int size = (regs[FPU_PARAM_CFG_addr / 4] >> 21) & 1 ? 6 : 5;
     int i, k, n_in = 0, n_out = 0;
-#ifdef _arch_dreamcast
+#if DR_IN_MEMORY
     memcpy(in, dr_vram + base / 4, sizeof(in));
     n_in = (int)(sizeof(in) / 4) / size;
 #else
@@ -370,7 +445,7 @@ static void dz_run(void) {
         printf(SAY "zexfil: HALF_OFFSET bit 0 is clear (samples at pixel corners); the probes are for centers\n");
         return;
     }
-#ifdef _arch_dreamcast
+#if DR_IN_MEMORY
     dz_vram = dr_vram;
     dz_vram_words = (uint32_t)(dr_vram_end - dr_vram);
 #else
@@ -445,6 +520,28 @@ static void dz_run(void) {
 }
 #endif
 
+#ifdef _arch_dreamcast
+/* The display registers (0x040 .. 0x0fc: border, FB_R_*, SPG_*, VO_*, SCALER_CTL) as KallistiOS set them: the dump's
+   replace them (load writes the whole register file), and are taken back before the program ends. With a dump's
+   interlaced scaler left in place (SCALER_CTL bit 17: nfl2k1_title, nfl2k1_spin) the console hung after the program
+   had returned (2026-11-18), and took the next program down with it */
+static uint32_t dr_display[0x100 / 4];
+
+static void display_save(void) {
+    int i;
+    for(i = 0x040 / 4; i < 0x100 / 4; i++)
+        dr_display[i] = *(volatile uint32_t *)(0xa05f8000 + i * 4);
+}
+
+static void display_restore(void) {
+    int i;
+    *(volatile uint32_t *)0xa05f8008 = 3;           /* nothing rendering any more */
+    *(volatile uint32_t *)0xa05f8008 = 0;
+    for(i = 0x040 / 4; i < 0x100 / 4; i++)
+        *(volatile uint32_t *)(0xa05f8000 + i * 4) = dr_display[i];
+}
+#endif
+
 int main(int argc, char **argv) {
 #ifndef _arch_dreamcast
     if(argc > 1 && !strcmp(argv[1], "--labels"))
@@ -455,6 +552,9 @@ int main(int argc, char **argv) {
     (void)argc; (void)argv;
 #endif
     pvrio_open();
+#ifdef _arch_dreamcast
+    display_save();
+#endif
     if(load()) {
 #ifdef SETREGS
         {
@@ -489,6 +589,9 @@ int main(int argc, char **argv) {
         }
 #endif
     }
+#ifdef _arch_dreamcast
+    display_restore();
+#endif
     pvrio_close();
     return 0;
 }

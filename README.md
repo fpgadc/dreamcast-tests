@@ -2735,6 +2735,24 @@ refsw3 stored, from a render log of the tiles, with the console's depth as a one
 cut (zstart, below), all 64 dumps are the console's in every depth (64 x 307,200; the offline side of every dump
 read out again, shenmue_intro and 20kdm2 on the console again too).
 
+**PVR core dumps** (`<scene>.pvrdmp`: "pvrcoredump", a gzip member of video memory, a gzip member of the registers;
+nulldc3's dump key and its `config:Script.File`). dumprender.sh takes one where there is no `vram_<scene>.bin`
+(main.c with PVRDMP): both sides inflate it with `common/gunzip.h` (RFC 1951/1952, CRC checked; KallistiOS has no
+zlib), the console gets it compressed inside the program (1-3.6 MB instead of 8: a run of ~7 s), and refsw3-offline
+loads it with its `pvrdmp` command. On the console dumprender takes the display registers (0x040-0x0fc) back to
+KallistiOS's before it ends: a dump with an interlaced scaler (SCALER_CTL bit 17) left in place hung the console after
+the program had returned, with the dump's frame on the screen.
+
+    bash hwdumps.sh [scene ...] hw=<ip>     # every .pvrdmp of the dumps folder, or these: frames compared, refsw3 / console
+
+106 dumps of 22 games, taken with nulldc3's Windows build by script (refsw2, headless; titles, menus, attract modes):
+105 are the console's in every pixel (the 24 bit packed, horizontally scaled frames of Ready 2 Rumble, the interlaced
+ones of NFL 2K1, vertical Ikaruga), r2r_ring in 8 pixels of 153,600: a dark spot at x 43-44, y 439-444, each one step in
+one channel, the console mostly above. The SB_ISTERR bits the console reports with the dumps: bit 0 (ISP out of cache)
+on the same tiles in every render of 25 of the 64 older dumps (up to 33 tiles, taxi4), all of them the console's in
+every depth and pixel: nothing it changes shows; bit 3 (TA object list pointer overflow) once a program, from the
+register file written at the start, not from a render.
+
 ## zstart: the tile's start cut to the slopes' grid (2026-11-18)
 
     bash run2.sh zstart off; bash run2.sh zstart hw=<ip>     # 3 pages, 1.5 min offline, 40 s on a console; fit/hw/zstart
