@@ -2,7 +2,8 @@
 # hwdumps.sh [scene ...] hw=<ip>: polly2 dumps (dreamster's polly2-data) rendered by refsw3-offline and by a console
 # (dumprender.sh), one after the other, the frames compared pixel by pixel: those named, else every <scene>.pvrdmp
 # of the dumps folder. Each dump's frames (frame.off.raw, frame.hw.raw) and logs in /tmp/pvr_tests/hwdumps/<scene>; a
-# line each in /tmp/pvr_tests/hwdumps/summary.txt. Not with another dumprender.sh at the same time (they share
+# line each in /tmp/pvr_tests/hwdumps/summary.txt. The console's frame of each compared dump is kept beside it as
+# <scene>.hw.png (framepng.py; bit exact). Not with another dumprender.sh at the same time (they share
 # /tmp/pvr_tests/dumprender).
 HERE=$(cd "$(dirname "$0")" && pwd)
 DUMPS=${DUMPS:-$(cd "$HERE/../dreamster/polly2-rtl/polly2-data/dumps" 2>/dev/null && pwd)}
@@ -24,4 +25,7 @@ for s in "${SCENES[@]}"; do
   cmpline=$(grep -a "refsw3 / console now" $OUT/$s.log | sed "s/^$s: refsw3 \/ console now: //")
   errors=$(grep -ac "reports errors" $W/build/hw.log 2> /dev/null)
   echo "$s: ${cmpline:-no comparison}; PVR errors ${errors:-?}; $(( $(date +%s) - start )) s" | tee -a $OUT/summary.txt
+  # the console's frame kept beside the dump: <scene>.hw.png (framepng.py: bit exact, back with framepng.py raw)
+  dump=$DUMPS/$s.pvrdmp; [ -f "$dump" ] || dump=$DUMPS/pvr_regs_$s.bin
+  [ -n "$cmpline" ] && [ -f $OUT/$s/frame.hw.raw ] && { python3 "$HERE/framepng.py" png $OUT/$s/frame.hw.raw "$dump" "$DUMPS/$s.hw.png" 2>> $OUT/framepng.log || echo "$s: no PNG (framepng.py, $OUT/framepng.log)" >> $OUT/framepng.log; }
 done
