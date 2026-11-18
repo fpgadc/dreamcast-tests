@@ -2581,6 +2581,43 @@ refsw2 now looks at the first punch-through pass before shading the opaque list:
 jgr_tree_shadows are the console's in all of video memory, jgr_tree_shadows2 is down to one word (a third
 punch-through pass, open with shenmue's): polly2dumps 58 of 63.
 
+## ptchunk, ptchunkq, ptchunkm: the punch-through ISP cache (2026-11-18)
+
+    bash run2.sh ptchunk ptchunkq ptchunkm off; bash run2.sh ptchunk ptchunkq ptchunkm hw=<ip>   # 44 + 200 + 120 pages
+    python3 pvr-tests/ptchunkm/gen.py [--seed N] [--pages N]        # ptchunkm's random configurations (conf.h)
+
+The hardware manual (3.4.3.1 "ISP Cache Size", ISP_FEED_CFG): punch-through polygons are processed in chunks of
+"Punch Through chunk size" vertices, each chunk sorted and drawn from the front on its own. refsw2 peeled all of a
+tile's punch-through polygons together. polly2-data shenmue_intro* and jgr_tree_shadows2 have tiles of 49 and more
+punch-through triangles (chunk size 0x40), and their last differences were layers shaded in other passes than the
+console's.
+
+The readout is ptlayers': B (uvrun's steep triangle, texel i holds the number i) behind A (fails the alpha test on
+columns 8-15). Peeled together, B's run on those columns starts at B's first pixel; with A in an earlier chunk than
+B, B is drawn in its own chunk only where A failed, from column 8. Filler polygons that pass, outside both, move the
+chunk boundary; ISP_FEED_CFG is set per page. A chunk is peeled on its own, in front of what earlier chunks resolved
+(or the opaque depth); a later chunk can still draw over them.
+
+**What goes into a chunk.** A primitive is taken into the chunk when the vertices stored before it plus its own come
+to at most the chunk size less 2. A triangle counts 3, a sprite (a quad to the ISP) 4, but the last vertex of a quad
+right before it is not counted yet. The triangles of a strip count one by one, and a strip's object list entry is
+cut between chunks.
+- ptchunk (22 kinds): at 0x20, 10 triangles fit and 11 do not; at 0x21 and 0x22 still 10; at 0x23 11; at 0x40 (the
+  games') 20, not 21. Discard mode does not matter. Strips count 3 a triangle (not shared vertices), and the first
+  triangle of a strip entry can be in one chunk and the second in the next.
+- ptchunkq (200 configurations: triangle or sprite A, 0-14 filler sprites, filler triangles, B; 0x20-0x25 and every
+  mix within a few vertices of the boundary at 0x20, 0x23, 0x40): no rule on the vertex count alone fits, and no
+  linear cost of vertices and primitives fits all of them. The one-vertex lag after a quad fits every one (B gets one
+  vertex more when a sprite comes right before it: A, 6 sprites, B at 0x20 is 31 vertices and stays with A; A, a
+  sprite, 7 triangles, B is also 31 and does not).
+- ptchunkm (120 random mixes of triangles, sprites and strips, seed 1): all the console's. The plain "at most S - 2"
+  would be wrong on 4 of them, "S - 1" on 5, a lag for every quad stored on 31, no chunks on 92.
+Whether a quad at the boundary itself counts 4 or 3 there is not measured: B lands in the next chunk either way.
+
+refsw2 = the console on all three (3520, 16000 and 9600 regions). polly2dumps: jgr_tree_shadows2, shenmue_intro,
+shenmue_intro3 and shenmue_intro4 are the console's in all of video memory, 62 of 63. Left: shenmue_intro2, 3 words
+(522,169-171): a translucent polygon just in front of a punch-through one, its run starting at the pixel.
+
 ## alphafilt: the alpha of a bilinear sample at the edge of a transparent texel (2026-11-18)
 
     bash run2.sh alphafilt off; bash run2.sh alphafilt hw=<ip>    # 2 pages; archived in fit/hw/alphafilt

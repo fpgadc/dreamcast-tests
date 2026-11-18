@@ -315,6 +315,10 @@ largest of its ISP, TSP and write-out times [M timemeas].
   of video memory; with the half texel at the level's size, 74,673 of 921,600 pixels were wrong, every one a
   bilinear sample below the full size. pvr-tests/mipbil tests it on the console (1120 of 1120 cells; the old
   rule gets 568 wrong), non-square declared sizes and trilinear passes included.
+- **Punch-through chunks [M ptchunk, ptchunkq, ptchunkm].** The punch-through polygons of a tile are peeled in
+  chunks, in list order: a primitive joins the chunk while the vertices before it (triangle 3, quad 4, the last vertex
+  of a quad just before not yet counted) and its own are at most ISP_FEED_CFG's chunk size less 2 (20 triangles at
+  0x40). Each chunk is peeled front to back on its own, against what the chunks before it resolved.
 - **Opaque runs with punch-through [M optrun, volrun].** Opaque runs end at volume edges (edges made by the depth
   test too), except in a tile where the first punch-through pass draws something: there they do not, and the opaque
   pixels inside a volume are shaded again in the punch-through volume pass with the punch-through ones.
