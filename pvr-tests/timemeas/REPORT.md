@@ -994,6 +994,22 @@ two volumes add nothing either, outside a modifier volume or inside it** (the pi
 colours, so the second set is what was shaded). This is the opaque list, where a polygon with two volumes is
 shaded once; in the punch through list the pixels inside a volume get a second pass (above, "Modifier volumes").
 
+**A triangle that straddles a volume is set up twice** (scenes `allfs`, log run43): stripes of volume (lines 2-3 of
+every 4) over quads of 4x4 and 8x8, so that both triangles of every quad have pixels inside and outside; the stripes
+closed as INSIDE_LAST against the same stripes closed as OUTSIDE_LAST (nothing inside, the ISP's work the same).
+TSP clocks a triangle, both passes within 1:
+
+| | 4x4 quads: inside - outside | 8x8 quads: inside - outside |
+|---|---|---|
+| all, two volumes | +68.9 | +60.0 |
+| untextured gouraud, two volumes | +39.0 | +38.5 |
+| all, one volume with the shadow bit (cheap shadow) | +69.0 | +59.6 |
+
+The part inside is a triangle of its own to the TSP and costs a whole setup with every feature (68, untextured
+39), once, however many runs it has; with 8x8 some of it hides behind the pixels' work. It is the split that
+costs, not the second set: cheap shadow, where both parts have the same parameters, pays the same. A triangle with
+both parts seen costs 131 here (against its twin), a triangle on one side of the volume what it costs without one.
+
 ## Not known
 
 - What makes runs cost more when more than about 12 different triangles are on a line.

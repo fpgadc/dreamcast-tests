@@ -25,3 +25,23 @@ for c, n in enumerate(names):
         row.append("%7.0f = %6.1f /tri" % (per[0], per[0] / tris[L]) + ("" if len(per) < 2 else " (%+.0f)" % (per[1] - per[0])) if per else "-")
     px = t.get((c, 5, 0, 0), (0, "?", "?"))
     print("%-28s %s   %s %s" % (n, "  ".join("%22s" % r for r in row), px[1], px[2]))
+
+# allfs: triangles that straddle a modifier volume (stripes inside, the same stripes closed so that nothing is
+# inside, and the twin behind the background)
+s = {}
+for l in open(sys.argv[1]):
+    f = l.split()
+    if len(f) < 16 or f[0] != "T" or f[1] != "allfs":
+        continue
+    s[tuple(int(x) for x in f[2:6])] = (int(f[9]), f[14], f[15])
+if s:
+    print("\nallfs: per triangle, clocks: both parts seen (stripes inside) / one part (nothing inside) / extra for the second part")
+    sn = ["all, two volumes", "untextured, two volumes", "all, one volume + shadow (cheap shadow)"]
+    st = {10: 128, 9: 32}
+    for c, n in enumerate(sn):
+        for L in (10, 9):
+            for p in (0, 1):
+                if all((c, L, m, p) in s for m in (0, 1, 2)):
+                    ins, out, twin = (s[(c, L, m, p)][0] for m in (0, 1, 2))
+                    print("  %-40s %-16s pass %d: %6.1f  %6.1f  %+6.1f" % (n, "64 quads 4x4" if L == 10 else "16 quads 8x8", p,
+                          (ins - twin) / 2 / st[L], (out - twin) / 2 / st[L], (ins - out) / 2 / st[L]))

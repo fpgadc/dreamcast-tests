@@ -788,6 +788,35 @@ static void run_all(void) {
         offs_mode = -1; dcalc_ctrl = 0; two_volumes = 0; shadow_bit = 0; shad_scale = 1;
         vis = DepthMode_Always; bg_depth = 0; cur = &formats[0];
     }
+    /* ---- allfs c L m pass: triangles that straddle a modifier volume. Stripes of volume, lines 2-3 of every 4
+       (8 sheets of 32x2), over layouts 10 (64 quads 4x4, 128 triangles) and 9 (16 quads 8x8, 32 triangles): both
+       triangles of every quad have pixels inside and outside. m 0: the stripes closed as INSIDE_LAST; 1: as
+       OUTSIDE_LAST (nothing inside, the ISP's work the same); 2: the twin (polygons behind the background, stripes
+       INSIDE_LAST). c 0: allf's "all" with two volumes; 1 untextured gouraud with two volumes; 2 "all" with one
+       volume and the shadow bit (cheap shadow, FPU_SHAD_SCALE 0x180). */
+    {
+        static const format_t all = { "565 gouraud offset mipmapped bilinear fog", OP, 1, 1, 1, PixelFmt_565, 0, 0, 1, BI, 1, 1 };
+        static const int sl[2] = { 10, 9 };
+        int pass, sc, li, sm, j;
+        for(pass = 0; pass < 2; pass++)
+            for(sc = 0; sc < 3; sc++)
+                for(li = 0; li < 2; li++)
+                    for(sm = 0; sm < 3; sm++) {
+                        cur = sc == 1 ? &formats[1] : &all; cur_own = 0;
+                        offs_mode = sc == 1 ? -1 : 2;
+                        dcalc_ctrl = sc != 1;
+                        two_volumes = sc != 2; shadow_bit = 1; shad_scale = sc == 2 ? 0x180 : 0x080; bg_shadow = 0;
+                        vis = sm == 2 ? DepthMode_Greater : DepthMode_Always; bg_depth = sm == 2 ? f32b_int(2) : 0;
+                        begin(ListType_Opaque);
+                        layout(sl[li]);
+                        ta_list_begin(ListType_Opaque_Modifier_Volume);
+                        for(j = 0; j < 8; j++)
+                            sheet(sm == 1 ? VolumeMode_Outside_Last : VolumeMode_Inside_Last, 0, 4 * j + 2, 32, 2);
+                        measure("allfs", sc, sl[li], sm, pass);
+                    }
+        offs_mode = -1; dcalc_ctrl = 0; two_volumes = 0; shadow_bit = 0; shad_scale = 1;
+        vis = DepthMode_Always; bg_depth = 0; cur = &formats[0];
+    }
 #ifdef TM_ALLF
     *fb_r_ctrl = fb_r;
     printf("T end\n");
