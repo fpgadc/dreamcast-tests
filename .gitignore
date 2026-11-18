@@ -16,3 +16,4 @@ __pycache__/
 /model/tspprobe
 /model/reachgen
 /pvr-tests/mipk/kfit
+/pvr-tests/mipk/kfit2

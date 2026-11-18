@@ -2820,6 +2820,25 @@ length and its part to 20, their sum on a grid 22 bits under the longer (MIP_K=2
 0 pixels, mipmeas 8 of 8 sets, mip, mipbil, sample, texfmt unchanged. The model (MIP_K=0) has 1,982. The exact
 arithmetic is not found yet (83 cells, all within 2^-13 of a step).
 
+**mipk2** (`pvr-tests/mipk/gen 2 exact pvr-tests/mipk2`; fit/hw/mipk2, fit/mipk_data/mipk2-seed2.observed.txt): the same
+question with exact numerators. 1/w flat (a power of two on pages 0-5), legs 32 x 32, u = v = 0 at the first corner:
+every numerator is a product of exact numbers, so K = (longer + f(shorter)) x size x bias, and with one w over the whole
+triangle one step of K8 is seen (130 for 1/w a power of two). The console: the shorter numerator 0 (pages 0, 1) and one
+product with 1/w not a power of two (6, 7): 1,200 of 1,200 the model's. With a shorter one (2-5): 153 of the 600 above a
+step are one step lower, none of those below. So all of it is in f(shorter): in units of a grid 24 bits under the
+longer, the longer and the step are whole numbers, and the cells that reach the step need c >= 0.41421403 (those with a
+large shorter / longer, 0.58 .. 0.97) while those that do not allow only c < 0.4142117 .. 0.4142137 (small ones, 0.03 ..
+0.11): no constant times an exact shorter does both; truncations on the longer's grid are what separates them.
+
+kfit (KFIT_ONE="cnum cbits lg lgm gw gm pw pm sw sm dv": one rule; KFIT_EXACT, KFIT_LG, KFIT_SUM, KFIT_SHIFT, KFIT_WIDE,
+KFIT_SQRT2: grids of rules; KFIT_BOUNDS, KFIT_BAND, KFIT_SHOW: the exact cells' constraints; build kfit2 with
+-DKFIT_CASES="../mipk2/cases.h" for mipk2). Best so far, the same rule on both sets: numerators' products cut to 24 bits,
+their difference to 26 (nearest), DCalcCtrl 1's values at the first vertex in the setup's 24 bit arithmetic, the shorter
+on a grid 23 bits under the longer (nearest), times 6949359 / 2^24 (0.41421407), the product and the longer on that grid
+(cut), added: mipk 2,371 / 2,401 (r2r_ring's triangle included), mipk2 2,394 / 2,401, mipmeas's 33,300 triangles all
+the model's. The model: 1,982 and 2,247. Shift and add multipliers (each 1 bit of the constant a term on the grid),
+sqrt(2) - 1 with rounding on the way, 27146 / 65536 with grids, the sum cut to its own width: no better.
+
 ## bumpfn, bumpbil, bumphang: bump maps (2026-11-17)
 
     bash run2.sh bumpfn bumpbil off hw=<ip>         # 7 + 7 pages; refsw2-offline = console in 952 and 1792 regions
