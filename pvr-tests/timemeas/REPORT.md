@@ -970,6 +970,30 @@ queue between ISP and TSP (it counts runs), so this is where they are cut.
   the second starts after the first's last pixel; a sprite over both tiles drained in the first does not take
   its runs in the second.
 
+## Every feature, and two volumes (2026-11-18)
+
+Scenes `allf` (`TEST_DEFS="-DTM_ALLF"`, log run42; table from `python3 allf.py <log>`): one tile, opaque list, a
+format built up one feature at a time, each against its twin behind the background, in three layouts. TSP clocks a
+seen triangle (both passes within 0.02):
+
+| | 1 quad 32x32 | 256 quads 2x2 | 1024 quads 1x1 |
+|---|---|---|---|
+| 565 gouraud | 86.8 | 46.1 | 47.1 |
+| + offset colour (not 0) | 119.0 | 62.2 | 63.1 |
+| + mipmapped bilinear | 290.0 | 62.2 | 63.1 |
+| + fog table | 297.0 | 62.2 | 63.1 |
+| + DCalcCtrl 1 (all) | 289.0 | 67.2 | 68.1 |
+| all, two volumes, outside a volume | 292.0 | 67.2 | 68.1 |
+| all, two volumes, inside a volume | 294.0 | 67.2 | 68.1 |
+| untextured gouraud | 39.0 | 37.1 | 38.0 |
+
+One quad over the tile is pixel work (512 pixels a triangle); 2x2 and 1x1 are bound by the triangles, and agree.
+**A triangle with every feature costs the TSP 68 clocks (680 ns): 48 for a textured one, +16 for an offset colour
+that is not 0, +5 for DCalcCtrl 1; mipmapping, bilinear filtering and the fog table add nothing per triangle, and
+two volumes add nothing either, outside a modifier volume or inside it** (the pixels inside show the second set's
+colours, so the second set is what was shaded). This is the opaque list, where a polygon with two volumes is
+shaded once; in the punch through list the pixels inside a volume get a second pass (above, "Modifier volumes").
+
 ## Not known
 
 - What makes runs cost more when more than about 12 different triangles are on a line.

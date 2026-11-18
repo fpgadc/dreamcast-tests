@@ -40,6 +40,7 @@
 /* #define TM_SHARE */                 /* only the share scenes: a few seconds */
 /* #define TM_SPANTEX */               /* only the spantex scenes: a few seconds */
 /* #define TM_SPANTEX3 */              /* only the spantex3 scenes: about 20 seconds */
+/* #define TM_ALLF */                  /* only the allf scenes (every feature, two volumes): a few seconds */
 #define NUM_LAYOUTS 17
 #define NUM_PAGES NUM_LAYOUTS
 #define TEST_MODIFIERS              /* the two modifier volume lists exist */
@@ -749,6 +750,50 @@ static void run_all(void) {
        each of two tiles; 20 = 11 again; 21 = 11 with lines 16-31 one sprite 32x16; 22 = 3 again. Two tiles,
        one above the other, with primitives in both: 23 32 columns 1x64; 24 T 32x64, columns 1x32 at x 8 and 16
        in the first tile only. */
+    /* ---- allf c L v pass: the TSP's setup of a triangle with every feature, and with two volumes (2026-11-18). One
+       tile, opaque list, polygons seen (v 0) and their twin behind the background (v 1); layouts 2 (1 quad over the
+       tile), 11 (256 quads 2x2: 512 seen triangles of 2 pixels) and 5 (1024 quads 1x1: 1024 seen triangles of one
+       pixel, setup-bound). c: 0 565 gouraud; 1 with an offset colour (0x101010 (k + 1) at vertex k: not 0, which
+       would cost nothing); 2 also mipmapped bilinear; 3 also the fog table; 4 also DCalcCtrl 1 ("all"); 5 all, with
+       two volumes (FPU_SHAD_SCALE 0x080, both sets alike, offset colours in both), outside any volume; 6 the same
+       inside a modifier volume over the tile (the second set); 7 untextured gouraud (the report's 39 a triangle).
+       pvr-tests/timemeas/allf.py makes the table. */
+    {
+        static const format_t af[4] = {
+            { "565 gouraud",                                 OP, 1, 1, 0, PixelFmt_565, 0, 0, 0, P0, 1, 0 },
+            { "565 gouraud offset",                          OP, 1, 1, 1, PixelFmt_565, 0, 0, 0, P0, 1, 0 },
+            { "565 gouraud offset mipmapped bilinear",       OP, 1, 1, 1, PixelFmt_565, 0, 0, 1, BI, 1, 0 },
+            { "565 gouraud offset mipmapped bilinear fog",   OP, 1, 1, 1, PixelFmt_565, 0, 0, 1, BI, 1, 1 },
+        };
+        static const int al[3] = { 2, 11, 5 };
+        int pass, ac, li, av;
+        for(pass = 0; pass < 2; pass++)
+            for(ac = 0; ac < 8; ac++)
+                for(li = 0; li < 3; li++)
+                    for(av = 0; av < 2; av++) {
+                        const int two = ac == 5 || ac == 6;
+                        cur = ac == 7 ? &formats[1] : &af[ac < 4 ? ac : 3]; cur_own = 0;
+                        offs_mode = ac >= 1 && ac <= 6 ? 2 : -1;
+                        dcalc_ctrl = ac >= 4 && ac <= 6;
+                        two_volumes = two; shadow_bit = two; shad_scale = two ? 0x080 : 1; bg_shadow = 0;
+                        vis = av ? DepthMode_Greater : DepthMode_Always; bg_depth = av ? f32b_int(2) : 0;
+                        begin(ListType_Opaque);
+                        layout(al[li]);
+                        if(ac == 6) {
+                            ta_list_begin(ListType_Opaque_Modifier_Volume);
+                            sheet(VolumeMode_Inside_Last, 0, 0, 32, 32);
+                        }
+                        measure("allf", ac, al[li], av, pass);
+                    }
+        offs_mode = -1; dcalc_ctrl = 0; two_volumes = 0; shadow_bit = 0; shad_scale = 1;
+        vis = DepthMode_Always; bg_depth = 0; cur = &formats[0];
+    }
+#ifdef TM_ALLF
+    *fb_r_ctrl = fb_r;
+    printf("T end\n");
+    return;
+#endif
+
 #ifdef TM_ORDER
     {
         static const format_t pal_fmt = { "palette 8 bpp decal", OP, 1, 0, 0, PixelFmt_Pal8, 0, 0, 0, P0, 1, 0 };
