@@ -2839,6 +2839,21 @@ on a grid 23 bits under the longer (nearest), times 6949359 / 2^24 (0.41421407),
 the model's. The model: 1,982 and 2,247. Shift and add multipliers (each 1 bit of the constant a term on the grid),
 sqrt(2) - 1 with rounding on the way, 27146 / 65536 with grids, the sum cut to its own width: no better.
 
+**mipk3** (`pvr-tests/mipk/gen 3 stair pvr-tests/mipk3`; fit/hw/mipk3, fit/mipk_data/mipk3-seed3.observed.txt;
+`KFIT_STAIR=1 pvr-tests/mipk/kfit3 ...` with kfit built for ../mipk3/cases.h): f(shorter) measured instead of fitted. Rows of
+20 cells share the shorter numerator; across a row the longer one rises by one unit of its 24 bit grid a cell (one float
+step), around the model's crossing of the step (130), so the cell where the row turns gives the console's part to a
+unit. All 120 rows turn once (short ... reached). In units of the longer's grid, the console's part against the
+model's (27146 / 65536 x shorter):
+
+| the sum longer + part | rows | console's part |
+|---|---|---|
+| stays under the next power of two | 59 | 0 .. 1.6 units below the model's, at every shorter / longer |
+| reaches the next power of two (a carry) | 61 | mostly ~1.2e-6 x shorter below (up to 10 units and beyond); 13 rows under a unit |
+
+So the constant is the model's, and the addition loses more when its result carries into the next binade: why only most
+of the carry rows do, and how much, is the open part.
+
 ## bumpfn, bumpbil, bumphang: bump maps (2026-11-17)
 
     bash run2.sh bumpfn bumpbil off hw=<ip>         # 7 + 7 pages; refsw2-offline = console in 952 and 1792 regions

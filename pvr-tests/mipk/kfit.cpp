@@ -64,12 +64,13 @@ struct Rule {
     int rw = 0, cb = 0;  // path 0 with rw: the coefficients made again for K, sum * Recip(det, rw) cut to cb bits
     int64_t cnum = 27146; int cbits = 16;               // the shorter length's factor, cnum / 2^cbits (sqrt(2) - 1)
     int lg = 0, lgm = 0; // the shorter on a grid lg bits under the longer before its multiplication (0: not)
+    int hg = 0;          // the longer on its own grid hg bits under its top (0: the part's grid gw, as before; 62: exact)
     int shiftadd = 0;    // the part as a sum of the shorter shifted by each 1 bit of cnum, each term on the grid (gw) first
     int sc = 62, scm = 0, ptm = 0, gm = 0;   // the sum cut to sc bits of its own (mode scm); the part's cut mode; the grid's mode
     int dv = 0;          // DCalcCtrl 1: 0 the planes at the first vertex exactly; 1 the vertex's own u1 z1, v1 z1, z1; 2 the planes there in 24 bits
     std::string Name() const {
         char b[200];
-        snprintf(b, sizeof b, "shiftadd %d logrid %d/%d sum %d/%d partmode %d gridmode %d dv %d const %lld/2^%d path %d inv %d recip %d coefprod %d coef %d/%d prod %d/%d diff %d/%d hi %d lo %d part %d grid %d", shiftadd, lg, lgm, sc, scm, ptm, gm, dv, (long long)cnum, cbits, path, iw, rw, cb, cw, cm, pw, pm, sw, sm, hw, lw, partw, gw);
+        snprintf(b, sizeof b, "higrid %d shiftadd %d logrid %d/%d sum %d/%d partmode %d gridmode %d dv %d const %lld/2^%d path %d inv %d recip %d coefprod %d coef %d/%d prod %d/%d diff %d/%d hi %d lo %d part %d grid %d", hg, shiftadd, lg, lgm, sc, scm, ptm, gm, dv, (long long)cnum, cbits, path, iw, rw, cb, cw, cm, pw, pm, sw, sm, hw, lw, partw, gw);
         return b;
     }
 };
@@ -156,7 +157,8 @@ static int K8Of(const Cell& c, const Rule& r, double* kOut = nullptr)
         Fp sum;
         if (r.gw < 62) {
             const int g = hi.top() - r.gw;
-            sum = pvrfp::Add(GridM(hi, g, r.gm), GridM(part, g, r.gm), 62, 200);
+            const Fp h = r.hg == 0 ? GridM(hi, g, r.gm) : r.hg >= 62 ? hi : GridM(hi, hi.top() - r.hg, 0);
+            sum = pvrfp::Add(h, GridM(part, g, r.gm), 62, 200);
         } else
             sum = pvrfp::Add(hi, part, 62, 200);
         return CutM(sum, r.sc, r.scm);
@@ -322,6 +324,42 @@ int main(int argc, char** argv)
         }
         return 0;
     }
+    if (getenv("KFIT_STAIR")) {
+        // mipk3: each row's shorter (units of the 24 bit grid under the longer), the model's part, and the console's part
+        // from where the row turns: lo, D = T - hi(step 0), s (first step reached; 99: none), f in [D - s, D - s + 1)
+        std::map<int, std::vector<std::pair<int, int>>> rowsObs;              // row -> (step, reached)
+        for (size_t i = 0; i < nMipk; i++) {
+            const Cell& c = cells[i];
+            if (c.page > 7) continue;
+            const int cellNo = (int)(i % 300), step = cellNo % 20 - 10, row = c.page * 15 + cellNo / 20;
+            const bool up = step >= 0;
+            rowsObs[row].push_back({ step, (up && c.obs == 0) || (!up && c.obs == 1) });
+        }
+        printf("row lo D model_part s console_part_lo deficit(model - console, units)\n");
+        for (auto& [row, v] : rowsObs) {
+            const size_t i0 = (size_t)(row / 15) * 300 + (size_t)(row % 15) * 20 + 10;         // step 0
+            const Cell& c = cells[i0];
+            const long double nu = fabsl((long double)c.uA.toDouble() * c.wC.toDouble()), nv = fabsl((long double)c.vA.toDouble() * c.wC.toDouble());
+            const long double hi = nu > nv ? nu : nv, lo = nu > nv ? nv : nu;
+            double kModel; K8Of(c, model, &kModel);
+            const long double scale = kModel / (hi + lo * 27146.0L / 65536.0L);
+            int es; const long double fs = frexpl(scale, &es);
+            const long double sc2 = ldexpl(fs > 0.75L ? 1.0L : 0.5L, es);
+            int eh; frexpl(hi, &eh);
+            const long double g = ldexpl(1, eh - 24);
+            const long double T = ldexpl(130, -6 - 7 + 7) ;   // placeholder
+            (void)T;
+            // the step: 130 * 2^n in K, the nearest to the model's K
+            int ek; const double mk = frexp(kModel, &ek) * 256;
+            const long double stepK = ldexpl(floor(mk), ek - 8);                     // the model's K8 at step 0: the step crossed
+            const long double D = (stepK / sc2 - hi) / g;
+            int s = 99;
+            for (auto& [st, r] : v) if (r) { s = std::min(s, st); }
+            const long double mp = lo / g * 27146.0L / 65536.0L;
+            printf("%3d %.4Lf %.4Lf %.4Lf %d %.4Lf %.2Lf %.1Lf\n", row, lo / g, D, mp, s, D - s, s == 99 ? -1.0L : mp - (D - s), hi / g);
+        }
+        return 0;
+    }
     if (getenv("KFIT_BAND")) {
         // the exact cells whose need / shorter is in the band where the bounds conflict, in units of 2^(e - 24), e the
         // longer one's exponent: its own value, the shorter, the need; reached or not
@@ -396,7 +434,20 @@ int main(int argc, char** argv)
     std::vector<Rule> rules;
     const int cws[] = { 62, 24, 23, 22 }, pws[] = { 62, 32, 26, 24 }, sws[] = { 24, 23, 22, 21, 20, 19, 18, 17, 16 };
     const int hws[] = { 62, 24, 20 }, lws[] = { 62, 24, 20, 16 }, parts[] = { 62, 24, 20, 16 }, gws[] = { 62, 26, 24, 22, 20 };
-    if (getenv("KFIT_WIDE")) {
+    if (getenv("KFIT_HG")) {
+        const int64_t cs[][2] = { { 6949355, 24 }, { 6949357, 24 }, { 6949358, 24 }, { 6949359, 24 }, { 6949360, 24 }, { 6949361, 24 }, { 6949363, 24 },
+                                  { 434333, 20 }, { 434334, 20 }, { 434335, 20 }, { 1737338, 22 }, { 1737339, 22 }, { 1737340, 22 },
+                                  { 13898716, 25 }, { 13898718, 25 }, { 13898720, 25 }, { 27797433, 26 }, { 27797437, 26 }, { 27797441, 26 } };
+        const int lgH[] = { 0, 25, 24, 23, 22 }, gwH[] = { 25, 24, 23, 22 }, hgH[] = { 0, 62, 24, 23 }, scH[] = { 62, 25, 24, 23 };
+        for (auto& cc : cs)
+        for (int lg : lgH) for (int lgm = 0; lgm < (lg ? 3 : 1); lgm += 2)
+        for (int gw : gwH) for (int gm = 0; gm < 3; gm += 2)
+        for (int hg : hgH) for (int sc : scH) for (int scm = 0; scm < (sc < 62 ? 3 : 1); scm += 2) {
+            Rule r = { 62, 0, 24, 0, 26, 2, 62, 62, 62, gw };
+            r.cnum = cc[0]; r.cbits = (int)cc[1]; r.lg = lg; r.lgm = lgm; r.gm = gm; r.hg = hg; r.sc = sc; r.scm = scm; r.dv = 2;
+            rules.push_back(r);
+        }
+    } else if (getenv("KFIT_WIDE")) {
         const int lgW[] = { 0, 26, 25, 24, 23, 22, 21 }, gwW[] = { 62, 26, 25, 24, 23, 22, 21 };
         for (int bits = 16; bits <= 26; bits++) {
             const int64_t n0 = (int64_t)floor(0.41421 * (double)(1LL << bits)), n1 = (int64_t)ceil(0.41422 * (double)(1LL << bits));

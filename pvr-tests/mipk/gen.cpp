@@ -88,7 +88,13 @@ int main(int argc, char** argv)
     // seen: the first whose K8 * w^2 reaches 2^15 (130 for a power of two). Pages 0, 1: the shorter numerator 0;
     // 2, 3: shorter / longer 0.02 .. 1; 4, 5: 0.5 .. 1; 6, 7: 1/w not a power of two, the shorter 0. Even pages above
     // that step, odd below.
-    const bool exact = argc > 2 && !strcmp(argv[2], "exact");
+    // mix stair (pvr-tests/mipk3): exact's cells (1/w = 1, so one step of K8 seen: 130) in rows of 20 that share the
+    // shorter numerator: across a row the longer one rises by one unit of its 24 bit grid a cell (one step of its float),
+    // around the model's crossing of the step; where the console's row turns says f(shorter) to a unit. 15 rows a page,
+    // shorter / longer from 0.005 to 0.99 (log), the shorter a float of any mantissa or of few bits
+    const bool stair = argc > 2 && !strcmp(argv[2], "stair");
+    const bool exact = stair || (argc > 2 && !strcmp(argv[2], "exact"));
+    Tri row;                                            // stair: the row's cell 10, at the model's crossing
     const std::string outDir = argc > 3 ? argv[3] : Here();
     Rng rng(seed);
     Model model;
@@ -98,7 +104,8 @@ int main(int argc, char** argv)
     h.push_back(Format("#define NUM_QUADS %d", PAGES * CELLS));
     h.push_back("typedef struct { unsigned char page, bias, mode, dcalc, tri[3][2]; unsigned short cell; uint32_t z[4]; uint32_t uv[4][2]; } quad_t;   /* corners TL, TR, BL, BR; tri (not all zero): a triangle with these corners, in pixels from the cell's, instead */");
     h.push_back("static const quad_t quads[NUM_QUADS] = {");
-    txt.push_back("# page cell dcalc bias legs K above(1)/below(0) distance-from-the-step(steps) K8-1-changes K8+1-changes");
+    txt.push_back(stair ? "# page cell dcalc bias legs K row step(-10..9: the longer's units from the model's crossing) 0 0"
+                        : "# page cell dcalc bias legs K above(1)/below(0) distance-from-the-step(steps) K8-1-changes K8+1-changes");
     const double Pi = 3.14159265358979323846;
     long tries = 0;
     for (int page = 0; page < PAGES; page++) {
@@ -110,6 +117,14 @@ int main(int argc, char** argv)
             for (;;) {
                 if (++tries > 50000000)
                     Fail("no case");
+                if (stair && cell % 20 != 0) {
+                    t = row;
+                    t.x[0] = cx; t.y[0] = cy; t.x[1] = cx + 32; t.y[1] = cy; t.x[2] = cx; t.y[2] = cy + 32;
+                    t.u[1] = Step(row.u[1], cell % 20 - 10);
+                    const double k = KOf(model, t);
+                    txt.push_back(Format("%d %d %d %d 32x32 %.12g %d %d %d %d", page, cell, t.dcalc, t.bias, k, cell / 20, cell % 20 - 10, 0, 0));
+                    break;
+                }
                 if (exact) {
                     t.dcalc = (int)rng.integers(0, 2);
                     t.bias = 4;
@@ -122,12 +137,22 @@ int main(int argc, char** argv)
                     const int wb = Fp::Bits(ww.mant), wwm = (int)(wb >= 8 ? ww.mant >> (wb - 8) : ww.mant << (8 - wb));
                     const int mT = (32768 + wwm - 1) / wwm;
                     if (mT < 129 || mT > 255) continue;
-                    const double ratio = page < 2 || page >= 6 ? 0 : page < 4 ? rng.logUniform(0.02, 1) : rng.uniform(0.5, 1);
+                    double ratio = page < 2 || page >= 6 ? 0 : page < 4 ? rng.logUniform(0.02, 1) : rng.uniform(0.5, 1);
+                    if (stair) {
+                        ratio = rng.logUniform(0.005, 0.99);
+                        for (int k = 0; k < 3; k++) t.z[k] = 1;
+                    }
                     const double s1 = rng.chance(0.5) ? 1 : -1, s2 = rng.chance(0.5) ? 1 : -1;
                     t.u[0] = 0; t.v[0] = 0;
                     t.u[1] = s1; t.v[1] = s2 * ratio;
+                    if (stair && rng.chance(0.5))       // a shorter of few bits
+                    {
+                        const int fb = (int)rng.integers(4, 12);
+                        const double few = ldexp(round(ldexp(ratio, fb)), -fb);
+                        if (few > 0) t.v[1] = s2 * few;
+                    }
                     t.u[2] = rng.uniform(-0.3, 0.3); t.v[2] = rng.uniform(-0.3, 0.3);
-                    if (rng.chance(0.5)) { std::swap(t.u[1], t.v[1]); std::swap(t.u[2], t.v[2]); }     // the longer from v
+                    if (!stair && rng.chance(0.5)) { std::swap(t.u[1], t.v[1]); std::swap(t.u[2], t.v[2]); }     // the longer from v
                     const double k1 = KOf(model, t);
                     if (!(k1 > 0)) continue;
                     // scale every coordinate so that K lies a little under mT steps of 2^s, with d = K * w^2 near 2^L (level
@@ -187,6 +212,15 @@ int main(int argc, char** argv)
                 const double perStep = (kAt(dir * hi) - kAt(dir * lo)) / step;
                 if (!(perStep > 0))
                     continue;
+                if (stair) {
+                    row = t;
+                    row.u[1] = Step(t.u[1], (int)(dir * hi));
+                    t = row;
+                    t.u[1] = Step(row.u[1], -10);                // the row's first cell
+                    const double k = KOf(model, t);
+                    txt.push_back(Format("%d %d %d %d 32x32 %.12g %d %d %d %d", page, cell, t.dcalc, t.bias, k, cell / 20, cell % 20 - 10, 0, 0));
+                    break;
+                }
                 const double want = rng.logUniform(ldexp(1.0, -18), ldexp(1.0, -5));
                 const int64_t moves = (int64_t)floor(want / perStep);
                 const int64_t n = above ? hi + moves : lo - moves;
