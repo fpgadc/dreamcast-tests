@@ -102,7 +102,7 @@ int main(int argc, char** argv)
         if (exact) { s.zero += delta == 0; s.deltas[delta]++; }
     }
     WriteFile(folder + (kind == "hw" ? "/meas.json" : "/meas." + kind + ".json"), Json::Object().set("cases", out).dump());
-    printf("%s; ladders %s\n", kind == "hw" ? "console" : "refsw2-offline", data.has("refined") && data.at("refined").truthy() ? "refined" : "first pass");
+    printf("%s; ladders %s\n", kind == "hw" ? "console" : "the offline renderer", data.has("refined") && data.at("refined").truthy() ? "refined" : "first pass");
     printf("%-46s cases  exact  = model   differences from the model in 19 bit steps (count)\n", "group");
     for (const std::string& name : order) {
         const Stats& s = stats[name];

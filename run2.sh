@@ -2,7 +2,8 @@
 # Run tests built on common/pvrtest2.h (the PVR driven directly, no KallistiOS driver).
 #   bash run2.sh [-j jobs] <test>[@<set>]... [off] [hw=<dreamcast ip>] [emu[=<emulator build dir>]]
 #
-#   off   the test built for the PC, piped into nulldc3's refsw2-offline  ->  page<n>.off.raw
+#   off   the test built for the PC, piped into nulldc3's refsw3-offline  ->  page<n>.off.raw
+#         (OFFLINE_TOOL=refsw2-offline: the old refsw2 core with refsw3-ta instead)
 #   hw    the test built for the Dreamcast, run on a console (dc-load)    ->  page<n>.hw.raw
 #   emu   the same Dreamcast program in nulldc3 (refsw2), one page each   ->  page<n>.emu.png
 #
@@ -18,7 +19,8 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 # a test's folder: pvr-tests/<test> (the core's tests) or ta-tests/<test> (the tile accelerator's)
 testdir() { local g; for g in pvr-tests ta-tests; do [ -d "$HERE/$g/$1" ] && { echo "$HERE/$g/$1"; return 0; }; done; return 1; }
 NULLDC3=${NULLDC3:-$HERE/../nulldc3}
-OFFLINE=${OFFLINE:-/tmp/refsw2-offline}
+OFFLINE_TOOL=${OFFLINE_TOOL:-refsw3-offline}
+OFFLINE=${OFFLINE:-/tmp/$OFFLINE_TOOL}
 DCTOOL=${DCTOOL:-/home/skmp/projects/fpgadc/shrike4-rtl/build/tools/dcload-ip/host-src/tool/dc-tool-ip}
 JOBS=${JOBS:-$(nproc)}
 
@@ -38,7 +40,7 @@ if [ "$1" = --worker ]; then
     rm -f $W/*.off.raw $W/*.off16.raw
     gcc -O1 -Wall -Wno-unused-function -I$HERE/common "${DEF[@]}" -o $W/build/pc $SRC || exit 1
     $W/build/pc --labels > $W/labels.txt
-    $W/build/pc $W | $OFFLINE/refsw2-offline - > $W/off.log 2>&1 || { echo "$RUN offline: failed"; tail -n 5 $W/off.log; }
+    $W/build/pc $W | $OFFLINE/$OFFLINE_TOOL - > $W/off.log 2>&1 || { echo "$RUN offline: failed"; tail -n 5 $W/off.log; }
     grep -a '^PVRIO crc' $W/off.log > $W/off.crc
     echo "$RUN offline: $(ls $W/*.off*.raw 2>/dev/null | wc -l) of $PAGES pages"
     ;;
@@ -93,12 +95,12 @@ while [ $# -gt 0 ]; do
   shift
 done
 [ ${#RUNS[@]} -gt 0 ] && [ ${#KINDS[@]} -gt 0 ] || { sed -n 2,4p "$0"; exit 1; }
-export JOBS NULLDC3 OFFLINE DCTOOL
+export JOBS NULLDC3 OFFLINE OFFLINE_TOOL DCTOOL
 for kind in "${KINDS[@]}"; do
   case $kind in
   off)
     mkdir -p /tmp/pvr_tests
-    bash $NULLDC3/refsw2-offline/build.sh $OFFLINE > /tmp/pvr_tests/offline-build.log 2>&1 || { tail -n 5 /tmp/pvr_tests/offline-build.log; exit 1; }
+    bash $NULLDC3/$OFFLINE_TOOL/build.sh $OFFLINE > /tmp/pvr_tests/offline-build.log 2>&1 || { tail -n 5 /tmp/pvr_tests/offline-build.log; exit 1; }
     printf '%s\n' "${RUNS[@]}" | xargs -P $JOBS -I{} bash "$0" --worker off {}
     ;;
   *) for run in "${RUNS[@]}"; do bash "$0" --worker $kind $run; done ;;

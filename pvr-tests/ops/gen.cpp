@@ -6,7 +6,7 @@
        gen --check <set>.cases.json             ->  does the model still predict what the set says?
 
    The model is refsw2's: the ISP's depth, the TSP's planes and the ISP's inside test as nulldc3 has them in
-   libswirl/rend/refsw2 (pvr_isp_depth.h, pvr_tsp_plane.h, pvr_isp_edge.h, all on pvr_softfp.h), included
+   refsw3/refpvr (pvr_isp_depth.h, pvr_tsp_plane.h, pvr_isp_edge.h, all on pvr_softfp.h), included
    through ../../model/gen_common.h. Each of the three has a configuration, a struct of the widths, reaches and
    shifts that were fitted to a console: pvrisp::DepthConfig, pvrtsp::PlaneConfig, pvrisp::EdgeConfig. An
    ALTERNATIVE is the model with one field of one configuration set to another value: two less, one less, one

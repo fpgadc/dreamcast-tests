@@ -18,7 +18,8 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NULLDC3 = os.environ.get("NULLDC3", os.path.join(HERE, "..", "nulldc3"))
-OFFLINE = os.environ.get("OFFLINE", "/tmp/refsw2-offline")
+TOOL = os.environ.get("OFFLINE_TOOL", "refsw3-offline")      # refsw2-offline: the old refsw2 core
+OFFLINE = os.environ.get("OFFLINE", "/tmp/" + TOOL)
 WORK = "/tmp/pvr_tests/polly2dumps"
 BPP = {0: 2, 1: 2, 2: 2, 3: 2, 4: 3, 5: 4, 6: 4}       # FB_W_CTRL packmode: bytes a pixel
 
@@ -46,9 +47,9 @@ def main():
     if args[:1] == ["--dumps"]:
         dumps, args = args[1], args[2:]
     scenes = args or sorted(f[len("vram_out_"):-4] for f in os.listdir(dumps) if f.startswith("vram_out_"))
-    b = subprocess.run(["bash", os.path.join(NULLDC3, "refsw2-offline", "build.sh"), OFFLINE], capture_output=True, text=True)
+    b = subprocess.run(["bash", os.path.join(NULLDC3, TOOL, "build.sh"), OFFLINE], capture_output=True, text=True)
     if b.returncode:
-        sys.exit("refsw2-offline: build failed\n" + b.stdout[-400:] + b.stderr[-400:])
+        sys.exit(TOOL + ": build failed\n" + b.stdout[-400:] + b.stderr[-400:])
     jobs = int(os.environ.get("JOBS", os.cpu_count() or 1))
 
     def one(s):
@@ -59,9 +60,9 @@ def main():
         if size not in (8192, 32768):
             return f"{s}: not replayed: its register file is {size} bytes, not the 8 KB of 0x005F8000-0x005F9FFF", False
         cmd = f"regs {dumps}/pvr_regs_{s}.bin; vram {dumps}/vram_{s}.bin; render; save {w}"
-        r = subprocess.run([os.path.join(OFFLINE, "refsw2-offline"), "--lax", "-c", cmd], capture_output=True, text=True)
+        r = subprocess.run([os.path.join(OFFLINE, TOOL), "--lax", "-c", cmd], capture_output=True, text=True)
         if r.returncode or not os.path.exists(os.path.join(w, "vram.bin")):
-            return f"{s}: refsw2-offline failed: {(r.stderr or r.stdout).strip().splitlines()[-1:]}", False
+            return f"{s}: {TOOL} failed: {(r.stderr or r.stdout).strip().splitlines()[-1:]}", False
         hw = np.fromfile(f"{dumps}/vram_out_{s}.bin", dtype=np.uint8)
         sw = np.fromfile(os.path.join(w, "vram.bin"), dtype=np.uint8)
         os.remove(os.path.join(w, "vram.bin"))

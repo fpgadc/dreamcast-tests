@@ -1,12 +1,12 @@
 #!/bin/bash
-# Build the standalone probes and the test generators against the model's single source in nulldc3 (refsw2).
+# Build the standalone probes and the test generators against the model's single source in nulldc3 (refsw3/refpvr).
 #   bash model/build.sh [test...]
 #   probes       model/covprobe, depthprobe, tspprobe, reachgen
 #   generators   pvr-tests/<test>/gen from its gen.cpp, pvr-tests/<test>/read from its read.cpp (ta-tests/ too):
 #                of the tests named, or of every test that has one
-# Only what is older than its sources is built (the refsw2 headers and model/gen_common.h count for all).
+# Only what is older than its sources is built (the refsw3-core headers and model/gen_common.h count for all).
 HERE=$(cd "$(dirname "$0")" && pwd)
-REFSW=${REFSW:-$HOME/projects/fpgadc/nulldc3/libswirl/rend/refsw2}
+REFSW=${REFSW:-$HOME/projects/fpgadc/nulldc3/refsw3/refpvr}
 newer() {       # is any source newer than the program $1?
   [ ! -x "$1" ] && return 0
   for f in "${@:2}" $REFSW/pvr_*.h $HERE/gen_common.h; do [ "$f" -nt "$1" ] && return 0; done

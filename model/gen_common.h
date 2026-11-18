@@ -2,7 +2,7 @@
     What the test generators (pvr-tests/<test>/gen.cpp) share.
 
     A generator places its cases by what the hardware will do with them, and that knowledge exists once: in
-    the soft floating point headers of refsw2 (nulldc3 libswirl/rend/refsw2: pvr_softfp.h, pvr_isp_edge.h,
+    the soft floating point headers of refsw2 (nulldc3 refsw3/refpvr: pvr_softfp.h, pvr_isp_edge.h,
     pvr_isp_depth.h, pvr_tsp_plane.h), the same ones the emulator and the probes of this folder compile. The
     functions under "the model" below only say which tile and which pixel; they add no arithmetic of their own.
 
