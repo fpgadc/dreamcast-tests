@@ -2782,6 +2782,44 @@ it on a console: each case a triangle alone in its own tile, compare always with
 
 Any start is cut. refsw3-offline = console on 49,152 of 49,152 pixels.
 
+## mipk: the precision of K, the polygon's part of the mipmap level (2026-11-18)
+
+    bash model/build.sh mipk; pvr-tests/mipk/gen 1                 # the cases (cases.h, cases.txt), ~30 s
+    bash run2.sh mipk off; bash run2.sh mipk hw=<ip>                 # 8 pages; fit/hw/mipk
+    MIP_K=<variant> bash run2.sh mipk off                            # refsw3-core's experiment switch (pvr_tsp_plane.h)
+    python3 pvr-tests/mipk/analyze.py <console run> <name>=<offline run> ...
+    pvr-tests/mipk/kfit fit/mipk_data/seed1.observed.txt            # rules against every cell (header of kfit.cpp)
+
+The one pixel difference left in the 106 new dumps (r2r_ring, 8 pixels) is a mipmap level: with the levels of the
+texture painted over in the dump (poke) and the scaler off (a tile alone, its framebuffer moved to free memory), the
+console samples level 1 at 6 pixels where refsw3 samples level 2. In the model d = K * w^2 in 8 bits, and that
+polygon's K is 66.0000062 texels a pixel: 2^-23 above a step of 8 bits (132), the 6 pixels the ones whose d is
+exactly a power of two. With K one step lower (131) every pixel of the polygon is the console's.
+
+mipk asks the console for K at such steps: one triangle a cell, 1/w sloped across it (so d sweeps over the change of
+level), one corner's u moved by single float steps until K lies 2^-18 .. 2^-5 of a step above one (pages 0, 2, 4, 6) or
+below one (1, 3, 5, 7), DCalcCtrl 0 and 1, biases 4 .. 7, determinants not a power of two; plain bilinear filtering on
+mipmeas's texture of one colour a level, so the cell's picture says which K8 the console has. Every cell is the
+model's K8 or one step off it (fit/mipk_data/seed1.observed.txt):
+
+| K | cells | console = model | console one step lower | one step higher |
+|---|---|---|---|---|
+| above a step by < 2^-17 of a step | 152 | 5 | 147 | |
+| 2^-17 .. 2^-15 | 190 | 20 | 170 | |
+| 2^-15 .. 2^-13 | 194 | 96 | 98 | |
+| 2^-13 .. 2^-11 | 182 | 181 | 1 | |
+| further above | 482 | 482 | | |
+| below a step | 1200 | 1198 | | 2 |
+
+So the console's K is 0 .. about 2^-21 (relative) below the model's, by an amount that depends on the numbers: a
+datapath of some 22 bits that cuts. kfit scores a grid of rules (the coefficients, the two products and their
+difference, the two lengths and the 27146/65536 part, the sum aligned to the longer one: widths and toward zero /
+down / nearest) against the 2,400 cells, r2r_ring's triangle and the 33,300 triangles of mipmeas's sets (on which the
+model is the console's). The best that breaks none of mipmeas: products and differences cut to 24 bits, the shorter
+length and its part to 20, their sum on a grid 22 bits under the longer (MIP_K=21): mipk 2,317 of 2,400 cells, r2r_ring
+0 pixels, mipmeas 8 of 8 sets, mip, mipbil, sample, texfmt unchanged. The model (MIP_K=0) has 1,982. The exact
+arithmetic is not found yet (83 cells, all within 2^-13 of a step).
+
 ## bumpfn, bumpbil, bumphang: bump maps (2026-11-17)
 
     bash run2.sh bumpfn bumpbil off hw=<ip>         # 7 + 7 pages; refsw2-offline = console in 952 and 1792 regions
