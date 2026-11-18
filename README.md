@@ -2703,6 +2703,26 @@ depth per corner; opaque, punch-through and translucent triangles over each othe
 console = refsw3-offline on all of it, 15 of 15 regions and 32,768 of 32,768 depths. The background reads as the
 bgdepth format (0.0001 as 0x38d00000, 0x3e7fffff as 0x3e7fffc0, below 2^-20 as 0).
 
+**Game frames** (polly2-data dumps):
+
+    bash dumprender.sh <scene> z [hw=<ip>]          # every tile: ~0.2 s a tile offline, ~0.3 s on a console
+    bash dumprender.sh <scene> 10,7 11,7 z [hw=<ip>]    # these tiles
+
+dumprender with ZEXFIL reads tile after tile: the dump's region array entries of the tile, not written out, then the
+keep Z entry at tile (0, 0). The probes need memory at or above PARAM_BASE's page that the render does not read; a
+game's video memory is mostly textures, so it is found per tile: a render of one tile reads its entries, their object
+lists, the parameters of their entries, the textures those name and the background, and any 76 kB outside that will
+do. It is put back from the dump after the tile. Tile (0, 0) is written out 0888, unscaled, into that memory as well,
+so the dump's framebuffer and its format do not matter. Output: depth.off.raw / depth.hw.raw (640x480 words, each
+tile's depths at its place; depthr for x 20-39 of a 1280 wide render), compared depth by depth per tile. The sample
+point has to be the pixel center (HALF_OFFSET bit 0: every dump but mipmap). Translucent polygons sorted per pixel
+leave the depth from before them (keepz page 3), so an autosort tile reads as its opaque and punch-through depth.
+
+shenmue_intro, all 300 tiles (1.5 minutes for both sides): the console = refsw3 in 307,198 of 307,200 depths; at
+(566, 305) and (599, 380) the console's depth is one step of the 19 bit grid above refsw3-core's (0x3d239e80 against
+0x3d239e60, 0x3d36efa0 against 0x3d36ef80). The frame's colours are the console's in every pixel, so nothing else
+shows these. The dump's render reports ISP out of cache (SB_ISTERR bit 0) for two tiles, with or without zexfil.
+
 ## bumpfn, bumpbil, bumphang: bump maps (2026-11-17)
 
     bash run2.sh bumpfn bumpbil off hw=<ip>         # 7 + 7 pages; refsw2-offline = console in 952 and 1792 regions

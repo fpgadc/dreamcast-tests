@@ -15,6 +15,7 @@
      POKES     optional: { address, value, ... }: words of video memory (32 bit area) written after the dump's
      SETREGS   optional: { offset, value, ... }: registers written after the dump's (e.g. SCALER_CTL 0x400, so that
                the framebuffer is the tiles as they were shaded, without the vertical filter)
+     ZEXFIL    optional: the depth buffer read out instead (common/zexfil.h; below), of every tile or of TILES
    Output: frame.off.raw (PC) / frame.hw.raw (console): the framebuffer FB_W_SOF1 .. FB_Y_CLIP's last line.
 
    On a console (pvr-renderer's rules, polly2-rtl): the core is reset before video memory is written (a render
@@ -228,8 +229,225 @@ static void keep_tiles(void) {
 }
 #endif
 
+#ifdef ZEXFIL
+/* ---- ZEXFIL: the depth buffer of tiles read out (common/zexfil.h), instead of the frame ----
+
+   Every tile of the region array (or the tiles of TILES) in turn: its entries, not written out, then zexfil's keep Z
+   entry at tile (0, 0); 27 renders a tile. The probes need ZEXFIL_AREA bytes at or above PARAM_BASE's page that
+   the render does not read: a render of the tile reads its region array entries, their object lists, the
+   parameters of their entries, the textures those name, and the background; any other memory will do, and is put
+   back from the dump after the tile. Tile (0, 0) is written out (0888, no scaling) in that area too, so the dump's
+   own framebuffer is left alone. Output: depth.off.raw / depth.hw.raw, 640x480 words, each tile's depths at its
+   place (and depthr: the tiles of x 20-39, of a frame rendered 1280 wide). */
+#include "zexfil.h"
+
+static const uint32_t *dz_vram;         /* the dump's video memory, 32 bit area */
+static uint32_t dz_vram_words;
+static uint32_t dz_region[6 * 4096];    /* the dump's region array */
+static int dz_entries, dz_ew;
+static uint32_t dz_used[2 * 8192];      /* what a render of the tile reads: [start, end) pairs */
+static int dz_n_used;
+
+static uint32_t dz_word(uint32_t a) {
+    a &= 0x7ffffcu;
+    return a / 4 < dz_vram_words ? dz_vram[a / 4] : 0;
+}
+
+static void dz_use(uint32_t start, uint32_t end) {
+    if(dz_n_used < 8192) {
+        dz_used[2 * dz_n_used] = start;
+        dz_used[2 * dz_n_used + 1] = end;
+        dz_n_used++;
+    }
+}
+
+/* a texture's memory from its TSP and TCW words (in both chips: the 64 bit area interleaves them) */
+static void dz_texture(uint32_t tsp, uint32_t tcw) {
+    const uint32_t stride = (regs[TEXT_CONTROL_addr / 4] & 31) * 32, fmt = (tcw >> 27) & 7;
+    uint32_t w = 8u << ((tsp >> 3) & 7), h = 8u << (tsp & 7), size, a, lo, hi;
+    if((tcw >> 26) & 1) {                           /* not twiddled: 16 bit texels, no mipmaps */
+        if((tcw >> 25) & 1)
+            w = stride;
+        size = w * h * 2;
+    } else {
+        size = (tcw >> 30) & 1 ? 2048 + w * h / 4 : w * h * (fmt == 5 ? 4 : fmt == 6 ? 8 : 16) / 8;
+        if(tcw >> 31)
+            size += size / 3 + 64;                  /* mipmaps */
+    }
+    a = (tcw & 0xfffffu) << 3;
+    lo = (a / 2) & ~3u;
+    hi = (a + size + 7) / 2 + 4;
+    dz_use(lo, hi);
+    dz_use(lo + 0x400000, hi + 0x400000);
+}
+
+/* an object list: its words, the parameters of its entries (a strip taken as 8 vertices), their textures */
+static void dz_walk(uint32_t at, int volume) {
+    const uint32_t page = regs[PARAM_BASE_addr / 4] & 0xf00000u;
+    uint32_t w, kind, skip, shadow, head, vsize, size, p;
+    int steps = 0;
+    while(steps++ < 65536) {
+        w = dz_word(at);
+        dz_use(at, at + 4);
+        kind = w >> 29;
+        if(kind == 7) {                             /* a link, or the end */
+            if((w >> 28) & 1)
+                break;
+            at = w & 0xfffffcu;
+            continue;
+        }
+        skip = (w >> 21) & 7;
+        shadow = (w >> 24) & 1;
+        head = volume ? 1 : 3 + 2 * shadow;         /* a modifier volume triangle: an ISP word and 3 corners */
+        vsize = volume ? 3 : 3 + skip * (1 + shadow);
+        size = !(w >> 31) ? head + 8 * vsize :
+               kind == 4 || kind == 5 ? (((w >> 25) & 15) + 1) * (head + (kind == 4 ? 3 : 4) * vsize) : 0;
+        if(size) {
+            p = page + 4 * (w & 0x1fffff);
+            dz_use(p, p + 4 * size);
+            if(!volume && (dz_word(p) >> 25) & 1) {
+                dz_texture(dz_word(p + 4), dz_word(p + 8));
+                if(shadow)
+                    dz_texture(dz_word(p + 12), dz_word(p + 16));
+            }
+        }
+        at += 4;
+    }
+}
+
+static int dz_entries_of(int x, int y, uint32_t *w) {
+    int i, n = 0;
+    for(i = 0; i < dz_entries && n < ZEXFIL_MAX_ENTRIES; i++) {
+        const uint32_t c = dz_region[dz_ew * i];
+        if((int)((c >> 2) & 63) == x && (int)((c >> 8) & 63) == y)
+            memcpy(&w[dz_ew * n++], &dz_region[dz_ew * i], 4 * (size_t)dz_ew);
+    }
+    return n;
+}
+
+/* the memory a render of tile (x, y) reads; ZEXFIL_AREA bytes at or above PARAM_BASE's page outside it */
+static uint32_t dz_area(int x, int y) {
+    static uint32_t e[6 * ZEXFIL_MAX_ENTRIES];
+    const uint32_t page = regs[PARAM_BASE_addr / 4] & 0xf00000u, bg = regs[ISP_BACKGND_T_addr / 4];
+    uint32_t a, p;
+    int n, i, k;
+
+    dz_n_used = 0;
+    n = dz_entries_of(x, y, e);
+    for(i = 0; i < n; i++)
+        for(k = 1; k < dz_ew; k++)
+            if(!(e[dz_ew * i + k] >> 31))
+                dz_walk(e[dz_ew * i + k] & 0xfffffcu, k == 2 || k == 4);
+    p = page + 4 * ((bg >> 3) & 0x1fffff);
+    dz_use(p, p + 256);
+    if((dz_word(p) >> 25) & 1)
+        dz_texture(dz_word(p + 4), dz_word(p + 8));
+    for(a = page; a + ZEXFIL_AREA <= VRAM_BYTES; a += 0x10000) {
+        for(i = 0; i < dz_n_used; i++)
+            if(dz_used[2 * i] < a + ZEXFIL_AREA && dz_used[2 * i + 1] > a)
+                break;
+        if(i == dz_n_used)
+            return a;
+    }
+    return 0xffffffffu;
+}
+
+static void dz_render(uint32_t region) {
+    pvrio_reg(REGION_BASE_addr, region);
+    pvrio_reg(STARTRENDER_addr, 0xffffffff);
+    pvrio_wait(PVRIO_RENDER_DONE);
+}
+
+static void dz_run(void) {
+    static uint32_t frame[2][640 * 480], z[1024];
+    const uint32_t base = regs[REGION_BASE_addr / 4] & 0xfffffcu;
+    int tiles_x[1280], tiles_y[1280], n_tiles = 0, used_right = 0, t, i, j, x, y;
+    uint32_t area;
+    char line[160];
+
+    if(!(regs[HALF_OFFSET_addr / 4] & 1)) {
+        printf(SAY "zexfil: HALF_OFFSET bit 0 is clear (samples at pixel corners); the probes are for centers\n");
+        return;
+    }
+#ifdef _arch_dreamcast
+    dz_vram = dr_vram;
+    dz_vram_words = (uint32_t)(dr_vram_end - dr_vram);
+#else
+    {
+        static uint32_t *v;
+        FILE *f = open_dump("vram");
+        v = (uint32_t *)calloc(VRAM_BYTES / 4, 4);
+        dz_vram_words = f ? (uint32_t)fread(v, 4, VRAM_BYTES / 4, f) : 0;
+        if(f)
+            fclose(f);
+        dz_vram = v;
+    }
+#endif
+    dz_ew = (regs[FPU_PARAM_CFG_addr / 4] >> 21) & 1 ? 6 : 5;
+    for(dz_entries = 0; dz_entries < 4096; ) {
+        for(i = 0; i < dz_ew; i++)
+            dz_region[dz_ew * dz_entries + i] = dz_word(base + 4 * (uint32_t)(dz_ew * dz_entries + i));
+        if(dz_region[dz_ew * dz_entries++] >> 31)
+            break;
+    }
+#ifdef TILES
+    for(t = 0; t < NTILES; t++) {
+        tiles_x[n_tiles] = tiles[2 * t];
+        tiles_y[n_tiles++] = tiles[2 * t + 1];
+    }
+#else
+    for(i = 0; i < dz_entries && n_tiles < 1280; i++) {            /* every tile, in the array's order */
+        x = (int)((dz_region[dz_ew * i] >> 2) & 63);
+        y = (int)((dz_region[dz_ew * i] >> 8) & 63);
+        for(t = 0; t < n_tiles && (tiles_x[t] != x || tiles_y[t] != y); t++) ;
+        if(t == n_tiles && x < 40 && y < 15) {
+            tiles_x[n_tiles] = x;
+            tiles_y[n_tiles++] = y;
+        }
+    }
+#endif
+    zexfil_cfg.param_base = regs[PARAM_BASE_addr / 4];
+    zexfil_cfg.entry_words = dz_ew;
+    zexfil_cfg.stride = 128;
+    zexfil_cfg.entries = dz_entries_of;
+    zexfil_cfg.render = dz_render;
+    pvrio_reg(FB_W_LINESTRIDE_addr, 128 / 8);
+    pvrio_reg(FB_W_CTRL_addr, fb_packmode_0888);
+    pvrio_reg(FB_X_CLIP_addr, 639u << 16);
+    pvrio_reg(FB_Y_CLIP_addr, 479u << 16);
+    pvrio_reg(SCALER_CTL_addr, 0x400);
+    for(t = 0; t < n_tiles; t++) {
+        x = tiles_x[t];
+        y = tiles_y[t];
+        area = dz_area(x, y);
+        if(area == 0xffffffffu) {
+            printf(SAY "zexfil: no memory for the probes of tile (%d, %d)\n", x, y);
+            continue;
+        }
+        zexfil_cfg.area = area;
+        zexfil_cfg.fb = zexfil_fb();
+        pvrio_reg(FB_W_SOF1_addr, zexfil_fb());
+        zexfil_tile(x, y, z);
+        pvrio_w32(area, dz_vram + area / 4, (int)(ZEXFIL_AREA / 4));    /* the dump's memory back */
+        used_right |= x >= 20;
+        for(j = 0; j < 32; j++)
+            memcpy(&frame[x >= 20][(y * 32 + j) * 640 + (x % 20) * 32], &z[j * 32], 32 * 4);
+    }
+    snprintf(line, sizeof(line), "%d tiles read out, %d readings of another colour than the probe's", n_tiles, zexfil_foreign);
+    pvrio_hw_say(line);
+    pvrio_unhashed = 1;                             /* the depths into video memory, to be dumped */
+    for(i = 0; i <= used_right; i++) {
+        pvrio_w32(0, frame[i], 640 * 480);
+        pvrio_dump32(0, 640 * 480, i ? "depthr" : "depth", ".raw");
+    }
+    pvrio_unhashed = 0;
+}
+#endif
+
 int main(int argc, char **argv) {
 #ifndef _arch_dreamcast
+    if(argc > 1 && !strcmp(argv[1], "--labels"))
+        return 0;                                   /* run2.sh asks every test for its labels: there are none */
     if(argc > 1)
         pvrio_folder = argv[1];
 #else
@@ -255,6 +473,9 @@ int main(int argc, char **argv) {
                 pvrio_w32(pk[k], &pk[k + 1], 1);
         }
 #endif
+#ifdef ZEXFIL
+        dz_run();
+#else
 #ifdef TILES
         keep_tiles();
 #endif
@@ -265,6 +486,7 @@ int main(int argc, char **argv) {
             pvrio_wait(PVRIO_RENDER_DONE);
             pvrio_dump32(sof, (int)(stride * lines / 4), "frame", ".raw");
         }
+#endif
     }
     pvrio_close();
     return 0;
