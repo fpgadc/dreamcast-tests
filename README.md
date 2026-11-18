@@ -1636,6 +1636,27 @@ Not measured: factor 0; what a stream that began before the first tile with y = 
 offset in the next frame (the model starts every frame from nothing, which is what two frames in a row in an
 order from the bottom show for factors 0x800 and 0x401).
 
+## supsample: SupSample, the texture read at four points (2026-11-18)
+
+TSP bit 12 ("super sample texture") had never been set by a test; Outtrigger's menu portraits set it, and refsw3,
+which ignored it, missed 20,610 pixels of outtrigger_menu (and 716 / 753 of mrdriller). The console:
+
+- reads the texture at four points: the pixel's centre and half a pixel right, down and both, each with the
+  polygon's filter (point or bilinear) and the centre's mipmap level;
+- evaluates the planes for them in half pixel steps: along the run, (2 n + hx) steps of A / 2 (the centre's point
+  too) instead of n steps of A; half a line down is the line's value plus B / 2; each half coefficient is cut to
+  the evaluator's grid like a whole one;
+- shades each point on its own (texel with the base and offset colours) and averages the four colours, each row's
+  two first, (a + b) >> 1, then the rows.
+
+`supsample`, 19 pages, 300 cells each: 565, 4444, 1555 and VQ 4444 textures, point and bilinear, round
+coordinates and arbitrary ones (turned and sheared), decal, times alpha, and Outtrigger's modulate alpha blended
+over a background; refsw3-offline = console on all 19 (archived in fit/hw/supsample). The variants that fail:
+the plane evaluated at the points themselves (870 pixels of page 15, 21,091 of the bilinear page 16), whole steps
+plus a half step (798), lines in half steps too (2,119), the texels averaged before shading (56,421 of page 18),
+the sum >> 2 instead of the pairs (4,334 of Outtrigger's frame). Not tested: SupSample with mipmaps, fog, an offset
+colour, perspective (1/w not flat).
+
 ## ycoeff: the vertical filter's weights, Y_COEFF (2026-11-18)
 
 When SCALER_CTL's factor shrinks the picture (above 0x400; KallistiOS and most games use 0x401) each line is
