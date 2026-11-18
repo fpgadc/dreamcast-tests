@@ -44,6 +44,14 @@ for name in ("depth", "depthr"):
         x, y = px[0]
         print(f"  tile ({tx}, {ty}): {len(px)}; first ({x + (640 if name == 'depthr' else 0)}, {y}): hw {hw[y, x]:08x} off {off[y, x]:08x}")
 PY
+  # pictures (depthpng.py): each side on refsw3's scale, and the console's with the depths that differ boxed in red
+  for n in depth depthr; do
+    [ -f $W/$n.off.raw ] || continue
+    python3 "$HERE/depthpng.py" $W/$n.off.raw > /dev/null
+    [ -f $W/$n.hw.raw ] && python3 "$HERE/depthpng.py" $W/$n.hw.raw --like $W/$n.off.raw > /dev/null \
+                        && python3 "$HERE/depthpng.py" $W/$n.hw.raw $W/$n.diff.png --like $W/$n.off.raw --diff $W/$n.off.raw > /dev/null
+  done
+  echo "pictures: $(cd $W && ls depth*.png | tr '\n' ' ')(in $W)"
   exit 0
 fi
 DR_SETREGS="$(for ((i = 0; i < ${#SETREGS[@]}; i += 2)); do printf "%x:%x " ${SETREGS[i]} ${SETREGS[i+1]}; done)" python3 - "$DUMPS" "$SCENE" "$W" "${#TILES[@]}" <<'PY'

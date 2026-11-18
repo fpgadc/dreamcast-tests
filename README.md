@@ -2714,7 +2714,8 @@ game's video memory is mostly textures, so it is found per tile: a render of one
 lists, the parameters of their entries, the textures those name and the background, and any 76 kB outside that will
 do. It is put back from the dump after the tile. Tile (0, 0) is written out 0888, unscaled, into that memory as well,
 so the dump's framebuffer and its format do not matter. Output: depth.off.raw / depth.hw.raw (640x480 words, each
-tile's depths at its place; depthr for x 20-39 of a 1280 wide render), compared depth by depth per tile. The sample
+tile's depths at its place; depthr for x 20-39 of a 1280 wide render), compared depth by depth per tile, and
+pictures of them (depthpng.py: log scale grey, nearer brighter; depth.diff.png boxes the depths that differ). The sample
 point has to be the pixel center (HALF_OFFSET bit 0: every dump but mipmap). Translucent polygons sorted per pixel
 leave the depth from before them (keepz page 3), so an autosort tile reads as its opaque and punch-through depth.
 
