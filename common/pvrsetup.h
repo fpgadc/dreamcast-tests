@@ -41,7 +41,9 @@ static struct {
     uint32_t bg_color;                      /* background plane, 0RGB */
     f32b bg_depth;                          /* ISP_BACKGND_D */
     uint32_t FB_X_CLIP, FB_Y_CLIP;
-} pvr_frame = { 0x00000000, 0x38d1b717 /* 0.0001 */, 639u << 16, 479u << 16 };
+    int bg_first;                           /* the background's parameters before the polygons' (its tag below theirs);
+                                               read by pvr_frame_begin too, so set it before the frame (test_setup) */
+} pvr_frame = { 0x00000000, 0x38d1b717 /* 0.0001 */, 639u << 16, 479u << 16, 0 };
 
 static pvr_setup_t pvr_cfg;
 static uint32_t pvr_ol_bytes;               /* the object lists' first blocks, all tiles and lists */
@@ -178,7 +180,7 @@ static void pvr_frame_begin(void) {
     pvrio_reg(TA_OL_BASE_addr, SETUP_OL);
     pvrio_reg(TA_NEXT_OPB_INIT_addr, SETUP_OL + pvr_ol_bytes);
     pvrio_reg(TA_OL_LIMIT_addr, SETUP_OL + pvr_ol_bytes * 4);
-    pvrio_reg(TA_ISP_BASE_addr, SETUP_PARAMS);
+    pvrio_reg(TA_ISP_BASE_addr, SETUP_PARAMS + (pvr_frame.bg_first ? 0x40u : 0u));
     pvrio_reg(TA_ISP_LIMIT_addr, SETUP_PARAMS_LIMIT);
     pvrio_reg(TA_GLOB_TILE_CLIP_addr, clip.full);
     pvrio_reg(TA_ALLOC_CTRL_addr, alloc.full);
@@ -246,8 +248,8 @@ static void pvr_frame_render(void) {
     bg[3] = f32b_int(0);   bg[4] = f32b_int(480);  bg[5] = 0x34000000;  bg[6] = pvr_frame.bg_color;
     bg[7] = f32b_int(0);   bg[8] = f32b_int(0);    bg[9] = 0x34000000;  bg[10] = pvr_frame.bg_color;
     bg[11] = f32b_int(640); bg[12] = f32b_int(480); bg[13] = 0x34000000; bg[14] = pvr_frame.bg_color;
-    pvrio_w32(SETUP_BACKGROUND, bg, 15);
-    tag.param_offs_in_words = (SETUP_BACKGROUND - SETUP_PARAMS) >> 2;
+    pvrio_w32(pvr_frame.bg_first ? SETUP_PARAMS : SETUP_BACKGROUND, bg, 15);
+    tag.param_offs_in_words = pvr_frame.bg_first ? 0 : (SETUP_BACKGROUND - SETUP_PARAMS) >> 2;
     tag.skip = 1;
 
     pvrio_reg(REGION_BASE_addr, pvr_region);

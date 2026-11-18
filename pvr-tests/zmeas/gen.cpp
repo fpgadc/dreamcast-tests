@@ -370,6 +370,11 @@ static Json MakeReach(Rng& rng)
 }
 
 // Triangles of all sizes drawn over each other; each cell measures the one that ends up on top of it.
+// --tris <json> (a list of {"x": [3], "y": [3], "z": [3]}: triangles of a game frame at their place) instead of the
+// random ones, and --at x,y: the pixel the case of its cell measures first
+static std::vector<Tri> givenTris;
+static std::vector<Pt> givenAt;
+
 static Json MakeScene(Rng& rng, Json& tris)
 {
     struct Class { const char* name; int count; double h; };
@@ -382,7 +387,19 @@ static Json MakeScene(Rng& rng, Json& tris)
     std::vector<Tri> list;
     std::vector<std::string> detail, cls;
     tris = Json::Array();
-    for (const Class& c : classes)
+    for (const Tri& t : givenTris) {
+        for (int y = 0; y < 480; y++)
+            for (int x = 0; x < 640; x++) {
+                const double d = EdgeDistance(t, x + 0.5, y + 0.5);
+                if (d > 1.0) { owner[y * 640 + x] = (int)list.size(); clean[y * 640 + x] = 1; }
+                else if (d > -1.0) clean[y * 640 + x] = 0;
+            }
+        list.push_back(t);
+        cls.push_back("dump");
+        detail.push_back("scene: a game frame's triangle");
+        tris.push(CaseJson(detail.back(), false, 0, t).set("cls", "dump"));
+    }
+    for (const Class& c : givenTris.empty() ? std::vector<Class>(classes, classes + 4) : std::vector<Class>())
         for (int made = 0; made < c.count;) {
             const double ox = rng.uniform(0, 640), oy = rng.uniform(0, 480);
             double p[3][2];
@@ -444,7 +461,10 @@ static Json MakeScene(Rng& rng, Json& tris)
                 const int at = (cy + j) * 640 + cx + i;
                 if (clean[at] && i + j != 31 && owner[at] == t) full.push_back({ cx + i + 0.5, cy + j + 0.5 });
             }
-        const Pt pix = full[rng.integers(0, (int64_t)full.size())];
+        Pt pix = full[rng.integers(0, (int64_t)full.size())];
+        for (const Pt& g : givenAt)
+            if (g.first >= cx && g.first < cx + 32 && g.second >= cy && g.second < cy + 32 && owner[(int)g.second * 640 + (int)g.first] == t)
+                pix = g;
         std::vector<Pt> rest;
         for (auto& p : full)
             if (p != pix) rest.push_back(p);
@@ -586,6 +606,17 @@ int main(int argc, char** argv)
         else if (arg == "--seed" && a + 1 < argc) seed = atoll(argv[++a]);
         else if (arg == "--refine" && a + 1 < argc) refinePath = argv[++a];
         else if (arg == "--from" && a + 1 < argc) fromPath = argv[++a];      // the cases of an archived set, not new ones
+        else if (arg == "--tris" && a + 1 < argc) {
+            const Json g = Json::Parse(ReadFile(argv[++a]));
+            for (size_t k = 0; k < g.a.size(); k++) {
+                Tri t;
+                for (int q = 0; q < 3; q++) { t.x[q] = g.a[k].at("x")[q].num(); t.y[q] = g.a[k].at("y")[q].num(); t.z[q] = g.a[k].at("z")[q].num(); }
+                givenTris.push_back(t);
+            }
+        } else if (arg == "--at" && a + 1 < argc) {
+            double x, y;
+            if (sscanf(argv[++a], "%lf,%lf", &x, &y) == 2) givenAt.push_back({ x + 0.5, y + 0.5 });
+        }
         else Fail("gen [--mix first|general|zero|scene|reach] [--seed N] [--refine meas.json]  |  gen --regen <set>.cases.json <folder>");
     }
     if (mix != "first" && mix != "general" && mix != "zero" && mix != "scene" && mix != "reach")

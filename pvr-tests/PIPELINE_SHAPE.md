@@ -315,6 +315,10 @@ largest of its ISP, TSP and write-out times [M timemeas].
   of video memory; with the half texel at the level's size, 74,673 of 921,600 pixels were wrong, every one a
   bilinear sample below the full size. pvr-tests/mipbil tests it on the console (1120 of 1120 cells; the old
   rule gets 568 wrong), non-square declared sizes and trilinear passes included.
+- **Ties and the background's depth [M trtie, bgdepth, bgtie].** The sort's and the punch-through passes' first
+  reference is the key (depth, tag) of what is there: at exactly its depth a fragment is drawn only with a tag above
+  it. The background's depth is stored as a 19 bit float whose smallest exponent is that of 0.25, denormal below
+  (step 2^-20; below 2^-20 zero).
 - **Punch-through chunks [M ptchunk, ptchunkq, ptchunkm].** The punch-through polygons of a tile are peeled in
   chunks, in list order: a primitive joins the chunk while the vertices before it (triangle 3, quad 4, the last vertex
   of a quad just before not yet counted) and its own are at most ISP_FEED_CFG's chunk size less 2 (20 triangles at

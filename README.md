@@ -2616,7 +2616,38 @@ Whether a quad at the boundary itself counts 4 or 3 there is not measured: B lan
 
 refsw2 = the console on all three (3520, 16000 and 9600 regions). polly2dumps: jgr_tree_shadows2, shenmue_intro,
 shenmue_intro3 and shenmue_intro4 are the console's in all of video memory, 62 of 63. Left: shenmue_intro2, 3 words
-(522,169-171): a translucent polygon just in front of a punch-through one, its run starting at the pixel.
+(522,169-171): a tie between a translucent polygon and the punch-through layer under it (trtie, below).
+
+## trtie, bgdepth, bgtie: ties with the layer underneath, and the background's depth (2026-11-18)
+
+    bash run2.sh trtie bgdepth bgtie off; bash run2.sh trtie bgdepth bgtie hw=<ip>     # 16 + 32 + 6 pages
+    pvr-tests/zmeas/gen --mix scene --tris <json> --at x,y     # zmeas on given triangles (a game frame's), that pixel first
+
+polly2-data shenmue_intro2's last pixel (522,170): a sorted translucent polygon at exactly the depth of the
+punch-through pixel under it (0x1.0d788p-3 both; zmeas on the two triangles alone: the console's depths are refsw2's)
+is not drawn on the console. refsw2 and polly2-rtl started the sort from a reference below every tag at that depth.
+
+**Ties (trtie).** A translucent quad (sorted per pixel) with exactly the corners of an opaque or punch-through quad,
+the lists sent in either order (tags grow with the order the parameters are written), flat and sloped; punch-through
+at exactly the opaque depth; both at exactly the background's depth. The first reference of the sort and of the
+punch-through passes is the key of what is there, depth and tag: a fragment at exactly its depth is drawn only with a
+tag above it, the opaque polygon's, a resolved punch-through layer's or the background's (whose parameters a game
+usually writes last). dumprules page 1 cells 4-6 ("drawn at exactly the opaque depth") had sent the opaque list first.
+
+**The background's depth (bgdepth, bgtie).** polly2-data rez_ingame: a translucent polygon at exactly the background's
+depth (0x3727c5a0, about 1e-5), its tag below the background's, is drawn on the console, while at 0.5, 0.75 or 0.3 it
+is not. bgdepth: one background depth a page and 300 flat opaque probes with compare GREATER around it (on the 19 bit
+grid, consecutive floats, or sloped): 32 depths from 2^-20 to 1e6. The background's depth is stored as a float of 19
+significant bits whose smallest exponent is that of 0.25; below it the leading bit is 0 (a denormal: the user's
+suggestion), so the smallest step is 2^-20 and a background below 2^-20 is zero (the rule dumprules pages 4-7 found).
+Polygons' depths are on the 19 bit grid, so a fixed point with 20 fraction bits fits bgdepth just as well; bgtie
+tells them apart: with the background's parameters first (pvr_frame.bg_first: its tag below the polygons'), a polygon
+at 0.5 ties with a background of 0.5 + 2^-20 and is drawn (the float stores 0.5; a fixed point would store the
+background above it). Polygons keep their relative precision far below 2^-20 (zmeas: a flat quad at 0x3727c5a0 is
+stored as exactly that).
+
+refsw2 = the console on all three (16, 9600 and 6 regions), dumprules and the regression unchanged. polly2dumps:
+shenmue_intro2 and rez_ingame are the console's in all of video memory: **63 of 63**.
 
 ## alphafilt: the alpha of a bilinear sample at the edge of a transparent texel (2026-11-18)
 
