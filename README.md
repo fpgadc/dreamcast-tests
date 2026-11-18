@@ -1631,6 +1631,27 @@ Not measured: factor 0; what a stream that began before the first tile with y = 
 offset in the next frame (the model starts every frame from nothing, which is what two frames in a row in an
 order from the bottom show for factors 0x800 and 0x401).
 
+## ycoeff: the vertical filter's weights, Y_COEFF (2026-11-18)
+
+When SCALER_CTL's factor shrinks the picture (above 0x400; KallistiOS and most games use 0x401) each line is
+filtered with the lines above and below it before the scaler takes it. Y_COEFF bits 15..8 weight the line, bits
+7..0 the two others:
+
+    out = ((((c0 * above) >> 4) + ((c1 * line) >> 4) + ((c0 * below) >> 4)) >> 4) & 0xff, per channel
+
+Each product loses its low 4 bits, the sum another 4, and only 8 bits are kept: weights that add up to more
+than 256 wrap (white with 0xffff comes out 0xfa), each channel on its own. 0x8040, the value almost everyone
+leaves, is exactly (above + 2 * line + below) >> 2, which is why no other dump showed it. Bits 31..16 do
+nothing.
+
+Found on Under Defeat (polly2-data underdefeat_*, Y_COEFF 0x6532): its five frames were 0.785 times as bright
+on the console as in refsw3, which used 1, 2, 1. With the rule all five are the console's, pixel for pixel;
+the whole products >> 8, or the products cut by 3 or 5 bits instead of 4, leave 2,000-5,000 pixels a frame.
+`ycoeff` checks it on 18 pages (14 values: sums of 256, below and above it, single weights, zero, bits 31..16;
+factors 0x401, 0x400, 0x800), a 32 bit framebuffer and four bands of line colours (two patterns, white, an
+arbitrary one): refsw3-offline = console on all 18 (archived in fit/hw/ycoeff). refsw2 has the same write-out
+and the same change.
+
 ## blendsel, blendsel2, blendpos: both select bits, the alpha that gets stuck, and where buffer 2 comes from (2026-11-16)
 
 `blend` is 4096 of 4096 regions now (256 settings x 4 colour sets x 4 views, a fresh console run), and so are
