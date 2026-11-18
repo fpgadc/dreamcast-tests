@@ -2676,9 +2676,14 @@ by a binary search with depth compare probes: one render per bit, the framebuffe
 (`pvrio_read32`: on a console straight from video memory, on a PC through a file that refsw3-offline writes when
 it reaches the command). A render is the scene's region array entries for the tile, not written out, then a keep Z
 entry whose opaque list has a black quad (compare always, no depth write) and a probe per pixel at that pixel's
-next depth (compare greater, its own colour). The probes are a second pass of the tile accelerator after the scene
-(TA_LIST_CONT with another object list matrix), and they are left out of the PVRIO checksum, because each side
+next depth (compare greater, its own colour). The probes' parameters, object list and region array are written to
+video memory directly (the first version sent them through the tile accelerator after the scene, TA_LIST_CONT with
+another object list matrix: the same depths), and they are left out of the PVRIO checksum, because each side
 searches with its own readbacks. 27 renders a tile, over the depths of 19 significant bits.
+
+The probes' memory has to be at or above PARAM_BASE's page: with the probes at 0x180000 and PARAM_BASE 0x400000
+(offsets that reach past the 8 MB of video memory) a console draws no probe at all, where refsw3-core wraps the
+address (not modelled: no game does it).
 
 **The probes have to be exact.** A 1x1 quad's depth goes through the setup's 24 bit truncating products of the
 depth with cross products of the absolute corner coordinates (up to 19 bits): it comes out a step or two of the 19

@@ -20,6 +20,13 @@
 #include "pvrtest2.h"
 #include "zexfil.h"
 
+/* the probes' video memory: free (the object lists and the region array end below 573000, textures start at
+   600000), above PARAM_BASE (400000). Below it, with offsets that reach past the 8 MB of video memory, a console
+   draws no probe (2026-11-18: everything read as 0x7fffffe0); refsw3-core wraps them. */
+#define ZEXFIL_AT 0x580000u
+
+static void scene(void);
+
 #define N_FLAT 64
 #define N_TRIS 32
 #define N_MIX  24
@@ -37,9 +44,8 @@ static const f32b bg_depths[8] = {
     0x357fffff,             /* below 2^-20 */
 };
 static const f32b cal_z[4] = { 0x3f8a5e00, 0x3e123400, 0x40490e00, 0x3c75c200 };     /* 15, 14, 15, 15 bits */
-static const zexfil_window_t win0 = { 1, 1, 4, 2 }, win1 = { 1, 5, 4, 2 };
-
-static uint32_t zbuf[8 * 1024];
+typedef struct { int tx, ty, tw, th; } window_t;
+static const window_t win0 = { 1, 1, 4, 2 }, win1 = { 1, 5, 4, 2 };
 static int cur_page;
 
 static f32b rnd_float(void) {                   /* a positive normal float, any exponent */
@@ -67,6 +73,7 @@ static void test_setup(void) {
             z[k] = 0x3f000000u + rng() % 0x1000000u;
         }
     pvrio_reg(PT_ALPHA_REF_addr, 0x80);
+    zexfil_use_pvrsetup(scene, ZEXFIL_AT);
 }
 
 static void test_describe(void) {
@@ -158,32 +165,31 @@ static void test_page(int page) {
 }
 
 static void test_draw_page(int page) {
-    static uint32_t bgz[8][1024];
+    static uint32_t z[8][1024];
     char line[80];
-    int k;
+    int k, n = 0;
 
     cur_page = page;
     zexfil_foreign = 0;
     if(page < 3) {
-        const zexfil_window_t *w = page == 0 ? &win0 : &win1;
-        zexfil_run(w, scene, zbuf);
+        const window_t *w = page == 0 ? &win0 : &win1;
+        for(k = 0; k < w->tw * w->th; k++)
+            zexfil_tile(w->tx + k % w->tw, w->ty + k / w->tw, z[n++]);
         pvrio_fill32(SETUP_FB, 640 * 480, 0);
-        zexfil_show(w, zbuf);
+        for(k = 0; k < n; k++)
+            zexfil_show(w->tx + k % w->tw, w->ty + k / w->tw, z[k]);
     } else {
         for(k = 0; k < 8; k++) {
-            const zexfil_window_t w = { 1 + 2 * k, 9, 1, 1 };
             pvr_frame.bg_depth = bg_depths[k];
-            zexfil_run(&w, scene, bgz[k]);
+            zexfil_tile(1 + 2 * k, 9, z[k]);
         }
         pvr_frame.bg_depth = bg_depths[0];
         pvrio_fill32(SETUP_FB, 640 * 480, 0);
-        for(k = 0; k < 8; k++) {
-            const zexfil_window_t w = { 1 + 2 * k, 9, 1, 1 };
-            zexfil_show(&w, bgz[k]);
-        }
+        for(k = 0; k < 8; k++)
+            zexfil_show(1 + 2 * k, 9, z[k]);
     }
     if(zexfil_foreign) {
-        snprintf(line, sizeof(line), "PVRIO zexfil page %d: %d readings of another probe's colour", page, zexfil_foreign);
+        snprintf(line, sizeof(line), "PVRIO zexfil page %d: %d readings of another colour than the probe's", page, zexfil_foreign);
         pvrio_hw_say(line);
     }
 }
