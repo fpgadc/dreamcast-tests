@@ -6,7 +6,13 @@
 //   pvr-tests/mipk/kfit fit/mipk_data/seed1.observed.txt      [KFIT_PATHS=1: numerators from the undivided sums]
 // The baseline (base, and the observations' 0) is the old model's length, the longer plus 27146 / 65536 of the shorter.
 // KFIT_FORM=1 with KFIT_ONE="9827858 24 ...": the console's length (mipk4; refsw3-core's model since): (longer + shorter)
-// - 0x95F612 / 2^24 x shorter, each step cut to 24 bits. KFIT_LIST=1 (2: each cell): the mipk cells one rule misses.
+// - 0x95F612 / 2^24 x shorter, each step cut to 24 bits. KFIT_LIST=1 (2: each cell, 3: with the numerators, 4: also
+// mipmeas's triangles and r2r): the cells one rule misses. KFIT_ONE's extras: KFIT_REACH (the length's adder),
+// KFIT_FMODES "sum product difference scale [widths]" (modes 0 toward zero, 2 nearest), KFIT_PATH (3: the console's
+// numerators: of the undivided sums, the lengths of those, then once times 1/det^2; KFIT_IW), KFIT_RW / KFIT_RM / KFIT_CB
+// / KFIT_CBM (coefficients made again: the reciprocal's and the product's width and mode). KFIT_NUM: a grid of the
+// numerators' cuts. KFIT_REACHED=<cases.txt>: observations of stairs (analyze.py observe: 1, 0, ?) against each row's step.
+// The console's K (refsw3-core): KFIT_PATH=3 KFIT_REACH=25 KFIT_FORM=1 KFIT_ONE="9827858 24 0 0 62 0 24 0 24 0 2".
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -62,15 +68,19 @@ struct Rule {
     int hw, lw;          // the longer / shorter length cut before combining
     int partw;           // the shorter's 27146/65536 part cut
     int gw;              // the sum on a grid gw bits under the longer one (62: none)
-    int path = 0;        // 0: divided coefficients; 1: undivided sums, then times inv and times inv; 2: times inv^2
+    int path = 0;        // 0: divided coefficients; 1: undivided sums, then times inv and times inv; 2: times inv^2; 3: the length of the undivided ones, then times inv^2
     int iw = 62;         // those multiplications cut to iw bits
     int rw = 0, cb = 0;  // path 0 with rw: the coefficients made again for K, sum * Recip(det, rw) cut to cb bits
+    int rm = 0, cbm = 0; // and the modes of those two cuts (0 toward zero, 2 to nearest)
     int64_t cnum = 27146; int cbits = 16;               // the shorter length's factor, cnum / 2^cbits (sqrt(2) - 1)
     int lg = 0, lgm = 0; // the shorter on a grid lg bits under the longer before its multiplication (0: not)
     int hg = 0;          // the longer on its own grid hg bits under its top (0: the part's grid gw, as before; 62: exact)
     int shiftadd = 0;    // the part as a sum of the shorter shifted by each 1 bit of cnum, each term on the grid (gw) first
     int sc = 62, scm = 0, ptm = 0, gm = 0;   // the sum cut to sc bits of its own (mode scm); the part's cut mode; the grid's mode
     int dv = 0;          // DCalcCtrl 1: 0 the planes at the first vertex exactly; 1 the vertex's own u1 z1, v1 z1, z1; 2 the planes there in 24 bits
+    int fs = 0, fq = 0, fd = 0, fk = 0, fsb = 24, fqb = 24, fdb = 24;   // form 1: the modes (0 toward zero, 2 nearest) and widths of its sum,
+                         // product and difference, and of path 3's scaling
+    int reach = 200;     // form 1: the reach of its adder (an operand this many exponents below the other is dropped)
     int form = 0;        // 1: the console's length (mipk4): (longer + shorter) - cnum / 2^cbits x shorter, each step cut to 24 bits
     std::string Name() const {
         char b[200];
@@ -83,7 +93,9 @@ struct Cell {
     Fp uA, uB, uC, vA, vB, vC, wA, wB, wC;     // A0, B0, C0 of the three planes (or the first vertex's values in C)
     bool dcalc;
     float first[5];
+    float vx[3], vy[3], vz[3], vu[3], vv[3];      // the corners
     int bias, sizeLog2, obs, page;
+    double stepK = 0;   // KFIT_REACHED: the row's step
     pvrtsp::Plane pu, pv, pw;
     Fp inv;
 };
@@ -98,19 +110,25 @@ static Cell MakeCell(const float* x, const float* y, const float* z, const float
     c.inv = pvrfp::Recip(c.pw.Sdet, 24);
     c.dcalc = dcalc; c.bias = bias; c.sizeLog2 = sizeLog2; c.obs = obs; c.page = page;
     c.first[0] = u[0]; c.first[1] = v[0]; c.first[2] = z[0]; c.first[3] = x[0]; c.first[4] = y[0];
+    for (int k = 0; k < 3; k++) { c.vx[k] = x[k]; c.vy[k] = y[k]; c.vz[k] = z[k]; c.vu[k] = u[k]; c.vv[k] = v[k]; }
     return c;
 }
 
+// KFIT_LIST=3: what the last K8Of on this thread computed (each numerator's two products and the difference; lx, ly)
+struct Diag { double p1[4], p2[4], n[4]; double lx, ly; int nm; };
+static thread_local Diag diag;
+
 static int K8Of(const Cell& c, const Rule& r, double* kOut = nullptr)
 {
+    diag.nm = 0;
     auto co = [&](const Fp& x) { return CutM(x, r.cw, r.cm); };
     // the coefficients: the planes' own (A0, B0, C0), or made again for K with another reciprocal and product
     Fp uA = c.uA, uB = c.uB, uC = c.uC, vA = c.vA, vB = c.vB, vC = c.vC, wA = c.wA, wB = c.wB, wC = c.wC;
     if (r.rw) {
         auto below = [](const Fp& x) { return !x.zero() && x.top() - 1 < -126; };     // the setup's range: flushed to 0
-        Fp inv = pvrfp::Recip(c.pw.Sdet, r.rw);
+        Fp inv = CutM(pvrfp::Recip(c.pw.Sdet, 32), r.rw, r.rm);
         if (below(inv)) inv = Fp();
-        auto m = [&](const Fp& sum) { Fp x = pvrfp::Mul(sum, inv, r.cb); return below(x) ? Fp() : x; };
+        auto m = [&](const Fp& sum) { Fp x = CutM(pvrfp::Mul(sum, inv, 62), r.cb, r.cbm); return below(x) ? Fp() : x; };
         uA = m(c.pu.Sa); uB = m(c.pu.Sb); uC = m(c.pu.Sc); vA = m(c.pv.Sa); vB = m(c.pv.Sb); vC = m(c.pv.Sc);
         wA = m(c.pw.Sa); wB = m(c.pw.Sb); wC = m(c.pw.Sc);
     }
@@ -131,6 +149,7 @@ static int K8Of(const Cell& c, const Rule& r, double* kOut = nullptr)
     auto minor = [&](const Fp& a1, const Fp& b1, const Fp& a2, const Fp& b2) {
         Fp p1 = CutM(pvrfp::Mul(co(a1), co(b2), 62), r.pw, r.pm), p2 = CutM(pvrfp::Mul(co(b1), co(a2), 62), r.pw, r.pm);
         Fp n = CutM(pvrfp::Sub(p1, p2, 62, 200), r.sw, r.sm);
+        if (diag.nm < 4) { diag.p1[diag.nm] = p1.toDouble(); diag.p2[diag.nm] = p2.toDouble(); diag.n[diag.nm] = n.toDouble(); diag.nm++; }
         n.neg = false;
         if (r.path == 1)
             n = CutM(pvrfp::Mul(CutM(pvrfp::Mul(n, c.inv, 62), r.iw, 0), c.inv, 62), r.iw, 0);
@@ -147,8 +166,8 @@ static int K8Of(const Cell& c, const Rule& r, double* kOut = nullptr)
         if (r.form == 1) {
             Fp k2 = Fp::FromHalves(2 * r.cnum);
             k2.exp -= r.cbits;
-            const Fp s = CutM(pvrfp::Add(hi, lo, 62, 200), 24, 0), q = CutM(pvrfp::Mul(lo, k2, 62), 24, 0);
-            return CutM(pvrfp::Sub(s, q, 62, 200), 24, 0);
+            const Fp s = CutM(pvrfp::Add(hi, lo, 62, r.reach), r.fsb, r.fs), q = CutM(pvrfp::Mul(lo, k2, 62), r.fqb, r.fq);
+            return CutM(pvrfp::Sub(s, q, 62, r.reach), r.fdb, r.fd);
         }
         Fp part;
         if (r.shiftadd) {
@@ -181,13 +200,20 @@ static int K8Of(const Cell& c, const Rule& r, double* kOut = nullptr)
         Fp su = c.pu.Sc, sv = c.pv.Sc, sw = c.pw.Sc;
         if (c.dcalc) {
             const Fp x1 = Fp::FromFloat(c.first[3]), y1 = Fp::FromFloat(c.first[4]);
-            auto at1 = [&](const pvrtsp::Plane& pl) { return pvrfp::Add(pvrfp::Add(pvrfp::Mul(pl.Sa, x1, 62), pvrfp::Mul(pl.Sb, y1, 62), 62, 200), pl.Sc, 62, 200); };
+            auto at1 = [&](const pvrtsp::Plane& pl) {
+                if (r.dv == 2)                          // in the setup's 24 bit arithmetic
+                    return pvrfp::Add(pvrfp::Add(pvrfp::Mul(pl.Sa, x1, 24), pvrfp::Mul(pl.Sb, y1, 24), 24, 53), pl.Sc, 24, 53);
+                return pvrfp::Add(pvrfp::Add(pvrfp::Mul(pl.Sa, x1, 62), pvrfp::Mul(pl.Sb, y1, 62), 62, 200), pl.Sc, 62, 200);
+            };
             su = at1(c.pu); sv = at1(c.pv); sw = at1(c.pw);
         }
         lx = length(minor(su, c.pu.Sa, sw, c.pw.Sa), minor(sv, c.pv.Sa, sw, c.pw.Sa));
         ly = length(minor(c.pu.Sb, su, c.pw.Sb, sw), minor(c.pv.Sb, sv, c.pw.Sb, sw));
     }
+    diag.lx = lx.toDouble(); diag.ly = ly.toDouble();
     Fp best = lx.toDouble() >= ly.toDouble() ? lx : ly;
+    if (r.path == 3)        // the lengths of the undivided numerators, then once times 1/det^2 (inv * inv, each cut to 24 bits)
+        best = CutM(pvrfp::Mul(best, CutM(pvrfp::Mul(c.inv, c.inv, 62), 24, 0), 62), 24, r.fk);
     Fp k = pvrfp::Mul(best, Fp::FromHalves(2 * (int64_t)c.bias), 62);
     k.exp += c.sizeLog2 - 2;
     if (kOut) *kOut = k.toDouble();
@@ -202,9 +228,25 @@ int main(int argc, char** argv)
     std::map<std::pair<int, int>, int> obs;
     FILE* f = fopen(argv[1], "r");
     int p, cl; char o[8];
+    // KFIT_REACHED=<cases.txt> (stairs, pvr-tests/mipk/analyze.py observe): "page cell 1|0|?", whether the console's K8
+    // reaches the row's step; the step (the model's K at it) from the cases.txt given, its last column
+    const bool reachedMode = getenv("KFIT_REACHED") != nullptr;
     while (fscanf(f, "%d %d %7s", &p, &cl, o) == 3)
-        obs[{ p, cl }] = !strcmp(o, "0") ? 0 : !strcmp(o, "-1") ? -1 : !strcmp(o, "+1") ? 1 : 9;
+        obs[{ p, cl }] = reachedMode ? (!strcmp(o, "1") ? 1 : !strcmp(o, "0") ? 0 : 9) : !strcmp(o, "0") ? 0 : !strcmp(o, "-1") ? -1 : !strcmp(o, "+1") ? 1 : 9;
     fclose(f);
+    std::map<std::pair<int, int>, double> stepK;
+    if (reachedMode) {
+        FILE* t = fopen(getenv("KFIT_REACHED"), "r");
+        char line[512];
+        while (fgets(line, sizeof line, t)) {
+            if (line[0] == '#') continue;
+            int pg, c; char* e = line; pg = (int)strtol(e, &e, 10); c = (int)strtol(e, &e, 10);
+            const char* last = strrchr(line, ' ');
+            stepK[{ pg, c }] = atof(last + 1);
+            (void)e;
+        }
+        fclose(t);
+    }
     pvrtsp::PlaneConfig pc;
     std::vector<Cell> cells;
     for (int i = 0; i < NUM_QUADS; i++) {
@@ -221,7 +263,9 @@ int main(int argc, char** argv)
         c.inv = pvrfp::Recip(c.pw.Sdet, 24);
         c.dcalc = q.dcalc; c.bias = q.bias; c.sizeLog2 = 6; c.page = q.page;
         c.first[0] = u[0]; c.first[1] = v[0]; c.first[2] = z[0]; c.first[3] = x[0]; c.first[4] = y[0];
+        for (int k = 0; k < 3; k++) { c.vx[k] = x[k]; c.vy[k] = y[k]; c.vz[k] = z[k]; c.vu[k] = u[k]; c.vv[k] = v[k]; }
         c.obs = obs.count({ q.page, q.cell }) ? obs[{ q.page, q.cell }] : 9;
+        if (reachedMode) c.stepK = stepK[{ q.page, q.cell }];
         cells.push_back(c);
     }
     // r2r_ring's triangle 13084C48 (size 128): the console's K8 is one step lower
@@ -235,6 +279,7 @@ int main(int argc, char** argv)
         c.wA = c.pw.A0; c.wB = c.pw.B0; c.wC = c.pw.C0;
         c.inv = pvrfp::Recip(c.pw.Sdet, 24);
         c.dcalc = false; c.bias = 4; c.sizeLog2 = 7; c.obs = -1; c.page = 99;
+        for (int k = 0; k < 3; k++) { c.vx[k] = x[k]; c.vy[k] = y[k]; c.vz[k] = z[k]; c.vu[k] = u[k]; c.vv[k] = v[k]; }
         cells.push_back(c);
     }
     // mipmeas's archived sets: the model is the console's on every one, so a rule has to give the model's K8 there
@@ -521,6 +566,18 @@ int main(int argc, char** argv)
                 rules.push_back(r);
             }
         }
+    } else if (getenv("KFIT_NUM")) {
+        // the numerators' arithmetic with the console's length (set KFIT_FORM=1 too): the coefficients cut (16 bits: the
+        // TSP's own), the two products, their difference, DCalcCtrl 1's values, the numerators before the length
+        const int cw9[] = { 62, 24, 23, 22, 21, 20, 18, 16 }, pw9[] = { 62, 26, 25, 24, 23 }, sw9[] = { 62, 26, 25, 24, 23, 22 }, nw9[] = { 62, 24 };
+        for (int cw : cw9) for (int cm = 0; cm < (cw < 62 ? 3 : 1); cm += 2)
+        for (int pw : pw9) for (int pm = 0; pm < (pw < 62 ? 3 : 1); pm++)
+        for (int sw : sw9) for (int sm = 0; sm < (sw < 62 ? 3 : 1); sm++)
+        for (int dv = 0; dv <= 2; dv++) for (int nw : nw9) {
+            Rule r = { cw, cm, pw, pm, sw, sm, nw, nw, 62, 62 };
+            r.dv = dv;
+            rules.push_back(r);
+        }
     } else if (getenv("KFIT_EXACT")) {
         // the length alone (mipk2): constants from 0.4142135 to 0.4142146 at 22 .. 26 bits, the cuts of the shorter,
         // of its part and of the sum's grid under the longer
@@ -618,8 +675,15 @@ int main(int argc, char** argv)
         sscanf(getenv("KFIT_ONE"), "%lld %d %d %d %d %d %d %d %d %d %d", &cn, &cbt, &r.lg, &r.lgm, &r.gw, &r.gm, &r.pw, &r.pm, &r.sw, &r.sm, &r.dv);
         r.cnum = cn; r.cbits = cbt;
         if (getenv("KFIT_FORM")) r.form = atoi(getenv("KFIT_FORM"));
+        if (getenv("KFIT_REACH")) r.reach = atoi(getenv("KFIT_REACH"));
+        if (getenv("KFIT_FMODES")) sscanf(getenv("KFIT_FMODES"), "%d %d %d %d %d %d %d", &r.fs, &r.fq, &r.fd, &r.fk, &r.fsb, &r.fqb, &r.fdb);
+        if (getenv("KFIT_RW")) { r.rw = atoi(getenv("KFIT_RW")); r.cb = getenv("KFIT_CB") ? atoi(getenv("KFIT_CB")) : 24;
+                                 r.rm = getenv("KFIT_RM") ? atoi(getenv("KFIT_RM")) : 0; r.cbm = getenv("KFIT_CBM") ? atoi(getenv("KFIT_CBM")) : 0; }
+        if (getenv("KFIT_PATH")) { r.path = atoi(getenv("KFIT_PATH")); r.iw = getenv("KFIT_IW") ? atoi(getenv("KFIT_IW")) : 62; }
         rules.push_back(r);
     }
+    if (getenv("KFIT_FORM") && !getenv("KFIT_ONE"))          // every rule of the grid with the console's length
+        for (Rule& r : rules) { r.form = atoi(getenv("KFIT_FORM")); r.cnum = 9827858; r.cbits = 24; }
     std::vector<int> score(rules.size()), r2r(rules.size()), viol(rules.size());
     #pragma omp parallel for schedule(dynamic, 64)
     for (size_t k = 0; k < rules.size(); k++) {
@@ -630,19 +694,50 @@ int main(int argc, char** argv)
         int s = 0;
         if (v <= 20)
             for (size_t i = 0; i < nMipk; i++) {
-                const int d = K8Of(cells[i], rules[k]) - base[i];
-                if (d == cells[i].obs) s++;
-                if (cells[i].page == 99) r2r[k] = d == -1;
+                double kk;
+                const int d = K8Of(cells[i], rules[k], &kk) - base[i];
+                if (cells[i].page == 99) { r2r[k] = d == -1; continue; }
+                if (reachedMode ? (cells[i].obs != 9 && (kk >= cells[i].stepK) == (cells[i].obs == 1)) : d == cells[i].obs) s++;
             }
         score[k] = s - 10000 * v;
     }
     if (getenv("KFIT_LIST") && rules.size() == 1) {      // the mipk cells the one rule misses: page, observed, predicted
         std::map<int, int> perPage;
         for (size_t i = 0; i < nMipk; i++) {
+            if (reachedMode) {
+                double kk; K8Of(cells[i], rules[0], &kk);
+                if (cells[i].page != 99 && cells[i].obs != 9 && (kk >= cells[i].stepK) != (cells[i].obs == 1)) {
+                    perPage[cells[i].page]++;
+                    if (getenv("KFIT_LIST")[0] >= '2') printf("miss page %d cell %zu dcalc %d bias %d console %s, rule K %.9g step %.9g (%.1f ulp24)\n", cells[i].page, i % 300, (int)cells[i].dcalc, cells[i].bias, cells[i].obs ? "reached" : "short", kk, cells[i].stepK, (kk - cells[i].stepK) / cells[i].stepK * 16777216);
+                }
+                continue;
+            }
             const int d = K8Of(cells[i], rules[0]) - base[i];
+            if (d != cells[i].obs && cells[i].obs != 9 && getenv("KFIT_LIST")[0] == '3') {
+                double k; K8Of(cells[i], rules[0], &k);
+                int e; const double m = frexp(k, &e) * 256, fr = m - floor(m);
+                const bool x = diag.lx >= diag.ly;
+                auto canc = [&](int j) { const double big = std::max(fabs(diag.p1[j]), fabs(diag.p2[j])); return diag.n[j] != 0 ? log2(big / fabs(diag.n[j])) : 99.0; };
+                const int j0 = x ? 0 : 2;
+                printf("miss page %d cell %3zu dcalc %d obs %+d pred %+d | K %.9g, %.1f ulp24 %s the step | %s: numerators %.6g (cancel %.1f bits) %.6g (cancel %.1f) ly/lx %.3f\n",
+                       cells[i].page, i % 300, (int)cells[i].dcalc, cells[i].obs, d, k, (fr < 0.5 ? fr : 1 - fr) * 65536, fr < 0.5 ? "above" : "below",
+                       x ? "x" : "y", fabs(diag.n[j0]), canc(j0), fabs(diag.n[j0 + 1]), canc(j0 + 1), x ? diag.ly / diag.lx : diag.lx / diag.ly);
+            }
             if (d != cells[i].obs && cells[i].obs != 9) { perPage[cells[i].page]++; if (getenv("KFIT_LIST")[0] == '2') printf("miss page %d cell %zu obs %+d pred %+d dcalc %d bias %d\n", cells[i].page, i % 300, cells[i].obs, d, (int)cells[i].dcalc, cells[i].bias); }
         }
         for (auto& [pg, n] : perPage) printf("page %d: %d missed\n", pg, n);
+        std::map<int, int> perSet;
+        int shown = 0;
+        for (size_t i = nMipk; i < cells.size(); i++) {
+            double kk;
+            const int d = K8Of(cells[i], rules[0], &kk) - base[i];
+            if (d != 0) {
+                perSet[cells[i].page]++;
+                if (getenv("KFIT_LIST")[0] == '4' && shown++ < 12) printf("mipmeas set %d triangle %zu: rule %+d, K %.9g, dcalc %d, 1/w %g %g %g\n", cells[i].page - 100, i, d, kk, (int)cells[i].dcalc, cells[i].vz[0], cells[i].vz[1], cells[i].vz[2]);
+            }
+        }
+        for (auto& [st, n] : perSet) printf("mipmeas set %d: %d triangles not the model's\n", st - 100, n);
+        { double kk; const size_t i = nMipk - 1; const int d = K8Of(cells[i], rules[0], &kk) - base[i]; printf("r2r: rule %+d (console -1), K %.9g\n", d, kk); }
     }
     std::vector<size_t> order(rules.size());
     for (size_t k = 0; k < order.size(); k++) order[k] = k;

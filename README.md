@@ -2790,18 +2790,23 @@ Any start is cut. refsw3-offline = console on 49,152 of 49,152 pixels.
     python3 pvr-tests/mipk/analyze.py <console run> <name>=<offline run> ...
     pvr-tests/mipk/kfit fit/mipk_data/seed1.observed.txt            # rules against every cell (header of kfit.cpp)
 
-**Result (mipk4, below):** a length is not the longer numerator plus (sqrt(2) - 1) of the shorter but
+**Result (mipk4, mipk5, below): K, all of it.** With Sa, Sb, Sc the planes' UNDIVIDED sums (of the u / w, v / w and
+1/w planes, before their division by the determinant; DCalcCtrl 1: Sc is those planes at the first corner, in the
+setup's 24 bit arithmetic) and every cut 24 bits toward zero:
 
-    L = cut24( cut24(longer + shorter) - cut24(0x3F15F612 * shorter) )         0x3F15F612 = 0.585785985
+    numerator  n  = cut24( cut24(Sc_a * Sa_w) - cut24(Sa_a * Sc_w) )         along x (y: Sb_a Sc_w - Sc_a Sb_w), a = u, v
+    length     L  = cut24( cut24(longer + shorter) - cut24(0x3F15F612 * shorter) )   (the adder drops an operand 25
+                    exponents below the other)
+    K             = cut24( max(L_x, L_y) * cut24(inv * inv) ) * bias * 2^size,  inv = the determinant's 24 bit reciprocal
 
-each cut to 24 bits toward zero; the constant is 8 units of 2^-24 under 2 - sqrt(2) (0x3F15F61A). The two agree to
-first order, but here the shorter's part falls as the shorter rises, until the sum's own cut steps up (by 2 units of
-the longer's grid once the sum has carried into the next power of two): a sawtooth, not a slope. refsw3-core's model
-since (MIP_K=1: the old length). Offline = console on every pixel of mipk2, mipk3, mipk4, mipmeas's 8 archived sets,
-mip, mipbil, sample, texfmt; r2r_ring 0 pixels (was 8). Left: mipk itself (1/w sloped, numerators that are
-differences of rounded products) 2,349 of 2,401 cells, 2,371 with the products and their difference cut to 24 bits
-and DCalcCtrl 1's values in the setup's 24 bit arithmetic: the numerators' own arithmetic (page 6, determinants not
-a power of two; page 2, DCalcCtrl 1) is the open part.
+0x3F15F612 = 0.585785985, 8 units of 2^-24 under 2 - sqrt(2) (0x3F15F61A). (longer + shorter) - (2 - sqrt(2)) shorter
+is longer + (sqrt(2) - 1) shorter to first order, but here the shorter's part falls as the shorter rises, until the
+sum's own cut steps up (by 2 units of the longer's grid once the sum has carried into the next power of two): a
+sawtooth, not a slope. The determinant is divided out once, at the end, from the lengths of undivided numerators;
+with the coefficients divided first (the model before), a flat 1/w = 1 on a determinant that is not a power of two
+has C_w just under 1 and K a unit or two low. refsw3-core's model since (MIP_K=1: the old K). Offline = console on
+every pixel of mipk, mipk2, mipk3, mipk4, mipk5, mipmeas's 8 archived sets (the limits included), mip, mipbil,
+sample, texfmt; r2r_ring 0 pixels (was 8), the other dumps unchanged.
 
 The one pixel difference left in the 106 new dumps (r2r_ring, 8 pixels) is a mipmap level: with the levels of the
 texture painted over in the dump (poke) and the scaler off (a tile alone, its framebuffer moved to free memory), the
@@ -2874,6 +2879,18 @@ k2 lo with a cut on each step; `python3 pvr-tests/mipk/lencells.py > cells.txt; 
 cells.txt`): every one of the 3,920 cells of mipk3's 76 rows and mipk4's 120 with the sum, the product and the
 difference cut to 24 bits toward zero (the product also 23 to nearest), and k2 = 0x95F612 / 2^24 alone (no other
 value at 2^-28). kfit with that length (KFIT_FORM=1): mipk2 2,401 of 2,401.
+
+**mipk5** (`pvr-tests/mipk/gen 5 detstair pvr-tests/mipk5`; fit/hw/mipk5): the numerators, with the length known. Rows of
+20 cells with the same triangle, u of corner 1 one float step a cell across a step of K8: pages 0, 1 flat 1/w = 1 and
+v = 0 (the numerator is u's coefficient times C_w alone), legs 17 .. 32 (determinants that are not a power of two);
+2, 3 the same with v; 4, 5 sloped 1/w on 32 x 32; 6, 7 sloped 1/w with legs 17 .. 32. With 1/w sloped any step of K8
+moves the change of level inside the cell, so each cell is read against offline renders with K8 one step up and
+down: `MIP_K=0|98|99 bash run2.sh mipk5 off` (each copied away), then `python3 pvr-tests/mipk/analyze.py observe mipk5
+<console> <0> <98> <99> > observed.txt` (1991 of the 2400 cells tell; fit/mipk_data/mipk5-seed5.observed.txt); kfit built for ../mipk5/cases.h with
+KFIT_REACHED=pvr-tests/mipk5/cases.txt. The model of then (each coefficient divided by the determinant, then the
+products) missed 104; the misses of the flat rows were all at a power of two, a unit off where C_w = cut(det x inv) is
+just under 1. Exactly (python on the flat rows, then kfit on all): the products of the undivided sums, the lengths of
+those, then once times 1/det^2: 1991 of 1991, and mipk's 2,401 cells on the console's pixels.
 
 ## bumpfn, bumpbil, bumphang: bump maps (2026-11-17)
 
