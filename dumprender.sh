@@ -65,11 +65,11 @@ def frame(path):
     return np.fromfile(path, dtype=np.uint8) if os.path.exists(path) else None
 off, hw = frame(f"{W}/frame.off.raw"), frame(f"{W}/frame.hw.raw")
 ref = None
-if ntiles == 0 and off is not None:
+if ntiles == 0 and off is not None and os.path.exists(f"{dumps}/vram_out_{scene}.bin"):     # polly2-data's console render, if it has one
     ref = np.fromfile(f"{dumps}/vram_out_{scene}.bin", dtype=np.uint8)[sof:sof + len(off)]
 bpp = {0: 2, 1: 2, 2: 2, 3: 2, 4: 3, 5: 4, 6: 4}[int(r[0x48 // 4]) & 7]
 def px(a): return a[:len(a) // bpp * bpp].reshape(-1, bpp)
-for name, a, b in (("refsw2 / console now", off, hw), ("refsw2 / polly2-data's console render", off, ref), ("console now / polly2-data's", hw, ref)):
+for name, a, b in (("refsw3 / console now", off, hw), ("refsw3 / polly2-data's console render", off, ref), ("console now / polly2-data's", hw, ref)):
     if a is None or b is None: continue
     d = (px(a) != px(b)).any(-1)
     print(f"{scene}: {name}: {int(d.sum())} of {len(d)} pixels differ")
