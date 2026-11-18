@@ -6,7 +6,7 @@
    its alpha; its colour is white). Two lights per page: light 2p at (0, 0), light 2p + 1 at (256, 0).
    Under the first, a strip (0, 256) 256x32 of a palette texture whose texel x has alpha x: what the same
    blend makes of every alpha, to read the intensities back from the pictures. */
-#define NUM_LIGHTS 14
+#define NUM_LIGHTS 16
 #define NUM_PAGES (NUM_LIGHTS / 2)
 #include "pvrtest2.h"
 #include "texgen.h"
@@ -15,6 +15,7 @@ static const uint32_t lights[NUM_LIGHTS] = {
     0x00ff0000, 0x0000ff00, 0x80000000, 0x00800000, 0x00008000, 0x0000ff55,
     0x40605020, 0x00110000, 0x00001100, 0xffffff00, 0x80408040, 0x00ffff80,
     0x10ff0000, 0x1000ff00,         /* K1 above 0: the smallest table entries show */
+    0x003b1250, 0x003b3250,         /* polly2-data rayman_ingame*'s lights */
 };
 static uint32_t tex_bump, tex_alpha;
 

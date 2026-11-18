@@ -65,8 +65,8 @@ static void test_page(int page) {
         if(tris[i].page != page)
             continue;
         ta_polygon(pcw, isp, tsp, tcw);
-        for(k = 0; k < 3; k++)                  /* v: x, y, u, z */
-            ta_vertex3(tris[i].v[k][0], tris[i].v[k][1], tris[i].v[k][3], tris[i].v[k][2], F32B_HALF, 0xffffffff, 0, k == 2);
+        for(k = 0; k < 3; k++)                  /* v: x, y, u, z, v (0.5 but in mix dump) */
+            ta_vertex3(tris[i].v[k][0], tris[i].v[k][1], tris[i].v[k][3], tris[i].v[k][2], tris[i].v[k][4], 0xffffffff, 0, k == 2);
     }
     ta_list_end();
 }

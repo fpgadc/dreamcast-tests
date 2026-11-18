@@ -2511,14 +2511,26 @@ regions); before: 6 pages wrong. shenmue_intro4 33 words to
 
 ## coordfix: from the texture coordinate to a texel and a bilinear weight (2026-11-18)
 
-    bash run2.sh coordfix off; bash run2.sh coordfix hw=<ip>    # 6 pages; archived in fit/hw/coordfix
+    bash run2.sh coordfix off; bash run2.sh coordfix hw=<ip>    # 16 pages; archived in fit/hw/coordfix
 
 refsw2's conversion was a guess, checked only above zero: C = floor(u * size * 256) as a two's complement integer,
 minus the half texel (128) when filtering, texel C >> 8, weight (C & 255) >> 3. Quads of depth 1 whose coordinate
 is C = c0 + x / 4 + y / 128 at their pixels sweep C over every weight step from -4 to +4 texels (U and V), point
 sampled, at up to 2^17 texels of a 1024 texel texture, clamped and flipped; texels alternating black and white show
 each pixel's weight and texel. refsw2 = the console on 1568 of 1568 regions. Truncating a negative C toward zero
-would get 437 of them wrong, and weights from the magnitude 489: the guess was right.
+would get 437 of them wrong, and weights from the magnitude 489: the guess was right. Pages 6-15 (V clamped and
+flipped; bump maps: S along U and V, R along U, R round the circle across 0 (83 / 225, 10 / 200, 0 / 128), V
+clamped with v just below 0) are the console's too: 4128 of 4128 regions.
+
+**Bump maps of rayman_ingame and rayman_ingame2 (open).** Their 5 pixels left: bump maps clamped in V, v just
+below 0, one level or two of intensity off. The function is exact for their lights (bumpfn page 7: 131,072 of
+131,072); their triangle's U and V read through uvmeas (mix dump, now with the triangle's own V: sets dump_rayman1,
+dump_rayman2, 52,672 readings each) are the console's; the triangle alone in its tile still differs at (84,309),
+and the same render with V not clamped does not. dumprender's new poke= (a word of video memory written after the
+dump's) changed its light: with K2 = 255 (I from S alone) every pixel is the console's, with K3 = 255 (I from S
+and R) that pixel is not: S is the console's (106, filtered with the u weight 18) and R is 10 or 11 where refsw2
+has 15 (the u weight 19 would give 11). No texel pair of the texture as the clamped row explains it, and
+coordfix's synthetic versions (8x8, V clamped, R across 0, v 36 below 0) do not show it.
 
 ## alphafilt: the alpha of a bilinear sample at the edge of a transparent texel (2026-11-18)
 

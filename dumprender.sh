@@ -1,20 +1,22 @@
 #!/bin/bash
-# dumprender.sh <scene> [x,y ...] [drop=<tag>,...] [reg=<offset>:<value> ...] [nolists=<mask>] [hw=<ip>]: a polly2 dump (dreamster's polly2-data) rendered by refsw2-offline
+# dumprender.sh <scene> [x,y ...] [drop=<tag>,...] [reg=<offset>:<value> ...] [poke=<address>:<value> ...] [nolists=<mask>] [hw=<ip>]: a polly2 dump (dreamster's polly2-data) rendered by refsw2-offline
 # and, with hw=, by a console: the whole frame, or only the region array entries of the tiles given (a partial
 # render; drop=: the objects of these refsw2 tags left out, hex, as its render log prints them; needs tiles).
-# nolists=: lists left out of the kept entries (1 OP, 2 OP volumes, 4 TR, 8 TR volumes, 16 PT). reg=: a register written after the dump's, hex (reg=f4:400: no vertical scaling). The framebuffers are compared pixel by pixel, and without tiles also with the console render that
+# poke=: a word of video memory written after the dump's (32 bit area address, hex: e.g. a vertex's colour in the
+# parameters, to read something else out of the same polygon). nolists=: lists left out of the kept entries (1 OP, 2 OP volumes, 4 TR, 8 TR volumes, 16 PT). reg=: a register written after the dump's, hex (reg=f4:400: no vertical scaling). The framebuffers are compared pixel by pixel, and without tiles also with the console render that
 # polly2-data keeps (vram_out_<scene>.bin). pvr-tests/dumprender/main.c; output in /tmp/pvr_tests/dumprender.
 HERE=$(cd "$(dirname "$0")" && pwd)
 DUMPS=${DUMPS:-$(cd "$HERE/../dreamster/polly2-rtl/polly2-data/dumps" 2>/dev/null && pwd)}
 [ -n "$DUMPS" ] || { echo "dumprender: no dumps (DUMPS=<folder>)"; exit 1; }
 SCENE=$1; shift
 TILES=(); HW=""
-DROP=""; SETREGS=(); NOL=""
-for a in "$@"; do case $a in hw=*) HW=$a ;; drop=*) DROP=${a#drop=} ;; nolists=*) NOL=${a#nolists=} ;; reg=*) r=${a#reg=}; SETREGS+=("0x${r%%:*}" "0x${r#*:}") ;; *,*) TILES+=("$a") ;; *) echo "dumprender: what is $a?"; exit 1 ;; esac; done
+DROP=""; SETREGS=(); NOL=""; POKES=()
+for a in "$@"; do case $a in hw=*) HW=$a ;; drop=*) DROP=${a#drop=} ;; nolists=*) NOL=${a#nolists=} ;; reg=*) r=${a#reg=}; SETREGS+=("0x${r%%:*}" "0x${r#*:}") ;; poke=*) r=${a#poke=}; POKES+=("0x${r%%:*}" "0x${r#*:}") ;; *,*) TILES+=("$a") ;; *) echo "dumprender: what is $a?"; exit 1 ;; esac; done
 DEFS="-DDUMPS=\"$DUMPS\" -DSCENE=\"$SCENE\""
 [ ${#TILES[@]} -gt 0 ] && DEFS="$DEFS -DTILES={$(IFS=,; echo "${TILES[*]}")} -DNTILES=${#TILES[@]}"
 [ -n "$NOL" ] && DEFS="$DEFS -DNOLISTS=$NOL"
 [ ${#SETREGS[@]} -gt 0 ] && DEFS="$DEFS -DSETREGS={$(IFS=,; echo "${SETREGS[*]}")}"
+[ ${#POKES[@]} -gt 0 ] && DEFS="$DEFS -DPOKES={$(IFS=,; echo "${POKES[*]}")}"
 [ -n "$DROP" ] && DEFS="$DEFS -DDROP={$(echo $DROP | sed 's/\([0-9a-fA-F]\+\)/0x\1/g')}"
 W=/tmp/pvr_tests/dumprender
 rm -f $W/frame.*

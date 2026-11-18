@@ -12,6 +12,7 @@
                object list entries become strips with no triangle enabled
      NOLISTS   optional: a mask of the lists to leave out of every entry kept (1 opaque, 2 opaque modifier
                volumes, 4 translucent, 8 translucent modifier volumes, 16 punch through): their pointers are emptied
+     POKES     optional: { address, value, ... }: words of video memory (32 bit area) written after the dump's
      SETREGS   optional: { offset, value, ... }: registers written after the dump's (e.g. SCALER_CTL 0x400, so that
                the framebuffer is the tiles as they were shaded, without the vertical filter)
    Output: frame.off.raw (PC) / frame.hw.raw (console): the framebuffer FB_W_SOF1 .. FB_Y_CLIP's last line.
@@ -244,6 +245,14 @@ int main(int argc, char **argv) {
                 pvrio_reg(set[k], set[k + 1]);
                 regs[set[k] / 4] = set[k + 1];      /* the framebuffer dumped follows (FB_W_CTRL, FB_W_LINESTRIDE) */
             }
+        }
+#endif
+#ifdef POKES
+        {
+            static const uint32_t pk[] = POKES;
+            unsigned k;
+            for(k = 0; k + 1 < sizeof(pk) / 4; k += 2)
+                pvrio_w32(pk[k], &pk[k + 1], 1);
         }
 #endif
 #ifdef TILES

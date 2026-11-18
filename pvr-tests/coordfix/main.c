@@ -17,15 +17,32 @@
      page 2  U, 8 texels, point sampled, texel i of the index texture: grey 32 i + 16
      page 3  U, 1024 texels, bilinear, large coordinates: c0 = +-(2^k + 8 j) units, k = 8 .. 25, j = 0 .. 7
      page 4  page 0 with U clamped
-     page 5  page 0 with U flipped (mirrored repeat) */
-#define NUM_PAGES 6
+     page 5  page 0 with U flipped (mirrored repeat)
+     page 6  page 1 with V clamped (polly2-data rayman_ingame*: bump maps clamped in V, v just below 0)
+     page 7  page 1 with V flipped
+   Bump maps (8x8, twiddled: a bump map that is not twiddled stops a render filtered bilinearly, bumphang),
+   drawn (SRC_ALPHA, ZERO) on a white base so that the intensity shows; polly2-data rayman_ingame*'s bump maps
+   are filtered with a weight one step above refsw2's at fractions 4 to 7 past a step:
+     page 8  U, S alternating 0 / 248 (R 0), light K2 = 255: I = (255 sin[S]) >> 8
+     page 9  V, the same
+     page 10 U, R alternating 0 / 63 (S 0), light K3 = 255: I follows cos[4 R]
+     page 11 page 9 with V clamped (rayman's bump maps are clamped in V, v just below 0)
+     pages 12-14  U, R alternating round the circle the short way across 0 (S 0, light K3 = 255): 83 / 225 (142
+             apart: rayman_ingame's texels), 10 / 200, 0 / 128 (half a turn)
+     page 15 page 12 with V clamped and v 36 units below 0 after the half texel (rayman_ingame (84,309)) */
+#define NUM_PAGES 16
 #include "pvrtest2.h"
 #include "texgen.h"
 
-static uint32_t tex_altU8, tex_altV8, tex_idx8, tex_alt1024;
+static uint32_t tex_altU8, tex_altV8, tex_idx8, tex_alt1024, tex_bSU, tex_bSV, tex_bRU, tex_bW[3];
 
 static uint32_t altU(const void *ctx, int size, int x, int y) { (void)ctx; (void)size; (void)y; return (x & 1) ? 0xffffu : 0; }
 static uint32_t altV(const void *ctx, int size, int x, int y) { (void)ctx; (void)size; (void)x; return (y & 1) ? 0xffffu : 0; }
+static uint32_t bSU(const void *ctx, int size, int x, int y) { (void)ctx; (void)size; (void)y; return (x & 1) ? 0xf800u : 0; }
+static uint32_t bSV(const void *ctx, int size, int x, int y) { (void)ctx; (void)size; (void)x; return (y & 1) ? 0xf800u : 0; }
+static uint32_t bRU(const void *ctx, int size, int x, int y) { (void)ctx; (void)size; (void)y; return (x & 1) ? 0x003fu : 0; }
+static const uint8_t wrapR[3][2] = { { 83, 225 }, { 10, 200 }, { 0, 128 } };
+static uint32_t bW(const void *ctx, int size, int x, int y) { const int k = *(const int *)ctx; (void)size; (void)y; return wrapR[k][x & 1]; }
 static uint32_t idx(const void *ctx, int size, int x, int y)
 {
     const uint32_t g = (uint32_t)(32 * x + 16);         /* grey 32 i + 16, as 565 */
@@ -41,10 +58,26 @@ static void test_setup(void)
     tex_idx8 = tex_build(&l, idx, NULL);
     l.w = 1024;
     tex_alt1024 = tex_build(&l, altU, NULL);
+    {
+        const tex_layout_t lb = { TEX_TWIDDLED, 16, 8, 8, 0 };
+        tex_bSU = tex_build(&lb, bSU, NULL);
+        tex_bSV = tex_build(&lb, bSV, NULL);
+        tex_bRU = tex_build(&lb, bRU, NULL);
+        {
+            static const int ks[3] = { 0, 1, 2 };
+            int k;
+            for(k = 0; k < 3; k++)
+                tex_bW[k] = tex_build(&lb, bW, &ks[k]);
+        }
+    }
 }
 
 static const char *what[NUM_PAGES] = { "U, 8 texels, bilinear", "V, 8 texels, bilinear", "U, 8 texels, point", "U, 1024 texels, bilinear, large",
-                                       "U clamped, 8 texels, bilinear", "U flipped, 8 texels, bilinear" };
+                                       "U clamped, 8 texels, bilinear", "U flipped, 8 texels, bilinear",
+                                       "V clamped, 8 texels, bilinear", "V flipped, 8 texels, bilinear",
+                                       "bump U, S 0/248, bilinear", "bump V, S 0/248, bilinear", "bump U, R 0/63, bilinear",
+                                       "bump V clamped, S 0/248, bilinear", "bump U, R 83/225", "bump U, R 10/200", "bump U, R 0/128",
+                                       "bump U, R 83/225, V clamped at v -36 units" };
 
 /* c0 of a cell (units of 1/256 texel), or 0 with *use = 0 for an unused cell */
 static int64_t cell_c0(int page, int c, int *use)
@@ -86,7 +119,8 @@ static f32b coord(int64_t c4, int size)                /* c4: C times 128 (the c
 
 static void test_page(int page)
 {
-    const int size = page == 3 ? 1024 : 8, alongV = page == 1;
+    const int size = page == 3 ? 1024 : 8, alongV = page == 1 || page == 6 || page == 7 || page == 9 || page == 11, bump = page >= 8;
+    const uint32_t light = page == 10 || page >= 12 ? 0x0000ff00u : 0x00ff0000u;
     int c, k, use;
     pvr_frame.bg_color = 0x000040;
     ta_list_begin(ListType_Opaque);
@@ -104,10 +138,14 @@ static void test_page(int page)
         pcw.Group_En = 1;
         pcw.Strip_Len = 1;
         pcw.Texture = 1;
+        pcw.Offset = bump;
+        pcw.Gouraud = bump;
+        isp.Offset = bump;
+        isp.Gouraud = bump;
         isp.DepthMode = DepthMode_Always;
         isp.CullMode = CullMode_None;
         isp.Texture = 1;
-        tsp.SrcInstr = BlendInstr_One;
+        tsp.SrcInstr = bump ? BlendInstr_SrcAlpha : BlendInstr_One;
         tsp.DstInstr = BlendInstr_Zero;
         tsp.FogCtrl = FogCtrl_None;
         tsp.UseAlpha = 1;
@@ -118,15 +156,19 @@ static void test_page(int page)
         tsp.TexV = 0;
         tsp.ClampU = page == 4;
         tsp.FlipU = page == 5;
-        tcw.PixelFmt = PixelFmt_565;
-        tcw.ScanOrder = 1;
-        tcw.TexAddr = (page == 1 ? tex_altV8 : page == 2 ? tex_idx8 : page == 3 ? tex_alt1024 : tex_altU8) >> 3;
+        tsp.ClampV = page == 6 || page == 11 || page == 15;
+        tsp.FlipV = page == 7;
+        tcw.PixelFmt = bump ? PixelFmt_BumpMap : PixelFmt_565;
+        tcw.ScanOrder = !bump;
+        tcw.TexAddr = (page >= 15 ? tex_bW[0] : page >= 12 ? tex_bW[page - 12] : page == 8 ? tex_bSU : page == 9 || page == 11 ? tex_bSV : page == 10 ? tex_bRU :
+                       page == 1 || page >= 6 ? tex_altV8 : page == 2 ? tex_idx8 : page == 3 ? tex_alt1024 : tex_altU8) >> 3;
         ta_polygon(pcw, isp, tsp, tcw);
         for(k = 0; k < 4; k++) {
             /* corners: C = c0 + X / 4 + Y / 128 at the corner (X, Y) of the cell, in 1/128 units: 128 c0 + 32 X + Y */
             const int X = (k & 1) * 32, Y = (k >> 1) * 32;
-            const f32b a = coord(128 * c0 + 32 * X + Y, size), mid = sf_ratio(1, 2 * 8 * 2);   /* the other: texel 0 + 1/4 */
-            ta_vertex3(f32b_int(x + X), f32b_int(y + Y), F32B_ONE, alongV ? mid : a, alongV ? a : mid, 0xffffffff, 0, k == 3);
+            const f32b a = coord(128 * c0 + 32 * X + Y, size),
+                       mid = page == 15 ? sf_ratio(92, 2048) : sf_ratio(1, 2 * 8 * 2);   /* the other: texel 0 + 1/4 (page 15: 92 / 256 texel) */
+            ta_vertex3(f32b_int(x + X), f32b_int(y + Y), F32B_ONE, alongV ? mid : a, alongV ? a : mid, 0xffffffff, bump ? light : 0, k == 3);
         }
     }
     ta_list_end();
