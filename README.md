@@ -1525,6 +1525,11 @@ above); the level table it printed for point sampling is the same rule.
 The earlier notes under "mip" about level selection, magnified quads and trilinear were of the first
 refsw2 and are superseded by this section.
 
+
+**MipMapD 0** (2026-11-18). The manual calls a D adjust of 0 illegal; Berserk uses it on its ground. A console
+takes it as 4/4: `measure.sh mipmeas <set> --mix ... --bias0` sends every quad with D = 0, and refsw3 with 0 read
+as 4 is the console's on all 4,147,200 colour values of the sets d0first (--mix first) and d0dcalc (--mix dcalc).
+With it berserk_fight goes from 145,460 differing pixels to 1,607 (32 bit framebuffer, no vertical filter).
 ## scalermeas, scalertile, sof2probe: the scaler, the pixel clip and the second framebuffer (2026-11-16)
 
 Three tests on the direct harness; every page renders the whole screen magenta without scaling first, so

@@ -44,6 +44,9 @@ page 6  ratio 1 .. 8, z of any exponent with a 16 bit mantissa
 page 7  ratio 3, z with 24 bit mantissas at 2^-70 .. 2^-58 (cells 0-149) and 2^58 .. 2^70
 --mix wextd: the same with DCalcCtrl 1 (the numerators taken at the first vertex).
 
+--bias0 (any mix): every quad with MipMapD 0, which the manual calls illegal (Berserk uses it): a console
+takes it as 4/4.
+
 --mix pos: does the level depend on where a polygon is? Every cell of a page holds the same quad (the same u, v
 and 1/w at its corners), so a level computed from the derivatives at each pixel would be the same in every
 cell. Ratio 2.5, pass B, bias 4/4.
@@ -233,11 +236,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--mix", default="first", choices=["first", "w", "det", "det2", "dcalc", "wext", "wextd", "pos"])
+    ap.add_argument("--bias0", action="store_true", help="every quad with MipMapD 0 (the manual's illegal value)")
     args = ap.parse_args()
     rng = np.random.default_rng(args.seed)
     pages = {"w": pages_w, "det": pages_det, "det2": pages_det2, "dcalc": pages_dcalc, "wext": pages_wext,
              "wextd": lambda r: [[dict(q, dcalc=1) for q in pg] for pg in pages_wext(r)], "pos": pages_pos}.get(args.mix, pages_first)(rng)
-    write(HERE, {"seed": args.seed, "mix": args.mix, "pages": pages})
+    if args.bias0:
+        pages = [[dict(q, bias=0) for q in pg] for pg in pages]
+    write(HERE, {"seed": args.seed, "mix": args.mix, "bias0": args.bias0, "pages": pages})
     print(f"seed {args.seed} mix {args.mix}: {PAGES} pages, {sum(len(p) for p in pages)} quads")
 
 
