@@ -2786,9 +2786,22 @@ Any start is cut. refsw3-offline = console on 49,152 of 49,152 pixels.
 
     bash model/build.sh mipk; pvr-tests/mipk/gen 1                 # the cases (cases.h, cases.txt), ~30 s
     bash run2.sh mipk off; bash run2.sh mipk hw=<ip>                 # 8 pages; fit/hw/mipk
-    MIP_K=<variant> bash run2.sh mipk off                            # refsw3-core's experiment switch (pvr_tsp_plane.h)
+    MIP_K=1 bash run2.sh mipk off                                    # refsw3-core with the old length (pvr_tsp_plane.h)
     python3 pvr-tests/mipk/analyze.py <console run> <name>=<offline run> ...
     pvr-tests/mipk/kfit fit/mipk_data/seed1.observed.txt            # rules against every cell (header of kfit.cpp)
+
+**Result (mipk4, below):** a length is not the longer numerator plus (sqrt(2) - 1) of the shorter but
+
+    L = cut24( cut24(longer + shorter) - cut24(0x3F15F612 * shorter) )         0x3F15F612 = 0.585785985
+
+each cut to 24 bits toward zero; the constant is 8 units of 2^-24 under 2 - sqrt(2) (0x3F15F61A). The two agree to
+first order, but here the shorter's part falls as the shorter rises, until the sum's own cut steps up (by 2 units of
+the longer's grid once the sum has carried into the next power of two): a sawtooth, not a slope. refsw3-core's model
+since (MIP_K=1: the old length). Offline = console on every pixel of mipk2, mipk3, mipk4, mipmeas's 8 archived sets,
+mip, mipbil, sample, texfmt; r2r_ring 0 pixels (was 8). Left: mipk itself (1/w sloped, numerators that are
+differences of rounded products) 2,349 of 2,401 cells, 2,371 with the products and their difference cut to 24 bits
+and DCalcCtrl 1's values in the setup's 24 bit arithmetic: the numerators' own arithmetic (page 6, determinants not
+a power of two; page 2, DCalcCtrl 1) is the open part.
 
 The one pixel difference left in the 106 new dumps (r2r_ring, 8 pixels) is a mipmap level: with the levels of the
 texture painted over in the dump (poke) and the scaler off (a tile alone, its framebuffer moved to free memory), the
@@ -2843,16 +2856,24 @@ sqrt(2) - 1 with rounding on the way, 27146 / 65536 with grids, the sum cut to i
 `KFIT_STAIR=1 pvr-tests/mipk/kfit3 ...` with kfit built for ../mipk3/cases.h): f(shorter) measured instead of fitted. Rows of
 20 cells share the shorter numerator; across a row the longer one rises by one unit of its 24 bit grid a cell (one float
 step), around the model's crossing of the step (130), so the cell where the row turns gives the console's part to a
-unit. All 120 rows turn once (short ... reached). In units of the longer's grid, the console's part against the
-model's (27146 / 65536 x shorter):
+unit. Only rows whose step is a change of level say anything (bilinear filtering shows the level alone): K8 130
+with K >= 2, 76 of the 120. The rest (K about 0.5 and 1, and pages 6 and 7, whose steps are at other K8) show one
+colour along the whole row, so their turn at step 0 measures nothing; reading them as rows that keep the model's part
+(an earlier version of this note: "a carry costs more, 13 carry rows excepted") was that selection, since at K8 130
+only a row whose sum carries can have a large shorter. In the 76 rows the console's part is about 0.4142140 x shorter
+less 0 .. 2 units, and no cut of the shorter, of the product and of the sum explains all of them (54 at best):
+mipk4 says why.
 
-| the sum longer + part | rows | console's part |
-|---|---|---|
-| stays under the next power of two | 59 | 0 .. 1.6 units below the model's, at every shorter / longer |
-| reaches the next power of two (a carry) | 61 | mostly ~1.2e-6 x shorter below (up to 10 units and beyond); 13 rows under a unit |
-
-So the constant is the model's, and the addition loses more when its result carries into the next binade: why only most
-of the carry rows do, and how much, is the open part.
+**mipk4** (`pvr-tests/mipk/gen 4 lostair pvr-tests/mipk4`; fit/hw/mipk4; 5 s on the console): rows built in units of
+the longer's grid, 1/w = 1, exact numerators. Lo stairs (pages 2 .. 6): the longer fixed, the shorter one float step
+a cell (0.25, 0.5 or 1 unit). The console's level is not monotonic in the shorter: it rises only where longer +
+shorter reaches a multiple of the sum's grid (even sums once the sum has carried; which shorters, odd or even, follows
+the longer's parity) and falls back in between, the shorter's part shrinking by 0.586 of each step. Hi stairs with
+biases 5 and 6 (pages 0, 1, 7): steps where the sum does not carry, with large shorters. lenfit (rules (hi + lo) -
+k2 lo with a cut on each step; `python3 pvr-tests/mipk/lencells.py > cells.txt; FIX=1 pvr-tests/mipk/lenfit
+cells.txt`): every one of the 3,920 cells of mipk3's 76 rows and mipk4's 120 with the sum, the product and the
+difference cut to 24 bits toward zero (the product also 23 to nearest), and k2 = 0x95F612 / 2^24 alone (no other
+value at 2^-28). kfit with that length (KFIT_FORM=1): mipk2 2,401 of 2,401.
 
 ## bumpfn, bumpbil, bumphang: bump maps (2026-11-17)
 

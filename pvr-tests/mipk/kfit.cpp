@@ -4,6 +4,9 @@
 // model's: 0, -1, +1. A grid of rules (where K's arithmetic is cut, and how); the best first.
 //   g++ -O2 -std=c++17 -fopenmp -I <refsw3/refcore> -I model -I pvr-tests/mipk pvr-tests/mipk/kfit.cpp -o pvr-tests/mipk/kfit
 //   pvr-tests/mipk/kfit fit/mipk_data/seed1.observed.txt      [KFIT_PATHS=1: numerators from the undivided sums]
+// The baseline (base, and the observations' 0) is the old model's length, the longer plus 27146 / 65536 of the shorter.
+// KFIT_FORM=1 with KFIT_ONE="9827858 24 ...": the console's length (mipk4; refsw3-core's model since): (longer + shorter)
+// - 0x95F612 / 2^24 x shorter, each step cut to 24 bits. KFIT_LIST=1 (2: each cell): the mipk cells one rule misses.
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -68,9 +71,10 @@ struct Rule {
     int shiftadd = 0;    // the part as a sum of the shorter shifted by each 1 bit of cnum, each term on the grid (gw) first
     int sc = 62, scm = 0, ptm = 0, gm = 0;   // the sum cut to sc bits of its own (mode scm); the part's cut mode; the grid's mode
     int dv = 0;          // DCalcCtrl 1: 0 the planes at the first vertex exactly; 1 the vertex's own u1 z1, v1 z1, z1; 2 the planes there in 24 bits
+    int form = 0;        // 1: the console's length (mipk4): (longer + shorter) - cnum / 2^cbits x shorter, each step cut to 24 bits
     std::string Name() const {
         char b[200];
-        snprintf(b, sizeof b, "higrid %d shiftadd %d logrid %d/%d sum %d/%d partmode %d gridmode %d dv %d const %lld/2^%d path %d inv %d recip %d coefprod %d coef %d/%d prod %d/%d diff %d/%d hi %d lo %d part %d grid %d", hg, shiftadd, lg, lgm, sc, scm, ptm, gm, dv, (long long)cnum, cbits, path, iw, rw, cb, cw, cm, pw, pm, sw, sm, hw, lw, partw, gw);
+        snprintf(b, sizeof b, "form %d higrid %d shiftadd %d logrid %d/%d sum %d/%d partmode %d gridmode %d dv %d const %lld/2^%d path %d inv %d recip %d coefprod %d coef %d/%d prod %d/%d diff %d/%d hi %d lo %d part %d grid %d", form, hg, shiftadd, lg, lgm, sc, scm, ptm, gm, dv, (long long)cnum, cbits, path, iw, rw, cb, cw, cm, pw, pm, sw, sm, hw, lw, partw, gw);
         return b;
     }
 };
@@ -140,6 +144,12 @@ static int K8Of(const Cell& c, const Rule& r, double* kOut = nullptr)
         Fp hi = CutM(pBig ? p : q, r.hw, 0), lo = CutM(pBig ? q : p, r.lw, 0);
         if (r.lg) lo = GridM(lo, hi.top() - r.lg, r.lgm);
         if (lo.zero()) return hi;
+        if (r.form == 1) {
+            Fp k2 = Fp::FromHalves(2 * r.cnum);
+            k2.exp -= r.cbits;
+            const Fp s = CutM(pvrfp::Add(hi, lo, 62, 200), 24, 0), q = CutM(pvrfp::Mul(lo, k2, 62), 24, 0);
+            return CutM(pvrfp::Sub(s, q, 62, 200), 24, 0);
+        }
         Fp part;
         if (r.shiftadd) {
             const int g = hi.top() - r.gw;
@@ -607,6 +617,7 @@ int main(int argc, char** argv)
         long long cn; int cbt;
         sscanf(getenv("KFIT_ONE"), "%lld %d %d %d %d %d %d %d %d %d %d", &cn, &cbt, &r.lg, &r.lgm, &r.gw, &r.gm, &r.pw, &r.pm, &r.sw, &r.sm, &r.dv);
         r.cnum = cn; r.cbits = cbt;
+        if (getenv("KFIT_FORM")) r.form = atoi(getenv("KFIT_FORM"));
         rules.push_back(r);
     }
     std::vector<int> score(rules.size()), r2r(rules.size()), viol(rules.size());
@@ -624,6 +635,14 @@ int main(int argc, char** argv)
                 if (cells[i].page == 99) r2r[k] = d == -1;
             }
         score[k] = s - 10000 * v;
+    }
+    if (getenv("KFIT_LIST") && rules.size() == 1) {      // the mipk cells the one rule misses: page, observed, predicted
+        std::map<int, int> perPage;
+        for (size_t i = 0; i < nMipk; i++) {
+            const int d = K8Of(cells[i], rules[0]) - base[i];
+            if (d != cells[i].obs && cells[i].obs != 9) { perPage[cells[i].page]++; if (getenv("KFIT_LIST")[0] == '2') printf("miss page %d cell %zu obs %+d pred %+d dcalc %d bias %d\n", cells[i].page, i % 300, cells[i].obs, d, (int)cells[i].dcalc, cells[i].bias); }
+        }
+        for (auto& [pg, n] : perPage) printf("page %d: %d missed\n", pg, n);
     }
     std::vector<size_t> order(rules.size());
     for (size_t k = 0; k < order.size(); k++) order[k] = k;
