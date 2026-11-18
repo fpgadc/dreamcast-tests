@@ -2522,15 +2522,36 @@ would get 437 of them wrong, and weights from the magnitude 489: the guess was r
 flipped; bump maps: S along U and V, R along U, R round the circle across 0 (83 / 225, 10 / 200, 0 / 128), V
 clamped with v just below 0) are the console's too: 4128 of 4128 regions.
 
-**Bump maps of rayman_ingame and rayman_ingame2 (open).** Their 5 pixels left: bump maps clamped in V, v just
-below 0, one level or two of intensity off. The function is exact for their lights (bumpfn page 7: 131,072 of
-131,072); their triangle's U and V read through uvmeas (mix dump, now with the triangle's own V: sets dump_rayman1,
-dump_rayman2, 52,672 readings each) are the console's; the triangle alone in its tile still differs at (84,309),
-and the same render with V not clamped does not. dumprender's new poke= (a word of video memory written after the
-dump's) changed its light: with K2 = 255 (I from S alone) every pixel is the console's, with K3 = 255 (I from S
-and R) that pixel is not: S is the console's (106, filtered with the u weight 18) and R is 10 or 11 where refsw2
-has 15 (the u weight 19 would give 11). No texel pair of the texture as the clamped row explains it, and
-coordfix's synthetic versions (8x8, V clamped, R across 0, v 36 below 0) do not show it.
+**Bump maps of rayman_ingame and rayman_ingame2 (solved, bumpiso and bumpclamp below).** Their 5 pixels: bump
+maps clamped in V, v just below 0, one level or two of intensity off. The function is exact for their lights (bumpfn
+page 7: 131,072 of 131,072); their triangle's U and V read through uvmeas (mix dump, now with the triangle's own V:
+sets dump_rayman1, dump_rayman2, 52,672 readings each) are the console's. coordfix's synthetic versions (8x8, V
+clamped, R across 0, v 36 below 0) do not show it: their rows are all alike.
+
+## bumpiso: rayman_ingame's bump triangles alone (2026-11-18)
+
+    bash run2.sh bumpiso off; bash run2.sh bumpiso hw=<ip>    # 8 pages; archived in fit/hw/bumpiso
+
+The four bump triangles of rayman_ingame (tris.h: corners, U and V exact, the 64x64 bump map as the game stored it)
+drawn as the game draws them over grey, one property changed per page. Before the fix: 9 pixels differ with the
+game's lights, 12 with K3 = 255 (I shows R), 0 with V not clamped, 0 with every row of the map a copy of row 0, 0 with
+K2 = 255 (I shows S alone), the same with decal or in the opaque list. So it is R, under the V clamp, and another row
+is in it. At each of the 49 clamped pixels (v from -128 to -5 after the half texel) the console's R is the circular
+filter from row 0 to row 1 with weight 0, where refsw2 read row 0 twice (49 of 49; row 0 twice 38, row 63 as the
+other row 20, row 1 with the pixel's own weight 21). Now 8 of 8 pages.
+
+## bumpclamp: a clamped coordinate at either end of the texture (2026-11-18)
+
+    bash run2.sh bumpclamp off; bash run2.sh bumpclamp hw=<ip>    # 7 pages; archived in fit/hw/bumpclamp
+
+Clamped, a coordinate below 0 (after the half texel) is 0 itself: texel 0 and texel 1 with weight 0, not texel 0
+twice. A colour cannot tell, a bump map's R can: the circular step is not exact at weight 0 when it starts from the
+second texel (31 - weight). An 8x8 bump map whose R goes by row (or column): 20, 230, 5, 10, 15, 25, 50, 60, under
+K3 = 255, with the coordinate swept over every weight step of both ends as in coordfix: refsw2 had all 144 cells
+below 0 wrong (U and V); past the last texel the second texel is clamped too, not wrapped round to texel 0 (the
+top-end pages, bump and 565, were the console's already). refsw2 now clamps the coordinate below 0 before cutting
+it into a texel and a weight: 1792 of 1792 regions; rayman_ingame and rayman_ingame2 are the console's in all of
+video memory (polly2dumps: 56 of 63 scenes).
 
 ## alphafilt: the alpha of a bilinear sample at the edge of a transparent texel (2026-11-18)
 

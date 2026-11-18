@@ -334,7 +334,9 @@ largest of its ISP, TSP and write-out times [M timemeas].
     tables. R is filtered the short way round the circle.
 - **Filter [M]:** bilinear is two truncated 5-bit steps. A trilinear pass fades by the level fraction (2 x
   fraction, 127 -> 256). A mipmapped texture whose declared V size differs from U forms V with the declared size
-  and then scales it.
+  and then scales it. Clamped, a coordinate below 0 becomes 0 before it is cut into texel and weight (texels 0
+  and 1, weight 0: it shows on a bump map's R only); past the last texel the second texel is clamped as well
+  [M bumpclamp, bumpiso].
 - **Shade, offset, fog [M env, fog, tspw]:** modulate is (a x b) >> 8 with no correction. The fog table is
   indexed with the TSP's own 1/w. Cheap-shadow intensity scales the colour before it is clamped [M faredge].
 - **Blend [M blend 4096/4096]:** out = sat((src x ks >> 8) + (dst x kd >> 8)). Each factor is k = x' or
