@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     std::map<std::string, int*> fields = {
         { "productBits", &cfg.productBits }, { "sumBits", &cfg.sumBits }, { "reach", &cfg.reach }, { "recipBits", &cfg.recipBits },
         { "coefBits", &cfg.coefBits }, { "startBits", &cfg.startBits }, { "slopeBits", &cfg.slopeBits }, { "pairBits", &cfg.pairBits },
-        { "tileBits", &cfg.tileBits }, { "storedBits", &cfg.storedBits } };
+        { "tileBits", &cfg.tileBits }, { "storedBits", &cfg.storedBits }, { "startOnSlopes", &cfg.startOnSlopes } };
     std::string scanName;
     std::vector<int> scanValues;
     std::vector<Rec> recs;

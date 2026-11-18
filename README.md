@@ -650,7 +650,8 @@ only from the cells next to the top left (5 cases: 26, 26, 27, 27, 29). Sets rea
   (uncommitted).
 - **One pixel** (reach1r cell 227, excess 13) is one stored step above the model. It is like zero6's: a negative
   start, the plane crossing zero in the tile, and the exact sum just under a stored boundary (0.0015 of a step
-  there, 0.031 = one quantum of the start's cut in zero6). Not resolved.
+  there, 0.031 = one quantum of the start's cut in zero6). Resolved 2026-11-18 (zstart, below): the start is cut
+  to the slopes' grid as well.
 - Every older set is unchanged (`archive_check.sh zmeas`). Over all 13 sets the model is inside the console's
   bracket on 89,762 of 89,765 pixels (`model/depthprobe`), and a one-bit change of any width breaks 50 to 1,800
   more.
@@ -1859,7 +1860,7 @@ pass, from `huge` and `detinf`).
 
 What refsw2-offline does not reproduce after this: `accbuf` (76 cells that depend on the write-out's timing,
 70 of them different from console run to console run; see accbuf),
-`blendpos` (69 regions that differ from run to run on the console), `modvol` (5 regions of two-volume polygons in intensity mode: an edge with a corner past 2^127, see faredge), `detinf` (2 probes, above) and one depth bracket of zmeas `zero6`.
+`blendpos` (69 regions that differ from run to run on the console), `modvol` (5 regions of two-volume polygons in intensity mode: an edge with a corner past 2^127, see faredge), `detinf` (2 probes, above). (One depth bracket of zmeas `zero6` was here until zstart, 2026-11-18.)
 
 ## The generators are C++ programs on the refsw2 headers (2026-11-16)
 
@@ -2723,6 +2724,45 @@ shenmue_intro, all 300 tiles (1.5 minutes for both sides): the console = refsw3 
 (566, 305) and (599, 380) the console's depth is one step of the 19 bit grid above refsw3-core's (0x3d239e80 against
 0x3d239e60, 0x3d36efa0 against 0x3d36ef80). The frame's colours are the console's in every pixel, so nothing else
 shows these. The dump's render reports ISP out of cache (SB_ISTERR bit 0) for two tiles, with or without zexfil.
+The cause is the start's cut (zstart, below).
+
+**Every dump** (`zdumps.sh hw=<ip>`: each dump that samples at pixel centers, one after the other, ~1.5 minutes a
+dump; readouts, pictures and logs in /tmp/pvr_tests/zdumps/<scene>, a line each in summary.txt). With refsw3-core
+before zstart: 61 of the 62 dumps besides shenmue_intro and 20kdm2 were the console's in all 307,200 depths (20kdm2
+as well); sa2_ingame differed in 34, all in tile row 8, all the console one step above. `model/zmiss.py <scene>`
+turns the depths that differ into depthprobe records (fit/zdump_data/<scene>.zme: the triangle whose fragment
+refsw3 stored, from a render log of the tiles, with the console's depth as a one-step bracket). With the start's
+cut (zstart, below), all 64 dumps are the console's in every depth (64 x 307,200; the offline side of every dump
+read out again, shenmue_intro and 20kdm2 on the console again too).
+
+## zstart: the tile's start cut to the slopes' grid (2026-11-18)
+
+    bash run2.sh zstart off; bash run2.sh zstart hw=<ip>     # 3 pages, 1.5 min offline, 40 s on a console; fit/hw/zstart
+    bash model/build.sh zstart; pvr-tests/zstart/gen         # the cases, pvr-tests/zstart/cases.h
+
+The 36 depths of the dumps that differed (sa2_ingame 34, shenmue_intro 2) are all in tiles where the triangle's
+plane, extended to the tile's first pixel, is a small negative number: the plane crosses zero next to that pixel,
+and the start is smaller than the per-pixel slopes. With every other pixel of the same triangles in those tiles
+(1,689, read out exactly) the console's fixed-point stepping can be fitted: with the model's slopes the start has
+to be 1 to 7 steps of its own 20 bit grid higher, exactly what cutting it toward zero to the slopes' grid (21 bits
+under the larger slope's exponent) gives, in all 11 (tile, triangle) groups; a grid twice as fine or twice as
+coarse misses. A negative start cut toward zero comes out higher, and a pixel whose depth was just under a stored
+step (0.99 of a step, in shenmue) goes over it. The three zmeas brackets the model had missed (reach1, reach1r,
+zero6) are the same case. refsw3-core cuts the start to the slopes' grid as well (`DepthConfig::startOnSlopes`):
+0 of 89,801 brackets missed (zmeas sets and dump records), from 39.
+
+A positive start cut to a coarser grid comes out lower, but it stays in the same cell of the slopes' grid, and a
+stored step is coarser than that cell unless the pixel's depth is below about a quarter of a pixel's slope. So the
+data could not tell whether a positive start is cut too (startOnSlopes 1) or only a negative one (2). zstart puts
+it on a console: each case a triangle alone in its own tile, compare always with depth write, read out by zexfil.
+
+| page | cases | pixels covered | console = cut any start | old model | cut only a negative start |
+|---|---|---|---|---|---|
+| 0: negative start | 16 | 15,785 | 15,785 | 15,291 | 15,785 |
+| 1: small positive start, depth rising into the tile | 16 | 16,384 | 16,384 | 16,267 | 16,267 |
+| 2: either sign, as they come | 16 | 15,353 | 15,353 | 15,292 | 15,349 |
+
+Any start is cut. refsw3-offline = console on 49,152 of 49,152 pixels.
 
 ## bumpfn, bumpbil, bumphang: bump maps (2026-11-17)
 

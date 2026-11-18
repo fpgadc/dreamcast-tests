@@ -14,7 +14,8 @@
 #
 # Results in /tmp/pvr_tests/<test>[@<set>]. A run also leaves the checksums of what it sent to the PVR
 # (off.crc, hw.crc): the same lines mean that the console and the offline renderer got the same input.
-# TEST_DEFS="-DX=1 ...": extra defines for the PC and the console build alike.
+# TEST_DEFS="-DX=1 ...": extra defines for the PC and the console build alike. HW_TIMEOUT: seconds a console run
+# may take (300).
 HERE=$(cd "$(dirname "$0")" && pwd)
 # a test's folder: pvr-tests/<test> (the core's tests) or ta-tests/<test> (the tile accelerator's)
 testdir() { local g; for g in pvr-tests ta-tests; do [ -d "$HERE/$g/$1" ] && { echo "$HERE/$g/$1"; return 0; }; done; return 1; }
@@ -49,7 +50,7 @@ if [ "$1" = --worker ]; then
     rm -f $W/*.hw.raw $W/*.hw16.raw $W/*.rle
     kos-cc -I$HERE/common -Wno-unused-function "-DDUMP_DIR=\"/pc$W\"" "${DEF[@]}" -c $SRC -o $W/build/hw.o && kos-cc -o $W/build/hw.elf $W/build/hw.o -lm || exit 1
     # one program on the console at a time, whoever else is running tests
-    flock /tmp/pvr_tests/console.lock timeout 300 $DCTOOL -t ${KIND#hw=} -x $W/build/hw.elf > $W/build/hw.log 2>&1
+    flock /tmp/pvr_tests/console.lock timeout ${HW_TIMEOUT:-300} $DCTOOL -t ${KIND#hw=} -x $W/build/hw.elf > $W/build/hw.log 2>&1
     grep -a '^pvrio' $W/build/hw.log | head -n 5
     grep -a '^PVRIO crc' $W/build/hw.log | tr -d '\r' > $W/hw.crc
     python3 - $W <<'PY'
