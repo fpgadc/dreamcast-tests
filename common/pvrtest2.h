@@ -74,10 +74,18 @@ static uint32_t rng(void) {
     return rng_state >> 8;
 }
 
+#ifdef TEST_DRAW_PAGE
+static void test_draw_page(int page);   /* the whole page, in place of the three calls below (zexfil: many renders) */
+#endif
 static void draw_page(int page) {
+#ifdef TEST_DRAW_PAGE
+    (void)test_page;
+    test_draw_page(page);
+#else
     pvr_frame_begin();
     test_page(page);
     pvr_frame_render();
+#endif
 }
 
 int main(int argc, char **argv) {

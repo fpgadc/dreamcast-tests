@@ -2666,6 +2666,38 @@ texel lower on the console is all it takes: the same one-unit coordinate differe
 colour differences (every differing pixel left in daytona_sanic, sa2_ingame2, gundam_ingame and daytona_intro has
 a bilinear layer; in gundam_ingame all 42 are at a weight step's edge, against 40 % of the pixels that agree).
 
+## zexfil: the depth buffer read out (2026-11-18)
+
+    bash run2.sh zexfil off; bash run2.sh zexfil hw=<ip>      # 4 pages, 5 s offline, 34 s on a console; fit/hw/zexfil
+    bash model/build.sh zexfil; pvr-tests/zexfil/gen          # the probe table, common/zexfil_probes.h
+
+`common/zexfil.h` reads the depth that each pixel of a tile has when the core is done with a scene, as a number,
+by a binary search with depth compare probes: one render per bit, the framebuffer read back between renders
+(`pvrio_read32`: on a console straight from video memory, on a PC through a file that refsw3-offline writes when
+it reaches the command). A render is the scene's region array entries for the tile, not written out, then a keep Z
+entry whose opaque list has a black quad (compare always, no depth write) and a probe per pixel at that pixel's
+next depth (compare greater, its own colour). The probes are a second pass of the tile accelerator after the scene
+(TA_LIST_CONT with another object list matrix), and they are left out of the PVRIO checksum, because each side
+searches with its own readbacks. 27 renders a tile, over the depths of 19 significant bits.
+
+**The probes have to be exact.** A 1x1 quad's depth goes through the setup's 24 bit truncating products of the
+depth with cross products of the absolute corner coordinates (up to 19 bits): it comes out a step or two of the 19
+bit grid off what it was given, more with the distance from the screen's top left (the first version read the
+background column of page 0 as 24 different depths). A triangle whose coordinates, their differences, its three
+cross products and their pairwise sums have at most 5 significant bits, with a determinant of plus or minus a power
+of two, has every product and sum exact for a depth of 19 bits whatever the arithmetic is (zmeas's calibration
+argument). Such triangles exist around a pixel only near the origin: `pvr-tests/zexfil/gen` finds one for each
+pixel of tile (0, 0) that covers that pixel's center alone (determinant 1 or 2), checked with the model in all six
+corner orders for depths from 2^-100 to 2^100. So the keep Z entry is at tile (0, 0), after the scene's entry of
+whatever tile is read, and it sees that tile's depths: page 0's calibration quads (full tiles at depths of 15 bits,
+which store exactly) read back as their depths on the console. Probe depths are kept within 2^-100 .. 2^100 (a
+depth below reads as 0, one above as 0x7fffffe0); the ISP has to sample at pixel centers and the framebuffer has to be 0888.
+
+The test's pages: calibration quads and flat 8x8 quads at given depths over the background; 32 triangles with a
+depth per corner; opaque, punch-through and translucent triangles over each other; the background at 8 depths. The
+console = refsw3-offline on all of it, 15 of 15 regions and 32,768 of 32,768 depths. The background reads as the
+bgdepth format (0.0001 as 0x38d00000, 0x3e7fffff as 0x3e7fffc0, below 2^-20 as 0).
+
 ## bumpfn, bumpbil, bumphang: bump maps (2026-11-17)
 
     bash run2.sh bumpfn bumpbil off hw=<ip>         # 7 + 7 pages; refsw2-offline = console in 952 and 1792 regions

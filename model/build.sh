@@ -27,7 +27,7 @@ for src in $SRC; do
   out=${src%.cpp}
   deps=$(ls "$(dirname "$src")"/*.h 2> /dev/null | grep -v '/cases.h$')      # not the tables a generator writes
   newer "$out" "$src" $deps || continue
-  g++ -O2 -std=c++17 -Wall -Wextra -I "$REFSW" -I "$HERE" -I "$(dirname "$src")" "$src" -o "$out.new.$$" && mv "$out.new.$$" "$out" \
+  g++ -O2 -std=c++17 -Wall -Wextra -fopenmp -I "$REFSW" -I "$HERE" -I "$(dirname "$src")" "$src" -o "$out.new.$$" && mv "$out.new.$$" "$out" \
     && echo "built $(basename "$(dirname "$src")")/$(basename "$out")" || { rm -f "$out.new.$$"; FAILED=1; }
 done
 exit $FAILED

@@ -8,6 +8,7 @@ __pycache__/
 /pvr-tests/zmeas/read
 /pvr-tests/uvspan/gen
 /pvr-tests/ops/gen
+/pvr-tests/zexfil/gen
 /model/covprobe
 /model/depthprobe
 /model/tspprobe

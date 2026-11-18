@@ -47,11 +47,17 @@ static void pvrio_dump_regs(uint32_t addr, int words, const char *name, const ch
 /* every word of the 32 bit area in addr .. addr + 4 words that is not value: lines "PVRIO scan <name> <address>
    <word>" (at most 64), then "PVRIO scan <name> count <n>" (ta-probe: writes outside the area dumped) */
 static void pvrio_scan32(uint32_t addr, int words, uint32_t value, const char *name);
+/* video memory back into the program (32 bit area): on a console read directly, on a PC written by refsw3-offline to
+   <folder>/readback.bin, which the program waits for (zexfil.h: the depth buffer by depth compare probes) */
+static void pvrio_read32(uint32_t addr, int words, uint32_t *out);
 static void pvrio_close(void);
 #define PVRIO_TA_EVENTS         ((0xfu << 7) | (1u << 21))
 
 /* ---- the checksum ---- */
 static uint32_t pvrio_crc = 0;
+/* set: what is sent is not added (what depends on a readback, which differs where the console and the offline
+   renderer differ: zexfil.h's probes); the lines then show that the two got the same input apart from that */
+static int pvrio_unhashed;
 static char pvrio_tag[24] __attribute__((unused));                /* the test's name for what it is doing (ta-tests: c<case>), for "PVRIO stall" */
 
 static void pvrio_hash(uint32_t kind, uint32_t addr, const uint32_t *words, int count) {
@@ -59,6 +65,8 @@ static void pvrio_hash(uint32_t kind, uint32_t addr, const uint32_t *words, int 
     uint32_t head[3] = { kind, addr, (uint32_t)count }, c = ~pvrio_crc, v;
     int i, k, part;
 
+    if(pvrio_unhashed)
+        return;
     if(!table[1])
         for(i = 0; i < 256; i++) {
             v = (uint32_t)i;
@@ -153,6 +161,9 @@ static void pvrio_dump_ta_state(const char *name, const char *suffix) {
 #ifndef _arch_dreamcast
 /* ======== on a PC: commands for refsw2-offline on standard output ======== */
 
+#include <stdlib.h>
+#include <unistd.h>
+
 static const char *pvrio_folder = ".";
 static int pvrio_mute;                      /* print nothing (the test is only asked for its labels) */
 #define printf(...) (pvrio_mute ? 0 : printf(__VA_ARGS__))
@@ -235,6 +246,39 @@ static void pvrio_hw_dump_regs(uint32_t addr, int words, const char *name, const
 
 static void pvrio_hw_scan32(uint32_t addr, int words, uint32_t value, const char *name) {
     printf("scan32 %06x %x %08x %s\n", (unsigned)addr, (unsigned)words, (unsigned)value, name);
+}
+
+static void pvrio_read32(uint32_t addr, int words, uint32_t *out) {
+    /* refsw3-offline takes the commands in order: once the second file is there the first is complete */
+    char data[256], done[256];
+    FILE *f;
+    int waited;
+
+    const uint32_t count = (uint32_t)words;
+    pvrio_hash('B', addr, &count, 1);         /* where and how much; what comes back is not in the checksum */
+    memset(out, 0, (size_t)words * 4);
+    if(pvrio_mute)
+        return;
+    snprintf(data, sizeof(data), "%s/readback.bin", pvrio_folder);
+    snprintf(done, sizeof(done), "%s/readback.done", pvrio_folder);
+    remove(data);
+    remove(done);
+    printf("dump32 %x %x %s\ndump32 %x 1 %s\n", (unsigned)addr, (unsigned)words, data, (unsigned)addr, done);
+    fflush(stdout);
+    for(waited = 0; !(f = fopen(done, "rb")); waited++) {
+        if(waited == 20000) {               /* 20 s: no refsw3-offline reading the commands */
+            fprintf(stderr, "pvrio: no %s after 20 s (is the output piped into refsw3-offline?)\n", done);
+            exit(1);
+        }
+        usleep(1000);
+    }
+    fclose(f);
+    f = fopen(data, "rb");
+    if(!f || fread(out, 4, (size_t)words, f) != (size_t)words) {
+        fprintf(stderr, "pvrio: %s is short\n", data);
+        exit(1);
+    }
+    fclose(f);
 }
 
 static void pvrio_hw_say(const char *text) {
@@ -508,6 +552,16 @@ static void pvrio_hw_scan32(uint32_t addr, int words, uint32_t value, const char
             printf("PVRIO scan %s %06lx %08lx\n", name, (unsigned long)(addr + 4u * (uint32_t)i), (unsigned long)w);
     }
     printf("PVRIO scan %s count %d\n", name, n);
+}
+
+static void pvrio_read32(uint32_t addr, int words, uint32_t *out) {
+    const volatile uint32_t *src = (const volatile uint32_t *)(0xa5000000 + addr);
+    int i;
+    const uint32_t count = (uint32_t)words;
+    pvrio_hash('B', addr, &count, 1);         /* where and how much; what comes back is not in the checksum */
+    pvrio_guard_read();
+    for(i = 0; i < words; i++)
+        out[i] = src[i];
 }
 
 static void pvrio_hw_say(const char *text) {

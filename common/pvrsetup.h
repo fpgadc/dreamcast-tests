@@ -217,11 +217,10 @@ static void ta_list_begin(int list) {
     pvr_list_open = list;
 }
 
-static void pvr_frame_render(void) {
-    ISP_TSP isp = { .full = 0 };
-    TSP tsp = { .full = 0 };
-    ISP_BACKGND_T_type tag = { .full = 0 };
-    uint32_t bg[15], events = 0;
+/* pvr_frame_render in two: the lists' end (every list the region array points to sent, the TA done with them),
+   then the render with the region array at region (zexfil.h sends more lists between the two) */
+static void pvr_frame_lists(void) {
+    uint32_t events = 0;
     int i;
 
     if(pvr_list_open >= 0)
@@ -235,6 +234,13 @@ static void pvr_frame_render(void) {
             events |= PVRIO_LIST_DONE(i);
         }
     pvrio_wait(events);
+}
+
+static void pvr_frame_start(uint32_t region) {
+    ISP_TSP isp = { .full = 0 };
+    TSP tsp = { .full = 0 };
+    ISP_BACKGND_T_type tag = { .full = 0 };
+    uint32_t bg[15];
 
     /* the background plane: three corners of the screen at depth FLT_EPSILON, as KallistiOS sends it */
     isp.DepthMode = DepthMode_Greater;
@@ -252,7 +258,7 @@ static void pvr_frame_render(void) {
     tag.param_offs_in_words = pvr_frame.bg_first ? 0 : (SETUP_BACKGROUND - SETUP_PARAMS) >> 2;
     tag.skip = 1;
 
-    pvrio_reg(REGION_BASE_addr, pvr_region);
+    pvrio_reg(REGION_BASE_addr, region);
     pvrio_reg(PARAM_BASE_addr, SETUP_PARAMS);
     pvrio_reg(FB_W_SOF1_addr, SETUP_FB);
     pvrio_reg(ISP_BACKGND_T_addr, tag.full);
@@ -261,6 +267,11 @@ static void pvr_frame_render(void) {
     pvrio_reg(FB_Y_CLIP_addr, pvr_frame.FB_Y_CLIP);
     pvrio_reg(STARTRENDER_addr, 0xffffffff);
     pvrio_wait(PVRIO_RENDER_DONE);
+}
+
+static void pvr_frame_render(void) {
+    pvr_frame_lists();
+    pvr_frame_start(pvr_region);
 }
 
 /* the rendered picture to a file: 640x480 words of 0RGB, or 16 bit pixels in pairs */
