@@ -96,7 +96,18 @@ static void pvrio_hw_dump_regs(uint32_t addr, int words, const char *name, const
 static void pvrio_hw_scan32(uint32_t addr, int words, uint32_t value, const char *name);
 static void pvrio_hw_say(const char *text);
 
+/* REG_OVERRIDE={addr,value},...: every write of such a register gets that value instead, setup's and the test's own
+   (run2.sh <test>+<reg>=<value>: a whole test rerun with one register changed) */
+#ifdef REG_OVERRIDE
+static const struct { uint32_t addr, value; } pvrio_override[] = { REG_OVERRIDE };
+#endif
 static void pvrio_reg(uint32_t addr, uint32_t value) {
+#ifdef REG_OVERRIDE
+    unsigned o;
+    for(o = 0; o < sizeof(pvrio_override) / sizeof(pvrio_override[0]); o++)
+        if(pvrio_override[o].addr == addr)
+            value = pvrio_override[o].value;
+#endif
     pvrio_hash('R', addr, &value, 1);
     pvrio_hw_reg(addr, value);
 }

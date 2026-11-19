@@ -26,6 +26,9 @@
    layouts drawn once each with every triangle in its own colour. */
 /* #define TM_CUT */                   /* only the cut scenes (how fast the ISP's side makes runs): a few seconds */
 /* #define TM_ORDER */                 /* only the order scenes (the palette clock: when each pixel is shaded): a few seconds */
+/* #define TM_SETUPK */                /* with TM_ORDER: order scenes 25-31 instead (q = 9 .. 15 columns of 1 pixel and one
+                                          polygon over the rest: q + 1 primitives a line; with SPAN_SORT_CFG 0 how many
+                                          primitives the TSP keeps set up, README "spansortcfg") */
 /* #define TM_PFETCH */                /* only the pfetch scenes (a shared parameter fetch?): a few seconds */
 /* #define TM_ROWS */                  /* only the rows scenes (shared setup engine or span stage?): a few seconds */
 /* #define TM_ISPQ */                  /* only the ispq scenes (how far the ISP runs ahead): a few seconds */
@@ -837,8 +840,17 @@ static void run_all(void) {
         shad_decal = 1;
         bg_fmt = &pal_fmt;
         region_addr = ONE_TILE;
+#ifdef TM_SETUPK
+        for(ok = 25; ok < 32; ok++) {
+#else
         for(ok = 0; ok < 25; ok++) {
+#endif
             ta_list_begin(ListType_Opaque);
+            if(ok >= 25) {              /* as 13 and 14 with q = ok - 16 */
+                q = ok - 16;
+                for(j = 0; j < q; j++) rect(&pal_fmt, 1, DepthMode_Always, j, 0, 1, 32, front, j, 0);
+                rect(&pal_fmt, 1, DepthMode_Always, q, 0, 32 - q, 32, front, q, 0);
+            }
             switch(ok) {
             case 0: break;
             case 1: rect(&pal_fmt, 1, DepthMode_Always, 0, 0, 32, 32, front, 0, 0); break;
@@ -901,11 +913,11 @@ static void run_all(void) {
                 }
                 break;
             }
-            if(ok == 19 || ok >= 23) {
+            if(ok == 19 || ok == 23 || ok == 24) {
                 tiles_region(2);
                 region_addr = MANY_TILES;
             }
-            order_go("order", ok, ok == 19 || ok >= 23 ? 2 : 1);
+            order_go("order", ok, ok == 19 || ok == 23 || ok == 24 ? 2 : 1);
             region_addr = ONE_TILE;
         }
         shad_decal = 0;

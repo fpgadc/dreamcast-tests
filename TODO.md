@@ -5,9 +5,8 @@ known, the pixel-level probe (P: the console's picture against refsw3-offline, o
 one setting changed), the timing probe (T: timemeas's method, one tile, STARTRENDER to the TSP's end-of-render bit
 on the CPU's cycle counter, README "timemeas"), and what it would change.
 
-Step 0, harness: a way to override a pvrsetup.h register for any existing test without editing it
-(`TEST_DEFS="-DSETUP_REG=0x030:0x000"` or similar), so that whole existing tests can be rerun with one register
-changed and compared console against console. A1, A2, A4 and A5 need it.
+Step 0, harness: done 2026-11-19: `bash run2.sh <test>+<reg>=<value> hw=<ip>` reruns a whole test with every write
+of that register forced (pvrio.h REG_OVERRIDE), into /tmp/pvr_tests/<test>+<reg>=<value>, next to the plain run.
 
 Priority, as discussed: A1, then C1 (A1 may explain it), A2, B, then the rest.
 
@@ -16,16 +15,19 @@ Priority, as discussed: A1, then C1 (A1 may explain it), A2, B, then the rest.
 All 790 polly2-data dumps (their registers tallied 2026-11-19) and every test use one value for each of these, so
 refsw3 models that value only. Only FPU_PERP_VAL is set otherwise by games.
 
-**A1. SPAN_SORT_CFG** (0x030: span sort enable bit 0, offset sort enable bit 8, TSP cache bypass bit 16).
-Every dump and test: 0x101. The manual calls it a performance feature ("span sort minimizes TS preprocessing,
-offset sort optimizes TSP parameter fetching"), but the span sorter is what forms and orders the runs the TSP
-shades (timemeas TM_ORDER: a window of 96 runs, drained one primitive at a time; PIPELINE_SHAPE.md [2b]), and every
-TSP value depends on its run (n steps from the run's first pixel; SupSample's half steps even more).
-- P: rerun ssrare, ssvol, supsample2, uvrun, uvspan, ptruns, blendpos (the tile buffers), blendsel
-  (tspAlphaStuck: order dependent) with 0x000, 0x001, 0x100 (the manual's "setting prohibited"), 0x10101; console
-  against the 0x101 run. A difference anywhere means the run model needs the setting.
-- T: timemeas's run scenes (runs a line, more than 12 triangles on a line, textured with offset) and TM_ORDER (the
-  order of shading) with each setting: is the order raster order without the sorter, what each grouping saves.
+**A1. SPAN_SORT_CFG** (0x030: span sort bit 0, offset sort bit 8, TSP cache bypass bit 16). Mostly done
+2026-11-19 (README spansortcfg): with the sorter off no picture changes (8 run-sensitive tests and timemeas's pages,
+console against itself), so the runs and their first pixels are made before the sorter (C1 is not it); the order
+becomes near raster order (timing-dependent, deterministic, not modelled); time grows up to 4.6x (a setup per run
+whose primitive is not among the last 9-16 set up); offset sort changes nothing seen; 0x100 hangs the core until
+the console is switched off. Left:
+- bit 16 (TSP cache bypass): 0x10101 and 0x10001, TM_ORDER times and the pixel sweep (its first run never ran: the
+  console was stuck from 0x100);
+- 0x001 and 0x10101 on the 8 tests, and 0x000 on ssvol, supsample, optrun, ptlayers, blendsel2, blendpos;
+- K exactly: `TEST_DEFS="-DTM_ORDER -DTM_SETUPK" bash run2.sh timemeas+030=0 hw=<ip>` (scenes 25-31, 10 to 16
+  primitives a line), setupfit.py on the log;
+- order-dependent state with the sorter off: tspAlphaStuck (blendsel was the same) and the persistent offset colour
+  (C13) follow the TSP's order, so C13's "which value persists" needs the sorter's order known.
 
 **A2. FPU_PERP_VAL** (0x084, "IEEE floating point value for perpendicular triangle compare", default 0).
 22 dumps set 0x3c000000 (1/128): floigan_*, nba2k_*, ncaa2k2_*, nfl2k1_*, oogabooga_* (Visual Concepts); all 22
@@ -97,7 +99,7 @@ the rarer condition is unknown; eight arithmetic variants ruled out.
   planes such that only the points half a line down land on that row (the average then is that point's texel / 4);
   a coordinate ramp in that row reads the point's value to a fraction of a unit. Sweep the plane's B / 2 and C
   fractions, the line, the run start. Compare with the next line's whole-step value (does the TSP step from it?).
-- A1 first: if the span sorter's grouping changes these points, the cause is in how the TSP walks a span.
+- A1 first: done, the sorter changes no picture (ssrare the same bit for bit with it off): not the sorter.
 
 **C2. Sliver depth (zs25, the ISP)**: 619 of 7,795 pixels of slivers with a nonzero determinant and different
 corner depths outside the console's 0.1-wide brackets. First, from the archived data (no console): do the misses
@@ -164,7 +166,7 @@ pixel with the offset bit overwrites and a bump map without the bit reads. Not m
   TSP's work, or a pipeline that hides some), with point, bilinear, mipmapped, fog, offset.
 - **D2.** Trilinear (two passes: twice the scene), two-volume polygons inside and outside a volume, bump maps
   (bumphang: they stop the render sooner), the punch-through passes.
-- **D3.** The span sorter settings (A1) and the TSP cache bypass, SPAN_SORT_CFG bit 16 and the per-polygon
+- **D3.** The span sorter settings (A1: done for bits 0 and 8, README spansortcfg) and the TSP cache bypass, SPAN_SORT_CFG bit 16 and the per-polygon
   CacheBypass bit: parameter fetch cost per primitive with and without the cache.
 - **D4.** FPU_PERP_VAL (A2): the ISP's cost per edge-on triangle.
 - **D5.** The YUV converter's throughput (B).

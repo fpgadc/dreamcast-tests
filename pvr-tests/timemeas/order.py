@@ -2,7 +2,7 @@
 tile was shaded, and the span sorter model that orders them.
 
     python3 pvr-tests/timemeas/order.py <log> [scene ...]     the tiles as counters less the tile's least
-    python3 pvr-tests/timemeas/order.py --fit <log>           every scene against the model (windows 92 .. 100)
+    python3 pvr-tests/timemeas/order.py --fit <log> [--windows 1,8,96]   every scene against the model (windows 92 .. 100)
     python3 pvr-tests/timemeas/order.py --drains <log> <scene> the model's drains and the console's times of them
 
 A pixel's value is the number of palette writes since STARTRENDER when the TSP read the palette for it (about
@@ -35,6 +35,8 @@ def load(path):
 def tags(k, tile=0):
     """Which primitive each pixel of scene k shows in its tile (the identities only; see main.c TM_ORDER)."""
     g = lambda f: [[f(x, y) for x in range(32)] for y in range(32)]
+    if 25 <= k <= 31:   # TM_SETUPK: as 13 and 14 with q = k - 16
+        return g(lambda x, y: min(x, k - 16))
     if k == 24:     # T over both tiles, columns at x 8 and 16 in the first
         return g(lambda x, y: (1 if x == 8 else 2 if x == 16 else 0) if tile == 0 else 0)
     return {
@@ -107,19 +109,21 @@ def main():
     a = sys.argv[1:]
     if a and a[0] == "--fit":
         S, _ = load(a[1])
+        # --windows 1,8,96: other windows to score (SPAN_SORT_CFG off: is it raster order, a window of 1?)
+        W = [int(x) for x in a[a.index("--windows") + 1].split(",")] if "--windows" in a else [92, 94, 95, 96, 97, 98, 100]
         print("runs out of order along the model's order, by window; at 96: of them glitch pixels, and the rest")
-        print("scene tile runs   92   94   95   96   97   98  100 | glitch  rest")
-        tot = [0] * 9
+        print("scene tile runs " + " ".join(f"{w:4d}" for w in W) + " | glitch  rest")
+        tot = [0] * (len(W) + 2)
         for (what, k), sc in sorted(S.items()):
             if tags(k) is None:
                 continue
             for t, grid in sorted(sc["tiles"].items()):
                 runs = runs_of(tags(k, t))
-                raw = [sum(violations(grid, sort_runs(runs, w)[0])) for w in (92, 94, 95, 96, 97, 98, 100)]
+                raw = [sum(violations(grid, sort_runs(runs, w)[0])) for w in W]
                 bad, glitch = violations(grid, sort_runs(runs, WINDOW)[0])
                 tot = [a + b for a, b in zip(tot, raw + [glitch, bad])]
                 print(f"{k:5d} {t:4d} {len(runs):4d} " + " ".join(f"{v:4d}" for v in raw) + f" | {glitch:6d} {bad:5d}")
-        print(" all           " + " ".join(f"{v:4d}" for v in tot[:7]) + f" | {tot[7]:6d} {tot[8]:5d}")
+        print(" all           " + " ".join(f"{v:4d}" for v in tot[:len(W)]) + f" | {tot[len(W)]:6d} {tot[len(W) + 1]:5d}")
         return
     if a and a[0] == "--drains":
         S, _ = load(a[1])

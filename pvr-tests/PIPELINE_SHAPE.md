@@ -217,6 +217,10 @@ largest of its ISP, TSP and write-out times [M timemeas].
     lines 0-3 to 0-7, then column 0 again from line 4), and each visit is a setup of its own (~45 clocks).
   - With few long runs the whole tile is one batch: a sprite with two columns in front is shaded over the whole
     tile first, then each column.
+- **SPAN_SORT_CFG bit 0 off [M README spansortcfg].** No picture changes: runs and their first pixels are made
+  before the sorter. The order becomes near raster order (some runs of a primitive on the next lines early, the
+  same in two runs, different band to band); every run whose primitive is not among the last 9-16 set up costs a
+  setup (44 clocks, 19 more the first time): up to 4.6 times the time. Bit 8 (offset sort): nothing seen.
 - **Early drains [M, not understood].** Some whole drains are shaded before the 2 to 9 drains in front of them,
   holding the runs the rule gives them: always the same drains (column 31 of 32 columns of 1x16, not of 1x32;
   the background and column 0 of 16 columns over the background).

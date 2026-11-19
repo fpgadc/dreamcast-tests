@@ -1820,6 +1820,42 @@ failing on chosen columns) with the chunk boundary placed by ISP_FEED_CFG's chun
 Both are _races tests: regress.sh leaves them out unless named. Archived in fit/hw. f1wgp_driver's other two pixels (a
 layer whose run starts later than refsw3's) were the same misplaced chunk boundary.
 
+## spansortcfg: SPAN_SORT_CFG, the span sorter switched off (2026-11-19)
+
+    bash run2.sh ssrare+030=0 hw=<ip>       # any test with a register forced: run2.sh <test>+<reg>=<value> (pvrio.h REG_OVERRIDE)
+    TEST_DEFS="-DTM_ORDER" bash run2.sh timemeas+030=0 hw=<ip>
+    python3 pvr-tests/timemeas/order.py --fit fit/timemeas_logs/timemeas_spansort0_order.log --windows 1,8,96
+    python3 pvr-tests/timemeas/setupfit.py fit/timemeas_logs/timemeas_spansort0_order.log
+
+SPAN_SORT_CFG (0x030): span sort bit 0, offset sort bit 8, TSP cache bypass bit 16. Every dump and test has 0x101;
+the manual calls the sorts performance features. The span sorter orders the runs the TSP shades (timemeas order:
+a window of 96 runs); whether it also makes the runs (their first pixels, from which every TSP value is stepped) was
+open (TODO A1). Each setting against the console's own 0x101 run of the same session:
+
+- **Pictures: none changes.** With 0x000, ssrare, uvrun, uvspan, ptruns, blendsel, supsample2, sscolor and accbuf
+  (128 pages) and timemeas's 17 layouts are the console's 0x101 pictures bit for bit (as is a second 0x101 run);
+  timemeas with 0x001 too. The runs and their first pixels are made before the sorter, which only orders them;
+  ssrare's open points (TODO C1) are not the sorter's.
+- **Order: bit 0 alone.** 0x001 is 0x101 (the 96-run window: 16 and 18 runs out of order of ~17,000, the glitch
+  pixels) and 0x100 is 0x000. With the sorter off the order is near raster order (596 runs out of order against it,
+  2,984 against the window), not exactly: some runs of a primitive on the next lines are shaded early (16 blocks of
+  8x8: the right-hand block's runs on the next 4 or 5 lines right after the line's first two blocks, the last band
+  two lines at a time; the background ahead of the one-pixel columns between it). The same in two runs (at most 3
+  of 1,024 runs more than two places apart), but different from band to band: the pipeline's timing, as
+  ptchunkcarry_races. Not modelled.
+- **Time: the sorter saves up to 4.6 times.** Without it, a run whose primitive is not among the last K set up costs
+  a setup of 44 clocks, 19 more the first time (a fetch of the parameters), with K from 9 to 16 (9 primitives a line
+  cost nothing more, 17 cost a setup a run; setupfit.py, worst scene 2,500 clocks off). One tile of 32 one-pixel
+  columns: 12,800 clocks sorted, 52,700 not; 16 blocks of 8x8: 6,500 and 8,200; one primitive a pixel the same both
+  ways (70,500). A primitive's first setup costs about 64 clocks either way; a later one 44 without the sorter and 32
+  with it (setupfit.py --sorted: the sorted scenes do not tell K, any K up to 16 fits as well). Offset sort changes
+  no time by more than 1% in these scenes.
+- **0x100** (the manual: setting prohibited) rendered the order scenes and timemeas's pages 0-9, then never finished
+  page 10 (64 quads 4x4) and left the core stuck: nothing rendered after it until the console was switched off
+  (dcload still loads programs; their first PVR access does not return).
+
+Logs in fit/timemeas_logs (timemeas_spansort<value>_order.log).
+
 ## optcull, ptchunkcost, ptchunklag: culled punch-through primitives (2026-11-19)
 
     bash run2.sh optcull ptchunkcost ptchunklag off; bash run2.sh optcull ptchunkcost ptchunklag hw=<ip>   # 18 + 40 + 48 pages

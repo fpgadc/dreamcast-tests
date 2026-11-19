@@ -11,8 +11,11 @@
 # one after the other; the emulator's pages run as many at a time as there are cores.
 # <test>@<set>: the test with the tables of an archived set, written by regen.py <test> <set> <folder>
 # into the run's own folder (the test includes CASES_H), so that sets of one test can run side by side.
+# <test>+<reg>=<value>[+<reg>=<value>...]: the test with every write of register <reg> (hex offset from 0x005f8000)
+# made <value> (hex) instead, pvrsetup.h's and the test's own (pvrio.h REG_OVERRIDE): e.g. ssrare+030=0 next to
+# ssrare, to compare the console with itself. (Not '%': the console's dump path goes through printf.)
 #
-# Results in /tmp/pvr_tests/<test>[@<set>]. A run also leaves the checksums of what it sent to the PVR
+# Results in /tmp/pvr_tests/<test>[@<set>][+<reg>=<value>...]. A run also leaves the checksums of what it sent to the PVR
 # (off.crc, hw.crc): the same lines mean that the console and the offline renderer got the same input.
 # TEST_DEFS="-DX=1 ...": extra defines for the PC and the console build alike. HW_TIMEOUT: seconds a console run
 # may take (300).
@@ -27,7 +30,8 @@ JOBS=${JOBS:-$(nproc)}
 
 # ---- one test, one kind of run (the script calls itself for this) ----
 if [ "$1" = --worker ]; then
-  KIND=$2; RUN=$3; T=${RUN%%@*}; SET=""; [ "$RUN" != "$T" ] && SET=${RUN#*@}
+  KIND=$2; RUN=$3; BASE=${RUN%%+*}; T=${BASE%%@*}; SET=""; [ "$BASE" != "$T" ] && SET=${BASE#*@}
+  OVR=""; [ "$RUN" != "$BASE" ] && OVR=$(echo "${RUN#*+}" | tr '+' '\n' | awk -F= '{printf "%s{0x%s,0x%s}", (NR > 1 ? "," : ""), $1, $2}')
   SRC=$(testdir $T)/main.c
   PAGES=$(grep -m 1 '^#define NUM_PAGES' $SRC | awk '{print $3}')
   W=/tmp/pvr_tests/$RUN; mkdir -p $W/build
@@ -36,6 +40,7 @@ if [ "$1" = --worker ]; then
     python3 $HERE/regen.py $T $SET $W > $W/build/regen.log 2>&1 || { echo "$RUN: cannot make the tables of set $SET"; tail -n 2 $W/build/regen.log; exit 1; }
     DEF=("-DCASES_H=\"$W/cases.h\"")
   fi
+  [ -n "$OVR" ] && DEF+=("-DREG_OVERRIDE=$OVR")
   case $KIND in
   off)
     rm -f $W/*.off.raw $W/*.off16.raw
@@ -87,7 +92,7 @@ while [ $# -gt 0 ]; do
   case $1 in
   -j) JOBS=$2; shift ;;
   off|hw=*|emu|emu=*) KINDS+=("$1") ;;
-  *) T=${1%%@*}
+  *) T=${1%%[@+]*}
      TD=$(testdir $T) && [ -f "$TD/main.c" ] || { echo "no such test: $T"; exit 1; }
      # (a <test>_races folder is another test's main.c built with a define: it includes that main.c)
      grep -q 'pvrtest2.h\|pvrio.h\|#include "\.\./[a-z0-9_]*/main.c"' $TD/main.c || { echo "$T is not on pvrtest2.h or pvrio.h: use run.sh"; exit 1; }
