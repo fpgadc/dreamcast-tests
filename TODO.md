@@ -108,10 +108,11 @@ core resets; 0 after power-on; only bump maps without the offset bit read it. Mo
 setter (dropped planes), how long it lasts powered off.
 
 **C14. The number formats at their edges** (README "refsw3 without float", 2026-11-19): cullval (register size
-only, NaN = +inf), perpeq, zneg, trimin done and modelled. Open: bgspec (backgrounds below zero, -inf, NaNs, the
-largest float: how the background store encodes them), zspec (polygons with a NaN / infinite / huge corner depth:
-black, with a varying depth; depths around 2^-126), texfar (clamped coordinates above 2^128 in 1/256 texel: the
-last texel).
+only, NaN = +inf), perpeq, zneg, trimin, bgspec (with zsign, bgneg, bgneg2, bgbig: the ISP's integer depth order,
+the negative background, saturation at 2^127) done and modelled. Open: zspec (a polygon with ONE corner at a NaN,
++-inf or the largest float and the others finite: the depth unit evaluates its plane through the overflow, the
+depth changes across the triangle at x + y = 16 / 17 of the cell as if a value reached 2^128 and wrapped, and it is
+shaded black; depths around 2^-126), texfar (clamped coordinates above 2^128 in 1/256 texel: the last texel).
 
 ## D. Timing probes
 

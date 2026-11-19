@@ -3376,18 +3376,31 @@ the float code had decided something no test had measured, a test went to the co
 - **perpeq** (15 pages: FPU_PERP_VAL at 3/8, 1, 2, 12, 64, each exactly and one ulp either side, against
   determinants of exactly those sizes): **a determinant equal to it counts** (drawn as determinant zero). 1800 of
   1800 regions as modelled.
-- **zneg** (4 pages: two flat polygons, depths from -2^100 to 2^100, both zeros, compared Greater and Less): two
-  polygons' depths compare as floats do, below zero too, -0 = +0. 1200 of 1200 regions as modelled.
+- **zneg** (4 pages: two flat polygons, depths from -2^100 to 2^100, both zeros, compared Greater and Less):
+  1200 of 1200 regions as modelled, but blind where both depths are below zero (both polygons are shaded black);
+  zsign below has the compare.
 - **trimin** (one page: trilinear passes A and B, both added, bilinear, point, VQ and SupSample at the levels from
   the one before the 1x1 to 20, of 8 x 8 and 64 x 64 textures; the level and fraction of each cell put exactly by
   the model, gen.cpp): **no level goes past the 1x1 one**: pass B at the 1x1 level and every level past it read the
   1x1 level, faded by the fraction all the same; the three texels in front of the 1x1 level are never read. 180 of
   180 cells as refsw3 had it (which until then relied on the texture filter's clamp; mipChoose bounds it now).
 - **bgspec** (16 backgrounds: below zero, +-0, +-2^-149, +-inf, NaNs, the largest float, +-1 with low bits; probes
-  at 20 depths in the six compares, the translucent and punch-through walks): open. Backgrounds of 0, +-0, the
-  denormals, 1 + low bits, +inf are as modelled; a background below zero, -inf or a NaN is stored as something that
-  orders differently from the float (at -1: -2, -1, -0.5, -2^-20 are below it, -inf and -1e30 above it); the largest
-  float stores as something above +inf and NaN. 2133 of 2560 regions.
+  at 20 depths in the six compares, the translucent and punch-through walks), then **zsign**, **bgneg**,
+  **bgneg2**, **bgbig** to pin what it showed. All exact now (bgspec 2560 of 2560 regions, the others every region):
+  - **The ISP's depth compare is not a float compare.** The stored word is read as a signed 32 bit integer with
+    the fraction bits of a negative depth inverted: positive depths order as floats, every negative one is below
+    zero, and of two negative ones **the larger exponent is the larger depth** (-2 > -1, -1e30 > -2), within one
+    exponent the float's own order (-1 > -1.5). A NaN is an ordinary number (a positive one above +inf); -0 is +0.
+    (zsign: every pair of 20 depths from -2^100 to 2^100, the polygons textured so that the negative ones show.)
+  - **A negative background**: below 2^-20 in size it is 0; from 2^-20 to below 64 it is one word, 0xc2ffffff
+    (-127.99999: the lowest depth of the binade of 64 in that order, above -32; not cut to 19 bits); from 64 on
+    it is itself (bgneg: 24 backgrounds against -64 .. -100.75 in quarters; bgneg2: across -128 and in steps of
+    the stored depth's last bit).
+  - **Overflow is 2^127**: a polygon whose depth plane overflows (corners at the largest float, +-inf, a NaN, or
+    -2^116 and beyond over a cell) stores +-2^127; a background with exponent field 255 takes 254, its fraction
+    kept: +-inf is +-2^127 (and ties with such a polygon), 0x7f800001 too (its fraction is cut), a NaN is above
+    it; a background of 1.5 2^127 or the largest float is above it, 2^127 ties, 1.5 2^126 is below (bgbig).
+  - Left: whether a negative background of 64 and more loses its low 5 fraction bits as a positive one does.
 - **zspec** (7 pages: polygons with a NaN, +-inf or huge first-corner depth; sloped depths around 2^-126 against
   flat probes): open. Such a polygon is drawn black on the console, with a depth that changes across it; refsw3
   draws it in its colour at the first corner's depth. Depths around 2^-126 do not follow a float's denormals.
