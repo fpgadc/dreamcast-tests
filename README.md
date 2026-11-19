@@ -1683,16 +1683,65 @@ only with decal and no offset or fog, which is all that the trilinear tests had 
 A, perspective, Gouraud with offset, modulate, table fog; SupSample off) missed 149,148 of its 153,600 pixels
 with the fade of the texel and none with the fade of the colour; pages 23 to 26 (modulate alpha blended over a
 background, with table fog mode 2, vertex fog and the colour clamp, IgnoreTexA) show that the alpha is faded too,
-also the fog alpha of mode 2 and an alpha that IgnoreTexA made 255. (A bump map's fade is still of the texel: not
-measured.)
+also the fog alpha of mode 2 and an alpha that IgnoreTexA made 255. A bump map's too (pages 31 and 32, and their
+controls: the fade of the texel missed 141k pixels each). `trifade`, below, pins it down.
 
-`supsample2`, 28 pages, 300 cells each: cells 0 .. 149 with SupSample, 150 .. 299 the same without (the control).
-64x64 textures (565, 4444, VQ 4444, and each mipmapped, every level arbitrary), point, bilinear and both trilinear
-passes; flat 1/w and every corner its own (1/4 .. 2); D adjusts 1 .. 15; Gouraud base and offset colours with
-every shading instruction; table fog, table fog mode 2, vertex fog, colour clamp; opaque, times alpha, blended over
-a background. refsw3-offline = console on all 28 pages, both halves (archived in fit/hw/supsample2). Not
-measured: SupSample on a bump map (refsw3 still takes the centre only), on a punch-through or modifier-volume
-polygon, and with the second volume's parameters.
+Bump maps (pages 28 to 32): SupSample makes a bump map at four points like any texture (refsw3 had taken the centre
+only: 98k .. 146k pixels a page). And, with or without SupSample, a bump map's LIGHT (K1 K2 K3 Q, the offset colour)
+is the last vertex's offset colour as it is: not interpolated on a Gouraud polygon (page 30 and its control: 123,578
+pixels missed), and not through the 1/w planes on a flat one (6 pixels of pages 29 and 31 and 15 of page 30's control,
+all next to a corner of large w, were one or two levels off). `bumplight`, below.
+
+`supsample2`, 33 pages, 300 cells each: cells 0 .. 149 with SupSample, 150 .. 299 the same without (the control).
+64x64 textures (565, 4444, VQ 4444, bump, and each mipmapped, every level arbitrary), point, bilinear and both
+trilinear passes; flat 1/w and every corner its own (1/4 .. 2); D adjusts 1 .. 15; Gouraud base and offset colours
+with every shading instruction; table fog, table fog mode 2, vertex fog, colour clamp; opaque, times alpha, blended
+over a background. refsw3-offline = console on all 33 pages, both halves (archived in fit/hw/supsample2).
+
+## trifade: the trilinear fade, of the finished colour (2026-11-19)
+
+A trilinear pass of a mipmapped texture is faded by its level's fraction k: pass A (FilterMode 2) times 256 - k,
+pass B (3, which reads the next smaller level) times k, >> 8, on all four channels, of the FINISHED colour: after
+the shading instruction, the offset colour, the colour clamp and the fog (supsample2 found it). Every cell is flat
+(one level, k and fog for the whole cell) and every level of the texture one colour, so a cell is one colour of
+known arithmetic, and each other order (the texel faded, the shaded colour, before the offset, the clamp, the fog)
+gives another one. 22 pages: both passes with each shading instruction, the offset colour, the colour clamp,
+IgnoreTexA, UseAlpha 0, table fog, its mode 2 and vertex fog, opaque and blended; a raster texture with the
+MipMapped bit (one level, still faded), a texture without mipmaps (not faded), a mipmapped bump map; and the two
+passes the way games draw them, A then B added on the same quad. refsw3-offline = console on all 22 (archived).
+
+## ssmip: SupSample and the mipmap level (2026-11-19)
+
+Each SupSample point takes its level and fraction from its own 1/w, one level finer than without SupSample; where
+the level would be the largest map with a fraction, it is the largest map without one. Every level of the textures
+is one colour, so a cell shows the level it was given. Flat pages sweep the slope evenly in the logarithm from
+1/16 to 2^11 texels a pixel (every boundary, past the smallest map; the SupSample half's level bands start one
+octave, ten cells, earlier than the control's); perspective pages put level changes inside the cells, where a
+pixel's four points straddle them. 14 pages: 256x256 and 8x8 mipmaps, VQ, a raster texture with the MipMapped bit,
+point, bilinear, both trilinear passes, D 4 and 1 .. 15, DCalcCtrl 1. refsw3-offline = console on all 14, both
+halves (archived).
+
+## bumplight: a bump map's light, and its fog (2026-11-19)
+
+A bump map's light (K1 K2 K3 Q in the offset colour) is the last vertex's offset colour as it is, and vertex fog
+does nothing to a bump map (its offset alpha is K1, not a fog: page 5, K1 used as the fog's alpha, missed every
+cell). Every cell is a strip of four triangles whose six vertices have their own base and offset colours, flat or
+at extreme depths (z 2^-8 .. 4 at the vertices), Gouraud and flat shaded, point and bilinear, with SupSample, table
+and vertex fog and an intensity shadow. Four pages of polygons that are not bump maps, flat shaded at the same
+depths, show that THEIR colours do go through the planes as refsw3 has them (with a white texture and the offset
+colour, and without a texture, opaque and blended). refsw3-offline = console on all 12 pages (archived).
+
+## sscolor: SupSample's colours and fog, and the bit with other features (2026-11-19)
+
+The per-point colours and fog of supsample2 again, with colours that change along x only or y only (every slope
+up to 255 / 32 a pixel), without a texture (Gouraud, flat shaded with table fog, table fog mode 2, the colour
+clamp), with a white texture and Gouraud offset colours and vertex fog; and SupSample with punch-through polygons
+(the alpha test takes the average of the four points' alphas), an intensity shadow, and two volumes (SupSample
+outside only, inside only, in both, in neither; point and bilinear, decal and modulate with offset). 16 pages,
+cells 0 .. 149 SupSample and 150 .. 299 the control (two-volume pages: the volumes as said). refsw3-offline =
+console on all of it but 2 pixels: one each on pages 11 and 14, bilinear inside a modifier volume with SupSample
+inside only, each a point whose u is within 1/50 of a coordinate unit of a bilinear weight step next to u = 0
+(page 14: u = -0x1.0076p-11, one channel 2 off). Open: a rounding of the planes there, not yet modelled.
 
 ## ycoeff: the vertical filter's weights, Y_COEFF (2026-11-18)
 

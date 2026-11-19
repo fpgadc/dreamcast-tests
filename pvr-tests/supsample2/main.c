@@ -39,12 +39,19 @@
               (FOG_CLAMP_MIN 0x20304050, MAX 0xd0c0b0a0), over
      page 26  4444 mip, trilinear B, perspective, Gouraud with offset, modulate alpha, IgnoreTexA, over
    And the bit on a polygon without a texture:
-     page 27  no texture, perspective, Gouraud, table fog, over */
-#define NUM_PAGES 28
+     page 27  no texture, perspective, Gouraud, table fog, over
+   Bump maps (64x64, every texel an arbitrary S and R; the offset colour the light, K1 K2 K3 Q; the result is
+   white with the intensity in alpha, shown x alpha):
+     page 28  bump, point, flat, one light (base and offset colour) a cell, decal
+     page 29  bump, bilinear, perspective, one light a cell, modulate
+     page 30  bump, bilinear, perspective, Gouraud (every corner its own light), modulate
+     page 31  bump mip, trilinear A, perspective, one light a cell, decal
+     page 32  bump mip, trilinear B, perspective, one light a cell, decal */
+#define NUM_PAGES 33
 #include "pvrtest2.h"
 #include "texgen.h"
 
-enum { T565, T4444, TVQ, M565, M4444, MVQ, NTEX };       /* 64x64: twiddled, VQ, mipmapped */
+enum { T565, T4444, TVQ, M565, M4444, MVQ, TBUMP, MBUMP, NTEX };       /* 64x64: twiddled, VQ, mipmapped, bump */
 enum { OPAQUE, XALPHA, OVER };
 enum { CLAMP = 1, IGNA = 2, NOTEX = 4 };
 typedef struct { int tex, filter, persp, gouraud, shad, fog, blend, extra; } page_t;
@@ -77,6 +84,11 @@ static const page_t pages[NUM_PAGES] = {
     { M4444, FilterMode_TrilinearA, 1, 1, ShadInstr_ModulateAlpha, FogCtrl_Vertex, OVER, CLAMP },
     { M4444, FilterMode_TrilinearB, 1, 1, ShadInstr_ModulateAlpha, FogCtrl_None, OVER, IGNA },
     { T565, FilterMode_Point, 1, 1, ShadInstr_Modulate, FogCtrl_Table, OVER, NOTEX },
+    { TBUMP, FilterMode_Point, 0, 2, ShadInstr_Decal, FogCtrl_None, XALPHA },
+    { TBUMP, FilterMode_Bilinear, 1, 2, ShadInstr_Modulate, FogCtrl_None, XALPHA },
+    { TBUMP, FilterMode_Bilinear, 1, 1, ShadInstr_Modulate, FogCtrl_None, XALPHA },
+    { MBUMP, FilterMode_TrilinearA, 1, 2, ShadInstr_Decal, FogCtrl_None, XALPHA },
+    { MBUMP, FilterMode_TrilinearB, 1, 2, ShadInstr_Decal, FogCtrl_None, XALPHA },
 };
 #define CELLS 150                       /* cells with SupSample; the next 150 are the same without */
 
@@ -102,8 +114,8 @@ static uint32_t fog_table[128];
 
 static void test_setup(void)
 {
-    static const uint32_t seed[NTEX] = { 0x1234567u, 0x89abcdeu, 0x5a5a5a5u, 0x3c3c3c3u, 0x7777777u, 0x2468ace };
-    static const int layout[NTEX] = { TEX_TWIDDLED, TEX_TWIDDLED, TEX_VQ, TEX_MIP, TEX_MIP, TEX_VQ_MIP };
+    static const uint32_t seed[NTEX] = { 0x1234567u, 0x89abcdeu, 0x5a5a5a5u, 0x3c3c3c3u, 0x7777777u, 0x2468ace, 0x1b2c3d4u, 0x6e5f4a3u };
+    static const int layout[NTEX] = { TEX_TWIDDLED, TEX_TWIDDLED, TEX_VQ, TEX_MIP, TEX_MIP, TEX_VQ_MIP, TEX_TWIDDLED, TEX_MIP };
     int k;
     for(k = 0; k < NTEX; k++) {
         const tex_layout_t l = { layout[k], 16, 64, 64, 0 };
@@ -113,8 +125,8 @@ static void test_setup(void)
         fog_table[k] = hsh((uint32_t)k + 0x5100u) & 0xffff;
 }
 
-static int tex_fmt(int t) { return t == T565 || t == M565 ? PixelFmt_565 : PixelFmt_4444; }
-static int tex_mip(int t) { return t >= M565; }
+static int tex_fmt(int t) { return t == T565 || t == M565 ? PixelFmt_565 : t == TBUMP || t == MBUMP ? PixelFmt_BumpMap : PixelFmt_4444; }
+static int tex_mip(int t) { return t == M565 || t == M4444 || t == MVQ || t == MBUMP; }
 static int tex_vq(int t) { return t == TVQ || t == MVQ; }
 
 /* a cell's parameters, from the page and the cell (the control cells take those of the cell 150 before) */
@@ -152,7 +164,7 @@ static void cell(int page, int c, cell_t *p)
 
 static void test_describe(void)
 {
-    static const char *tn[NTEX] = { "565", "4444", "4444 VQ", "565 mip", "4444 mip", "4444 VQ mip" };
+    static const char *tn[NTEX] = { "565", "4444", "4444 VQ", "565 mip", "4444 mip", "4444 VQ mip", "bump", "bump mip" };
     static const char *fn[4] = { "point", "bilinear", "trilinear A", "trilinear B" };
     static const char *sn[4] = { "decal", "modulate", "decal alpha", "modulate alpha" };
     static const char *fogn[4] = { ", table fog", ", vertex fog", "", ", table fog 2" };
