@@ -1766,6 +1766,33 @@ sscolor's two pixels in their own setting, with every weight step showing: 20 pa
   pixels of these tests).
 To pin it down: read the value of the points half a line down directly (uvmeas-style), plane by plane.
 
+## mipdump, mipdet: the mipmap level when the determinant is huge (2026-11-19)
+
+    bash run2.sh mipdump mipdet off; bash run2.sh mipdump mipdet hw=<ip>      # 4 + 7 pages
+    python3 pvr-tests/mipdump/gen.py tris.h <render log>:<tag>,..             # mipdump's triangles from a dump
+
+sydney_race and sydney_stadium differed from the console on 1258 and 741 pixels along the kerb of the track: 64x64
+mipmapped VQ, bilinear, D adjust 2/4, on triangles with one corner on the screen (1/w about 0.002) and two at about
+2^36 with 1/w of 10^6 (geometry behind the camera, projected). Their depths are the console's (dumprender z, 15
+tiles), their U and V too (uvmeas, mix dump, both scales, every pixel); what differs is the mipmap level. mipdump
+draws a dump's triangles at their place, exactly as sent, with a mipmapped texture whose levels are flat colours
+(point sampled: the level; trilinear B of white levels: the fraction): on the console, every pixel of 5 of the 12
+kerb triangles is the largest map without blending, the rest are the levels refsw3 gives. The 5 are the ones whose
+setup determinant is 2^63.0 .. 2^66.8; those of 2^62.9 and below are not. Their numerators are near 2^115, so no
+overflow there.
+
+**The rule:** the length is multiplied once by 1/det^2, the determinant's 24 bit reciprocal squared and cut to 24
+bits; that number is in the setup's range like every other: below 2^-126, a determinant above 2^63, it is zero,
+the length is zero and the level is the largest map without blending (as MipSelect's other zeros). det^2 itself
+overflowing (from det = 2^64) does not fit: 2^63.0 already does it.
+
+`mipdet` (7 pages): every cell a right triangle whose legs leave the screen, clipped to its tile by a user clip,
+flat 1/w = 2^-20 (the numerators stay near 2^83), slopes of 1.5 .. 6 texels a pixel, levels and fractions read as
+in mipdump; log2 det 61 .. 64 and 63 .. 66 in steps of 0.01, both signs, and legs 2^31 x (2^32 + j 2^12): det = 2^63
++ j 2^43 for j = -150 .. 149. refsw3-offline = console on every page with the rule (962,560 pixels missed without
+it); sydney_race, sydney_stadium and dynamite_attract are the console's in every pixel (782 of the 786 dumps with a
+console frame).
+
 ## ycoeff: the vertical filter's weights, Y_COEFF (2026-11-18)
 
 When SCALER_CTL's factor shrinks the picture (above 0x400; KallistiOS and most games use 0x401) each line is

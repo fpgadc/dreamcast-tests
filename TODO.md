@@ -110,8 +110,12 @@ units: division by almost zero, 1/w below zero unmeasured); 4 sliver pixels with
 11, the K 127 vertical triangles), modvol 187 / 192 (two-volume cells at extreme depth), hugepos from 2^114 and the
 translucent sort's cross-talk with garbage depths (from 2^62). Each has its README section.
 
-**C5. The 7 dumps that still miss**: sydney_race 1258, sydney_stadium 741, dynamite_attract 53, f1wgp_driver 5,
-f1wgp_race 2, ff2_fight 1, vrally_rally4 1 pixels. dumprender (partial tiles, objects dropped, 32 bit frame
+**C5. The dumps that still miss**: f1wgp_driver 5, f1wgp_race 2, ff2_fight 1, vrally_rally4 1 pixels (sydney_race,
+sydney_stadium, dynamite_attract: solved 2026-11-19, README mipdet). Each is one step of a 565 / 4444 channel on a
+bilinear sample (f1wgp and vrally under punch-through layers); the triangles at those pixels drawn on their own read
+the console's U and V on every pixel (uvmeas mix dump, 8 triangles, 2^4), so what differs comes from the tile around
+them: a run start (cut by other polygons, volumes or the punch-through passes). Next: dumprender of the tile on the
+console with objects dropped one at a time (drop=), to find whose presence changes the pixel. dumprender (partial tiles, objects dropped, 32 bit frame
 buffer), then the primitive alone in a test (the bumpiso method).
 
 **C6. Translucent modifier volumes**: not covered (the modvol test's translucent modifier list blanked a console's
