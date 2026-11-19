@@ -3402,9 +3402,24 @@ the float code had decided something no test had measured, a test went to the co
     it; a background of 1.5 2^127 or the largest float is above it, 2^127 ties, 1.5 2^126 is below (bgbig).
   - Left: whether a negative background of 64 and more loses its low 5 fraction bits as a positive one does.
 - **zspec** (7 pages: polygons with a NaN, +-inf or huge first-corner depth; sloped depths around 2^-126 against
-  flat probes): open. Such a polygon is drawn black on the console, with a depth that changes across it; refsw3
-  draws it in its colour at the first corner's depth. Depths around 2^-126 do not follow a float's denormals.
-  879 of 1040 regions.
+  flat probes): open, 894 of 1040 regions (after the saturation above). Followed up by **zbad** (one bad corner,
+  textured so that every depth shows, against 17 probe depths), **zbadbg** and **zbadk** (the same against
+  backgrounds: binades, then 1/32 of a binade), **zovf** (sign maps against a probe at 0: the corner from 2^113 to
+  2^127 at every place, sizes, places in the tile). The depth unit does not give up on an overflowing plane:
+  - **Three regimes** (zovf). Below the overflow: ordinary. When only the plane's constant overflows (it holds x y
+    of the corners: from 2^114 at the right of the screen, 2^117 everywhere) the tile's start is 0 and the
+    slopes are as computed: the first pixel of the tile 0, the rest the slopes' values. When the slopes overflow
+    too (from 2^123: 32 z past 2^128): the start is 0 and a slope that overflows steps by +-2^124, in a register
+    whose top bit is 2^128, which **wraps every 32 pixels** of x + y counted from the tile's first pixel (legs 64:
+    the signs repeat; a triangle 16 pixels into the tile starts half way through), whatever the corner (inf,
+    NaN, the largest float, 2^127) and the other corners.
+  - **The stored value is that register read as a sign and the rest with its top bit flipped**: of k = x + y
+    steps of -2^124 the depth is -(16 - k) 2^124 for k = 1 .. 15, a negative zero at 16, and beyond the largest
+    float for 17 .. 31 (zbadk: the binades of every pixel; zbadbg: the mirror with +2^124 steps). Left: the
+    pixels at k = 0 and 1 (beyond -2^127 and 2^127 (1 + small) where the rule says 0 and 15 2^124), the fraction
+    bits (they read as all ones), the regime with only the constant overflowing in numbers, and the colour (such
+    a polygon is shaded black: the TSP's planes overflow too). Not modelled yet: refsw3 stores 2^127 over it.
+  Depths around 2^-126 (zspec pages 3-6) do not follow a float's denormals: open.
 - **texfar** (one page: u of 3.5 to the largest float, both signs, +-inf, NaN; clamp, flip, wrap; 8 and 64 texels):
   open. Clamped, a coordinate above 2^128 in 1/256 texel gives the last texel (refsw3: texel 0, the old float
   code's overflow); exactly 2^128, +inf and NaN give texel 0 as modelled. Flip and wrap as modelled. 132 of 160.

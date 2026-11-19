@@ -109,10 +109,12 @@ setter (dropped planes), how long it lasts powered off.
 
 **C14. The number formats at their edges** (README "refsw3 without float", 2026-11-19): cullval (register size
 only, NaN = +inf), perpeq, zneg, trimin, bgspec (with zsign, bgneg, bgneg2, bgbig: the ISP's integer depth order,
-the negative background, saturation at 2^127) done and modelled. Open: zspec (a polygon with ONE corner at a NaN,
-+-inf or the largest float and the others finite: the depth unit evaluates its plane through the overflow, the
-depth changes across the triangle at x + y = 16 / 17 of the cell as if a value reached 2^128 and wrapped, and it is
-shaded black; depths around 2^-126), texfar (clamped coordinates above 2^128 in 1/256 texel: the last texel).
+the negative background, saturation at 2^127) done and modelled. Open: zspec (README zspec: zbad, zbadbg, zbadk,
+zovf found the three regimes of an overflowing depth plane, the start of 0, the +-2^124 steps wrapping every 32
+pixels from the tile's first pixel, the register read with its top bit flipped; left: k = 0 and 1, the fraction
+bits, the constant-only regime in numbers, then model it; it is likely the same machinery as faredge's
+"constant +-Q, Q = 2^132.07" for the edge unit and modvol's 5 cells; depths around 2^-126), texfar (clamped
+coordinates above 2^128 in 1/256 texel: the last texel).
 
 ## D. Timing probes
 
