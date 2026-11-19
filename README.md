@@ -1740,8 +1740,31 @@ clamp), with a white texture and Gouraud offset colours and vertex fog; and SupS
 outside only, inside only, in both, in neither; point and bilinear, decal and modulate with offset). 16 pages,
 cells 0 .. 149 SupSample and 150 .. 299 the control (two-volume pages: the volumes as said). refsw3-offline =
 console on all of it but 2 pixels: one each on pages 11 and 14, bilinear inside a modifier volume with SupSample
-inside only, each a point whose u is within 1/50 of a coordinate unit of a bilinear weight step next to u = 0
-(page 14: u = -0x1.0076p-11, one channel 2 off). Open: a rounding of the planes there, not yet modelled.
+inside only, one point each whose coordinate is a hair below a bilinear weight step. Open: see ssrare below (it is not
+about volumes).
+
+## ssvol: SupSample's coordinates at high resolution, inside and outside volumes (2026-11-19)
+
+1024x8 textures whose channels are 0 or all ones, so that along u a bilinear weight step is 1/32768 of the coordinate
+and every step shows: one and two volumes, inside and outside a modifier volume, SupSample in either volume, both
+or neither, an intensity shadow, flat and perspective, and u or v crossing zero in the middle of every cell.
+refsw3-offline = console on all 17 pages, both halves (archived): the half pixel steps hold to the last bit there.
+
+## ssrare: an open rounding of SupSample's points half a line down (2026-11-19)
+
+sscolor's two pixels in their own setting, with every weight step showing: 20 pages of 300 cells (64x64 textures,
+1/4 .. 2 texels a pixel, perspective; two volumes and one). The console and refsw3-offline differ on 24 pixels of
+6.1 million, in every variant (so not because of the volumes). What the 24 have in common (agents' logs, not a model):
+- each is one point half a line down (hy = 1) whose coordinate the console has one LSB higher; refsw3's 16 bit cut
+  of that point's plane value drops bits that are all ones (or, below zero, just the lowest), the mark of a value
+  one grid unit higher on the console before the cut;
+- they come by tile: a few planes are a unit higher at all their points half a line down (8 hits in one tile), and
+  those planes' B / 2 is far above the grid line below it (fraction 0.6875 .. 0.9375 of a unit), which a third of
+  all planes are; what else singles them out is not known;
+- not explained by: B / 2 rounded up, to nearest or toward zero, A / 2 toward zero, the half line as one product,
+  B / 2 kept to half a unit, one more bit before the divider (each misses thousands to hundreds of thousands of
+  pixels of these tests).
+To pin it down: read the value of the points half a line down directly (uvmeas-style), plane by plane.
 
 ## ycoeff: the vertical filter's weights, Y_COEFF (2026-11-18)
 
