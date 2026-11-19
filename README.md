@@ -1642,7 +1642,7 @@ TSP bit 12 ("super sample texture") had never been set by a test; Outtrigger's m
 which ignored it, missed 20,610 pixels of outtrigger_menu (and 716 / 753 of mrdriller). The console:
 
 - reads the texture at four points: the pixel's centre and half a pixel right, down and both, each with the
-  polygon's filter (point or bilinear) and the centre's mipmap level;
+  polygon's filter (point or bilinear) and, with mipmaps, a level of its own (supsample2, below);
 - evaluates the planes for them in half pixel steps: along the run, (2 n + hx) steps of A / 2 (the centre's point
   too) instead of n steps of A; half a line down is the line's value plus B / 2; each half coefficient is cut to
   the evaluator's grid like a whole one;
@@ -1654,8 +1654,45 @@ coordinates and arbitrary ones (turned and sheared), decal, times alpha, and Out
 over a background; refsw3-offline = console on all 19 (archived in fit/hw/supsample). The variants that fail:
 the plane evaluated at the points themselves (870 pixels of page 15, 21,091 of the bilinear page 16), whole steps
 plus a half step (798), lines in half steps too (2,119), the texels averaged before shading (56,421 of page 18),
-the sum >> 2 instead of the pairs (4,334 of Outtrigger's frame). Not tested: SupSample with mipmaps, fog, an offset
-colour, perspective (1/w not flat).
+the sum >> 2 instead of the pairs (4,334 of Outtrigger's frame). Mipmaps, fog, Gouraud and offset colours and
+perspective: supsample2.
+
+## supsample2: SupSample with mipmaps, perspective, Gouraud, offset colours and fog; the trilinear fade (2026-11-19)
+
+Each of the four points of a SupSample pixel has everything of its own, and only the finished colours are
+averaged:
+
+- its 1/w, from the 1/w plane in the half steps above, and its coordinates with it;
+- its mipmap level and trilinear coefficient, from its own 1/w, ONE LEVEL FINER than the pixel's would be (the
+  points are half a pixel apart: as if the texels a pixel were halved). What would be below the largest map is the
+  largest map, unblended. The centre's 1/w for all four misses 6,934 pixels of page 8, the level not made finer
+  every mipmapped cell that is not magnified;
+- its base and offset colours (Gouraud), evaluated like the coordinates: the centre's miss 112k .. 148k pixels of
+  each Gouraud page;
+- its shading, then its fog: table fog with its own 1/w, vertex fog with its own offset alpha, the colour clamp
+  before it; fog applied to the average misses every fog page;
+- its trilinear fade (below);
+- then the four colours are averaged as before.
+
+The bit also works on a polygon without a texture: its Gouraud colour and fog are taken at the four points and
+averaged (page 27; refsw3 had ignored it there, 146,451 pixels).
+
+The trilinear fade (pass A: times 256 - k, pass B: times k, every channel, >> 8) is of the FINISHED colour, after the
+shading, the offset colour, the colour clamp and the fog, not of the texel as refsw3 had it: the two are the same
+only with decal and no offset or fog, which is all that the trilinear tests had used. Page 21's control (trilinear
+A, perspective, Gouraud with offset, modulate, table fog; SupSample off) missed 149,148 of its 153,600 pixels
+with the fade of the texel and none with the fade of the colour; pages 23 to 26 (modulate alpha blended over a
+background, with table fog mode 2, vertex fog and the colour clamp, IgnoreTexA) show that the alpha is faded too,
+also the fog alpha of mode 2 and an alpha that IgnoreTexA made 255. (A bump map's fade is still of the texel: not
+measured.)
+
+`supsample2`, 28 pages, 300 cells each: cells 0 .. 149 with SupSample, 150 .. 299 the same without (the control).
+64x64 textures (565, 4444, VQ 4444, and each mipmapped, every level arbitrary), point, bilinear and both trilinear
+passes; flat 1/w and every corner its own (1/4 .. 2); D adjusts 1 .. 15; Gouraud base and offset colours with
+every shading instruction; table fog, table fog mode 2, vertex fog, colour clamp; opaque, times alpha, blended over
+a background. refsw3-offline = console on all 28 pages, both halves (archived in fit/hw/supsample2). Not
+measured: SupSample on a bump map (refsw3 still takes the centre only), on a punch-through or modifier-volume
+polygon, and with the second volume's parameters.
 
 ## ycoeff: the vertical filter's weights, Y_COEFF (2026-11-18)
 

@@ -4,7 +4,8 @@
 
    The console's rule, refsw3 = console on all 19 pages (and on outtrigger_menu, mrdriller_*):
    - the texture is read at four points: the pixel's centre and half a pixel right, down and both, each with the
-     polygon's own filter (point, bilinear) and the centre's level;
+     polygon's own filter (point, bilinear) and, with mipmaps, a level of its own (pvr-tests/supsample2: one finer,
+     and the base and offset colours, the fog and the trilinear fade of each point too);
    - the planes are evaluated for them in half pixel steps: along the run (2 n + hx) steps of A / 2, the centre's
      point included, instead of n of A; half a line down is the line's value plus B / 2 (each half coefficient cut
      to the evaluator's grid like a whole one). Evaluating the plane at the points themselves misses 870 pixels of
