@@ -3420,16 +3420,29 @@ the float code had decided something no test had measured, a test went to the co
     corners' x y: from about z = 2^114 at the right of the screen, 2^117 everywhere) the tile's first pixel is 0
     and every other pixel the block's negative full scale, -(2^(e + 1) - ulp), e the block exponent from the slopes
     (zword: 0xfc7fffff for a 2^120 corner). When a slope overflows too (from 2^123: 32 z past 2^128) the slope
-    steps by +-2^124 from a start of 0 in a register whose top bit is 2^128, which **wraps every 32 pixels** of the
-    steps, counted from the tile's first pixel (legs 64: the pattern repeats; a triangle 16 pixels into the tile
-    starts half way through), whatever the corner (inf, NaN, the largest float, 2^127) and the other corners.
+    steps by +-2^127 a pixel in a register whose sign is at 2^131, which **wraps every 32 pixels** of the steps,
+    counted from the tile's first pixel (legs 64: the pattern repeats; a triangle 16 pixels into the tile starts
+    half way through), whatever the corner (inf, NaN, the largest float, 2^127) and the other corners. The
+    register starts at the **plane's start**, (a x0 + b y0) + c with the infinities' rules (bad x 0 = 0, +bad +
+    -bad = +0): an infinite start is one step with its sign (its NaN payload does not count), a finite one is kept
+    on a grid of 2^102 (below it 0). Mostly the infinities cancel to 0; where the edge facing a bad TR or BL corner
+    lies on a line through the origin (x = 0, y = 0, the diagonal) they do not, and the register starts one step on
+    (**nantr_pos**: 300 cells, every corner bad in turn, six NaN payloads, +-inf, +-max, 2^127, 2^123; 70 start at
+    +-1 step, the controls one tile off at 0).
   - **The word stored is a function of the register alone** (zword, every word to 19 bits, the mirror with steps
     of +2^124 word for word): m = 0: 0; 1: 2^127; 2 .. 15: beyond the largest float; 16: the lowest word there is;
     17: 0xfdffffff; 18, 19: 0xfe7fffff; 20 .. 22: 0xfeffffff; 23: 0xfeffffe0; 24 .. 29: 0xff7fffff; 30:
-    0xff7fffe0; 31: 0xff000000 (m the register in steps of 2^124). refsw3 has the table (pvr_isp_depth.h kWrap).
-    Left: one cell of zbad / zbadbg (a NaN at the far corner TR with +0.5 elsewhere starts one step on), and zovf's
-    six cells where the constant is exactly 2^128 (refsw3 calls it an overflow, a console not: there the console's
-    switch is where a x0 + b y0 reaches 2^128).
+    0xff7fffe0; 31: 0xff000000 (m the register in steps of 2^127). refsw3 has the table (pvr_isp_depth.h kWrap).
+    Between whole steps (a finite start: **nantr_fin**, **nantr_fin2**, **nantr_wreg**, and **nantr_word** for the
+    words of the cells that start one step on) the word is still the register's alone (WrapWord): 0 is 0; above 0
+    the register itself to 19 bits (beyond the largest float from 2^128 on); below 0, with u = r + 2^131 to 19 bits
+    and 2^p its leading one, exponent field p + 124 and compare-key fraction (u / 2^p - 1.75) 2^26 - 1, clamped to
+    the binade's lowest word below and the next binade's lowest word above (from -2 steps to -1 it is r itself, from
+    -9 to -8.5 r + 8 steps); at whole steps that formula is kWrap's 32 words. zbad 4080 / 4080, zbadbg 3480 / 3480
+    (their NaN-at-TR cell at x = 0 was such a start). Left: zovf's six cells where the constant is exactly 2^128
+    (refsw3 calls it an overflow, a console not: there the console's switch is where a x0 + b y0 reaches 2^128); the
+    words between -1 step and 0 (field 255), the low 5 bits where the probes leave them, a negative finite start's
+    rounding onto the grid.
   - **Underflow**: the range of the setup's numbers (below 2^-126 zero) holds for the slopes and the tile's start
     too: a plane from 2^-124 to -2^-124 over a cell is its start everywhere, one from 2^-126 to -2^-126 is 0 (zspec
     pages 3-6). This is also what **detinf** was: 480 of 480 regions now (its 2 open probes were a start below
@@ -3440,8 +3453,23 @@ the float code had decided something no test had measured, a test went to the co
   up, the first product of the constant the one past 2^128) that keeps 2^127 on the console, and page 1's control
   strip; which of the two rules the hardware takes when is not known.
 - **texfar** (one page: u of 3.5 to the largest float, both signs, +-inf, NaN; clamp, flip, wrap; 8 and 64 texels):
-  open. Clamped, a coordinate above 2^128 in 1/256 texel gives the last texel (refsw3: texel 0, the old float
-  code's overflow); exactly 2^128, +inf and NaN give texel 0 as modelled. Flip and wrap as modelled. 132 of 160.
+  **exact now, 160 of 160**, with eight more (300 regions each, all exact): **texfar_edge**, **texfar_quot**,
+  **texfar_bits**, **texfar_mip**, **texfar_mipv**, **texfar_decl**, **texfar_m1**, **texfar_m1q**. Three rules:
+  - **A texture coordinate never overflows**: in 1/256 texel, F = q 2^(log2 size + 8), it is the exact two's
+    complement floor(F) at every size, up to the largest quotient there is (about 2^243, F to 2^261). Clamped,
+    positive is the last texel, negative texel 0; wrap and flip read its real low bits (zeros once the quotient's
+    17 bits are above the texel bits, so bilinear wrap blends the last and first texel). The old "2^128 and up is
+    texel 0" was the float code's overflow; "exactly 2^128 gives texel 0" was a misreading (u = 2^117 at 8 texels
+    is just below 2^128), and +inf / NaN attributes give texel 0 because the plane evaluator reads them as 2^-128.
+  - **A mipmapped texture declared shorter than wide** (d = TexU - TexV > 0): V is made at the full height with its
+    fraction bits, floor(v 2^(TexU + 11)) less the declared half texel, then shifted by the level; not the declared
+    height's coordinate shifted up by d (that loses d fraction bits, visible in bilinear from d >= 4 + level:
+    texfar_decl 122 regions), and a huge clamped V is the last row (it was row 0: an int overflow).
+  - **A 1/w of exactly -1 grid unit** (the evaluator's all-ones value, -2^-143) is read by the divider as 0xFFFF
+    2^-143, just under 2^-127 (the negative-denominator rule on the unnormalized all-ones field; texfar_m1: only
+    that D of every m 2^e fits all 166 readings). So no denominator is below 2^-128.
+  Left: the mip level at such a pixel, colour and offset quotients there, a mipmapped texture declared taller than
+  wide at large d with fraction bits.
 
 ## Still not covered
 

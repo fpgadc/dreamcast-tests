@@ -111,9 +111,10 @@ setter (dropped planes), how long it lasts powered off.
 only, NaN = +inf), perpeq, zneg, trimin, bgspec (with zsign, bgneg, bgneg2, bgbig: the ISP's integer depth order,
 the negative background, saturation at 2^127), zspec (with zbad, zbadbg, zbadk, zovf, zword: the overflow
 regimes, the wrapping register and its words, underflow of slopes and start; detinf exact with it), modvol (the
-edge start of +-2^132) done and modelled. Open: faredge's last 10 regions (page 4's strip, page 1's control strip:
-when the edge unit keeps 2^127 instead of 2^132), the NaN-at-TR cell of zbad, zovf's exactly-2^128 cells, texfar
-(clamped coordinates above 2^128 in 1/256 texel: the last texel).
+edge start of +-2^132), nantr (the overflowing register's start and its words between steps), texfar (with
+texfar_*: coordinates never overflow, the declared-short mip V, the -1 unit 1/w) done and modelled. Open:
+faredge's last 10 regions (page 4's strip, page 1's control strip: when the edge unit keeps 2^127 instead of
+2^132), zovf's exactly-2^128 cells.
 
 ## D. Timing probes
 
