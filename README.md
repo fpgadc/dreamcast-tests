@@ -1793,6 +1793,31 @@ in mipdump; log2 det 61 .. 64 and 63 .. 66 in steps of 0.01, both signs, and leg
 it); sydney_race, sydney_stadium and dynamite_attract are the console's in every pixel (782 of the 786 dumps with a
 console frame).
 
+## ptchunkrun_races, ptchunkcarry_races: resolved pixels in the next punch-through chunk, by timing (2026-11-19)
+
+    bash run2.sh ptchunkrun_races ptchunkcarry_races off; bash run2.sh ptchunkrun_races ptchunkcarry_races hw=<ip>
+
+polly2-data f1wgp_driver, tile (16, 9): three pixels are a layer in the first pass of a new punch-through chunk whose
+run on the console starts further left than refsw3's (partial render of the tile in 32 bits, and refsw3 with every
+run start forced in turn: only starts at or left of column 19 give the console's colours). ptlayers' readout (B at the
+back, layers in front failing on chosen columns) with the chunk boundary placed by ISP_FEED_CFG's chunk size:
+
+- `ptchunkrun_races` (15 kinds): with A in the chunk before B, the pixels A resolved take part in B's first pass as
+  run-only pixels (their colour kept): B's run starts at its first pixel, as if A and B were one chunk (kinds 0, 4,
+  9, 10, 13; refsw3, which leaves them out, misses 9,452 pixels a kind). With A and 8 or 9 fillers in that chunk
+  (ptchunk kind 1's setting) they do not (kinds 11, 12, 14), whatever the chunk size, A's shape or discard. A later
+  chunk in front draws over as before (kind 5); a layer failing in bands of its own texels changes nothing (6 - 8).
+- `ptchunkcarry_races` (20 kinds): A and k filler triangles in the first chunk, B in the second. k = 0 .. 5: every
+  cell carries; k = 8, 9: none does; k = 6, 7: the cells of the first tile row and the first tile of a row after
+  empty ones carry, the rest do not. Fillers on one spot or side by side: the same. The same picture in two console
+  runs, so not noise: which cells carry depends on where the pipeline is (the ISP runs ahead of the TSP; at the start
+  of the frame and after empty tiles it has caught up), not on the cell. A model needs a clock to tell (as accbuf's
+  and blendpos' races); refsw3 does not carry, which is what the games' chunk size (0x40, 21 triangles) and ptchunk
+  show.
+
+Both are _races tests: regress.sh leaves them out unless named. Archived in fit/hw. f1wgp_driver's other two pixels (a
+layer whose run starts later than refsw3's, 16 or later where refsw3 has 14) are not explained.
+
 ## ycoeff: the vertical filter's weights, Y_COEFF (2026-11-18)
 
 When SCALER_CTL's factor shrinks the picture (above 0x400; KallistiOS and most games use 0x401) each line is

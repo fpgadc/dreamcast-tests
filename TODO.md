@@ -123,9 +123,10 @@ renders in 32 bits on the console and forced run starts in refsw3 (2026-11-19):
 - two pixels are a layer (89A1, pass 3) whose run on the console starts LATER than refsw3's (16 or later on line 30,
   17 or 18 on line 31, against 14 and 15): the layer fails the alpha test on the first columns of the run and passes
   from 16; a run restarting after failed pixels fits line 30, not line 31.
-Next: a ptlayers-style test across a chunk boundary (steep B at the back in a later chunk, single-tag layers over it
-in earlier chunks failing or passing on chosen columns; and a layer failing on its first columns), to get the rules
-from readings instead of from 5 pixels. refsw3 logs "PASS:" and "SPAN:" lines now (render log). dumprender (partial tiles, objects dropped, 32 bit frame
+Done (README ptchunkrun_races, ptchunkcarry_races): whether resolved pixels take part in the next chunk's runs
+depends on the pipeline's timing (small chunks always, large never, in between by the cell's place in the frame):
+needs a clock (the cycle-accurate model). The two pixels of a run starting later, f1wgp_race, ff2_fight and
+vrally_rally4 are still open. refsw3 logs "PASS:" and "SPAN:" lines now (render log). dumprender (partial tiles, objects dropped, 32 bit frame
 buffer), then the primitive alone in a test (the bumpiso method).
 
 **C6. Translucent modifier volumes**: not covered (the modvol test's translucent modifier list blanked a console's
@@ -179,4 +180,5 @@ pixel with the offset bit overwrites and a bump map without the bit reads. Not m
 - **D6.** The busy dumps (C11): replay each on a console (pvr-renderer) and time STARTRENDER to the end of render;
   which tiles take the time (one tile at a time in the region array).
 - **D7.** SDRAM and burst settings (A5).
-- **D8.** Chunked punch-through and the translucent sort cache against the ISP out of cache error (A4).
+- **D8.** Chunked punch-through and the translucent sort cache against the ISP out of cache error (A4); and when a
+  chunk's resolved pixels carry into the next chunk's runs (ptchunkcarry_races: by where the ISP is against the TSP).
