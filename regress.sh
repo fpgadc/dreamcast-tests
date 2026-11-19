@@ -14,7 +14,7 @@ TESTS="$@"
 [ -z "$TESTS" ] && TESTS=$(ls fit/hw | grep -v '_races$')
 bash run2.sh $TESTS off | grep -v 'offline: [0-9]* of [0-9]* pages$'
 for t in $TESTS; do
-  W=/tmp/pvr_tests/$t
+  W=${PVR_TESTS:-/tmp/pvr_tests}/$t
   note=""; cmp -s $W/off.crc fit/hw/$t/hw.crc || note="   <-- NOT the input the console was given: run it on the console again"
   CMP="compare2.py $t"; [ -f "$(testdir $t)/compare_dumps.py" ] && CMP="$(testdir $t)/compare_dumps.py"      # a test with dumps of its own (ta-tests)
   echo "$(python3 $CMP ref off -q 2>&1 | tail -n 1)$note"

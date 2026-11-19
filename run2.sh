@@ -15,10 +15,10 @@
 # made <value> (hex) instead, pvrsetup.h's and the test's own (pvrio.h REG_OVERRIDE): e.g. ssrare+030=0 next to
 # ssrare, to compare the console with itself. (Not '%': the console's dump path goes through printf.)
 #
-# Results in /tmp/pvr_tests/<test>[@<set>][+<reg>=<value>...]. A run also leaves the checksums of what it sent to the PVR
+# Results in ${PVR_TESTS:-/tmp/pvr_tests}/<test>[@<set>][+<reg>=<value>...]. A run also leaves the checksums of what it sent to the PVR
 # (off.crc, hw.crc): the same lines mean that the console and the offline renderer got the same input.
 # TEST_DEFS="-DX=1 ...": extra defines for the PC and the console build alike. HW_TIMEOUT: seconds a console run
-# may take (300).
+# may take (300). PVR_TESTS: the folder of the runs (/tmp/pvr_tests; the console lock stays in /tmp/pvr_tests).
 HERE=$(cd "$(dirname "$0")" && pwd)
 # a test's folder: pvr-tests/<test> (the core's tests) or ta-tests/<test> (the tile accelerator's)
 testdir() { local g; for g in pvr-tests ta-tests; do [ -d "$HERE/$g/$1" ] && { echo "$HERE/$g/$1"; return 0; }; done; return 1; }
@@ -34,7 +34,7 @@ if [ "$1" = --worker ]; then
   OVR=""; [ "$RUN" != "$BASE" ] && OVR=$(echo "${RUN#*+}" | tr '+' '\n' | awk -F= '{printf "%s{0x%s,0x%s}", (NR > 1 ? "," : ""), $1, $2}')
   SRC=$(testdir $T)/main.c
   PAGES=$(grep -m 1 '^#define NUM_PAGES' $SRC | awk '{print $3}')
-  W=/tmp/pvr_tests/$RUN; mkdir -p $W/build
+  W=${PVR_TESTS:-/tmp/pvr_tests}/$RUN; mkdir -p $W/build
   DEF=($TEST_DEFS)                  # e.g. TEST_DEFS="-DTA_LONG=2000": extra defines for both builds
   if [ -n "$SET" ]; then
     python3 $HERE/regen.py $T $SET $W > $W/build/regen.log 2>&1 || { echo "$RUN: cannot make the tables of set $SET"; tail -n 2 $W/build/regen.log; exit 1; }
@@ -105,15 +105,15 @@ export JOBS NULLDC3 OFFLINE OFFLINE_TOOL DCTOOL
 for kind in "${KINDS[@]}"; do
   case $kind in
   off)
-    mkdir -p /tmp/pvr_tests
-    bash $NULLDC3/$OFFLINE_TOOL/build.sh $OFFLINE > /tmp/pvr_tests/offline-build.log 2>&1 || { tail -n 5 /tmp/pvr_tests/offline-build.log; exit 1; }
+    mkdir -p ${PVR_TESTS:-/tmp/pvr_tests}
+    bash $NULLDC3/$OFFLINE_TOOL/build.sh $OFFLINE > ${PVR_TESTS:-/tmp/pvr_tests}/offline-build.log 2>&1 || { tail -n 5 ${PVR_TESTS:-/tmp/pvr_tests}/offline-build.log; exit 1; }
     printf '%s\n' "${RUNS[@]}" | xargs -P $JOBS -I{} bash "$0" --worker off {}
     ;;
   *) for run in "${RUNS[@]}"; do bash "$0" --worker $kind $run; done ;;
   esac
 done
 for run in "${RUNS[@]}"; do
-  W=/tmp/pvr_tests/$run
+  W=${PVR_TESTS:-/tmp/pvr_tests}/$run
   if [[ " ${KINDS[*]}" == *" off"* ]] && [[ " ${KINDS[*]}" == *" hw="* ]] && [ -s $W/off.crc ] && [ -s $W/hw.crc ]; then
     cmp -s $W/off.crc $W/hw.crc && echo "$run: the console and the offline renderer got the same input ($(wc -l < $W/hw.crc) checksums)" \
                                 || echo "$run: the console and the offline renderer did NOT get the same input (off.crc, hw.crc)"

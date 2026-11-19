@@ -23,7 +23,7 @@ WHAT = dict(cov="pixels drawn or not", isp="pixels with depth written or not", t
 
 test, name = sys.argv[1], sys.argv[2]
 kind = sys.argv[3] if len(sys.argv) > 3 else "off"
-d = Path(sys.argv[4]) if len(sys.argv) > 4 else Path("/tmp/pvr_tests") / test
+d = Path(sys.argv[4]) if len(sys.argv) > 4 else Path(os.environ.get("PVR_TESTS", "/tmp/pvr_tests")) / test
 who = dict(off=os.environ.get("OFFLINE_TOOL", "refsw3-offline"), emu="emulator", hw="this console run")[kind]
 if test == "zmeas":         # its readings are brackets (lo, hi) of the stored depth per pixel, in meas.json
     import json

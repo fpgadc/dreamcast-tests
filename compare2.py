@@ -9,7 +9,7 @@ ref (the console's dumps of this test, kept in fit/hw by archive_hw.sh: what reg
 against without a console).
 The regions are the labels of the test (labels.txt, written by run2.sh off). With hw and off the whole
 framebuffer word is compared, including the bits that are not colour."""
-import sys
+import os, sys
 from pathlib import Path
 
 import numpy as np
@@ -37,7 +37,7 @@ def main():
     args = [x for x in sys.argv[1:] if x not in ("-q", "-a")]   # -q: the last line only; -a: every region that differs, not the 12 worst
     test = args[0]
     a, b = (args[1:] + ["hw", "off"])[:2] if len(args) < 3 else args[1:3]
-    d = Path("/tmp/pvr_tests") / test
+    d = Path(os.environ.get("PVR_TESTS", "/tmp/pvr_tests")) / test
     labels = [l.split(" ", 5) for l in (d / "labels.txt").read_text().splitlines() if l.startswith("LABEL ")]
     quiet = "-q" in sys.argv
     mask = 0xffffff if "emu" in (a, b) or "kos" in (a, b) else 0xffffffff
