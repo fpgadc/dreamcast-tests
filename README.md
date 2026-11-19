@@ -1919,16 +1919,47 @@ test), 256 .. 8, and discard off. SB_ISTERR bit 0 (ISP out of cache):
   that report it, nothing shows. With 32 and below the whole row is wrong from L = 8 (not modelled). Discard off:
   the same as on. Archived at 512 (18 pages, the console's).
 
-## texctl: TEXT_CONTROL's endian and bank bits (2026-11-19, measured, not modelled)
+## texctl: TEXT_CONTROL's endian and bank bits (2026-11-19, modelled)
 
-    bash run2.sh texctl hw=<ip>; python3 agents/nulldc3/prep/texctl_score.py /tmp/pvr_tests/texctl hw
+    bash run2.sh texctl texctl_bank texctl_bankbase texctl_bankmip texctl_addr hw=<ip>
+    python3 agents/nulldc3/prep/texctl_score.py /tmp/pvr_tests/texctl hw
+    python3 agents/nulldc3/hunt/texctl/vqdecode.py /tmp/pvr_tests/texctl_addr hw addr   (bankfit.py, addr565.py)
 
-Seven textures whose every texel holds its own address (565 raster and twiddled, palette 8 and 4 bpp, VQ 565, VQ
-palette 8 and 4 bpp), read 1:1 with TEXT_CONTROL set per page. Bit 16 ("index endian"): VQ only: index bytes read at
-address ^ 8, code book entries ^ 1; 4 bpp palette VQ untouched. Bit 17 ("code book endian"): every format: the bytes
-of each 16-bit unit swapped (565 texels, palette indices: 8 bpp ^ 1, 4 bpp ^ 2 nibbles, the code book's texels).
-Bits 12..8 (bank): only VQ reads move, by XOR patterns of the address that change with the value. refsw3 ignores
-all of them (agents/nulldc3/prep/texctl.md: what to change).
+TEXT_CONTROL (0x0E4), above the stride in bits 4..0, as refsw3 models it (refsw_tile.cpp, VQIndexAddress and
+TextureFetch):
+- Bit 17: in every texture format, the two bytes of every 16-bit unit of texture data are swapped: 16-bit texels,
+  palette indices (8 bpp: byte address ^ 1, 4 bpp: nibble address ^ 2), VQ code book entries, YUV422, bump maps,
+  4444. VQ index bytes are not swapped, and no address changes.
+- Bit 16: only the VQ index bytes, swapped in pairs: index byte address ^ 1 (VQ 565, VQ palette 8 and 4 bpp).
+- Bits 12..8 (bank value b): only the address of a VQ texture's index bytes moves:
+  ((TexAddr * 8 + offset) ^ (b << 19)) + 2048, offset the index byte's place (mipmap offset plus twiddled place),
+  2048 the code book's size. Code book entries and every texture that is not VQ are read where they are.
+
+The tests fill the video memory nothing else uses with 32-bit words that name their own place (chip, offset, a
+check byte); the textures read straight from it, and VQ code book entries show the index byte read, so every read
+decodes to an address:
+- texctl: seven textures whose texels hold their own address, 12 pages (endian bits, bank values 1, 2, 3, 4, 7, 8).
+- texctl_bank: four VQ 565 textures, b = 0 .. 15: every decoded index half fits (112,640).
+- texctl_bankbase: index addresses past a 512 KB line through the code book's 2 KB, the mipmap offset or the
+  twiddled place (65,728 halves; XORing after the 2 KB is wrong on 6,098, the start alone on 21,330).
+- texctl_bankmip: ten mipmapped VQ 565 textures crossing a 512 KB line inside one level 8x8 .. 64x64, every level
+  read, point, bilinear, trilinear A and B; b = 0 .. 15 and with the endian bits (XOR after the 2 KB wrong in
+  1,214 of 2,716 regions, the start alone 502, start plus mipmap offset 205).
+- texctl_addr: every format at addresses 0x4b2000 .. 0x7f0000, b = 0 .. 15 and the endian bits, 22 pages: the
+  textures that are not VQ read their own places with every bank value (565: 1,441,792 of 1,441,792 words; with
+  the bank bits applied to them too, 144 of 233 regions wrong). Its bump map goes through (SRC_ALPHA, ZERO) with a
+  light, so that its intensity shows (opaque and decal a bump map is plain white whatever it reads).
+All exact against the console, and the same on two console runs.
+
+Left open (GAP):
+- Bank bit 4 (b = 16 .. 31) is taken to be address bit 23: inferred, not measured. With it set, or with a sum past
+  8 MB, the console reads data that differs from run to run (an earlier texctl_bank: 8,800 to 17,716 of 65,536
+  pixels per texture between two runs), as it would outside video memory; refsw3 wraps the address at 8 MB. The
+  tests draw a VQ texture only where every index read stays in the filled memory (agents/nulldc3/hunt/texctl/plan.py,
+  plan_mip.py).
+- An index read landing in the framebuffer of the render that reads it gives what is there at that moment
+  (whether the tile has been written out yet: 376 to 864 pixels on 3 pages of the earlier texctl_bank). That is the
+  framebuffer write-out's timing, not TEXT_CONTROL, and is not modelled.
 
 ## yuvconv: the YUV converter (2026-11-19)
 

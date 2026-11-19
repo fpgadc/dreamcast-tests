@@ -28,10 +28,9 @@ determinant zero (mean depth, flat colour at the third corner); sign ignored; mo
 16 sets. Left: an infinite value on huge or infinite determinants (faredge, detinf); the mean's arithmetic (zmeas gen5
 at 2^20: 3,807 of 174,646 pixels, the dataset to pin it); the ISP's cost (D4). A determinant equal to it counts (perpeq, 1800 of 1800).
 
-**A3. TEXT_CONTROL**: measured 2026-11-19 (README texctl): bit 16 moves VQ index reads (^8) and code book entries
-(^1); bit 17 swaps the bytes of every 16-bit unit of texture data in every format; the bank bits move VQ reads only.
-Left: model them in refsw3's fetch (agents/nulldc3/prep/texctl.md), then archive texctl; the bank bits' exact mapping;
-the 16 address bits above 128 KB.
+**A3. TEXT_CONTROL**: done 2026-11-19 (README texctl): bits 17, 16 and the bank bits 12..8 modelled in refsw3's
+fetch; texctl, texctl_bank, texctl_bankbase, texctl_bankmip, texctl_addr exact. Left (GAP): bank bit 4 / reads past
+8 MB (change from run to run on the console), index reads into the framebuffer being rendered (write-out timing).
 
 **A4. ISP_FEED_CFG: punch-through chunks, the translucent sort cache, and the "ISP out of cache" error.** Partly done
 2026-11-19 (README ispcache): out of cache from size / 8 full-tile layers (sizes 64-512; 32 and below as 32), twice

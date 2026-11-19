@@ -16,14 +16,15 @@
    Pages (TEXT_CONTROL):
      0  0x00000    1  0x10000 (index endian)    2  0x20000 (code book endian)    3  0x30000 (both)
      4  0x00000 (again, after the endian pages)
-     5  0x00100    6  0x00400    7  0x00800    8  0x01000    9  0x01400    10  0x01f00   (bank bit 1, 4, 8, 16, 20, 31)
-     11 0x31000 (both endians, bank bit 16)
+     5  0x00100    6  0x00400    7  0x00800    8  0x00200    9  0x00300    10  0x00700   (bank value 1, 4, 8, 2, 3, 7)
+     11 0x30200 (both endians, bank value 2)
+   (Bank values 16 and up read VQ index bytes past 8 MB, data that differs from run to run: pvr-tests/texctl_bank.)
    The bank pages come last: a setting that stops the core loses only them. */
 #define NUM_PAGES 12
 #include "pvrtest2.h"
 
 static const uint32_t text_control[NUM_PAGES] = {
-    0x00000, 0x10000, 0x20000, 0x30000, 0x00000, 0x00100, 0x00400, 0x00800, 0x01000, 0x01400, 0x01f00, 0x31000,
+    0x00000, 0x10000, 0x20000, 0x30000, 0x00000, 0x00100, 0x00400, 0x00800, 0x00200, 0x00300, 0x00700, 0x30200,
 };
 
 enum { T_RASTER, T_TW565, T_PAL8, T_PAL4, T_VQ565, T_VQPAL8, T_VQPAL4, NUM_TEX };
