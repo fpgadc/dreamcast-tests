@@ -135,6 +135,23 @@ td6_menu: what keeps it busy, see T below) and the 65 old-format dumps.
 level is a rough estimate (no console test is close); no strip buffer. Score it against the archived tests once
 its mipmap level follows refsw3's.
 
+**C13. The core's persistent offset colour (found by purist, 2026-11-19).** A bump map drawn WITHOUT the offset bit
+lights itself with the offset colour (K1 K2 K3 Q) the core used last: the core keeps the last offset colour, and it
+survives taking the power off (purist: 2 seconds, 30 seconds, 5 minutes unplugged; the value was still there).
+refsw3 keeps one static offset colour (`offs` in refsw_tile.cpp, 0x20004080 at start, an arbitrary choice) that every
+pixel with the offset bit overwrites and a bump map without the bit reads. Not measured:
+- P, which value persists: the last pixel shaded with the bit (its interpolated offset on a Gouraud polygon, or the
+  vertex's), the last SupSample point, a bump map's raw light; and "last" in the TSP's order, i.e. the span sorter's
+  (SpanGen / SpanSort): a tile of several offset polygons, then a bump map without the bit, the polygons sent in
+  different orders and placed so that the span sorter shades them in another order than the list.
+- P, how long and through what: across tiles, renders, frames, SOFTRESET (core and TA), a new region array, the
+  display off; its value after a cold boot (purist: it survives one; is there a default when the console has been
+  off for longer, hours?).
+- P, who else reads it: vertex fog (the offset colour's alpha) on a polygon without the bit; decal / modulate
+  without the bit (by the manual nothing is added; check that nothing is); two-volume polygons, the second
+  volume's offset; intensity shadows.
+- For the emulator (purist's suggestion): a random value at start-up, then the last one set kept at run time.
+
 ## D. Timing probes
 
 - **D1. SupSample's cost**: per pixel and per run against the same scene without it (four points: four times the
