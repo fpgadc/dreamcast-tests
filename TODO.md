@@ -66,8 +66,11 @@ zs25f_* ladder (archive_check). covprobe's misses were not depth: the console's 
 (pvr-tests/probes_zs25z, 20,480 of 20,480), the pixels are the TSP's garbage colours (green 255 read as the probe,
 or black). covprobe now shades as refsw3 does (0 misses on all 96 sets); depthprobe compares in StoredDepth order.
 
-**C3. Sliver colours**: the TSP colour model gives 0 at 870 sliver pixels a console shows (a determinant of a few
-units: division by almost zero, 1/w below zero unmeasured); 4 sliver pixels with a negative model depth are drawn.
+**C3. Sliver colours: done 2026-11-19**: the 870 colour-0 pixels and the 4 drawn negative-depth pixels were the old
+Python model's (pvr-tests/ops/model.py) misses; refsw3 gives the console's exact colour word on all 27 sliver sets
+(66 million pixels). The determinant-zero TSP planes were z3, now the measured mean with its zero rule (README
+"Slivers", slivers_tsp, _detzero, _perp, _dzspec, _dzzero). Left: the ISP's depth mean (0xaaaaaa against
+0x3eaaaaab, the zero rule).
 
 **C4. The regression's known misses** (2026-11-19, later the same day: detinf and modvol exact, README "refsw3 without float"; faredge 1330 / 1340 left), hugepos from 2^114 and the
 translucent sort's cross-talk with garbage depths (from 2^62). Each has its README section.

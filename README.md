@@ -1097,9 +1097,22 @@ not nothing:
   three equal corners, or a sliver whose constants cancel exactly although each is in the thousands. With
   corner depths 0.2, 0.7, 0.3 all 11,456 + 1,344 + 53 such pixels store a depth in [0.35, 0.45); finer brackets
   on the points: [0.39, 0.41) there, [0.55, 0.58) for 0.9, 0.3, 0.5, [0.3, 0.4) for 0.1, 0.1, 0.9 and for
-  0.9, 0.1, 0.1. (The arithmetic of that mean is not measured beyond these brackets.)
+  0.9, 0.1, 0.1. (The ISP's arithmetic of that mean is not measured beyond these brackets.)
 - **Its color is the third corner's**, Gouraud shaded or flat (corners red, green, blue: the 11,456 pixels are
   (0, 0, 255) either way).
+- **The TSP's planes of such a triangle** (2026-11-19, determinant 0 or |det| <= FPU_PERP_VAL) are flat: 1/w is
+  the mean ((z1 + z2) + z3) x 0x3eaaaaab (the float nearest 1/3, a hair above it), the sums and the product cut
+  to 24 bits as the setup's arithmetic, then to the plane's 16; an attribute plane is the third corner's
+  attribute times that mean, so after the divide U, V and colour are the third corner's (refsw3 had 1/w = z3: the
+  colour came out the same, U and fog did not). In the first sum a zero depth (exponent field 0, fraction m)
+  against an opposite-sign depth in [2^-126, 2^-125) counts as (1 + m 2^-23) 2^-127, its hidden bit not cleared:
+  the sum is +0 when what is left is below 2^-126, the other depth unchanged otherwise. **slivers_tsp** (3600
+  cells), **slivers_detzero** (9,600 depth triples, 2400 cells; the alternatives: 1/3 as 0xaaaaaa 8,143 triples,
+  1/3 rounded up at 26 bits or more 9,594, 25-bit sums 9,474, other orders 9,413 / 9,379, the exact mean 9,373),
+  **slivers_perp** (det +-12 against FPU_PERP_VAL 16), **slivers_dzspec** (zero, denormal, huge, infinite, NaN
+  depths), **slivers_dzzero** (9,600 triples on the zero rule): all exact. Table fog with a 1/w below zero is no
+  fog, as below 1 (slivers_dzspec). Left: whether the ISP's depth mean is the same (refsw3's ISP takes 1/3 as
+  0xaaaaaa, no zero rule; nothing archived tells them apart).
 - With any other culling mode (small, clockwise, counter-clockwise) none of these is drawn.
 
 The model needed one change for this, the zero edge counting as inside; the depth unit one, the mean; refsw2's
