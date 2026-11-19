@@ -86,14 +86,10 @@ TA_YUV_TEX_CNT counts the macroblocks stored and is cleared by that write.
 
 ## C. Open pixel-level loops
 
-**C1. ssrare: SupSample points half a line down, one grid unit high on some planes.** 24 pixels of 6.1 million
-(README ssrare); per plane (hits cluster by tile), those planes' B / 2 is 0.69 .. 0.94 of a unit above the grid;
-the rarer condition is unknown; eight arithmetic variants ruled out.
-- P: read the value at the hy = 1 points directly, plane by plane: a texture that is zero but for one row, and V
-  planes such that only the points half a line down land on that row (the average then is that point's texel / 4);
-  a coordinate ramp in that row reads the point's value to a fraction of a unit. Sweep the plane's B / 2 and C
-  fractions, the line, the run start. Compare with the next line's whole-step value (does the TSP step from it?).
-- A1 first: done, the sorter changes no picture (ssrare the same bit for bit with it off): not the sorter.
+**C1. ssrare: done 2026-11-19** (README ssrare): a SupSample point half a line down has floor(C + B / 2), not
+floor(C) + floor(B / 2); ssrare and sscolor exact. Found from the archived pages alone (one unit more per plane,
+labelled by the console, then grouped by each term's fraction). Left: a console test of the rule by itself
+(cells whose C is off the grid, with and without the carry, at known pixels).
 
 **C2. Sliver depth (zs25, the ISP)**: 619 of 7,795 pixels of slivers with a nonzero determinant and different
 corner depths outside the console's 0.1-wide brackets. First, from the archived data (no console): do the misses
@@ -102,7 +98,7 @@ cluster by triangle, a whole plane a unit off as in C1? Then probes from what th
 **C3. Sliver colours**: the TSP colour model gives 0 at 870 sliver pixels a console shows (a determinant of a few
 units: division by almost zero, 1/w below zero unmeasured); 4 sliver pixels with a negative model depth are drawn.
 
-**C4. The regression's known misses**: detinf 478 / 480 (stored depth below 2^-125), faredge 1245 / 1340 (pages 8 to
+**C4. The regression's known misses** (2026-11-19: the only misses left in the regression): detinf 478 / 480 (stored depth below 2^-125), faredge 1245 / 1340 (pages 8 to
 11, the K 127 vertical triangles), modvol 187 / 192 (two-volume cells at extreme depth), hugepos from 2^114 and the
 translucent sort's cross-talk with garbage depths (from 2^62). Each has its README section.
 

@@ -1750,21 +1750,28 @@ and every step shows: one and two volumes, inside and outside a modifier volume,
 or neither, an intensity shadow, flat and perspective, and u or v crossing zero in the middle of every cell.
 refsw3-offline = console on all 17 pages, both halves (archived): the half pixel steps hold to the last bit there.
 
-## ssrare: an open rounding of SupSample's points half a line down (2026-11-19)
+## ssrare: SupSample's points half a line down add B / 2 to C before the cut (2026-11-19)
 
 sscolor's two pixels in their own setting, with every weight step showing: 20 pages of 300 cells (64x64 textures,
-1/4 .. 2 texels a pixel, perspective; two volumes and one). The console and refsw3-offline differ on 24 pixels of
-6.1 million, in every variant (so not because of the volumes). What the 24 have in common (agents' logs, not a model):
-- each is one point half a line down (hy = 1) whose coordinate the console has one LSB higher; refsw3's 16 bit cut
-  of that point's plane value drops bits that are all ones (or, below zero, just the lowest), the mark of a value
-  one grid unit higher on the console before the cut;
-- they come by tile: a few planes are a unit higher at all their points half a line down (8 hits in one tile), and
-  those planes' B / 2 is far above the grid line below it (fraction 0.6875 .. 0.9375 of a unit), which a third of
-  all planes are; what else singles them out is not known;
-- not explained by: B / 2 rounded up, to nearest or toward zero, A / 2 toward zero, the half line as one product,
-  B / 2 kept to half a unit, one more bit before the divider (each misses thousands to hundreds of thousands of
-  pixels of these tests).
-To pin it down: read the value of the points half a line down directly (uvmeas-style), plane by plane.
+1/4 .. 2 texels a pixel, perspective; two volumes and one). The console and refsw3-offline differed on 24 pixels of
+6.1 million, each one point half a line down (hy = 1) one grid unit higher on the console; eight arithmetic variants
+(B / 2 rounded every way, the half line as one product, B / 2 to half a unit, more bits before the divider; and B y
+and B / 2 kept to 1 .. 10 bits below the unit and added, 2026-11-19) each missed thousands of pixels.
+
+**The rule.** At a point half a line down the evaluator has floor(C + B / 2), C and B / 2 added exactly before the
+cut to the grid, where refsw3 had floor(C) + floor(B / 2): one unit more where their fractions below the grid carry.
+C has any fraction there only where another term (A or B times the tile's position) sets the grid, which is why it
+is rare. refsw3 (pvr_tsp_plane.h, Value): ssrare 6,144,000 of 6,144,000 pixels, sscolor all; supsample, supsample2,
+ssvol, ssmip, trifade, bumplight, all 786 polly2-data dumps and the 63 older scenes as before.
+
+**How it was found, without the console** (agents' tools, reusable for any "one unit more, sometimes" miss):
+refsw3-offline rendered ssrare once as it is and once per plane (1/w, U/w, V/w, base and offset colours, each
+volume) with one unit more at every point half a line down. Where a render with the unit differs from the plain
+one, the archived console page says which of the two the console has: 140,545 pixels where that unit shows, the
+console has it on 24. Logging every term of those points (each term's 16 bits below the grid) and grouping the
+labels by each term: C's fraction is zero at 201,793 points and not at 48, 31 of them in the 24 pixels; then
+frac(C) + frac(B / 2) >= 1 agrees on 140,544 of 140,545 pixels (the last is a pixel the V/w unit explains, which
+the 1/w unit happens to colour the same).
 
 ## mipdump, mipdet: the mipmap level when the determinant is huge (2026-11-19)
 
