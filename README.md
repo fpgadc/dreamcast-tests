@@ -1121,8 +1121,12 @@ The depth of slivers whose determinant is NOT zero and whose corners have differ
 the standalone model (model/covprobe, depthprobe) misses it on 619 of 7,795 pixels. refsw3 itself is the console on
 every zs25 set (archive_check, since zstart 2026-11-18), and on a finer ladder of 2026-11-19 (zs25f_*: probes at
 0.1 .. 3 and 10^-2 .. 10^-4; 1e-5 and 1e-6 do not work as probes) and the same slivers drawn as plain triangles
-(zs25f_tri) as well: the misses are covprobe's alone (all one way, 51 pixels of 16 slivers where the console stores
-under 10^-4, and 1,442 pixels the console leaves undrawn): the probe has not followed the renderer's depth.
+(zs25f_tri) as well: the misses were covprobe's alone, and not about depth (pvr-tests/probes_zs25z, 2026-11-19): the
+console's depth buffer under those slivers, read out (zexfil) over the 18 tiles that hold the 51 pixels, is refsw3's
+on 20,480 of 20,480 pixels, 0.265 .. 2.06 at the 51 (none below 10^-4). Those pixels are the sliver's own, shaded
+by the TSP from its garbage planes: cyan 0x00ffff or white, whose green of 255 covmeas read.py takes for the probe's
+(the probe's green 0x00ff00 is at none of them); the 1,442 of zs25f_tri and 7 of sliver26/28/29 are TSP black.
+covprobe, which had the ISP alone, now shades the pages as refsw3 does: 0 misses on every covmeas set.
 
 ### hugepos: corners at 2^30 to 2^125
 
@@ -1198,7 +1202,12 @@ the probes run against the archived console data:
     model/depthprobe [name=value ...] [--scan name=v1,v2,...] [--misses N] fit/zmeas_data/*.zme
 
 `covprobe` rasterizes every polygon of a run into its page and compares the page with the console's; all 42
-archived runs (103 million pixels) take 2 seconds. With the default configuration it gives what the Python model
+archived runs (103 million pixels) take 2 seconds. Since 2026-11-19 (pvr-tests/probes_zs25z) it also shades the
+triangle, strip and depth-probe sets as refsw3 does (shade=1, the default): the depth in refsw3's StoredDepth order,
+the last polygon to pass owns the pixel, then the TSP per span with refsw3's own pvrtsp::ColorRounded, and the page
+read as read.py reads it; sprites and modifier volumes stay ISP-only, every list is shaded as the opaque one.
+shade=0 is the old ISP-only reading. `--dump <dir>` writes the model's colour, depth and tag pages. All 96
+covmeas sets: 0 misses, about 4 seconds. With the default configuration it gives what the Python model
 gives: no difference on the 24 runs before the slivers, on ten of the thirteen sliver runs and on five of the
 seven depth probes; the other 7 + 8 pixels are the black and garbage-depth pixels of the sliver section. `--scan` varies one parameter:
 

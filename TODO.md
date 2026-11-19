@@ -61,9 +61,10 @@ floor(C) + floor(B / 2); ssrare and sscolor exact. Found from the archived pages
 labelled by the console, then grouped by each term's fraction). Confirmed by pvr-tests/sshalf: the console has the
 new rule on all 728 pixels where the rules differ.
 
-**C2. Sliver depth (zs25, the ISP)**: done (2026-11-19 found so): refsw3 is the console on every zs25 set and the finer
-zs25f_* ladder (archive_check); the 619 misses are model/covprobe's, a standalone probe behind the renderer (zstart).
-Left: bring covprobe / depthprobe up to refsw3's depth (or retire them for these sets).
+**C2. Sliver depth (zs25, the ISP)**: done (2026-11-19): refsw3 is the console on every zs25 set and the finer
+zs25f_* ladder (archive_check). covprobe's misses were not depth: the console's depth buffer under them is refsw3's
+(pvr-tests/probes_zs25z, 20,480 of 20,480), the pixels are the TSP's garbage colours (green 255 read as the probe,
+or black). covprobe now shades as refsw3 does (0 misses on all 96 sets); depthprobe compares in StoredDepth order.
 
 **C3. Sliver colours**: the TSP colour model gives 0 at 870 sliver pixels a console shows (a determinant of a few
 units: division by almost zero, 1/w below zero unmeasured); 4 sliver pixels with a negative model depth are drawn.

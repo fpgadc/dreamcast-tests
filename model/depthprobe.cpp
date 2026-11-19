@@ -1,9 +1,12 @@
-// depthprobe: the ISP's depth (nulldc3 refsw2: pvr_isp_depth.h, pvr_softfp.h) against archived console runs.
+// depthprobe: the ISP's depth (nulldc3 refsw3/refcore: pvr_isp_depth.h, pvr_softfp.h) against archived console runs.
 //
 //   depthprobe [name=value ...] [--scan name=v1,v2,...] [--misses N] <set>.zme ...
 //
 // name: a field of pvrisp::DepthConfig. A pixel is right when the model's stored depth is inside the bracket the
-// console gave (at least lo, below hi). Sets: python export_z.py.
+// console gave (at least lo, below hi). The depth is refsw3's: pvrisp::DepthTile set up for the pixel's tile (the
+// overflow regimes included), At() its word as the ISP stores it, compared with the bracket's ends as the ISP
+// compares depths (pvrisp::StoredDepth: the words as integers, a depth below zero below every positive one, an
+// overflow word an ordinary number), not as floats. Sets: python export_z.py.
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -73,12 +76,14 @@ int main(int argc, char** argv)
             int tx = (int)floor(r.px / 32) * 32, ty = (int)floor(r.py / 32) * 32;
             pvrisp::DepthTile d;
             d.Setup(F32s(r.x), F32s(r.y), F32s(r.z), tx, ty, cfg);
-            double m = d.At((int)(r.px - tx), (int)(r.py - ty), true).toDouble();
-            bool ok = (std::isnan(r.lo) || m >= r.lo) && (std::isnan(r.hi) || m < r.hi);
+            const pvrisp::StoredDepth m = d.At((int)(r.px - tx), (int)(r.py - ty), true);
+            // a bracket's end: a probe depth (a float; NaN: no such end)
+            auto end = [](double v) { const float f = (float)v; return pvrisp::StoredDepth::Bits(F32s(&f, 1)[0]); };
+            bool ok = (std::isnan(r.lo) || m >= end(r.lo)) && (std::isnan(r.hi) || m < end(r.hi));
             right += ok;
             if (!std::isnan(r.lo) && !std::isnan(r.hi)) { both++; bothRight += ok; }
             if (!ok && left-- > 0)
-                printf("   pixel (%.1f, %.1f): console in [%.9g, %.9g), model %.9g\n", r.px, r.py, r.lo, r.hi, m);
+                printf("   pixel (%.1f, %.1f): console in [%.9g, %.9g), model %.9g (%08x)\n", r.px, r.py, r.lo, r.hi, m.toDouble(), m.bits);
         }
         if (scanName.empty())
             printf("pixels %zu: model inside the console's bracket on %ld (%ld of %ld with both bounds)\n", recs.size(), right, bothRight, both);
