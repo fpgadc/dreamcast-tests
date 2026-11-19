@@ -43,11 +43,22 @@ already match the console, so nothing there triggered it. No test sets it.
   index): which bytes the big-endian code book and index orders swap (16, 32 or 64 bit units; 4 bpp nibble order),
   and the address mapping for each bank bit position. Then implement in refsw3's fetch.
 
-**A4. ISP_FEED_CFG** discard mode (bit 3) and translucent cache size (23..14). Every dump: 0x00800408 (discard 1,
-cache 512); ptchunk* covered the punch-through chunk size.
-- P: autosort scenes with more layers on a pixel than the cache size (cache 8, 16, 32 .. 512), discard 0 and 1;
-  console against the default.
-- T: autosort cost against the cache size.
+**A4. ISP_FEED_CFG: punch-through chunks, the translucent sort cache, and the "ISP out of cache" error.**
+Every dump: 0x00800408 (discard 1, punch-through chunk 0x40, translucent cache 512). Known: which primitives go
+into a punch-through chunk, and that each chunk is peeled on its own (ptchunk, ptchunkq, ptchunkm: pixels only);
+the console reports ISP out of cache (SB_ISTERR bit 0) on the same tiles in every render of 25 of the 64 older dumps
+(up to 33 tiles, taxi4) and on two tiles of shenmue_intro, with nothing visible in those pictures (README zdumps).
+Not known: what fills the cache, what the core does when it is full, what it costs.
+- P: autosort tiles with more layers on a pixel (and more fragments in the tile) than the cache holds, cache sizes
+  8, 16, 32 .. 512, discard 0 and 1; console against refsw3, and the console against itself at each size: where a
+  full cache changes the picture (layers dropped, drawn unsorted, sorted in batches), and when it does not.
+- Interrupts: read SB_ISTERR (and SB_ISTNRM) after each render: the out-of-cache bit against the cache size and the
+  layers / fragments / primitives in the tile, to find the count that sets it; the same for punch-through tiles
+  against the chunk size; a scene that sets it in exactly one known tile (one tile in the region array at a time).
+  Then the dumps that report it: which tiles and why, from their tiles' contents.
+- T: render time against the punch-through chunk size (each chunk a peel of its own: cost per chunk and per
+  primitive in it) and against the translucent cache size (sorting in batches when it is full?); the time of a tile
+  that overflows against the same tile with a cache that holds it; whether the error stops or slows the render.
 
 **A5. FPU_PARAM_CFG burst sizes and thresholds, SDRAM_REFRESH / SDRAM_ARB_CFG / SDRAM_CFG, FB_BURSTCTRL.**
 Timing only, by the manual.
@@ -137,3 +148,4 @@ its mipmap level follows refsw3's.
 - **D6.** The busy dumps (C11): replay each on a console (pvr-renderer) and time STARTRENDER to the end of render;
   which tiles take the time (one tile at a time in the region array).
 - **D7.** SDRAM and burst settings (A5).
+- **D8.** Chunked punch-through and the translucent sort cache against the ISP out of cache error (A4).
