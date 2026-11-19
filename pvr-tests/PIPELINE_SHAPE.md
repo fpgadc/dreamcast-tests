@@ -220,7 +220,9 @@ largest of its ISP, TSP and write-out times [M timemeas].
 - **SPAN_SORT_CFG bit 0 off [M README spansortcfg].** No picture changes: runs and their first pixels are made
   before the sorter. The order becomes near raster order (some runs of a primitive on the next lines early, the
   same in two runs, different band to band); every run whose primitive is not among the last 9-16 set up costs a
-  setup (44 clocks, 19 more the first time): up to 4.6 times the time. Bit 8 (offset sort): nothing seen.
+  setup (44 clocks, 19 more the first time): up to 4.6 times the time (the TSP keeps 16 set up, not least recently
+  used). Bit 8 (offset sort): the compare is of the parameter offset alone, a strip's triangles one primitive.
+  Bit 16: nothing seen (2%). 0x100 and 0x10001 hang the core.
 - **Early drains [M, not understood].** Some whole drains are shaded before the 2 to 9 drains in front of them,
   holding the runs the rule gives them: always the same drains (column 31 of 32 columns of 1x16, not of 1x32;
   the background and column 0 of 16 columns over the background).

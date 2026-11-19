@@ -35,6 +35,12 @@ def load(path):
 def tags(k, tile=0):
     """Which primitive each pixel of scene k shows in its tile (the identities only; see main.c TM_ORDER)."""
     g = lambda f: [[f(x, y) for x in range(32)] for y in range(32)]
+    if 32 <= k <= 42:   # TM_SORTOFF (main.c): columns, a new primitive (99) late, strips (two triangles a column)
+        w = 2 if k == 35 else 4 if k == 41 else 1
+        late = {32: (0, 31), 35: (0, 31), 41: (0, 31), 33: (31, 31), 34: (0, 16), 42: (0, 31)}.get(k)
+        if k in (39, 40):
+            return g(lambda x, y: 2 * x + (y >= 16))
+        return g(lambda x, y: 99 if (x, y) == late else x // w)
     if 25 <= k <= 31:   # TM_SETUPK: as 13 and 14 with q = k - 16
         return g(lambda x, y: min(x, k - 16))
     if k == 24:     # T over both tiles, columns at x 8 and 16 in the first

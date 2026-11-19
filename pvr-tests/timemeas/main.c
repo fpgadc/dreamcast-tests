@@ -26,6 +26,9 @@
    layouts drawn once each with every triangle in its own colour. */
 /* #define TM_CUT */                   /* only the cut scenes (how fast the ISP's side makes runs): a few seconds */
 /* #define TM_ORDER */                 /* only the order scenes (the palette clock: when each pixel is shaded): a few seconds */
+/* #define TM_SORTOFF */               /* with TM_ORDER: order scenes 32-42 instead (SPAN_SORT_CFG off: when a line's last run
+                                          goes early, what sets up runs before shading starts, strips and offset colours;
+                                          README "spansortcfg") */
 /* #define TM_SETUPK */                /* with TM_ORDER: order scenes 25-31 instead (q = 9 .. 15 columns of 1 pixel and one
                                           polygon over the rest: q + 1 primitives a line; with SPAN_SORT_CFG 0 how many
                                           primitives the TSP keeps set up, README "spansortcfg") */
@@ -829,6 +832,7 @@ static void run_all(void) {
 #ifdef TM_ORDER
     {
         static const format_t pal_fmt = { "palette 8 bpp decal", OP, 1, 0, 0, PixelFmt_Pal8, 0, 0, 0, P0, 1, 0 };
+        static const format_t pal_ofs = { "palette 8 bpp decal offset", OP, 1, 0, 1, PixelFmt_Pal8, 0, 0, 0, P0, 1, 0 };
         static uint8_t zeros[65536];
         static uint16_t perm[1024];
         const uint32_t tex_keep = tex;
@@ -842,11 +846,30 @@ static void run_all(void) {
         region_addr = ONE_TILE;
 #ifdef TM_SETUPK
         for(ok = 25; ok < 32; ok++) {
+#elif defined(TM_SORTOFF)
+        for(ok = 32; ok < 43; ok++) {
 #else
         for(ok = 0; ok < 25; ok++) {
 #endif
             ta_list_begin(ListType_Opaque);
-            if(ok >= 25) {              /* as 13 and 14 with q = ok - 16 */
+            if(ok >= 32) {              /* TM_SORTOFF */
+                const int cols = ok == 35 ? 16 : ok == 41 ? 8 : 32, w = 32 / cols;
+                if(ok == 36 || ok == 37)        /* 16 or 64 quads that never pass, before the columns */
+                    for(j = 0; j < (ok == 36 ? 16 : 64); j++) rect(&pal_fmt, 1, DepthMode_Never, j & 31, 0, 1, 32, front, j, 0);
+                if(ok == 42)                    /* the new primitive first in the list, column 0 one line shorter */
+                    rect(&pal_fmt, 1, DepthMode_Always, 0, 31, 1, 1, front, 99, 0);
+                if(ok == 39 || ok == 40) {      /* columns as strips of two triangles: lines 0-15 and 16-31 */
+                    if(ok == 40) offs_mode = 3; /* offset alpha only: offset planes, the colour unchanged */
+                    for(j = 0; j < 32; j++) rect(ok == 40 ? &pal_ofs : &pal_fmt, 0, DepthMode_Always, j, 0, 1, 32, front, j, 0);
+                    offs_mode = -1;
+                } else
+                    for(j = 0; j < cols; j++) rect(&pal_fmt, 1, DepthMode_Always, j * w, 0, w, ok == 42 && j == 0 ? 31 : 32, front, j, 0);
+                if(ok == 38)                    /* 64 that never pass, after */
+                    for(j = 0; j < 64; j++) rect(&pal_fmt, 1, DepthMode_Never, j & 31, 0, 1, 32, front, j, 0);
+                if(ok == 32 || ok == 35 || ok == 41) rect(&pal_fmt, 1, DepthMode_Always, 0, 31, 1, 1, front, 99, 0);
+                if(ok == 33) rect(&pal_fmt, 1, DepthMode_Always, 31, 31, 1, 1, front, 99, 0);
+                if(ok == 34) rect(&pal_fmt, 1, DepthMode_Always, 0, 16, 1, 1, front, 99, 0);
+            } else if(ok >= 25) {       /* as 13 and 14 with q = ok - 16 */
                 q = ok - 16;
                 for(j = 0; j < q; j++) rect(&pal_fmt, 1, DepthMode_Always, j, 0, 1, 32, front, j, 0);
                 rect(&pal_fmt, 1, DepthMode_Always, q, 0, 32 - q, 32, front, q, 0);

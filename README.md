@@ -1836,25 +1836,43 @@ open (TODO A1). Each setting against the console's own 0x101 run of the same ses
   (128 pages) and timemeas's 17 layouts are the console's 0x101 pictures bit for bit (as is a second 0x101 run);
   timemeas with 0x001 too. The runs and their first pixels are made before the sorter, which only orders them;
   ssrare's open points (TODO C1) are not the sorter's.
-- **Order: bit 0 alone.** 0x001 is 0x101 (the 96-run window: 16 and 18 runs out of order of ~17,000, the glitch
-  pixels) and 0x100 is 0x000. With the sorter off the order is near raster order (596 runs out of order against it,
-  2,984 against the window), not exactly: some runs of a primitive on the next lines are shaded early (16 blocks of
-  8x8: the right-hand block's runs on the next 4 or 5 lines right after the line's first two blocks, the last band
-  two lines at a time; the background ahead of the one-pixel columns between it). The same in two runs (at most 3
-  of 1,024 runs more than two places apart), but different from band to band: the pipeline's timing, as
-  ptchunkcarry_races. Not modelled.
-- **Time: the sorter saves up to 4.6 times.** Without it, a run whose primitive is not among the last K set up costs
-  a setup of 44 clocks, 19 more the first time (a fetch of the parameters), with K from 9 to 16 (9 primitives a line
-  cost nothing more, 17 cost a setup a run; setupfit.py, worst scene 2,500 clocks off). One tile of 32 one-pixel
+- **Offset sort (bit 8): a strip's triangles are one primitive to the sorter.** In the order scenes of sprites each
+  primitive has a parameter block of its own and 0x001 orders as 0x101. Columns made of strips of two triangles
+  (TM_SORTOFF scenes 39, 40: lines 0-15 one triangle, 16-31 the other, with and without offset colours) fit the
+  window with the strip as the primitive under 0x101 (1 and 2 runs of 1,024 out of order, against 82 and 84 taken
+  triangle by triangle) and with the triangle under 0x001 (0, against 90): the compare is of the parameter offset
+  without the triangle's index in its strip (ISP_BACKGND_T's tag_offset). Offset colours change nothing in it. It is
+  4-5% slower there (14,163 against 13,592 clocks). refsw3's SpanSort does this now.
+- **Span sort off (bit 0): near raster order, unmodelled.** 0x100 orders as 0x000. With the sorter off the order is
+  near raster order (596 runs out of order against it, 2,984 against the window), not exactly: some runs are shaded
+  early (32 one-pixel columns over 16 lines: each line's last run right after its x 15; 16 blocks of 8x8: the
+  right-hand block's runs on the next lines; with one pixel of another primitive at (0, 16), the next line's x 21
+  right after x 23 on every odd line). Deterministic (two runs: at most 3 of 1,024 runs more than two places apart)
+  but a matter of clocks: that pixel at (0, 31) instead, or the same columns without it, give none at all. refsw3
+  shades in raster order then; an exact order needs the clocked pipeline (as ptchunkcarry_races).
+  At the start of a tile the setups of the first runs are done ahead (up to ~22 runs shaded at once), fewer the
+  more the ISP had to do (16 or 64 quads that never pass, before or after: fewer, none): the time, not the order.
+- **Time: the sorter saves up to 4.6 times.** Without it, a run whose primitive is not among the 16 the TSP keeps set
+  up costs a setup of 44 clocks, 19 more the first time (a fetch of the parameters); one of those 16 about 12
+  (TM_SETUPK scenes: 10 to 16 primitives a line, about 12 clocks a line more for each; 17 (scene 13), most runs a
+  setup; setupfit.py with any K from 9 to 16 fits the order scenes to 2,500 clocks). Which of 17 stay is not least
+  recently used (scene 13 keeps 5 of 17 from line to line, scene 11 a 32nd column over 16 setups). One tile of 32 one-pixel
   columns: 12,800 clocks sorted, 52,700 not; 16 blocks of 8x8: 6,500 and 8,200; one primitive a pixel the same both
   ways (70,500). A primitive's first setup costs about 64 clocks either way; a later one 44 without the sorter and 32
   with it (setupfit.py --sorted: the sorted scenes do not tell K, any K up to 16 fits as well). Offset sort changes
   no time by more than 1% in these scenes.
-- **0x100** (the manual: setting prohibited) rendered the order scenes and timemeas's pages 0-9, then never finished
-  page 10 (64 quads 4x4) and left the core stuck: nothing rendered after it until the console was switched off
-  (dcload still loads programs; their first PVR access does not return).
+- **Bit 16 (TSP cache bypass)**: 0x10101 orders as 0x101 (8 runs out of order against the window) and takes the
+  same time to within 2% (up to 1.9% more with many primitives a line). Pictures not compared (lost to the hang
+  below).
+- **Two settings hang the core**: 0x100 (the manual: setting prohibited) rendered the order scenes and timemeas's
+  pages 0-9, then never finished page 10 (64 quads 4x4); 0x10001 (the cache bypass without offset sort) rendered
+  order scenes 0-21 as 0x10101 does, then never finished scene 22 (the 32 columns that scene 3 had just drawn).
+  Both left the core stuck: nothing rendered after until the console was switched off (dcload still loads
+  programs; their first PVR access does not return). nulldc3's emulator reports both with EMUERROR, the other
+  settings it does not model with EMUWARN.
 
-Logs in fit/timemeas_logs (timemeas_spansort<value>_order.log).
+Logs in fit/timemeas_logs: timemeas_spansort<value>_order.log (TM_ORDER), timemeas_sortoff_<value>.log
+(`-DTM_ORDER -DTM_SORTOFF`, scenes 32-42), timemeas_setupk_<value>.log (`-DTM_ORDER -DTM_SETUPK`, scenes 25-31).
 
 ## optcull, ptchunkcost, ptchunklag: culled punch-through primitives (2026-11-19)
 

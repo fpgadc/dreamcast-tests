@@ -15,19 +15,13 @@ Priority, as discussed: A1, then C1 (A1 may explain it), A2, B, then the rest.
 All 790 polly2-data dumps (their registers tallied 2026-11-19) and every test use one value for each of these, so
 refsw3 models that value only. Only FPU_PERP_VAL is set otherwise by games.
 
-**A1. SPAN_SORT_CFG** (0x030: span sort bit 0, offset sort bit 8, TSP cache bypass bit 16). Mostly done
-2026-11-19 (README spansortcfg): with the sorter off no picture changes (8 run-sensitive tests and timemeas's pages,
-console against itself), so the runs and their first pixels are made before the sorter (C1 is not it); the order
-becomes near raster order (timing-dependent, deterministic, not modelled); time grows up to 4.6x (a setup per run
-whose primitive is not among the last 9-16 set up); offset sort changes nothing seen; 0x100 hangs the core until
-the console is switched off. Left:
-- bit 16 (TSP cache bypass): 0x10101 and 0x10001, TM_ORDER times and the pixel sweep (its first run never ran: the
-  console was stuck from 0x100);
-- 0x001 and 0x10101 on the 8 tests, and 0x000 on ssvol, supsample, optrun, ptlayers, blendsel2, blendpos;
-- K exactly: `TEST_DEFS="-DTM_ORDER -DTM_SETUPK" bash run2.sh timemeas+030=0 hw=<ip>` (scenes 25-31, 10 to 16
-  primitives a line), setupfit.py on the log;
-- order-dependent state with the sorter off: tspAlphaStuck (blendsel was the same) and the persistent offset colour
-  (C13) follow the TSP's order, so C13's "which value persists" needs the sorter's order known.
+**A1. SPAN_SORT_CFG** (0x030: span sort bit 0, offset sort bit 8, TSP cache bypass bit 16). Done 2026-11-19
+(README spansortcfg): no setting changes a picture (14 run-sensitive tests and timemeas's pages, console against
+itself); offset sort makes a strip's triangles one primitive to the sorter (modelled in refsw3's SpanSort); the
+sorter off gives near raster order with timing-dependent early runs (unmodelled: needs the clocked pipeline) and up
+to 4.6x the time (the TSP keeps 16 primitives set up); bit 16 changes neither order nor time (2%); 0x100 and 0x10001
+hang the core until power-off. Left: the pictures with bit 16; the sort-off order (a clocked model); what in a render
+sets off the two hangs (each costs a power cycle).
 
 **A2. FPU_PERP_VAL** (0x084, "IEEE floating point value for perpendicular triangle compare", default 0).
 22 dumps set 0x3c000000 (1/128): floigan_*, nba2k_*, ncaa2k2_*, nfl2k1_*, oogabooga_* (Visual Concepts); all 22
