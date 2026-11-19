@@ -1,0 +1,139 @@
+# Probes to do (2026-11-19)
+
+The work list after the SupSample / trilinear / bump-light round (README: supsample .. ssrare). Each item: what is
+known, the pixel-level probe (P: the console's picture against refsw3-offline, or the console against itself with
+one setting changed), the timing probe (T: timemeas's method, one tile, STARTRENDER to the TSP's end-of-render bit
+on the CPU's cycle counter, README "timemeas"), and what it would change.
+
+Step 0, harness: a way to override a pvrsetup.h register for any existing test without editing it
+(`TEST_DEFS="-DSETUP_REG=0x030:0x000"` or similar), so that whole existing tests can be rerun with one register
+changed and compared console against console. A1, A2, A4 and A5 need it.
+
+Priority, as discussed: A1, then C1 (A1 may explain it), A2, B, then the rest.
+
+## A. Registers refsw3 ignores
+
+All 790 polly2-data dumps (their registers tallied 2026-11-19) and every test use one value for each of these, so
+refsw3 models that value only. Only FPU_PERP_VAL is set otherwise by games.
+
+**A1. SPAN_SORT_CFG** (0x030: span sort enable bit 0, offset sort enable bit 8, TSP cache bypass bit 16).
+Every dump and test: 0x101. The manual calls it a performance feature ("span sort minimizes TS preprocessing,
+offset sort optimizes TSP parameter fetching"), but the span sorter is what forms and orders the runs the TSP
+shades (timemeas TM_ORDER: a window of 96 runs, drained one primitive at a time; PIPELINE_SHAPE.md [2b]), and every
+TSP value depends on its run (n steps from the run's first pixel; SupSample's half steps even more).
+- P: rerun ssrare, ssvol, supsample2, uvrun, uvspan, ptruns, blendpos (the tile buffers), blendsel
+  (tspAlphaStuck: order dependent) with 0x000, 0x001, 0x100 (the manual's "setting prohibited"), 0x10101; console
+  against the 0x101 run. A difference anywhere means the run model needs the setting.
+- T: timemeas's run scenes (runs a line, more than 12 triangles on a line, textured with offset) and TM_ORDER (the
+  order of shading) with each setting: is the order raster order without the sorter, what each grouping saves.
+
+**A2. FPU_PERP_VAL** (0x084, "IEEE floating point value for perpendicular triangle compare", default 0).
+22 dumps set 0x3c000000 (1/128): floigan_*, nba2k_*, ncaa2k2_*, nfl2k1_*, oogabooga_* (Visual Concepts); all 22
+already match the console, so nothing there triggered it. No test sets it.
+- P: rerun covmeas's sliver, degen, tiny, lean and skew mixes, the zs25 depth probes, faredge and detinf with 0,
+  1/128, 1, 2^20, -1, infinity; console against the 0 run. Then a sweep of its own: triangles turned toward edge-on
+  (depth slope 2^-10 .. 2^20 a pixel, area from a pixel to a tile) against each value, to find what is compared
+  (a depth slope, the area, the determinant against the depth range) and what happens (culled, depth or colour
+  clamped, drawn flat).
+- T: the ISP's cost per triangle for edge-on triangles at each value.
+- Possibly the open sliver depth (C2): both are almost edge-on geometry.
+
+**A3. TEXT_CONTROL** code book endian (bit 17), index endian (bit 16), bank bit (12..8). Never set by a game.
+- P: texfmt / sample variants with each bit, read with address-revealing textures (texgen: every word its own
+  index): which bytes the big-endian code book and index orders swap (16, 32 or 64 bit units; 4 bpp nibble order),
+  and the address mapping for each bank bit position. Then implement in refsw3's fetch.
+
+**A4. ISP_FEED_CFG** discard mode (bit 3) and translucent cache size (23..14). Every dump: 0x00800408 (discard 1,
+cache 512); ptchunk* covered the punch-through chunk size.
+- P: autosort scenes with more layers on a pixel than the cache size (cache 8, 16, 32 .. 512), discard 0 and 1;
+  console against the default.
+- T: autosort cost against the cache size.
+
+**A5. FPU_PARAM_CFG burst sizes and thresholds, SDRAM_REFRESH / SDRAM_ARB_CFG / SDRAM_CFG, FB_BURSTCTRL.**
+Timing only, by the manual.
+- T: timemeas totals with each changed. P: one check that the pictures do not change.
+
+**A6. The strip buffer** (FB_R_CTRL bit 22, strip size 21..16, FB_W_SOF2): measured by sof2sweep, not implemented
+in refsw2 or refsw3, used by no dump.
+- P: implement from sof2sweep and score it; the oddities as pages of their own (one pixel of the second strip's
+  first tile in the first buffer, 16-line strips, tiles column by column, with the scaler on); how the display
+  reads strips (FB_R_SOF2) was not looked at; a strip render once left the core stuck for the renders after it.
+- T: does the strip mode change the render time.
+
+## B. The YUV converter (TA_YUV_TEX_BASE 0x148, TA_YUV_TEX_CTRL 0x14c, TA_YUV_TEX_CNT 0x150)
+
+Every Sofdec FMV goes through it. nulldc3's emulator has one (libswirl/hw/pvr/pvr_yuv.cpp), refta does not, and no
+console test checks the converter itself (yuvbil only reads YUV422 textures). From the manual: YUV_Form 0 =
+YUV420 input, 1 = YUV422 input; YUV_Tex 0 = one texture of (U_Size + 1) * 16 x (V_Size + 1) * 16 pixels,
+1 = (U_Size + 1) * (V_Size + 1) textures of 16x16; U sizes 16 .. 1024, stride U sizes 32 .. 992 (odd settings
+0x05 .. 0x3B, 0x3D); writing TA_YUV_TEX_BASE initializes the converter, which then takes the next input as U data;
+TA_YUV_TEX_CNT counts the macroblocks stored and is cleared by that write.
+- P: macroblocks of known values through the TA's YUV path, video memory read back (dump32) and compared byte for
+  byte with pvr_yuv.cpp: how YUV420's chroma becomes YUV422's (each chroma row twice, or two rows averaged), the
+  byte order of the YUV422 words, the layout for YUV_Tex 0 and 1 and each size (twiddled or not), stride sizes,
+  the 16x16 textures' order for YUV_Tex 1.
+- Edges: TA_YUV_TEX_BASE written in the middle of a macroblock; more macroblocks than the texture holds;
+  TA_YUV_TEX_CNT after each one; YUV input between list input in one frame; store queues against DMA.
+- T: macroblocks a second (TA_YUV_TEX_CNT polled against the cycle counter), the end-of-conversion interrupt's
+  latency, whether conversion holds up list input.
+
+## C. Open pixel-level loops
+
+**C1. ssrare: SupSample points half a line down, one grid unit high on some planes.** 24 pixels of 6.1 million
+(README ssrare); per plane (hits cluster by tile), those planes' B / 2 is 0.69 .. 0.94 of a unit above the grid;
+the rarer condition is unknown; eight arithmetic variants ruled out.
+- P: read the value at the hy = 1 points directly, plane by plane: a texture that is zero but for one row, and V
+  planes such that only the points half a line down land on that row (the average then is that point's texel / 4);
+  a coordinate ramp in that row reads the point's value to a fraction of a unit. Sweep the plane's B / 2 and C
+  fractions, the line, the run start. Compare with the next line's whole-step value (does the TSP step from it?).
+- A1 first: if the span sorter's grouping changes these points, the cause is in how the TSP walks a span.
+
+**C2. Sliver depth (zs25, the ISP)**: 619 of 7,795 pixels of slivers with a nonzero determinant and different
+corner depths outside the console's 0.1-wide brackets. First, from the archived data (no console): do the misses
+cluster by triangle, a whole plane a unit off as in C1? Then probes from what that shows. A2 may bear on it.
+
+**C3. Sliver colours**: the TSP colour model gives 0 at 870 sliver pixels a console shows (a determinant of a few
+units: division by almost zero, 1/w below zero unmeasured); 4 sliver pixels with a negative model depth are drawn.
+
+**C4. The regression's known misses**: detinf 478 / 480 (stored depth below 2^-125), faredge 1245 / 1340 (pages 8 to
+11, the K 127 vertical triangles), modvol 187 / 192 (two-volume cells at extreme depth), hugepos from 2^114 and the
+translucent sort's cross-talk with garbage depths (from 2^62). Each has its README section.
+
+**C5. The 7 dumps that still miss**: sydney_race 1258, sydney_stadium 741, dynamite_attract 53, f1wgp_driver 5,
+f1wgp_race 2, ff2_fight 1, vrally_rally4 1 pixels. dumprender (partial tiles, objects dropped, 32 bit frame
+buffer), then the primitive alone in a test (the bumpiso method).
+
+**C6. Translucent modifier volumes**: not covered (the modvol test's translucent modifier list blanked a console's
+frame and was left out). Whether any dump uses them: not checked.
+
+**C7. Render to texture** and its 1555 / 4444 formats: not covered.
+
+**C8. tspAlphaStuck** (blendsel): not measured with textured polygons, what else clears it in a tile, the
+automatic sort.
+
+**C9. HALF_OFFSET** with its half-pixel bits off: how the TSP samples (only measured at pixel centres); with
+SupSample.
+
+**C10. SupSample with the rest**: punch-through in a modifier volume (the PT_MOD pass), translucent modifier
+volumes, sprites, 16 bit UVs, palette and YUV textures, render to texture, DCalcCtrl with perspective.
+
+**C11. Dumps not run**: the 4 that keep a console busy for minutes (garou_intro, garou_title, gunbird2_title,
+td6_menu: what keeps it busy, see T below) and the 65 old-format dumps.
+
+**C12. refsw2** (the emulator's renderer): its SupSample, trilinear and bump-light ports are unverified; its mipmap
+level is a rough estimate (no console test is close); no strip buffer. Score it against the archived tests once
+its mipmap level follows refsw3's.
+
+## D. Timing probes
+
+- **D1. SupSample's cost**: per pixel and per run against the same scene without it (four points: four times the
+  TSP's work, or a pipeline that hides some), with point, bilinear, mipmapped, fog, offset.
+- **D2.** Trilinear (two passes: twice the scene), two-volume polygons inside and outside a volume, bump maps
+  (bumphang: they stop the render sooner), the punch-through passes.
+- **D3.** The span sorter settings (A1) and the TSP cache bypass, SPAN_SORT_CFG bit 16 and the per-polygon
+  CacheBypass bit: parameter fetch cost per primitive with and without the cache.
+- **D4.** FPU_PERP_VAL (A2): the ISP's cost per edge-on triangle.
+- **D5.** The YUV converter's throughput (B).
+- **D6.** The busy dumps (C11): replay each on a console (pvr-renderer) and time STARTRENDER to the end of render;
+  which tiles take the time (one tile at a time in the region array).
+- **D7.** SDRAM and burst settings (A5).
