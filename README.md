@@ -1832,9 +1832,9 @@ the manual calls the sorts performance features. The span sorter orders the runs
 a window of 96 runs); whether it also makes the runs (their first pixels, from which every TSP value is stepped) was
 open (TODO A1). Each setting against the console's own 0x101 run of the same session:
 
-- **Pictures: none changes.** With 0x000, ssrare, uvrun, uvspan, ptruns, blendsel, supsample2, sscolor and accbuf
-  (128 pages) and timemeas's 17 layouts are the console's 0x101 pictures bit for bit (as is a second 0x101 run);
-  timemeas with 0x001 too. The runs and their first pixels are made before the sorter, which only orders them;
+- **Pictures: none changes.** With 0x000, ssrare, uvrun, uvspan, ptruns, blendsel, supsample2, sscolor, accbuf,
+  ssvol, supsample, optrun, ptlayers, blendsel2 and blendpos (218 pages) and timemeas's 17 layouts are the console's
+  0x101 pictures bit for bit (as is a second 0x101 run); with 0x001 the first eight and timemeas too. The runs and their first pixels are made before the sorter, which only orders them;
   ssrare's open points (TODO C1) are not the sorter's.
 - **Offset sort (bit 8): a strip's triangles are one primitive to the sorter.** In the order scenes of sprites each
   primitive has a parameter block of its own and 0x001 orders as 0x101. Columns made of strips of two triangles
