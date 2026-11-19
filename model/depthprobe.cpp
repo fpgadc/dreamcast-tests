@@ -12,6 +12,7 @@
 #include <vector>
 #include <map>
 #include "pvr_isp_depth.h"
+#include "f32bits.h"
 
 struct Rec { float x[3], y[3], z[3], px, py; double lo, hi; };
 
@@ -71,8 +72,8 @@ int main(int argc, char** argv)
         for (const auto& r : recs) {
             int tx = (int)floor(r.px / 32) * 32, ty = (int)floor(r.py / 32) * 32;
             pvrisp::DepthTile d;
-            d.Setup(r.x, r.y, r.z, tx, ty, cfg);
-            double m = d.At((int)(r.px - tx), (int)(r.py - ty), true);
+            d.Setup(F32s(r.x), F32s(r.y), F32s(r.z), tx, ty, cfg);
+            double m = d.At((int)(r.px - tx), (int)(r.py - ty), true).toDouble();
             bool ok = (std::isnan(r.lo) || m >= r.lo) && (std::isnan(r.hi) || m < r.hi);
             right += ok;
             if (!std::isnan(r.lo) && !std::isnan(r.hi)) { both++; bothRight += ok; }

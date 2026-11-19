@@ -37,18 +37,18 @@ static pvrtsp::MipChoice Choice(const Model& m, const Tri& t, float W)
     const float fz[3] = { (float)t.z[0], (float)t.z[1], (float)t.z[2] };
     const float fu[3] = { (float)t.u[0], (float)t.u[1], (float)t.u[2] }, fv[3] = { (float)t.v[0], (float)t.v[1], (float)t.v[2] };
     pvrtsp::Plane pu, pv, pw;
-    pu.Setup(fx, fy, fz, fu, m.plane);
-    pv.Setup(fx, fy, fz, fv, m.plane);
-    pw.Setup(fx, fy, fz, nullptr, m.plane);
+    pu.Setup(F32s(fx), F32s(fy), F32s(fz), F32s(fu), m.plane);
+    pv.Setup(F32s(fx), F32s(fy), F32s(fz), F32s(fv), m.plane);
+    pw.Setup(F32s(fx), F32s(fy), F32s(fz), nullptr, m.plane);
     const float first[5] = { fu[0], fv[0], fz[0], fx[0], fy[0] };
-    return pvrtsp::MipSelect(pu, pv, pw, pvrfp::Fp::FromFloat(W), SIZE_LOG2, t.bias, t.dcalc ? first : nullptr);
+    return pvrtsp::MipSelect(pu, pv, pw, pvrfp::Fp::FromFloat(W), SIZE_LOG2, t.bias, F32s(t.dcalc ? first : nullptr, 5));
 }
 
 // K of the triangle (the model's, before its cut to 8 bits)
 static double KOf(const Model& m, const Tri& t)
 {
     pvrtsp::mipKVariant = 0;
-    return Choice(m, t, (float)t.z[0]).kFull;
+    return Choice(m, t, (float)t.z[0]).kFull.toDouble();
 }
 
 // the level of every covered pixel (-1: not covered), with the variant given
@@ -149,8 +149,9 @@ static int LoStair(uint64_t seed, const std::string& outDir)
                 a.u[1] = Step(t.u[1], -400); c.u[1] = Step(t.u[1], 400);
                 const auto ca = Choice(model, a, (float)t.z[0]), cc = Choice(model, c, (float)t.z[0]);
                 int ea, ec;
-                const double ma = frexp(ca.kFull, &ea) * 256, mc = frexp(cc.kFull, &ec) * 256;
-                if ((int)ma != 129 || (int)mc != 130 || ca.level == cc.level || ca.kFull < 2) continue;
+                const double ka = ca.kFull.toDouble(), kc = cc.kFull.toDouble();
+                const double ma = frexp(ka, &ea) * 256, mc = frexp(kc, &ec) * 256;
+                if ((int)ma != 129 || (int)mc != 130 || ca.level == cc.level || ka < 2) continue;
                 break;
             }
             for (int s = 0; s < 20; s++) {

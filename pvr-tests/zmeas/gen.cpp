@@ -332,10 +332,10 @@ static Json MakeReach(Rng& rng)
         const float fx[3] = { (float)t.x[0], (float)t.x[1], (float)t.x[2] }, fy[3] = { (float)t.y[0], (float)t.y[1], (float)t.y[2] };
         const float fz[3] = { (float)t.z[0], (float)t.z[1], (float)t.z[2] };
         pvrisp::DepthTile d;
-        d.Setup(fx, fy, fz, p.tx, p.ty, model.depth);
+        d.Setup(F32s(fx), F32s(fy), F32s(fz), p.tx, p.ty, model.depth);
         if (!d.valid)
             continue;
-        const double v = d.At(p.i, p.j, true);
+        const double v = d.At(p.i, p.j, true).toDouble();
         if (!(v > 0) || !std::isfinite(v))
             continue;                               // a probe measures positive depths
         int bin, excess = 0;

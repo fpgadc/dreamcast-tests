@@ -26,7 +26,7 @@ sets off the two hangs (each costs a power cycle).
 **A2. FPU_PERP_VAL**: done 2026-11-19 (README perpval): a triangle with |det| <= |FPU_PERP_VAL| is drawn as one of
 determinant zero (mean depth, flat colour at the third corner); sign ignored; modelled, exact at 1/128, 1, -1, 2^20 on
 16 sets. Left: an infinite value on huge or infinite determinants (faredge, detinf); the mean's arithmetic (zmeas gen5
-at 2^20: 3,807 of 174,646 pixels, the dataset to pin it); the ISP's cost (D4).
+at 2^20: 3,807 of 174,646 pixels, the dataset to pin it); the ISP's cost (D4). A determinant equal to it counts (perpeq, 1800 of 1800).
 
 **A3. TEXT_CONTROL**: measured 2026-11-19 (README texctl): bit 16 moves VQ index reads (^8) and code book entries
 (^1); bit 17 swaps the bytes of every 16-bit unit of texture data in every format; the bank bits move VQ reads only.
@@ -106,6 +106,12 @@ its mipmap level follows refsw3's.
 vertex's offset colour, as sent, of the last primitive with the offset bit the TSP shaded; across tiles, renders and
 core resets; 0 after power-on; only bump maps without the offset bit read it. Modelled (offsKept). Left: an all-zero
 setter (dropped planes), how long it lasts powered off.
+
+**C14. The number formats at their edges** (README "refsw3 without float", 2026-11-19): cullval (register size
+only, NaN = +inf), perpeq, zneg, trimin done and modelled. Open: bgspec (backgrounds below zero, -inf, NaNs, the
+largest float: how the background store encodes them), zspec (polygons with a NaN / infinite / huge corner depth:
+black, with a varying depth; depths around 2^-126), texfar (clamped coordinates above 2^128 in 1/256 texel: the
+last texel).
 
 ## D. Timing probes
 

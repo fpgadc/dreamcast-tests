@@ -112,8 +112,8 @@ struct Planes {
         for (int k = 0; k < 3; k++) {
             fx[k] = (float)t.x[k]; fy[k] = (float)t.y[k]; fz[k] = (float)t.z[k]; fu[k] = (float)t.u[k];
         }
-        u.Setup(fx, fy, fz, fu, model.plane);
-        w.Setup(fx, fy, fz, nullptr, model.plane);
+        u.Setup(F32s(fx), F32s(fy), F32s(fz), F32s(fu), model.plane);
+        w.Setup(F32s(fx), F32s(fy), F32s(fz), nullptr, model.plane);
     }
 
     // The texel number the test reads at pixel (i, j) of the cell when the pixel's run starts at column

@@ -18,6 +18,7 @@
 #include <vector>
 #include "pvr_isp_edge.h"
 #include "pvr_tsp_plane.h"
+#include "f32bits.h"
 
 using pvrfp::Fp;
 
@@ -107,8 +108,8 @@ static long score(const Set& s, const pvrtsp::PlaneConfig& cfg, int misses, bool
         pvrtsp::Plane w, u;
         pvrtsp::PlaneConfig wc = cfg;
         if (wFixed >= 0) wc.valueFixed = wFixed;
-        w.Setup(tr.x, tr.y, tr.z, nullptr, wc);
-        u.Setup(tr.x, tr.y, tr.z, tr.u, cfg);
+        w.Setup(F32s(tr.x), F32s(tr.y), F32s(tr.z), nullptr, wc);
+        u.Setup(F32s(tr.x), F32s(tr.y), F32s(tr.z), F32s(tr.u), cfg);
         Fp fx[3], fy[3];
         for (int k = 0; k < 3; k++) { fx[k] = Fp::FromFloat(tr.x[k]); fy[k] = Fp::FromFloat(tr.y[k]); }
         bool bad;

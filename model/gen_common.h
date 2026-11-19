@@ -13,6 +13,7 @@
 */
 #pragma once
 #include <cstdint>
+#include "f32bits.h"
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
@@ -393,18 +394,19 @@ struct Coverage {
     void Setup(const Model& m, const double* x, const double* y, int corners, int tileLeft, int tileTop, bool centers = true, bool rows = true)
     {
         Fp fx[4], fy[4];
-        float yf[4];
         n = corners; top = tileTop;
         first = -1e300; last = 1e300;
         for (int k = 0; k < n; k++) {
             fx[k] = Fp::FromFloat((float)x[k]); fy[k] = Fp::FromFloat((float)y[k]);
-            yf[k] = (float)y[k];
         }
         const int sgn = pvrisp::Winding(fx, fy, m.edge, &bad);
         if (bad)
             return;
-        if (rows)
-            pvrisp::RowRange(yf, n, &first, &last);
+        if (rows) {
+            int64_t f, l;
+            pvrisp::RowRange(fy, n, &f, &l);
+            first = (double)f; last = (double)l;
+        }
         const int h = centers ? 1 : 0;
         for (int k = 0; k < n; k++)
             e[k].Setup(fx[k], fy[k], fx[(k + 1) % n], fy[(k + 1) % n], 2 * (int64_t)tileLeft + h, 2 * (int64_t)tileTop + h, sgn, m.edge);
@@ -435,8 +437,8 @@ inline double IspDepth(const Model& m, const double* x, const double* y, const d
     const float fx[3] = { (float)x[0], (float)x[1], (float)x[2] }, fy[3] = { (float)y[0], (float)y[1], (float)y[2] };
     const float fz[3] = { (float)z[0], (float)z[1], (float)z[2] };
     pvrisp::DepthTile d;
-    d.Setup(fx, fy, fz, p.tx, p.ty, m.depth);
-    return d.At(p.i, p.j, true);
+    d.Setup(F32s(fx), F32s(fy), F32s(fz), p.tx, p.ty, m.depth);
+    return d.At(p.i, p.j, true).toDouble();
 }
 
 // The column in its tile of the first pixel of the triangle on the pixel's line (0 when the triangle is not on
@@ -464,7 +466,7 @@ inline Fp TspPlane(const Model& m, const double* x, const double* y, const doubl
     if (attr)
         for (int k = 0; k < 3; k++) fa[k] = (float)attr[k];
     pvrtsp::Plane pl;
-    pl.Setup(fx, fy, fz, attr ? fa : nullptr, m.plane);
+    pl.Setup(F32s(fx), F32s(fy), F32s(fz), F32s(attr ? fa : nullptr), m.plane);
     if (pl.bad) {
         Fp v;
         v.bad = true;

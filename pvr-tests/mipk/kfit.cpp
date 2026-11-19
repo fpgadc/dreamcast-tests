@@ -104,7 +104,7 @@ static Cell MakeCell(const float* x, const float* y, const float* z, const float
 {
     pvrtsp::PlaneConfig pc;
     Cell c;
-    c.pu.Setup(x, y, z, u, pc); c.pv.Setup(x, y, z, v, pc); c.pw.Setup(x, y, z, nullptr, pc);
+    c.pu.Setup(F32s(x), F32s(y), F32s(z), F32s(u), pc); c.pv.Setup(F32s(x), F32s(y), F32s(z), F32s(v), pc); c.pw.Setup(F32s(x), F32s(y), F32s(z), nullptr, pc);
     c.uA = c.pu.A0; c.uB = c.pu.B0; c.uC = c.pu.C0; c.vA = c.pv.A0; c.vB = c.pv.B0; c.vC = c.pv.C0;
     c.wA = c.pw.A0; c.wB = c.pw.B0; c.wC = c.pw.C0;
     c.inv = pvrfp::Recip(c.pw.Sdet, 24);
@@ -257,7 +257,7 @@ int main(int argc, char** argv)
         for (int k = 0; k < 3; k++) {
             x[k] = cx + q.tri[k][0]; y[k] = cy + q.tri[k][1]; z[k] = F(q.z[k]); u[k] = F(q.uv[k][0]); v[k] = F(q.uv[k][1]);
         }
-        c.pu.Setup(x, y, z, u, pc); c.pv.Setup(x, y, z, v, pc); c.pw.Setup(x, y, z, nullptr, pc);
+        c.pu.Setup(F32s(x), F32s(y), F32s(z), F32s(u), pc); c.pv.Setup(F32s(x), F32s(y), F32s(z), F32s(v), pc); c.pw.Setup(F32s(x), F32s(y), F32s(z), nullptr, pc);
         c.uA = c.pu.A0; c.uB = c.pu.B0; c.uC = c.pu.C0; c.vA = c.pv.A0; c.vB = c.pv.B0; c.vC = c.pv.C0;
         c.wA = c.pw.A0; c.wB = c.pw.B0; c.wC = c.pw.C0;
         c.inv = pvrfp::Recip(c.pw.Sdet, 24);
@@ -274,7 +274,7 @@ int main(int argc, char** argv)
         float x[3] = { 0x1.55abe4p+6f, 0x1.660df4p+6f, 0x1.5a3fa4p+6f }, y[3] = { 0x1.bcec4p+8f, 0x1.bb4acap+8f, 0x1.b8c50cp+8f };
         float z[3] = { 0x1.6ae9c6p+5f, 0x1.6d18c2p+5f, 0x1.6d0f18p+5f }, u[3] = { 0x1.60281cp-2f, 0x1.93711p-2f, 0x1.51be6ep-2f };
         float v[3] = { 0x1.01a24p-1f, 0x1.a7996p-2f, 0x1.a23314p-2f };
-        c.pu.Setup(x, y, z, u, pc); c.pv.Setup(x, y, z, v, pc); c.pw.Setup(x, y, z, nullptr, pc);
+        c.pu.Setup(F32s(x), F32s(y), F32s(z), F32s(u), pc); c.pv.Setup(F32s(x), F32s(y), F32s(z), F32s(v), pc); c.pw.Setup(F32s(x), F32s(y), F32s(z), nullptr, pc);
         c.uA = c.pu.A0; c.uB = c.pu.B0; c.uC = c.pu.C0; c.vA = c.pv.A0; c.vB = c.pv.B0; c.vC = c.pv.C0;
         c.wA = c.pw.A0; c.wB = c.pw.B0; c.wC = c.pw.C0;
         c.inv = pvrfp::Recip(c.pw.Sdet, 24);

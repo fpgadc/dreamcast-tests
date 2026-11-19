@@ -37,7 +37,7 @@ static bool Evaluate(const Model& model, Case& c, int left, int top)
     for (int v = 0; v < 3; v++) {
         pvrisp::DepthConfig cfg = model.depth;
         cfg.startOnSlopes = v;
-        d[v].Setup(c.x, c.y, c.z, left, top, cfg);
+        d[v].Setup(F32s(c.x), F32s(c.y), F32s(c.z), left, top, cfg);
         if (!d[v].block)
             return false;
     }
@@ -51,7 +51,7 @@ static bool Evaluate(const Model& model, Case& c, int left, int top)
                 continue;
             float v[3];
             for (int k = 0; k < 3; k++) {
-                v[k] = d[k].At(i, j, true);
+                v[k] = d[k].At(i, j, true).toDouble();
                 if (!(v[k] > 0) || !std::isfinite(v[k]))
                     return false;
             }

@@ -1510,7 +1510,7 @@ environment variable `MIP_ARITH`, and `MIP_ARITH=n bash archive_check.sh mipmeas
 | 0 | w * w cut to 8 bits, times K cut to 8 bits (the rule above) | 8 of 8 | none |
 | 1 | exponents only: L = e_K + 2 e_w, no fraction | 0 | 386,637 .. 2,286,280 |
 | 2 | log with the mantissa taken as linear (log2 m ~ m - 1), added, back the same way | 2 | 168,768 .. 1,879,637 |
-| 3 | exact log and antilog of the 8 bit numbers (a log domain with perfect tables) | 2 | 108,864 .. 668,908 |
+| 3 | exact log and antilog of the 8 bit numbers (a log domain with perfect tables; in doubles, so no longer in refsw3 since 2026-11-19) | 2 | 108,864 .. 668,908 |
 | 4 | K * w^2 at full precision, no cuts | 0 | 25,116 .. 1,912,620 |
 | 5 | the rule without its cut of w * w | 2 | 108,864 .. 664,420 |
 | 6 | the rule with K * w^2 rounded instead of cut | 0 | 10,212 .. 1,227,074 |
@@ -3362,6 +3362,39 @@ now waits 2 s, resets the core (SOFTRESET 2, then 0) and goes on, and the log sa
 - The count carries over to the next render (ten quads a render: the second render stops at its sixth) and
   starts again after the core reset.
 - Why is not known. sample leaves that variant's bilinear cells empty; refsw2 draws such pages to the end.
+
+## refsw3 without float: the number formats at their edges (2026-11-19)
+
+refsw3 (nulldc3 refsw3/refcore) does all its arithmetic in pvr_softfp.h and integers now, with the hardware's
+precisions baked in as template constants; floats are only an input format (vertices, registers: their bits). Where
+the float code had decided something no test had measured, a test went to the console:
+
+- **cullval** (16 pages, FPU_CULL_VAL at 1, -1, 2, -2, 0.5, -0.5, +0, -0, +-inf, NaN, -NaN, a signalling NaN,
+  +-2^-149, 1e30; slivers and exact right triangles, CullMode 1-3): **only the register's size counts, and every
+  NaN culls like +infinity** (pages with -x are the pages with x, pixel for pixel; -inf, NaN, -NaN, sNaN are +inf's).
+  Equal is culled (as raster page 4). Modelled; 4800 of 4800 regions.
+- **perpeq** (15 pages: FPU_PERP_VAL at 3/8, 1, 2, 12, 64, each exactly and one ulp either side, against
+  determinants of exactly those sizes): **a determinant equal to it counts** (drawn as determinant zero). 1800 of
+  1800 regions as modelled.
+- **zneg** (4 pages: two flat polygons, depths from -2^100 to 2^100, both zeros, compared Greater and Less): two
+  polygons' depths compare as floats do, below zero too, -0 = +0. 1200 of 1200 regions as modelled.
+- **trimin** (one page: trilinear passes A and B, both added, bilinear, point, VQ and SupSample at the levels from
+  the one before the 1x1 to 20, of 8 x 8 and 64 x 64 textures; the level and fraction of each cell put exactly by
+  the model, gen.cpp): **no level goes past the 1x1 one**: pass B at the 1x1 level and every level past it read the
+  1x1 level, faded by the fraction all the same; the three texels in front of the 1x1 level are never read. 180 of
+  180 cells as refsw3 had it (which until then relied on the texture filter's clamp; mipChoose bounds it now).
+- **bgspec** (16 backgrounds: below zero, +-0, +-2^-149, +-inf, NaNs, the largest float, +-1 with low bits; probes
+  at 20 depths in the six compares, the translucent and punch-through walks): open. Backgrounds of 0, +-0, the
+  denormals, 1 + low bits, +inf are as modelled; a background below zero, -inf or a NaN is stored as something that
+  orders differently from the float (at -1: -2, -1, -0.5, -2^-20 are below it, -inf and -1e30 above it); the largest
+  float stores as something above +inf and NaN. 2133 of 2560 regions.
+- **zspec** (7 pages: polygons with a NaN, +-inf or huge first-corner depth; sloped depths around 2^-126 against
+  flat probes): open. Such a polygon is drawn black on the console, with a depth that changes across it; refsw3
+  draws it in its colour at the first corner's depth. Depths around 2^-126 do not follow a float's denormals.
+  879 of 1040 regions.
+- **texfar** (one page: u of 3.5 to the largest float, both signs, +-inf, NaN; clamp, flip, wrap; 8 and 64 texels):
+  open. Clamped, a coordinate above 2^128 in 1/256 texel gives the last texel (refsw3: texel 0, the old float
+  code's overflow); exactly 2^128, +inf and NaN give texel 0 as modelled. Flip and wrap as modelled. 132 of 160.
 
 ## Still not covered
 

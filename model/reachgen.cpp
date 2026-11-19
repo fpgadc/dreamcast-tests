@@ -22,6 +22,7 @@
 #include <vector>
 #include "pvr_isp_edge.h"
 #include "pvr_tsp_plane.h"
+#include "f32bits.h"
 
 using pvrfp::Fp;
 
@@ -50,8 +51,8 @@ static void readings(const Tri& tr, int reach, std::vector<int>& out)
     pvrtsp::PlaneConfig cfg;
     cfg.reach = reach;
     pvrtsp::Plane w, u;
-    w.Setup(tr.x, tr.y, tr.z, nullptr, cfg);
-    u.Setup(tr.x, tr.y, tr.z, tr.u, cfg);
+    w.Setup(F32s(tr.x), F32s(tr.y), F32s(tr.z), nullptr, cfg);
+    u.Setup(F32s(tr.x), F32s(tr.y), F32s(tr.z), F32s(tr.u), cfg);
     if (w.bad || u.bad)
         return;
     Fp fx[3], fy[3];

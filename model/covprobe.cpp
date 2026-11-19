@@ -14,6 +14,7 @@
 #include <map>
 #include "pvr_isp_edge.h"
 #include "pvr_isp_depth.h"
+#include "f32bits.h"
 
 using pvrfp::Fp;
 
@@ -57,11 +58,9 @@ static void raster(const Poly& p, const int* k, int n, bool rows, int half, cons
                    const float* zs = nullptr, float probez = 0)
 {
     Fp x[4], y[4];
-    float fy[4];
     float xmin = 1e30f, xmax = -1e30f, ymin = 1e30f, ymax = -1e30f;
     for (int i = 0; i < n; i++) {
         x[i] = Fp::FromFloat(p.x[k[i]]); y[i] = Fp::FromFloat(p.y[k[i]]);
-        fy[i] = p.y[k[i]];
         if (p.x[k[i]] < xmin) xmin = p.x[k[i]];
         if (p.x[k[i]] > xmax) xmax = p.x[k[i]];
         if (p.y[k[i]] < ymin) ymin = p.y[k[i]];
@@ -71,9 +70,9 @@ static void raster(const Poly& p, const int* k, int n, bool rows, int half, cons
     int sgn = pvrisp::Winding(x, y, cfg, &bad);
     if (bad)
         return;
-    double first = -1e300, last = 1e300;
+    int64_t first = INT64_MIN, last = INT64_MAX;
     if (rows)
-        pvrisp::RowRange(fy, n, &first, &last);
+        pvrisp::RowRange(y, n, &first, &last);
     // the tiles the corners' bounding box touches
     if (xmax < 0 || ymax < 0 || xmin >= 640 || ymin >= 480)
         return;
@@ -88,7 +87,7 @@ static void raster(const Poly& p, const int* k, int n, bool rows, int half, cons
             if (zs) {
                 static const pvrisp::DepthConfig dcfg;
                 const float px[3] = { p.x[k[0]], p.x[k[1]], p.x[k[2]] }, py[3] = { p.y[k[0]], p.y[k[1]], p.y[k[2]] };
-                depth.Setup(px, py, zs, tx * 32, ty * 32, dcfg);
+                depth.Setup(F32s(px), F32s(py), F32s(zs), tx * 32, ty * 32, dcfg);
             }
             for (int j = 0; j < 32; j++) {
                 int row = ty * 32 + j;
@@ -104,7 +103,7 @@ static void raster(const Poly& p, const int* k, int n, bool rows, int half, cons
                     for (int q = 0; q < n && in; q++)
                         in = e[q].Inside(i, j);
                     if (in && zs) {
-                        float d = depth.At(i, j, half != 0);
+                        const float d = (float)depth.At(i, j, half != 0).toDouble();
                         // the probe polygon: a strip over the whole screen (TL, TR, BL, BR), flat at probez; what it
                         // stores at this pixel comes out of the same depth unit
                         static const pvrisp::DepthConfig dcfg;
@@ -114,8 +113,8 @@ static void raster(const Poly& p, const int* k, int n, bool rows, int half, cons
                         const float qy[3] = { 0.0f, upper ? 0.0f : 480.0f, 480.0f };
                         const float qz[3] = { probez, probez, probez };
                         pvrisp::DepthTile probe;
-                        probe.Setup(qx, qy, qz, tx * 32, ty * 32, dcfg);
-                        float pd = probe.At(i, j, half != 0);
+                        probe.Setup(F32s(qx), F32s(qy), F32s(qz), tx * 32, ty * 32, dcfg);
+                        const float pd = (float)probe.At(i, j, half != 0).toDouble();
                         in = !(d < 0) && !(pd > d);             // not drawn when negative; the probe wins when it is greater
                     }
                     if (in)
