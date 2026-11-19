@@ -1797,10 +1797,12 @@ console frame).
 
     bash run2.sh ptchunkrun_races ptchunkcarry_races off; bash run2.sh ptchunkrun_races ptchunkcarry_races hw=<ip>
 
-polly2-data f1wgp_driver, tile (16, 9): three pixels are a layer in the first pass of a new punch-through chunk whose
-run on the console starts further left than refsw3's (partial render of the tile in 32 bits, and refsw3 with every
-run start forced in turn: only starts at or left of column 19 give the console's colours). ptlayers' readout (B at the
-back, layers in front failing on chosen columns) with the chunk boundary placed by ISP_FEED_CFG's chunk size:
+polly2-data f1wgp_driver, tile (16, 9) led here: three pixels are a layer in the first pass of a new punch-through
+chunk in refsw3, whose run on the console starts further left (partial render of the tile in 32 bits, and refsw3 with
+every run start forced in turn: only starts at or left of column 19 give the console's colours). That tile turned out
+to be a chunk boundary in the wrong place (culled triangles take no room: optcull, ptchunkcost, ptchunklag below), not
+this carry; the two tests measure what they measure regardless. ptlayers' readout (B at the back, layers in front
+failing on chosen columns) with the chunk boundary placed by ISP_FEED_CFG's chunk size:
 
 - `ptchunkrun_races` (15 kinds): with A in the chunk before B, the pixels A resolved take part in B's first pass as
   run-only pixels (their colour kept): B's run starts at its first pixel, as if A and B were one chunk (kinds 0, 4,
@@ -1816,7 +1818,55 @@ back, layers in front failing on chosen columns) with the chunk boundary placed 
   show.
 
 Both are _races tests: regress.sh leaves them out unless named. Archived in fit/hw. f1wgp_driver's other two pixels (a
-layer whose run starts later than refsw3's, 16 or later where refsw3 has 14) are not explained.
+layer whose run starts later than refsw3's) were the same misplaced chunk boundary.
+
+## optcull, ptchunkcost, ptchunklag: culled punch-through primitives (2026-11-19)
+
+    bash run2.sh optcull ptchunkcost ptchunklag off; bash run2.sh optcull ptchunkcost ptchunklag hw=<ip>   # 18 + 40 + 48 pages
+
+Three polly2-data dumps had their last pixels in tiles whose punch-through lists hold triangles the ISP culls
+(CullMode: facing away, or an area at most FPU_CULL_VAL). Each was found with partial renders in 32 bits on the console
+(dumprender) and refsw3 with run starts forced, chunk sizes swept or rules switched per tile, then measured here.
+All three tests use triangles that cover a pixel centre, checked offline to draw with CullMode none and to be culled
+with the mode set.
+
+**optcull: what makes OpInPt.** ff2_fight, tile (10, 12): an opaque run crosses a volume edge on the console (optrun's
+OpInPt) in a tile whose punch-through list holds two culled triangles and draws nothing. optcull reads it as optrun
+(uvrun's steep opaque triangle with the shadow bit, a cheap shadow volume over columns 18-23), with the punch-through
+list of each cell's tile holding one of 9 kinds. A culled triangle (facing away, either CullMode; or small), one
+behind the opaque triangle, a degenerate one, or a thin one between the pixel centres all act as one that draws:
+the opaque runs do not end at the volume (4,204 / 4,239 pixels a page otherwise). No list does not. The rule is that
+the tile's punch-through list holds a primitive, not that its first pass draws. The lists of optrun's dumps
+(sa2_ingame, 18wheel_select and sa2_ingame2) that "draw nothing" hold no primitive at all (an empty list in every
+tile); ff2_fight has 209 such tiles and 65 with primitives that draw nothing, all as the console does them. 18 of 18
+pages.
+
+**ptchunkcost: what a primitive costs in a chunk.** f1wgp_driver tile (16, 9) and vrally_rally4 have chunk
+boundaries that no count of 3 per triangle gives. Read as ptchunk (A, N fillers of one kind, B; chunk 0x20), 8 pages
+a kind: triangles (cost 3), triangles culled facing away, triangles culled as small, strip entries whose first
+triangle is in another tile (mask 010000), strips of two. Culled triangles take no room: B stays in A's chunk with
+12 of them, where 7 triangles that draw already push it out. A strip's triangles outside the tile take no room
+either, and a lead triangle masked off counts nothing (counting it as one or more vertices is wrong from N = 5). 40
+of 40 pages.
+
+**ptchunklag: the primitive right after a culled one.** f1wgp_race, tile (0, 5): the chunk ends one triangle early,
+right after three culled ones (one of a triangle array and two of a strip, corners at 2^19), while tile (1, 7) of the
+same frame, with the same three, needs them to take no room. Counting exactly one of the three fits both; so does
+this rule: the primitive after a culled one is checked against the chunk with the culled one's vertices still
+counted, and then they are gone. Read as ptchunkcost with chunk 0x23 (11 triangles, so that the chunk before B holds
+10 primitives or more and nothing carries: ptchunkcarry_races): A, k = 6 .. 11 fillers, X, B, where X is nothing, a
+triangle culled facing away, one culled small, two culled ones, a culled one and a filler, a sprite culled facing
+away, a strip of two whose second triangle is culled small, or a culled triangle with a corner 2^19 up. All 48 pages
+fit the lag, and each of the other rules misses some: "free" (B one filler later on kinds 1-3, 5-7), "3 each" (two
+culled ones, culled and a filler, the strip), "a run of culled ones costs 3 once" (culled and a filler). Two culled
+ones in a row still count 3. A culled sprite counts 3, not 4: its fourth vertex is not counted yet, as with a sprite
+that is drawn (ptchunkq's lag after a quad).
+
+refsw3 (refsw_lists.cpp: ObjectListHasPrimitive, ptChunkCulled; refsw_tile.cpp: TriangleCulled, the same arithmetic as
+the rasterizer's cull): 18 + 40 + 48 pages, ptchunk / ptchunkq / ptchunkm / ptlayers / ptruns / optrun as before,
+and all 786 polly2-data dumps the console's (ff2_fight, f1wgp_driver, f1wgp_race and vrally_rally4 were the last).
+Archived in fit/hw. Not measured: a primitive with an infinite or NaN corner (draws nothing, not culled; counted as
+stored), and a culled quad right after a drawn quad.
 
 ## ycoeff: the vertical filter's weights, Y_COEFF (2026-11-18)
 
@@ -2788,7 +2838,9 @@ without punch-through drawn in the tile:
 - in a tile where the first punch-through pass draws something (anywhere: kind 10 has it only in a corner outside
   the triangle), the opaque runs do not end at volume edges, and the opaque pixels inside a volume are shaded again
   in the punch-through volume pass, in its runs together with the punch-through pixels there (not alpha tested);
-- a punch-through list that draws nothing in the tile changes nothing (polly2-data sa2_ingame, 18wheel_select).
+  2026-11-19: what counts is a primitive in the tile's list, drawn or not (optcull);
+- a punch-through list that draws nothing in the tile changes nothing (polly2-data sa2_ingame, 18wheel_select: their
+  lists hold no primitive at all).
 refsw2 now looks at the first punch-through pass before shading the opaque list: 24 of 24 pages; jgr_car, jgr and
 jgr_tree_shadows are the console's in all of video memory, jgr_tree_shadows2 is down to one word (a third
 punch-through pass, open with shenmue's): polly2dumps 58 of 63.
@@ -2825,6 +2877,8 @@ cut between chunks.
 - ptchunkm (120 random mixes of triangles, sprites and strips, seed 1): all the console's. The plain "at most S - 2"
   would be wrong on 4 of them, "S - 1" on 5, a lag for every quad stored on 31, no chunks on 92.
 Whether a quad at the boundary itself counts 4 or 3 there is not measured: B lands in the next chunk either way.
+Culled primitives (2026-11-19, optcull / ptchunkcost / ptchunklag): no room, but the primitive right after one is
+checked with 3 more.
 
 refsw2 = the console on all three (3520, 16000 and 9600 regions). polly2dumps: jgr_tree_shadows2, shenmue_intro,
 shenmue_intro3 and shenmue_intro4 are the console's in all of video memory, 62 of 63. Left: shenmue_intro2, 3 words

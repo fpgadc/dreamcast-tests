@@ -110,24 +110,15 @@ units: division by almost zero, 1/w below zero unmeasured); 4 sliver pixels with
 11, the K 127 vertical triangles), modvol 187 / 192 (two-volume cells at extreme depth), hugepos from 2^114 and the
 translucent sort's cross-talk with garbage depths (from 2^62). Each has its README section.
 
-**C5. The dumps that still miss**: f1wgp_driver 5, f1wgp_race 2, ff2_fight 1, vrally_rally4 1 pixels (sydney_race,
-sydney_stadium, dynamite_attract: solved 2026-11-19, README mipdet). Each is one step of a 565 / 4444 channel on a
-bilinear sample (f1wgp and vrally under punch-through layers); the triangles at those pixels drawn on their own read
-the console's U and V on every pixel (uvmeas mix dump, 8 triangles, 2^4), so what differs comes from the tile around
-them: a run start (cut by other polygons, volumes or the punch-through passes). f1wgp_driver tile (16, 9), partial
-renders in 32 bits on the console and forced run starts in refsw3 (2026-11-19):
-- three pixels are a layer in the first pass of a new punch-through chunk (93A9, pass 5) whose run on the console
-  starts at column 19 or before, where refsw3's starts at the pixel: pixels an earlier chunk resolved take part in
-  the next chunk's runs. Letting them in crudely (peeled against the opaque depth, kept colour when behind) fixes 4
-  of the 5 pixels but breaks ptchunk / ptchunkq / ptchunkm (thousands of regions) and f1wgp_race (2 -> 11);
-- two pixels are a layer (89A1, pass 3) whose run on the console starts LATER than refsw3's (16 or later on line 30,
-  17 or 18 on line 31, against 14 and 15): the layer fails the alpha test on the first columns of the run and passes
-  from 16; a run restarting after failed pixels fits line 30, not line 31.
-Done (README ptchunkrun_races, ptchunkcarry_races): whether resolved pixels take part in the next chunk's runs
-depends on the pipeline's timing (small chunks always, large never, in between by the cell's place in the frame):
-needs a clock (the cycle-accurate model). The two pixels of a run starting later, f1wgp_race, ff2_fight and
-vrally_rally4 are still open. refsw3 logs "PASS:" and "SPAN:" lines now (render log). dumprender (partial tiles, objects dropped, 32 bit frame
-buffer), then the primitive alone in a test (the bumpiso method).
+**C5. The dumps that missed: done 2026-11-19, all 786 polly2-data dumps (and the 63 older scenes) are the console's.**
+f1wgp_driver 5, f1wgp_race 2, ff2_fight 1, vrally_rally4 1 pixels were two punch-through rules (README optcull,
+ptchunkcost, ptchunklag): OpInPt is "the tile's punch-through list holds a primitive", drawn or not (ff2_fight's tile
+had two culled triangles); a culled primitive takes no room in a chunk, but the next one is checked with 3 vertices
+more (f1wgp, vrally). The way there: dumprender partial tiles in 32 bits, refsw3 with run starts forced (the forced
+starts pointed at the right pixels but at the wrong cause, a chunk carry: ptchunkrun_races / ptchunkcarry_races came
+out of that and stand on their own), then switching rules per triangle tag until one fit every tile, then a console
+test per rule. Open from here: a culled quad right after a drawn quad; a primitive with an infinite or NaN corner in
+a chunk (counted as stored, not measured).
 
 **C6. Translucent modifier volumes**: not covered (the modvol test's translucent modifier list blanked a console's
 frame and was left out). Whether any dump uses them: not checked.
