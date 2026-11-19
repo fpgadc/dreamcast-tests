@@ -68,8 +68,7 @@ Left: bring covprobe / depthprobe up to refsw3's depth (or retire them for these
 **C3. Sliver colours**: the TSP colour model gives 0 at 870 sliver pixels a console shows (a determinant of a few
 units: division by almost zero, 1/w below zero unmeasured); 4 sliver pixels with a negative model depth are drawn.
 
-**C4. The regression's known misses** (2026-11-19: the only misses left in the regression): detinf 478 / 480 (stored depth below 2^-125), faredge 1245 / 1340 (pages 8 to
-11, the K 127 vertical triangles), modvol 187 / 192 (two-volume cells at extreme depth), hugepos from 2^114 and the
+**C4. The regression's known misses** (2026-11-19, later the same day: detinf and modvol exact, README "refsw3 without float"; faredge 1330 / 1340 left), hugepos from 2^114 and the
 translucent sort's cross-talk with garbage depths (from 2^62). Each has its README section.
 
 **C5. The dumps that missed: done 2026-11-19, all 786 polly2-data dumps (and the 63 older scenes) are the console's.**
@@ -109,12 +108,11 @@ setter (dropped planes), how long it lasts powered off.
 
 **C14. The number formats at their edges** (README "refsw3 without float", 2026-11-19): cullval (register size
 only, NaN = +inf), perpeq, zneg, trimin, bgspec (with zsign, bgneg, bgneg2, bgbig: the ISP's integer depth order,
-the negative background, saturation at 2^127) done and modelled. Open: zspec (README zspec: zbad, zbadbg, zbadk,
-zovf found the three regimes of an overflowing depth plane, the start of 0, the +-2^124 steps wrapping every 32
-pixels from the tile's first pixel, the register read with its top bit flipped; left: k = 0 and 1, the fraction
-bits, the constant-only regime in numbers, then model it; it is likely the same machinery as faredge's
-"constant +-Q, Q = 2^132.07" for the edge unit and modvol's 5 cells; depths around 2^-126), texfar (clamped
-coordinates above 2^128 in 1/256 texel: the last texel).
+the negative background, saturation at 2^127), zspec (with zbad, zbadbg, zbadk, zovf, zword: the overflow
+regimes, the wrapping register and its words, underflow of slopes and start; detinf exact with it), modvol (the
+edge start of +-2^132) done and modelled. Open: faredge's last 10 regions (page 4's strip, page 1's control strip:
+when the edge unit keeps 2^127 instead of 2^132), the NaN-at-TR cell of zbad, zovf's exactly-2^128 cells, texfar
+(clamped coordinates above 2^128 in 1/256 texel: the last texel).
 
 ## D. Timing probes
 
