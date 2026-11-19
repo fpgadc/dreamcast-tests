@@ -114,8 +114,18 @@ translucent sort's cross-talk with garbage depths (from 2^62). Each has its READ
 sydney_stadium, dynamite_attract: solved 2026-11-19, README mipdet). Each is one step of a 565 / 4444 channel on a
 bilinear sample (f1wgp and vrally under punch-through layers); the triangles at those pixels drawn on their own read
 the console's U and V on every pixel (uvmeas mix dump, 8 triangles, 2^4), so what differs comes from the tile around
-them: a run start (cut by other polygons, volumes or the punch-through passes). Next: dumprender of the tile on the
-console with objects dropped one at a time (drop=), to find whose presence changes the pixel. dumprender (partial tiles, objects dropped, 32 bit frame
+them: a run start (cut by other polygons, volumes or the punch-through passes). f1wgp_driver tile (16, 9), partial
+renders in 32 bits on the console and forced run starts in refsw3 (2026-11-19):
+- three pixels are a layer in the first pass of a new punch-through chunk (93A9, pass 5) whose run on the console
+  starts at column 19 or before, where refsw3's starts at the pixel: pixels an earlier chunk resolved take part in
+  the next chunk's runs. Letting them in crudely (peeled against the opaque depth, kept colour when behind) fixes 4
+  of the 5 pixels but breaks ptchunk / ptchunkq / ptchunkm (thousands of regions) and f1wgp_race (2 -> 11);
+- two pixels are a layer (89A1, pass 3) whose run on the console starts LATER than refsw3's (16 or later on line 30,
+  17 or 18 on line 31, against 14 and 15): the layer fails the alpha test on the first columns of the run and passes
+  from 16; a run restarting after failed pixels fits line 30, not line 31.
+Next: a ptlayers-style test across a chunk boundary (steep B at the back in a later chunk, single-tag layers over it
+in earlier chunks failing or passing on chosen columns; and a layer failing on its first columns), to get the rules
+from readings instead of from 5 pixels. refsw3 logs "PASS:" and "SPAN:" lines now (render log). dumprender (partial tiles, objects dropped, 32 bit frame
 buffer), then the primitive alone in a test (the bumpiso method).
 
 **C6. Translucent modifier volumes**: not covered (the modvol test's translucent modifier list blanked a console's
