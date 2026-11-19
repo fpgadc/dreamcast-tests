@@ -1117,10 +1117,12 @@ TSP planes one, the third corner. The rest is what the soft floating point alrea
 | zs25: the same on the slivers (7,848 pixels) | 51, 51, 51, 35, 21, 13, 5, 3, 1, 0 | |
 | points, almost-points, slivers with culling small / ccw / cw | | 0 (nothing drawn but 177 sliver pixels) |
 
-Open: the depth of slivers whose determinant is NOT zero and whose corners have different depths (zs25). Their
-planes have slopes of a hundred per pixel and a start value thousands of times the result; the model is inside
-the console's 0.1 wide bracket on 7,176 of 7,795 such pixels and misses the rest by 0.02 or less mostly. With
-equal corner depths (every earlier sliver probe) nothing is off.
+The depth of slivers whose determinant is NOT zero and whose corners have different depths (zs25) was open here:
+the standalone model (model/covprobe, depthprobe) misses it on 619 of 7,795 pixels. refsw3 itself is the console on
+every zs25 set (archive_check, since zstart 2026-11-18), and on a finer ladder of 2026-11-19 (zs25f_*: probes at
+0.1 .. 3 and 10^-2 .. 10^-4; 1e-5 and 1e-6 do not work as probes) and the same slivers drawn as plain triangles
+(zs25f_tri) as well: the misses are covprobe's alone (all one way, 51 pixels of 16 slivers where the console stores
+under 10^-4, and 1,442 pixels the console leaves undrawn): the probe has not followed the renderer's depth.
 
 ### hugepos: corners at 2^30 to 2^125
 
@@ -1566,7 +1568,13 @@ The manual's figure (3-line filter, then scaling; "scale up repeats lines") is h
   bits of SCALER_CTL only change which lines the scaler takes; putting the fields into two buffers, or into
   alternate lines of one, is up to the software (FB_W_SOF1 and FB_W_LINESTRIDE between renders).
 - **Strip buffer: FB_R_CTRL bit 22, strip size in bits 21..16, is what uses FB_W_SOF2** (`sof2sweep`;
-  KallistiOS's header calls the register "output for strip-buffering"). The picture is cut into strips of
+  KallistiOS's header calls the register "output for strip-buffering"). Modelled in refsw3 (2026-11-19; the
+  console's strip pages, kept in fit/sof2sweep_hw, scored by sof2sweep's PC side): the write-out keeps a strip
+  number that only grows, a line at or below the next strip's first moves it on, even strips to FB_W_SOF1 and odd
+  ones to FB_W_SOF2 at the distance from the strip's first line; every line of both buffers on 10 of the 11 strip
+  pages (row and column order, strips of 16 to 240 lines), but for the one pixel below; the 11th (half-tile strips,
+  tiles column by column) has the buffers swapped for the later columns, and the scaler with strips is scrambled:
+  neither modelled. The picture is cut into strips of
   16 x size lines; they go alternately to FB_W_SOF1 and FB_W_SOF2, each written from the first line of its
   buffer, so a buffer only ever holds one strip. With the tiles row by row and one colour per tile row:
 
@@ -1764,6 +1772,10 @@ C has any fraction there only where another term (A or B times the tile's positi
 is rare. refsw3 (pvr_tsp_plane.h, Value): ssrare 6,144,000 of 6,144,000 pixels, sscolor all; supsample, supsample2,
 ssvol, ssmip, trifade, bumplight, all 786 polly2-data dumps and the 63 older scenes as before.
 
+**Confirmed on the console** (pvr-tests/sshalf, 16 pages whose planes have C off the grid on purpose: 728 pixels
+where the two rules give different colours): the console has the new rule's colour on all 728, the old one's on
+none; the console and refsw3 agree on every pixel. Archived.
+
 **How it was found, without the console** (agents' tools, reusable for any "one unit more, sometimes" miss):
 refsw3-offline rendered ssrare once as it is and once per plane (1/w, U/w, V/w, base and offset colours, each
 volume) with one unit more at every point half a line down. Where a render with the unit differs from the plain
@@ -1826,6 +1838,88 @@ failing on chosen columns) with the chunk boundary placed by ISP_FEED_CFG's chun
 
 Both are _races tests: regress.sh leaves them out unless named. Archived in fit/hw. f1wgp_driver's other two pixels (a
 layer whose run starts later than refsw3's) were the same misplaced chunk boundary.
+
+## perpval: FPU_PERP_VAL, a triangle as "perpendicular" (2026-11-19)
+
+    bash run2.sh perpval+084=<value> covmeas@sliver30+084=<value> ... hw=<ip>     # each next to its +084=0 run
+
+FPU_PERP_VAL (0x084, "comparison value for perpendicular polygons"; 22 polly2-data dumps set 1/128, the rest and
+every test 0). Run at 0, 1/128, 1.0, 2^20, -1 and infinity on 16 sets (pvr-tests/perpval: depth slopes 2^-10 ..
+2^18.5 a pixel against size and thinness, under a flat probe at 1.5; covmeas's sliver, degenerate, tiny, lean and
+skew sets, the zs25 sliver ladder and a z-probe set; faredge, detinf, a zmeas set), the console against itself.
+
+**The rule: a triangle whose determinant is at most |FPU_PERP_VAL| in size is drawn as one of determinant zero**:
+every pixel at the mean of the corners' depths, the colour planes flat at the third corner (README covmeas: what
+the console does with determinant 0). The sign does not count (-1 is 1.0 on every pixel); an infinity takes every
+triangle. refsw3 (pvr_softfp.h perpVal, pvr_isp_depth.h, pvr_tsp_plane.h): at 1/128 every one of the 3,933 pixels
+the console changes on the sliver sets, at 1.0 and -1 the 10,915, at 2^20 the perpval sweep's 136,764, all exact.
+What 1/128 does in a game: slivers (determinants below 1/64 pixel^2) get a flat depth and colour instead of planes
+of huge cancellation. Not modelled: with an infinite value, triangles of huge or infinite determinant (faredge,
+detinf), and the mean's own arithmetic: zmeas gen5 at 2^20 has 174,646 pixels at the mean, refsw3 misses 3,807 of
+them by the arithmetic of the mean, which was a guess (a dataset to pin it). Whether |det| equal to the value
+counts is not measured.
+
+## offspersist: the offset colour the core keeps (2026-11-19)
+
+    bash run2.sh offspersist hw=<ip>; agents/nulldc3/prep/bumpsolve /tmp/pvr_tests/offspersist/page1.hw.raw 1
+
+purist found that a bump map drawn without the offset bit is lit by the offset colour the core used last, and that
+it survives switching the console off. 13 pages: setters (Gouraud offset quads, four hashed offset colours each) and
+readers (bump maps without the offset bit, decoded back to the K1 K2 K3 Q they were lit with; prep/bumpsolve).
+
+**The kept colour is the last vertex's offset colour, as it was sent, of the last primitive with the offset bit the
+TSP shaded**: not the interpolated colour at its last pixel (that misses by 3 to 7 a channel), the same for a flat,
+a SupSample and a bump-map setter; "last" in the TSP's order (a reader shaded before its tile's setter reads the tile
+before's, tiles column by column; one listed first but shaded after reads its own tile's); it carries across tiles,
+renders and a core SOFTRESET (pages 7-9: one value in every cell); after the console was switched on it was 0 (page
+0). Decal, modulate and vertex fog without the offset bit do not read it. refsw3 (refsw_tile.cpp offsKept, 0 at the
+start): 13 of 13 pages the console's. Not measured: a setter whose offset colours are all zero (its offset planes
+dropped), and how long the value lasts with the power off (purist: minutes).
+
+## halfofs2: HALF_OFFSET at every value (2026-11-19)
+
+    bash run2.sh halfofs2 hw=<ip>; python3 agents/nulldc3/prep/halfofs2_read.py hw
+
+Page p sets HALF_OFFSET = p (0 .. 7), and 256-texel palette textures read where each point samples (point and
+bilinear, along x and y, with and without SupSample; Gouraud ramps). refsw3 is the console on all 8 pages: the
+ISP's and TSP's half-pixel bits and the texel bit as they were modelled; SupSample's points do not move with them.
+
+## ispcache: the translucent sort cache (2026-11-19)
+
+    bash run2.sh ispcache ispcache+098=<size << 14 | 0x408> hw=<ip>    # the log's "the PVR reports errors" lines
+
+A row of 20 tiles with L = 1 .. 256 layers of translucent full-tile sprites (autosort, shuffled depths), and pages
+of L 8x8 triangles at shuffled places. ISP_FEED_CFG's translucent cache size (bits 23..14) 512 (every game and
+test), 256 .. 8, and discard off. SB_ISTERR bit 0 (ISP out of cache):
+- with full-tile layers from L = size / 8 (512: 64, 256: 32, 128: 16, 64: 8); sizes 32, 16 and 8 alike (from 4);
+  8x8 triangles need twice as many; at L = 256 never, at any size (a count of 8 bits?);
+- the picture is the sorted one (refsw3's, every layer) wherever the error comes, down to size 64: like the dumps
+  that report it, nothing shows. With 32 and below the whole row is wrong from L = 8 (not modelled). Discard off:
+  the same as on. Archived at 512 (18 pages, the console's).
+
+## texctl: TEXT_CONTROL's endian and bank bits (2026-11-19, measured, not modelled)
+
+    bash run2.sh texctl hw=<ip>; python3 agents/nulldc3/prep/texctl_score.py /tmp/pvr_tests/texctl hw
+
+Seven textures whose every texel holds its own address (565 raster and twiddled, palette 8 and 4 bpp, VQ 565, VQ
+palette 8 and 4 bpp), read 1:1 with TEXT_CONTROL set per page. Bit 16 ("index endian"): VQ only: index bytes read at
+address ^ 8, code book entries ^ 1; 4 bpp palette VQ untouched. Bit 17 ("code book endian"): every format: the bytes
+of each 16-bit unit swapped (565 texels, palette indices: 8 bpp ^ 1, 4 bpp ^ 2 nibbles, the code book's texels).
+Bits 12..8 (bank): only VQ reads move, by XOR patterns of the address that change with the value. refsw3 ignores
+all of them (agents/nulldc3/prep/texctl.md: what to change).
+
+## yuvconv: the YUV converter (2026-11-19)
+
+    bash run2.sh yuvconv hw=<ip>; agents/nulldc3/prep/yuvscore
+
+12 cases of macroblocks whose bytes say where they come from (three variants), written to the TA's YUV input with
+TA_YUV_TEX_BASE / TA_YUV_TEX_CTRL set, video memory read back. nulldc3's emulator (libswirl/hw/pvr/pvr_yuv.cpp) is
+the console byte for byte in every ordinary case: YUV420 into one texture 16x16, 32x32, 64x16, 48x32 (not a power
+of two) and 128x32, YUV422 in KallistiOS's order, four 16x16 textures (YUV_Tex 1) of either, and one macroblock more
+than a 16x16 texture holds (back to the start). TA_YUV_TEX_CNT counts every macroblock, and the end of conversion
+interrupt comes each time the texture is full. Not the console's: one macroblock more than a 32x16 texture holds
+(1,024 bytes), and TA_YUV_TEX_BASE written again in the middle of a macroblock (1,534 bytes). refta has no converter
+(the offline renderer cannot check this test).
 
 ## spansortcfg: SPAN_SORT_CFG, the span sorter switched off (2026-11-19)
 

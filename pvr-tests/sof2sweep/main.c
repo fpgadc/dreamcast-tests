@@ -154,8 +154,16 @@ static void test_page(int page) {
     reg[0x44 / 4] = fb_r;
     reg[0x48 / 4] = fb_w;
 #else
+    /* the same through pvrio, so that refsw3-offline's strip buffer can be scored against the console's dumps
+       (FB_R_CTRL as pvrio_video sets it for 0888) */
+    pvrio_fill32(SETUP_FB, WORDS, 0x00ff00ff);
+    pvrio_fill32(SOF2, WORDS, 0x00ff00ff);
+    if(pages[page].what == 0) pvrio_reg(FB_R_CTRL_addr, 0x0080000du | pages[page].value);
+    if(pages[page].what == 2) pvrio_reg(FB_W_CTRL_addr, (uint32_t)TEST_FB_PACKMODE | pages[page].value);
     tiles_picture(page);
     pvr_frame_render();
+    pvrio_reg(FB_R_CTRL_addr, 0x0080000du);
+    pvrio_reg(FB_W_CTRL_addr, (uint32_t)TEST_FB_PACKMODE);
 #endif
     pvrio_w32(NOTES, notes, 12);
     snprintf(name, sizeof(name), "page%ds", page);

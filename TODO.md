@@ -23,77 +23,47 @@ to 4.6x the time (the TSP keeps 16 primitives set up); bit 16 changes neither or
 hang the core until power-off. Left: the pictures with bit 16; the sort-off order (a clocked model); what in a render
 sets off the two hangs (each costs a power cycle).
 
-**A2. FPU_PERP_VAL** (0x084, "IEEE floating point value for perpendicular triangle compare", default 0).
-22 dumps set 0x3c000000 (1/128): floigan_*, nba2k_*, ncaa2k2_*, nfl2k1_*, oogabooga_* (Visual Concepts); all 22
-already match the console, so nothing there triggered it. No test sets it.
-- P: rerun covmeas's sliver, degen, tiny, lean and skew mixes, the zs25 depth probes, faredge and detinf with 0,
-  1/128, 1, 2^20, -1, infinity; console against the 0 run. Then a sweep of its own: triangles turned toward edge-on
-  (depth slope 2^-10 .. 2^20 a pixel, area from a pixel to a tile) against each value, to find what is compared
-  (a depth slope, the area, the determinant against the depth range) and what happens (culled, depth or colour
-  clamped, drawn flat).
-- T: the ISP's cost per triangle for edge-on triangles at each value.
-- Possibly the open sliver depth (C2): both are almost edge-on geometry.
+**A2. FPU_PERP_VAL**: done 2026-11-19 (README perpval): a triangle with |det| <= |FPU_PERP_VAL| is drawn as one of
+determinant zero (mean depth, flat colour at the third corner); sign ignored; modelled, exact at 1/128, 1, -1, 2^20 on
+16 sets. Left: an infinite value on huge or infinite determinants (faredge, detinf); the mean's arithmetic (zmeas gen5
+at 2^20: 3,807 of 174,646 pixels, the dataset to pin it); the ISP's cost (D4).
 
-**A3. TEXT_CONTROL** code book endian (bit 17), index endian (bit 16), bank bit (12..8). Never set by a game.
-- P: texfmt / sample variants with each bit, read with address-revealing textures (texgen: every word its own
-  index): which bytes the big-endian code book and index orders swap (16, 32 or 64 bit units; 4 bpp nibble order),
-  and the address mapping for each bank bit position. Then implement in refsw3's fetch.
+**A3. TEXT_CONTROL**: measured 2026-11-19 (README texctl): bit 16 moves VQ index reads (^8) and code book entries
+(^1); bit 17 swaps the bytes of every 16-bit unit of texture data in every format; the bank bits move VQ reads only.
+Left: model them in refsw3's fetch (agents/nulldc3/prep/texctl.md), then archive texctl; the bank bits' exact mapping;
+the 16 address bits above 128 KB.
 
-**A4. ISP_FEED_CFG: punch-through chunks, the translucent sort cache, and the "ISP out of cache" error.**
-Every dump: 0x00800408 (discard 1, punch-through chunk 0x40, translucent cache 512). Known: which primitives go
-into a punch-through chunk, and that each chunk is peeled on its own (ptchunk, ptchunkq, ptchunkm: pixels only);
-the console reports ISP out of cache (SB_ISTERR bit 0) on the same tiles in every render of 25 of the 64 older dumps
-(up to 33 tiles, taxi4) and on two tiles of shenmue_intro, with nothing visible in those pictures (README zdumps).
-Not known: what fills the cache, what the core does when it is full, what it costs.
-- P: autosort tiles with more layers on a pixel (and more fragments in the tile) than the cache holds, cache sizes
-  8, 16, 32 .. 512, discard 0 and 1; console against refsw3, and the console against itself at each size: where a
-  full cache changes the picture (layers dropped, drawn unsorted, sorted in batches), and when it does not.
-- Interrupts: read SB_ISTERR (and SB_ISTNRM) after each render: the out-of-cache bit against the cache size and the
-  layers / fragments / primitives in the tile, to find the count that sets it; the same for punch-through tiles
-  against the chunk size; a scene that sets it in exactly one known tile (one tile in the region array at a time).
-  Then the dumps that report it: which tiles and why, from their tiles' contents.
-- T: render time against the punch-through chunk size (each chunk a peel of its own: cost per chunk and per
-  primitive in it) and against the translucent cache size (sorting in batches when it is full?); the time of a tile
-  that overflows against the same tile with a cache that holds it; whether the error stops or slows the render.
+**A4. ISP_FEED_CFG: punch-through chunks, the translucent sort cache, and the "ISP out of cache" error.** Partly done
+2026-11-19 (README ispcache): out of cache from size / 8 full-tile layers (sizes 64-512; 32 and below as 32), twice
+that with 8x8 triangles, never at 256 layers; the picture unchanged down to size 64 (refsw3's), wrong below (not
+modelled). Left: what the cache holds exactly (fragments, primitives, per pixel or per tile), the picture with a
+small cache, the time against cache and chunk sizes (D8), the punch-through chunk's error bit.
 
 **A5. FPU_PARAM_CFG burst sizes and thresholds, SDRAM_REFRESH / SDRAM_ARB_CFG / SDRAM_CFG, FB_BURSTCTRL.**
 Timing only, by the manual.
 - T: timemeas totals with each changed. P: one check that the pictures do not change.
 
-**A6. The strip buffer** (FB_R_CTRL bit 22, strip size 21..16, FB_W_SOF2): measured by sof2sweep, not implemented
-in refsw2 or refsw3, used by no dump.
-- P: implement from sof2sweep and score it; the oddities as pages of their own (one pixel of the second strip's
-  first tile in the first buffer, 16-line strips, tiles column by column, with the scaler on); how the display
-  reads strips (FB_R_SOF2) was not looked at; a strip render once left the core stuck for the renders after it.
-- T: does the strip mode change the render time.
+**A6. The strip buffer**: modelled 2026-11-19 (README scalermeas/sof2sweep): the write-out's growing strip number;
+10 of sof2sweep's 11 strip pages exact but for one pixel each. Left: that pixel, half-tile strips with the tiles
+column by column, strips with the scaler, where lines before a buffer go, how the display reads strips.
 
-## B. The YUV converter (TA_YUV_TEX_BASE 0x148, TA_YUV_TEX_CTRL 0x14c, TA_YUV_TEX_CNT 0x150)
+## B. The YUV converter: measured 2026-11-19 (README yuvconv)
 
-Every Sofdec FMV goes through it. nulldc3's emulator has one (libswirl/hw/pvr/pvr_yuv.cpp), refta does not, and no
-console test checks the converter itself (yuvbil only reads YUV422 textures). From the manual: YUV_Form 0 =
-YUV420 input, 1 = YUV422 input; YUV_Tex 0 = one texture of (U_Size + 1) * 16 x (V_Size + 1) * 16 pixels,
-1 = (U_Size + 1) * (V_Size + 1) textures of 16x16; U sizes 16 .. 1024, stride U sizes 32 .. 992 (odd settings
-0x05 .. 0x3B, 0x3D); writing TA_YUV_TEX_BASE initializes the converter, which then takes the next input as U data;
-TA_YUV_TEX_CNT counts the macroblocks stored and is cleared by that write.
-- P: macroblocks of known values through the TA's YUV path, video memory read back (dump32) and compared byte for
-  byte with pvr_yuv.cpp: how YUV420's chroma becomes YUV422's (each chroma row twice, or two rows averaged), the
-  byte order of the YUV422 words, the layout for YUV_Tex 0 and 1 and each size (twiddled or not), stride sizes,
-  the 16x16 textures' order for YUV_Tex 1.
-- Edges: TA_YUV_TEX_BASE written in the middle of a macroblock; more macroblocks than the texture holds;
-  TA_YUV_TEX_CNT after each one; YUV input between list input in one frame; store queues against DMA.
-- T: macroblocks a second (TA_YUV_TEX_CNT polled against the cycle counter), the end-of-conversion interrupt's
-  latency, whether conversion holds up list input.
+nulldc3's pvr_yuv.cpp is the console in every ordinary case (YUV420 and YUV422, one texture of any size or 16x16
+textures, one macroblock too many into 16x16). Left: one macroblock too many into a larger texture (32x16: 1,024
+bytes), TA_YUV_TEX_BASE written mid-macroblock (1,534 bytes); a converter in refta (so that the offline renderer can
+run yuvconv); input by DMA, mixed with list input; throughput (D5).
 
 ## C. Open pixel-level loops
 
 **C1. ssrare: done 2026-11-19** (README ssrare): a SupSample point half a line down has floor(C + B / 2), not
 floor(C) + floor(B / 2); ssrare and sscolor exact. Found from the archived pages alone (one unit more per plane,
-labelled by the console, then grouped by each term's fraction). Left: a console test of the rule by itself
-(cells whose C is off the grid, with and without the carry, at known pixels).
+labelled by the console, then grouped by each term's fraction). Confirmed by pvr-tests/sshalf: the console has the
+new rule on all 728 pixels where the rules differ.
 
-**C2. Sliver depth (zs25, the ISP)**: 619 of 7,795 pixels of slivers with a nonzero determinant and different
-corner depths outside the console's 0.1-wide brackets. First, from the archived data (no console): do the misses
-cluster by triangle, a whole plane a unit off as in C1? Then probes from what that shows. A2 may bear on it.
+**C2. Sliver depth (zs25, the ISP)**: done (2026-11-19 found so): refsw3 is the console on every zs25 set and the finer
+zs25f_* ladder (archive_check); the 619 misses are model/covprobe's, a standalone probe behind the renderer (zstart).
+Left: bring covprobe / depthprobe up to refsw3's depth (or retire them for these sets).
 
 **C3. Sliver colours**: the TSP colour model gives 0 at 870 sliver pixels a console shows (a determinant of a few
 units: division by almost zero, 1/w below zero unmeasured); 4 sliver pixels with a negative model depth are drawn.
@@ -120,8 +90,7 @@ frame and was left out). Whether any dump uses them: not checked.
 **C8. tspAlphaStuck** (blendsel): not measured with textured polygons, what else clears it in a tile, the
 automatic sort.
 
-**C9. HALF_OFFSET** with its half-pixel bits off: how the TSP samples (only measured at pixel centres); with
-SupSample.
+**C9. HALF_OFFSET**: done 2026-11-19 (README halfofs2): refsw3 is the console at all 8 values, SupSample included.
 
 **C10. SupSample with the rest**: punch-through in a modifier volume (the PT_MOD pass), translucent modifier
 volumes, sprites, 16 bit UVs, palette and YUV textures, render to texture, DCalcCtrl with perspective.
@@ -133,22 +102,10 @@ td6_menu: what keeps it busy, see T below) and the 65 old-format dumps.
 level is a rough estimate (no console test is close); no strip buffer. Score it against the archived tests once
 its mipmap level follows refsw3's.
 
-**C13. The core's persistent offset colour (found by purist, 2026-11-19).** A bump map drawn WITHOUT the offset bit
-lights itself with the offset colour (K1 K2 K3 Q) the core used last: the core keeps the last offset colour, and it
-survives taking the power off (purist: 2 seconds, 30 seconds, 5 minutes unplugged; the value was still there).
-refsw3 keeps one static offset colour (`offs` in refsw_tile.cpp, 0x20004080 at start, an arbitrary choice) that every
-pixel with the offset bit overwrites and a bump map without the bit reads. Not measured:
-- P, which value persists: the last pixel shaded with the bit (its interpolated offset on a Gouraud polygon, or the
-  vertex's), the last SupSample point, a bump map's raw light; and "last" in the TSP's order, i.e. the span sorter's
-  (SpanGen / SpanSort): a tile of several offset polygons, then a bump map without the bit, the polygons sent in
-  different orders and placed so that the span sorter shades them in another order than the list.
-- P, how long and through what: across tiles, renders, frames, SOFTRESET (core and TA), a new region array, the
-  display off; its value after a cold boot (purist: it survives one; is there a default when the console has been
-  off for longer, hours?).
-- P, who else reads it: vertex fog (the offset colour's alpha) on a polygon without the bit; decal / modulate
-  without the bit (by the manual nothing is added; check that nothing is); two-volume polygons, the second
-  volume's offset; intensity shadows.
-- For the emulator (purist's suggestion): a random value at start-up, then the last one set kept at run time.
+**C13. The core's persistent offset colour (found by purist)**: done 2026-11-19 (README offspersist): the last
+vertex's offset colour, as sent, of the last primitive with the offset bit the TSP shaded; across tiles, renders and
+core resets; 0 after power-on; only bump maps without the offset bit read it. Modelled (offsKept). Left: an all-zero
+setter (dropped planes), how long it lasts powered off.
 
 ## D. Timing probes
 
