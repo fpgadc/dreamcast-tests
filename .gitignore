@@ -21,3 +21,10 @@ __pycache__/
 /pvr-tests/mipk/kfit3
 /pvr-tests/mipk/kfit5
 /pvr-tests/mipk/lenfit
+/pvr-tests/perpmean_bg/gen
+/pvr-tests/perpmean_strip/gen
+/pvr-tests/perpmean_word/gen
+/pvr-tests/slivers_detzero/gen
+/pvr-tests/slivers_dzspec/gen
+/pvr-tests/slivers_dzzero/gen
+/pvr-tests/slivers_tsp/gen
