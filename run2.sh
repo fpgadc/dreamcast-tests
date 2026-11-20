@@ -102,6 +102,7 @@ while [ $# -gt 0 ]; do
 done
 [ ${#RUNS[@]} -gt 0 ] && [ ${#KINDS[@]} -gt 0 ] || { sed -n 2,4p "$0"; exit 1; }
 export JOBS NULLDC3 OFFLINE OFFLINE_TOOL DCTOOL
+mkdir -p /tmp/pvr_tests ${PVR_TESTS:-/tmp/pvr_tests}       # the console lock lives in /tmp/pvr_tests whatever PVR_TESTS is
 for kind in "${KINDS[@]}"; do
   case $kind in
   off)
