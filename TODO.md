@@ -74,8 +74,8 @@ Python model's (pvr-tests/ops/model.py) misses; refsw3 gives the console's exact
 
 **C4. The regression's known misses**: done 2026-11-20 for the edges: faredge 1340 / 1340 (regress has no known miss
 left), hugepos from 2^114 exact on 17 of its 19 console sets (README "refsw3 without float", faredge / hugepos bullet;
-left hugepos_rules page 11, hugepos_v5 one tile). Open: the translucent sort's cross-talk with garbage depths (from
-2^62, hugepos --tri all).
+left hugepos_rules page 11, hugepos_v5 one tile). Done 2026-11-20 (r8 round 1): edge2 made both exact (every regress
+test is now the console's), trsort found the garbage-depth "cross-talk" (a determinant of 2^126 or more: reciprocal 0).
 
 **C5. The dumps that missed: done 2026-11-19, all 786 polly2-data dumps (and the 63 older scenes) are the console's.**
 f1wgp_driver 5, f1wgp_race 2, ff2_fight 1, vrally_rally4 1 pixels were two punch-through rules (README optcull,
@@ -120,8 +120,8 @@ edge start of +-2^132), nantr (the overflowing register's start and its words be
 texfar_*: coordinates never overflow, the declared-short mip V, the -1 unit 1/w), faredge / hugepos (the edge
 unit's walk past 2^124: wrap, push, end of the edge; faredge 1340 / 1340), depthgaps and zovf (depths below zero as
 block and fixed point, above 2^128, the overflow per product and sum, adding a zero, the negative background;
-zovf 1080 / 1080) done and modelled. Left: the GAPs listed in README "refsw3 without float" (depthgaps, zovf
-bullet; faredge bullet).
+zovf 1080 / 1080), and r8 round 1 (edge2, depth2, tsp2, trsort: their GAPs measured) done and modelled. Left: why
+row 31 starts a row earlier; three hang cases (README "refsw3 without float", the r8 round-1 bullet).
 
 ## D. Timing probes
 

@@ -28,3 +28,7 @@ __pycache__/
 /pvr-tests/slivers_dzspec/gen
 /pvr-tests/slivers_dzzero/gen
 /pvr-tests/slivers_tsp/gen
+/pvr-tests/tsp2_m1/gen
+/pvr-tests/tsp2_mipdz/gen
+/pvr-tests/tsp2_mipdz2/gen
+/pvr-tests/tsp2_zadd/gen

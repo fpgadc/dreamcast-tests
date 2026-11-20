@@ -1179,8 +1179,9 @@ in the opaque list (`--tri a|b|c`):
   depth of the form huge * (y - x) with negative values not drawn would be. Above 2^116 the edges' limit
   cuts b further.
 - `--tri all` puts the three into the translucent list, one color channel each, added. From 2^62 the green
-  and blue triangles also show inside the red one's area, where they do not cover: the translucent sort goes
-  wrong when depths are garbage. Not looked into.
+  and blue triangles also show inside the red one's area, where they do not cover. (2026-11-20, trsort_*: the sort
+  was right; the setup's reciprocal of a determinant of 2^126 or more is zero, so such a triangle's depth is 0
+  everywhere: README "refsw3 without float", the r8 round-1 bullet.)
 
 ## model: one implementation in soft floating point, for the emulator and the probes (2026-11-16)
 
@@ -3533,14 +3534,13 @@ the float code had decided something no test had measured, a test went to the co
   - **A perpendicular or determinant-zero triangle with an infinite or NaN corner**: the mean is +-2^127 (an
     infinity among the sums); two exponent-255 corners of opposite sign: the larger 23-bit fraction's sign, equal
     ones +0; a sum is an infinity of fraction 0 (depthgaps_dzinf, _nanprod). In the products a NaN is an infinity.
-  - Left (GAP): where the overflow register's words between fields lie among OTHER planes' depths in the same
-    intervals (pinned against float words and each other only); the order of denormal depths among each other;
-    Big's grid (13 to 23 bits fit, 19 taken); the zero rule's reach into the coordinate differences and the
-    determinant; regime C with HALF_OFFSET off; an off-grid negative slope of 2^102 or more in regime C.
+  - These GAPs are measured since (2026-11-20, depth2_*, the r8 round-1 bullet below): the overflow register's
+    words among other planes' depths, denormal order, Big's grid (19 bits), the zero rule in coordinates and edges,
+    regime C with HALF_OFFSET off (the corner), off-grid negative regime-C slopes (toward zero).
 - **faredge, modvol, hugepos: the edge unit past 2^128** (2026-11-20): **faredge 1340 of 1340, the regression has no
   known miss left**, with faredge_walk, faredge_cull, faredge_far32 (held out), faredge_m131, faredge_ecap,
   faredge_cmax, faredge_k132 and hugepos_a / _b / _all / _odd_* / _cov / _sw1-4 / _val1 / _v3 / _v4 / _v6 exact;
-  hugepos_rules 3590 of 3600 and hugepos_v5 2399 of 2400 left (GAPs below). The rules (pvr_isp_edge.h):
+  hugepos_rules and hugepos_v5 exact since edge2 (below). The rules (pvr_isp_edge.h):
   - **Overflow is per product**: a product of the start (xb ya, xa yb, dx y0, dy x0), or the sum c or first, that
     reaches 2^128 swamps every other operand of the adds, so the start saturates to +-2^127 with its sign; two such
     of one sign cancel exactly (faredge_cmax, faredge_k132: 9,600 tiles). A coordinate difference past 2^128 swamps
@@ -3556,9 +3556,30 @@ the float code had decided something no test had measured, a test went to the co
     passes 2^131 and the one-pixel L-lines of hugepos_sw3. Culling takes the swamped determinant (EdgeWinding).
   - **Row 31**: a polygon with such an edge whose first row is the tile's last starts a row earlier there
     (faredge_walk 366 tiles wrong without it, faredge_far32 held out 390).
-  - Left (GAP): hugepos_rules page 11 (10 tiles: a pixel at either end of slivers with a column step of 0.3 2^127),
-    hugepos_v5 one tile (79 pixels); the units the walk keeps; whether an ordinary sliver with its top corner in
-    row 31 starts a row earlier too (no test has one); the end rule with sx < 0 (taken as R alone).
+  - Since edge2 (the r8 round-1 bullet below): the walk's units, the end against ZERO, the sx < 0 end rule and row
+    31 for every polygon are measured; hugepos_rules page 11 and hugepos_v5's tile were those.
+- **r8 round 1** (2026-11-20, nulldc3 1040c4aa .. 4f3efe15): with it **every regress test is exact** (hugepos_rules
+  and hugepos_v5 too), 786 dumps, 63 scenes, archive_check 185 sets. 23 new console tests, all exact:
+  - **edge2** (edge2_walk, _end, _mult, _row31): a big edge keeps its start and steps in units of 2^(E-27) = 2^102,
+    cut toward zero, ordinary rows too (hugepos_rules page 11: the 0.3 2^127 step's last bit); the edge ends when the
+    row's far value falls to ZERO or below, the far value R + (32 sx mod 2^131) for sx > 0, R for sx < 0, R + 2^131
+    when 32 sx is 0 mod 2^131 (hugepos_v5 tile (0,7)); a polygon whose first row is its tile's row 31 starts at 30,
+    every polygon. Why row 31 is not known (GAP).
+  - **depth2** (depth2_halfc, _halfo, _zcoord, _zedge, _cneg, _denorm, _biggrid, _regbelow, _regmix): a plane
+    starts at the tile's first sample point, the corner with HALF_OFFSET bit 0 clear; the setup's zero rule also in
+    the coordinate differences, the edges' sums and the determinant; negative off-grid regime-C slopes toward zero,
+    positive denormals by value, Big depths to 19 bits, the overflow register's words among other planes as the
+    Neg / Big representation has them.
+  - **tsp2** (tsp2_zadd, _m1, _mipdz, _mipdz2, _tall): the TSP's planes add a zero with the ISP's rule (+0 against
+    2^-126 .. 1.5 2^-126 of the other sign, otherwise exact; every zero sum +0), not "a zero as 2^-127 in the last
+    addition"; a mipmapped triangle with Sdet 0 takes the last level (as if the length were all ones); at a 1/w of
+    exactly -1 unit the colour quotients are 0 or 255 by sign; a texture declared taller than wide as modelled.
+  - **trsort** (trsort_auto, _single, _recip, _recipovf, _garb): the setup's reciprocal of a determinant of 2^126 or
+    more (exactly 2^126 included) is zero: depth 0 at every pixel, an infinite determinant too; the TSP's planes
+    follow. That was the translucent "cross-talk" with garbage depths (hugepos --tri all); the sort was right.
+  - Not settled: three console hangs found on the way (a dc-tool run killed mid page-dump; ~10^5 FOG / PALETTE
+    writes a scene during a render; a triangle with corners +inf and -inf compared Equal against a background of
+    2^127) each need a power cycle; the tests leave them out.
 - **texfar** (one page: u of 3.5 to the largest float, both signs, +-inf, NaN; clamp, flip, wrap; 8 and 64 texels):
   **exact now, 160 of 160**, with eight more (300 regions each, all exact): **texfar_edge**, **texfar_quot**,
   **texfar_bits**, **texfar_mip**, **texfar_mipv**, **texfar_decl**, **texfar_m1**, **texfar_m1q**. Three rules:
@@ -3575,8 +3596,8 @@ the float code had decided something no test had measured, a test went to the co
   - **A 1/w of exactly -1 grid unit** (the evaluator's all-ones value, -2^-143) is read by the divider as 0xFFFF
     2^-143, just under 2^-127 (the negative-denominator rule on the unnormalized all-ones field; texfar_m1: only
     that D of every m 2^e fits all 166 readings). So no denominator is below 2^-128.
-  Left: the mip level at such a pixel, colour and offset quotients there, a mipmapped texture declared taller than
-  wide at large d with fraction bits.
+  The mip level and the colour quotients at such a pixel, and a mipmapped texture declared taller than wide, are
+  measured since (tsp2_*, the r8 round-1 bullet below).
 
 ## Still not covered
 
