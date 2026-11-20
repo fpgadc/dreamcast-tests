@@ -1170,6 +1170,8 @@ in the opaque list (`--tri a|b|c`):
   itself overflows, 1 of the console's 4).
 - refsw2 (soft floating point build) draws the console's pixels for a at every exponent up to 2^124 (15,019,
   705, 15, 2), and for b and c up to where their depth limit starts.
+- (2026-11-20: hugepos and its variants are exact now, the limits of b and c included: README "refsw3 without
+  float", the faredge / hugepos bullet. What follows is the history.)
 - Not modelled: the limits of b and c. They follow the determinant reaching about 2^127 (its reciprocal
   leaves the float range) and are the depth's doing, not the edges': c, whose depth slopes are zero and
   whose determinant is negative, is not drawn at all; b, whose depth slopes are -64 and 768 before the
@@ -3507,11 +3509,28 @@ the float code had decided something no test had measured, a test went to the co
     too: a plane from 2^-124 to -2^-124 over a cell is its start everywhere, one from 2^-126 to -2^-126 is 0 (zspec
     pages 3-6). This is also what **detinf** was: 480 of 480 regions now (its 2 open probes were a start below
     2^-126 with slopes that are not).
-- **faredge, modvol: the edge unit's start past 2^128 with a column step of 2^127 or more** is +-2^132 less the
-  first sum (dx y0 - dy x0), not 2^127: the K 127 vertical triangles' crossings, and modvol's garbage polygon (192
-  of 192 cells now; 187 since 2026-11-16). faredge 1330 of 1340: left, a first-column strip of page 4 (far corner
-  up, the first product of the constant the one past 2^128) that keeps 2^127 on the console, and page 1's control
-  strip; which of the two rules the hardware takes when is not known.
+- **faredge, modvol, hugepos: the edge unit past 2^128** (2026-11-20): **faredge 1340 of 1340, the regression has no
+  known miss left**, with faredge_walk, faredge_cull, faredge_far32 (held out), faredge_m131, faredge_ecap,
+  faredge_cmax, faredge_k132 and hugepos_a / _b / _all / _odd_* / _cov / _sw1-4 / _val1 / _v3 / _v4 / _v6 exact;
+  hugepos_rules 3590 of 3600 and hugepos_v5 2399 of 2400 left (GAPs below). The rules (pvr_isp_edge.h):
+  - **Overflow is per product**: a product of the start (xb ya, xa yb, dx y0, dy x0), or the sum c or first, that
+    reaches 2^128 swamps every other operand of the adds, so the start saturates to +-2^127 with its sign; two such
+    of one sign cancel exactly (faredge_cmax, faredge_k132: 9,600 tiles). A coordinate difference past 2^128 swamps
+    in the start's products too, but steps by the saturated +-2^127 (hugepos_v4, _v5, _v6; as an infinite step
+    68,397 / 67,565 pixels of v5 / v6 wrong).
+  - **An edge whose block exponent is cut** (a step of 2^124 or more, E at most 129) is walked down the tile from the
+    polygon's first row in it: the row value R at column 0 is held in [-2^131, 2^131), wrapping mod 2^132; a row
+    whose wrapped R and column step sx have one sign is all on R's side; otherwise its value at pixel 16, R + 16 sx,
+    is held in [-2^131, 2^131) as well, and a row where that is out of range is taken as R + sign(R) 2^132 (the
+    +-2^132 of the K 127 crossings and modvol's garbage polygon). **The edge ends** when the row's largest value
+    (R + 32 sx for sx > 0, else R; 32 sx kept below 2^131) falls from above 0 to 0 or below: every later row of the
+    tile is outside. That one rule gives the earlier pixel-32 rule, hugepos's sliver cut, the death of rows after R
+    passes 2^131 and the one-pixel L-lines of hugepos_sw3. Culling takes the swamped determinant (EdgeWinding).
+  - **Row 31**: a polygon with such an edge whose first row is the tile's last starts a row earlier there
+    (faredge_walk 366 tiles wrong without it, faredge_far32 held out 390).
+  - Left (GAP): hugepos_rules page 11 (10 tiles: a pixel at either end of slivers with a column step of 0.3 2^127),
+    hugepos_v5 one tile (79 pixels); the units the walk keeps; whether an ordinary sliver with its top corner in
+    row 31 starts a row earlier too (no test has one); the end rule with sx < 0 (taken as R alone).
 - **texfar** (one page: u of 3.5 to the largest float, both signs, +-inf, NaN; clamp, flip, wrap; 8 and 64 texels):
   **exact now, 160 of 160**, with eight more (300 regions each, all exact): **texfar_edge**, **texfar_quot**,
   **texfar_bits**, **texfar_mip**, **texfar_mipv**, **texfar_decl**, **texfar_m1**, **texfar_m1q**. Three rules:

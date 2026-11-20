@@ -72,8 +72,10 @@ Python model's (pvr-tests/ops/model.py) misses; refsw3 gives the console's exact
 "Slivers", slivers_tsp, _detzero, _perp, _dzspec, _dzzero). Left: the ISP's depth mean (0xaaaaaa against
 0x3eaaaaab, the zero rule).
 
-**C4. The regression's known misses** (2026-11-19, later the same day: detinf and modvol exact, README "refsw3 without float"; faredge 1330 / 1340 left), hugepos from 2^114 and the
-translucent sort's cross-talk with garbage depths (from 2^62). Each has its README section.
+**C4. The regression's known misses**: done 2026-11-20 for the edges: faredge 1340 / 1340 (regress has no known miss
+left), hugepos from 2^114 exact on 17 of its 19 console sets (README "refsw3 without float", faredge / hugepos bullet;
+left hugepos_rules page 11, hugepos_v5 one tile). Open: the translucent sort's cross-talk with garbage depths (from
+2^62, hugepos --tri all).
 
 **C5. The dumps that missed: done 2026-11-19, all 786 polly2-data dumps (and the 63 older scenes) are the console's.**
 f1wgp_driver 5, f1wgp_race 2, ff2_fight 1, vrally_rally4 1 pixels were two punch-through rules (README optcull,
@@ -115,9 +117,9 @@ only, NaN = +inf), perpeq, zneg, trimin, bgspec (with zsign, bgneg, bgneg2, bgbi
 the negative background, saturation at 2^127), zspec (with zbad, zbadbg, zbadk, zovf, zword: the overflow
 regimes, the wrapping register and its words, underflow of slopes and start; detinf exact with it), modvol (the
 edge start of +-2^132), nantr (the overflowing register's start and its words between steps), texfar (with
-texfar_*: coordinates never overflow, the declared-short mip V, the -1 unit 1/w) done and modelled. Open:
-faredge's last 10 regions (page 4's strip, page 1's control strip: when the edge unit keeps 2^127 instead of
-2^132), zovf's exactly-2^128 cells.
+texfar_*: coordinates never overflow, the declared-short mip V, the -1 unit 1/w), faredge / hugepos (the edge
+unit's walk past 2^124: wrap, push, end of the edge; faredge 1340 / 1340) done and modelled. Open: zovf's
+exactly-2^128 cells (solved by the zovf / depthgaps hunts, being merged).
 
 ## D. Timing probes
 
