@@ -3463,15 +3463,14 @@ the float code had decided something no test had measured, a test went to the co
     zero, and of two negative ones **the larger exponent is the larger depth** (-2 > -1, -1e30 > -2), within one
     exponent the float's own order (-1 > -1.5). A NaN is an ordinary number (a positive one above +inf); -0 is +0.
     (zsign: every pair of 20 depths from -2^100 to 2^100, the polygons textured so that the negative ones show.)
-  - **A negative background**: below 2^-20 in size it is 0; from 2^-20 to below 64 it is one word, 0xc2ffffff
-    (-127.99999: the lowest depth of the binade of 64 in that order, above -32; not cut to 19 bits); from 64 on
-    it is itself (bgneg: 24 backgrounds against -64 .. -100.75 in quarters; bgneg2: across -128 and in steps of
-    the stored depth's last bit).
+  - **A negative background** (superseded 2026-11-20 by depthgaps_bgpin, _bglow*, below): below 2^-20 in size it
+    is 0; from 2^-20 to below 64 it looked like one word, 0xc2ffffff, against bgneg's probes; from 64 on it is
+    itself (bgneg: 24 backgrounds against -64 .. -100.75 in quarters; bgneg2: across -128 and in steps of the
+    stored depth's last bit).
   - **Overflow is 2^127**: a polygon whose depth plane overflows (corners at the largest float, +-inf, a NaN, or
     -2^116 and beyond over a cell) stores +-2^127; a background with exponent field 255 takes 254, its fraction
     kept: +-inf is +-2^127 (and ties with such a polygon), 0x7f800001 too (its fraction is cut), a NaN is above
     it; a background of 1.5 2^127 or the largest float is above it, 2^127 ties, 1.5 2^126 is below (bgbig).
-  - Left: whether a negative background of 64 and more loses its low 5 fraction bits as a positive one does.
 - **zspec** (7 pages: polygons with a NaN, +-inf or huge first-corner depth; sloped depths around 2^-126 against
   flat probes): **exact now, 1040 of 1040 regions**, after **zbad** (one bad corner, textured so that every depth
   shows, against 17 probe depths), **zbadbg** and **zbadk** (against backgrounds), **zovf** (sign maps against a
@@ -3494,21 +3493,50 @@ the float code had decided something no test had measured, a test went to the co
   - **The word stored is a function of the register alone** (zword, every word to 19 bits, the mirror with steps
     of +2^124 word for word): m = 0: 0; 1: 2^127; 2 .. 15: beyond the largest float; 16: the lowest word there is;
     17: 0xfdffffff; 18, 19: 0xfe7fffff; 20 .. 22: 0xfeffffff; 23: 0xfeffffe0; 24 .. 29: 0xff7fffff; 30:
-    0xff7fffe0; 31: 0xff000000 (m the register in steps of 2^127). refsw3 has the table (pvr_isp_depth.h kWrap).
+    0xff7fffe0; 31: 0xff000000 (m the register in steps of 2^127). refsw3 computes them (pvr_isp_depth.h RegDepth).
     Between whole steps (a finite start: **nantr_fin**, **nantr_fin2**, **nantr_wreg**, and **nantr_word** for the
     words of the cells that start one step on) the word is still the register's alone (WrapWord): 0 is 0; above 0
     the register itself to 19 bits (beyond the largest float from 2^128 on); below 0, with u = r + 2^131 to 19 bits
     and 2^p its leading one, exponent field p + 124 and compare-key fraction (u / 2^p - 1.75) 2^26 - 1, clamped to
     the binade's lowest word below and the next binade's lowest word above (from -2 steps to -1 it is r itself, from
     -9 to -8.5 r + 8 steps); at whole steps that formula is kWrap's 32 words. zbad 4080 / 4080, zbadbg 3480 / 3480
-    (their NaN-at-TR cell at x = 0 was such a start). Left: zovf's six cells where the constant is exactly 2^128
-    (refsw3 calls it an overflow, a console not: there the console's switch is where a x0 + b y0 reaches 2^128); the
-    words between -1 step and 0 (field 255), the low 5 bits where the probes leave them, a negative finite start's
-    rounding onto the grid.
+    (their NaN-at-TR cell at x = 0 was such a start). zovf's six cells and the words left open here: next bullet.
   - **Underflow**: the range of the setup's numbers (below 2^-126 zero) holds for the slopes and the tile's start
     too: a plane from 2^-124 to -2^-124 over a cell is its start everywhere, one from 2^-126 to -2^-126 is 0 (zspec
     pages 3-6). This is also what **detinf** was: 480 of 480 regions now (its 2 open probes were a start below
     2^-126 with slopes that are not).
+- **depthgaps, zovf: the depth unit below zero, past 2^128 and at its range's ends** (2026-11-20): **zovf 1080 of
+  1080**, the 33 depthgaps_* tests, the 15 zovf_* tests and perpmean_negedge / _negslope / _negstore all exact
+  (pvr_isp_depth.h, refsw_lists.cpp). The rules:
+  - **A depth below zero is not stored as a float**: the depth unit keeps its block's exponent E (max of the start's
+    exponent and the larger slope's + 5, at least -122, at most 128) and a fixed point M 2^(E - 16), the value
+    rounded down (the size up). Inside the block's top binade that is the float word (16 bits, the binade's bottom
+    0x...7fffe0, no carry); outside it the depth lies between two neighbouring fields' words, ordered by M
+    (depthgaps_uwmat, _ties, _negconv, _negladder, _negramp, _negpp, _neggrid, _search, _final, _tinymean: a mean
+    of -2^-125 below a quad at -2^-126 is the floor at -122). A flat plane and a mean are stored the same way.
+  - **The background below zero** is stored as a flat plane of its depth whose E is at least 6 (grid 2^-10),
+    its 20 bits first: -1 and -1 - 2^-23 tie with a ramp's -1, -2^-20 is one unit (depthgaps_bgpin); from 64 on
+    itself, its low 4 bits cut, rounded up in size to 0x100 (depthgaps_bglow, _bglow2, _bglow3, -inf and -NaN too).
+  - **Above 2^128** (a start of 2^127 stepping up) a depth is above every float word, ordered as a float of 19
+    bits whose exponent field goes past 254 (depthgaps_bigpos, _bigord, _bigslope, _bigpair).
+  - **The overflow**: every product and every sum of the depth setup is checked at 2^128 where it is made
+    (zovf_lim, zovf_c, zovf_ps, zovf_sum; inf - inf = +0). zovf's six cells: the constant's product exactly 2^128
+    makes c infinite while a x0 + b y0 is not: a one-sided infinite start, which saturates to +2^127 and steps from
+    there; regime B is a start of +0 (inf - inf) stepping normally (depthgaps_regb). In regime C the slope that did
+    not overflow steps the register too, cut to 20 bits and to the register's 2^102 grid toward zero (zovf_creg,
+    zovf_ab, zovf_slope, zovf_wrap); the register's start is cut to 20 bits, taken toward zero (depthgaps_rstart,
+    _rcut). The overflow register's words are RegDepth: positive values as themselves, negative ones as a block of
+    E 128 stores them (zword's 32 words; depthgaps_mm orders them).
+  - **Adding a zero**: a zero (an input, a product below 2^-126 with its sign, or a sum) added to x of 2^-126 ..
+    1.5 2^-126 of the other sign gives +0, to any other x exactly x; every zero sum is +0, -0 + -0 too; in every
+    addition of the depth setup (depthgaps_zadd 109 of 109, the TSP planes' rule 76; depthgaps_field1).
+  - **A perpendicular or determinant-zero triangle with an infinite or NaN corner**: the mean is +-2^127 (an
+    infinity among the sums); two exponent-255 corners of opposite sign: the larger 23-bit fraction's sign, equal
+    ones +0; a sum is an infinity of fraction 0 (depthgaps_dzinf, _nanprod). In the products a NaN is an infinity.
+  - Left (GAP): where the overflow register's words between fields lie among OTHER planes' depths in the same
+    intervals (pinned against float words and each other only); the order of denormal depths among each other;
+    Big's grid (13 to 23 bits fit, 19 taken); the zero rule's reach into the coordinate differences and the
+    determinant; regime C with HALF_OFFSET off; an off-grid negative slope of 2^102 or more in regime C.
 - **faredge, modvol, hugepos: the edge unit past 2^128** (2026-11-20): **faredge 1340 of 1340, the regression has no
   known miss left**, with faredge_walk, faredge_cull, faredge_far32 (held out), faredge_m131, faredge_ecap,
   faredge_cmax, faredge_k132 and hugepos_a / _b / _all / _odd_* / _cov / _sw1-4 / _val1 / _v3 / _v4 / _v6 exact;

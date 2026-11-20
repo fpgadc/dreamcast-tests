@@ -118,8 +118,10 @@ the negative background, saturation at 2^127), zspec (with zbad, zbadbg, zbadk, 
 regimes, the wrapping register and its words, underflow of slopes and start; detinf exact with it), modvol (the
 edge start of +-2^132), nantr (the overflowing register's start and its words between steps), texfar (with
 texfar_*: coordinates never overflow, the declared-short mip V, the -1 unit 1/w), faredge / hugepos (the edge
-unit's walk past 2^124: wrap, push, end of the edge; faredge 1340 / 1340) done and modelled. Open: zovf's
-exactly-2^128 cells (solved by the zovf / depthgaps hunts, being merged).
+unit's walk past 2^124: wrap, push, end of the edge; faredge 1340 / 1340), depthgaps and zovf (depths below zero as
+block and fixed point, above 2^128, the overflow per product and sum, adding a zero, the negative background;
+zovf 1080 / 1080) done and modelled. Left: the GAPs listed in README "refsw3 without float" (depthgaps, zovf
+bullet; faredge bullet).
 
 ## D. Timing probes
 
