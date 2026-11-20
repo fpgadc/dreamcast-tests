@@ -1876,10 +1876,26 @@ the console does with determinant 0). The sign does not count (-1 is 1.0 on ever
 triangle. refsw3 (pvr_softfp.h perpVal, pvr_isp_depth.h, pvr_tsp_plane.h): at 1/128 every one of the 3,933 pixels
 the console changes on the sliver sets, at 1.0 and -1 the 10,915, at 2^20 the perpval sweep's 136,764, all exact.
 What 1/128 does in a game: slivers (determinants below 1/64 pixel^2) get a flat depth and colour instead of planes
-of huge cancellation. Not modelled: with an infinite value, triangles of huge or infinite determinant (faredge,
-detinf), and the mean's own arithmetic: zmeas gen5 at 2^20 has 174,646 pixels at the mean, refsw3 misses 3,807 of
-them by the arithmetic of the mean, which was a guess (a dataset to pin it). Whether |det| equal to the value
-counts is not measured.
+of huge cancellation. A |det| equal to the value counts (perpeq).
+
+**The mean, to the last bit** (2026-11-20, pvr-tests/perpmean_*): the ISP's depth is (z1 + z2) + z3 in rasterizer
+order (the third corner sent added last, in strips, odd strip triangles and sprites alike: perpmean_strip) in the
+setup's adder (24 bits toward zero, the 25 bit reach), times 1/3 rounded up to 24 bits (0xaaaaab 2^-25), cut to
+24 then to the start's 20 bits, stored as any depth: 19 bits above zero; below zero the size to 16 bits rounded UP
+(the 20-bit cut first; no carry into the exponent: the binade's largest 19-bit word 0x...7fffe0). A sum of 2^128
+or more is +-2^127; a quotient below 2^-126 is 0. perpmean_word (16,384 stored words read back with zexfil: all;
+the other sum orders, a rounding adder, 0xaaaaaa all miss), perpmean_neg (11,258 means below zero), perpmean_bg
+(136 words against the background), perpmean_tiny (336 regions around 2^-126). The TSP's 1/w plane is the same
+mean (slivers above; perpmean_fogw 16,384 pixels through table fog, perpmean_uv 8,192 U readings to the 16th bit),
+attributes the third corner's times it; with an overflowing sum the 1/w plane is an infinity, read by the
+evaluator as 2^-128: a colour comes out white (perpmean_ovf 240 regions; detinf's black perpendicular quads).
+**A NaN or -infinity FPU_PERP_VAL is +infinity** (the console's detinf and perpval pages at 7fc00000, ffc00000,
+ff800000, 7f800001 are byte for byte the +infinity pages). zmeas@gen5 at 2^20 and +infinity: 4800 of 4800 (the
+3,807 pixels the guess missed); detinf at every value 480 of 480, perpval 1200 of 1200; archived with the runs
+zmeas@gen5+084=49800000, +084=7f800000, detinf+084=49800000, 7f800000, 7fc00000, perpval+084=7fc00000. Left
+(GAP): whether the ISP divides or multiplies by 1/3 (the same 19 bits for every 24-bit sum), stored negative sizes
+below about 2^-122 (perpmean_tiny's first version: a mean of -2^-125 below a flat quad at -2^-126; the depthgaps
+item), a perpendicular triangle with an infinite or NaN corner depth (taken as the first vertex's depth as given).
 
 ## offspersist: the offset colour the core keeps (2026-11-19)
 

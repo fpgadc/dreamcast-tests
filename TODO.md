@@ -25,8 +25,9 @@ sets off the two hangs (each costs a power cycle).
 
 **A2. FPU_PERP_VAL**: done 2026-11-19 (README perpval): a triangle with |det| <= |FPU_PERP_VAL| is drawn as one of
 determinant zero (mean depth, flat colour at the third corner); sign ignored; modelled, exact at 1/128, 1, -1, 2^20 on
-16 sets. Left: an infinite value on huge or infinite determinants (faredge, detinf); the mean's arithmetic (zmeas gen5
-at 2^20: 3,807 of 174,646 pixels, the dataset to pin it); the ISP's cost (D4). A determinant equal to it counts (perpeq, 1800 of 1800).
+16 sets. The mean's arithmetic (ISP and TSP) and NaN / -inf values (= +inf): done 2026-11-20 (README perpval,
+perpmean_*; zmeas gen5 at 2^20 4800 of 4800). Left: the ISP's cost (D4); stored negative sizes below about 2^-122 (with
+depthgaps). A determinant equal to it counts (perpeq, 1800 of 1800).
 
 **A3. TEXT_CONTROL**: done 2026-11-19 (README texctl): bits 17, 16 and the bank bits 12..8 modelled in refsw3's
 fetch; texctl, texctl_bank, texctl_bankbase, texctl_bankmip, texctl_addr exact. Left (GAP): bank bit 4 / reads past
